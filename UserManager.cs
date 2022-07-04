@@ -3,20 +3,20 @@
 namespace Atria;
 
 public class UserManager {
-    private static string[] Titles = new[] { "", "Dr.", "Dr. Dr.", "Dr. Dr. Dr.", "Dr. mult." };
-    private static string[] FirstNames = new[] {
+    private static readonly string[] Titles = { "", "Dr.", "Dr. Dr.", "Dr. Dr. Dr.", "Dr. mult." };
+    private static readonly string[] FirstNames = {
         "Karin", "Hans",        "Renate", "Peter",        "Monika", "Klaus",        "Ursula", "Wolfgang",        "Ingrid", "Jürgen",        "Helga", "Dieter",        "Giesela", "Manfred",        "Elke", "Uwe",        "Brigitte", "Günther",        "Christa", "Horst",        "Hannelore", "Bernd",        "Bärbel", "Karl",        "Barbara", "Werner",        "Erika", "Heinz",        "Jutta", "Rolf",        "Christel", "Reiner",        "Heike", "Gerhard",        "Marion", "Helmuth",        "Angelika", "Michael",        "Inge", "Gerd",
         "Hyunji", "Jonas",
         "Selina", "Johannes",
                   "Stefan",
     };
-    private static string[] LastNames = new[] {
+    private static readonly string[] LastNames = {
         "Müller", "Schmidt", "Schneider", "Fischer", "Weber", "Meyer", "Wagner", "Becker",
         "Schulz", "Hoffmann", "Schäfer", "Koch", "Bauer", "Richter", "Klein", "Wolf", "Schröder",
         "Neumann", "Schwarz", "Zimmermann", "Braun", "Krüger", "Hofmann", "Hartmann", "Lange",
     };
 
-    private List<User> _users;
+    private readonly List<User> _users;
 
     public IReadOnlyList<User> Users => _users;
 

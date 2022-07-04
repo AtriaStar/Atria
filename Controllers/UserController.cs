@@ -6,7 +6,7 @@ namespace Atria.Controllers;
 [ApiController]
 [Route("api/users/")]
 public class UserController : ControllerBase {
-    private UserManager _mgr;
+    private readonly UserManager _mgr;
 
     public UserController(UserManager mgr) {
         _mgr = mgr;
