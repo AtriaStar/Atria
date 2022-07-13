@@ -13,5 +13,5 @@ public record WebserviceEntry(
     Question[] Questions,
     Tag[] Tags,
     Review[] Reviews,
-    Dictionary<User, PermissionSet> Collaborators
+    Dictionary<User, WSERole> Collaborators
 );
