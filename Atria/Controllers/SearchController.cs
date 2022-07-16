@@ -7,11 +7,11 @@ namespace Atria.Controllers;
 [Route("/search")]
 public class SearchController : ControllerBase {
 
-    //WseSearchParam and Pagination missing in param
+    // TODO: WseSearchParam and Pagination missing in param
     [HttpGet("/wse")]
     public IEnumerable<WebserviceEntry> GetWseList() => null!;
 
-    //Pagination missing in param
+    // TODO: Pagination missing in param
     [HttpGet("/user")]
     public IEnumerable<User> GetUserList(string query) => null!;
 
