@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Atria.Controllers;
 
 [ApiController]
-[Route("/tag")]
+[Route("tag")]
 public class TagController : ControllerBase {
 
     [HttpGet]

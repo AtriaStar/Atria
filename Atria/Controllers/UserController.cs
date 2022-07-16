@@ -4,53 +4,39 @@ using Microsoft.AspNetCore.Mvc;
 namespace Atria.Controllers;
 
 [ApiController]
-[Route("/user")]
+[Route("user")]
 public class UserController : ControllerBase {
-
-    //not in doc
-
-    [HttpGet]
-    public IReadOnlyList<User> GetUsers() => null!;
-
-    [HttpGet("/by_title/{title}")]
-    public IEnumerable<User> GetUsersByTitle(string title) => null!;
-
-    [HttpPost("/add")]
-    public void AddUser(User user) { }
-
-    //not in doc
-
-    [HttpGet("/{userId}")]
+    [HttpGet("{userId}")]
     public User Get(int userId) => null!;
 
     // TODO: WseSearchParam and Pagination missing in param
-    [HttpGet("/{userId}/wse")]
+    [HttpGet("{userId}/wse")]
     public IEnumerable<WebserviceEntry> GetWseByUser(int userId) => null!;
 
     // TODO: WseSearchParam and Pagination missing in param
-    [HttpGet("/{userId}/bookmarks")]
+    [HttpGet("{userId}/bookmarks")]
     public IEnumerable<WebserviceEntry> GetBookmarksByUser(int userId) => null!;
 
     // TODO: Pagination missing in param
-    [HttpGet("/{userId}/reviews")]
+    [HttpGet("{userId}/reviews")]
     public IEnumerable<Review> GetReviewsByUser(int userId, string query) => null!;
 
     // TODO: WseSearchParam and Pagination missing in param
-    [HttpGet("/{userId}/drafts")]
+    [HttpGet("{userId}/drafts")]
     public IEnumerable<WSEDraft> GetWseDrafts() => null!;
 
-    [HttpGet("/{userId}/notifications")]
+    [HttpGet("{userId}/notifications")]
     public IReadOnlyList<Notification> GetNotifications() => null!;
 
-    [HttpPost("/{userId}")]
+    [HttpPost("{userId}")]
     public void Edit(User user) { }
 
-    [HttpPost("/{userId}/bookmarks")]
+    [HttpPost("{userId}/bookmarks")]
     public void SetBookmark(int wseId, bool state) { }
 
     [HttpPut("")]
     public int Create(User user) => 0;
 
-    [HttpDelete("/{userId}")]
+    [HttpDelete("{userId}")]
     public void Delete(int userId) { }
 }

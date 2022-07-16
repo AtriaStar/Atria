@@ -4,20 +4,20 @@ using Microsoft.AspNetCore.Mvc;
 namespace Atria.Controllers;
 
 [ApiController]
-[Route("/search")]
+[Route("search")]
 public class SearchController : ControllerBase {
 
     // TODO: WseSearchParam and Pagination missing in param
-    [HttpGet("/wse")]
+    [HttpGet("wse")]
     public IEnumerable<WebserviceEntry> GetWseList() => null!;
 
     // TODO: Pagination missing in param
-    [HttpGet("/user")]
+    [HttpGet("user")]
     public IEnumerable<User> GetUserList(string query) => null!;
 
-    [HttpGet("/count/wse")]
+    [HttpGet("count/wse")]
     public int GetWseCount(string query) => 0!;
 
-    [HttpGet("/count/user")]
+    [HttpGet("count/user")]
     public int GetUserCount(string query) => 0!;
 }

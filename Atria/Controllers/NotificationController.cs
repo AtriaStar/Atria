@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Atria.Controllers;
 
 [ApiController]
-[Route("/notification")]
+[Route("notification")]
 public class NotificationController : ControllerBase {
 
     [HttpPost("")]
     public void SetAllowedNotification(Notification notification, bool state) { }
 
-    [HttpPost("/email")]
+    [HttpPost("email")]
     public void SetEmailNotification(bool state) { }
     
 }
