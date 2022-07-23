@@ -5,5 +5,3 @@ public record Notification(
     string baseMessage,
     DateTimeOffset creationTime
 );
-
-    
