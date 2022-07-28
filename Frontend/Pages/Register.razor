@@ -16,7 +16,7 @@
                     <div class="form-group row">
                         <label for="lastName" class="form-label">Name</label>
                         <div>
-                            <Forms.InputText id="lastName" class="form-control" @bind-Value="_user.LastName"></Forms.InputText>
+                            <InputText id="lastName" class="form-control" @bind-Value="_user.LastName"></InputText>
                             <ValidationMessage For="() => _user.LastName"></ValidationMessage>
                         </div>
                     </div>
@@ -24,7 +24,7 @@
                     <div class="form-group row">
                         <label for="firstName" class="form-label">Vorname</label>
                         <div>
-                            <Forms.InputText id="firstName" class="form-control" @bind-Value="_user.FirstNames"></Forms.InputText>
+                            <InputText id="firstName" class="form-control" @bind-Value="_user.FirstNames"></InputText>
                             <ValidationMessage For="() => _user.FirstNames"></ValidationMessage>
                         </div>
                     </div>
@@ -32,7 +32,7 @@
                     <div class="form-group row">
                         <label for="email" class="form-label">E-Mail</label>
                         <div>
-                            <Forms.InputText id="email" class="form-control" @bind-Value="_user.Email"></Forms.InputText>
+                            <InputText id="email" class="form-control" @bind-Value="_user.Email"></InputText>
                             <ValidationMessage For="() => _user.Email"></ValidationMessage>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
                     <div class="form-group row">
                         <label for="password" class="form-label">Passwort</label>
                         <div>
-                            <Forms.InputText id="password" class="form-control" @bind-Value="_user.PasswordHash"></Forms.InputText>
+                            <InputText id="password" class="form-control" @bind-Value="_user.PasswordHash"></InputText>
                             <ValidationMessage For="() => _user.PasswordHash"></ValidationMessage>
                         </div>
                     </div>
