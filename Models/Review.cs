@@ -1,9 +1,9 @@
 ﻿namespace Models; 
 
-public class Review {
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public StarCount StarCount { get; set; }
-    public DateTimeOffset CreationTime { get; set; }
-    public User Creator  { get; set; }
-}
+public record Review(
+    string Title,
+    string Description,
+    StarCount StarCount,
+    DateTimeOffset CreationTime,
+    User Creator
+);

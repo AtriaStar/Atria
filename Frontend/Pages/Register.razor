@@ -10,38 +10,38 @@
                 <h2>Registrieren</h2>
             </div>
             <div class="card-body container">
-                <EditForm Model="@_user" OnValidSubmit="HandleValidSubmit">
+                <EditForm OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator></DataAnnotationsValidator>
                     <ValidationSummary></ValidationSummary>
                     <div class="form-group row">
                         <label for="lastName" class="form-label">Name</label>
                         <div>
-                            <InputText id="lastName" class="form-control" @bind-Value="_user.LastName"></InputText>
-                            <ValidationMessage For="() => _user.LastName"></ValidationMessage>
+                            <InputText id="lastName" class="form-control" @bind-Value="lastName"></InputText>
+                            <ValidationMessage For="() => lastName"></ValidationMessage>
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="firstName" class="form-label">Vorname</label>
                         <div>
-                            <InputText id="firstName" class="form-control" @bind-Value="_user.FirstNames"></InputText>
-                            <ValidationMessage For="() => _user.FirstNames"></ValidationMessage>
+                            <InputText id="firstName" class="form-control" @bind-Value="firstNames"></InputText>
+                            <ValidationMessage For="() => firstNames"></ValidationMessage>
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="email" class="form-label">E-Mail</label>
                         <div>
-                            <InputText id="email" class="form-control" @bind-Value="_user.Email"></InputText>
-                            <ValidationMessage For="() => _user.Email"></ValidationMessage>
+                            <InputText id="email" class="form-control" @bind-Value="email"></InputText>
+                            <ValidationMessage For="() => email"></ValidationMessage>
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="password" class="form-label">Passwort</label>
                         <div>
-                            <InputText id="password" class="form-control" @bind-Value="_user.PasswordHash"></InputText>
-                            <ValidationMessage For="() => _user.PasswordHash"></ValidationMessage>
+                            <InputText id="password" class="form-control" @bind-Value="password"></InputText>
+                            <ValidationMessage For="() => password"></ValidationMessage>
                         </div>
                     </div>
                     
@@ -59,12 +59,15 @@
 
 @* TODO implement registration logic *@
 @code {
-	readonly User _user = new();
+	string lastName = "";
+	string firstNames = "";
+	string email = "";
+	string password = "";
     
     private void HandleValidSubmit()
     {
         Console.WriteLine("Valid");
-        Console.WriteLine(_user.Email);
+        Console.WriteLine(email);
     }
 
 }

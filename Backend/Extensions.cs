@@ -1,4 +1,4 @@
-﻿namespace Atria; 
+﻿namespace Backend; 
 
 public static class Extensions {
     public static T RandomElement<T>(this IEnumerable<T> enumerable)

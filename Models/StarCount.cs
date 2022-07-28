@@ -1,6 +1,6 @@
 ﻿namespace Models; 
 
-public enum StarCount : byte {
+public enum StarCount {
     One = 1,
     Two = 2,
     Three = 3,
