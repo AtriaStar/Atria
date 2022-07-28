@@ -1,0 +1,34 @@
+﻿@page "/searchUser"
+
+<PageTitle>AtriaTest</PageTitle>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <form action="">
+            <div class="input-group mb-4 border rounded-pill p-1">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                    @* TODO: icon not working*@
+                    <button type="submit" class="btn btn-link text-dark"><i class="fa fa-search"></i></button>
+                    </div>
+                <input type="search" placeholder="Search for ..." class="form-control rounded-pill border-0">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* TODO: change border color*@
+@* TODO: webservices active does not change when user selected, prob bc no href*@
+<div class="row mb-2">
+    <div class="col-2">
+        <div class="list-group">
+            <a href="" class="list-group-item d-flex justify-content-between align-items-center">Webservices
+                <span class="badge rounded-pill bg-primary">14</span>
+            </a>
+            <a href="searchUser" class="list-group-item d-flex justify-content-between align-items-center active">Nutzer
+                <span class="badge rounded-pill bg-primary">14</span>
+            </a>
+        </div>
+    </div>
+</div>

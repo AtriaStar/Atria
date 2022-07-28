@@ -1,4 +1,4 @@
-﻿namespace Atria.Models;
+﻿namespace Models;
 
 [Flags]
 public enum WSERole {

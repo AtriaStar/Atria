@@ -1,0 +1,8 @@
+main {
+    /*border is temporary*/
+    border: 1px solid black;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 200px;
+    margin-left: 200px;
+}

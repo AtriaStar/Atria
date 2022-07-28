@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\SearchUser.razor.css" />
+    <None Remove="Shared\BottomBar.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Pages\SearchUser.razor.css" />
+    <Content Include="Shared\BottomBar.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Models\Models.csproj" />
+  </ItemGroup>
+
+</Project>

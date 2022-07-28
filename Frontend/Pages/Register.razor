@@ -1,0 +1,70 @@
+﻿@page "/Register"
+@using Microsoft.AspNetCore.Components
+@using Models
+
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-5">
+        <div class="card mt-3 mb-3">
+            <div class="card-header text-center">
+                <h2>Registrieren</h2>
+            </div>
+            <div class="card-body container">
+                <EditForm Model="@_user" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                    <ValidationSummary></ValidationSummary>
+                    <div class="form-group row">
+                        <label for="lastName" class="form-label">Name</label>
+                        <div>
+                            <Forms.InputText id="lastName" class="form-control" @bind-Value="_user.LastName"></Forms.InputText>
+                            <ValidationMessage For="() => _user.LastName"></ValidationMessage>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="firstName" class="form-label">Vorname</label>
+                        <div>
+                            <Forms.InputText id="firstName" class="form-control" @bind-Value="_user.FirstNames"></Forms.InputText>
+                            <ValidationMessage For="() => _user.FirstNames"></ValidationMessage>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="email" class="form-label">E-Mail</label>
+                        <div>
+                            <Forms.InputText id="email" class="form-control" @bind-Value="_user.Email"></Forms.InputText>
+                            <ValidationMessage For="() => _user.Email"></ValidationMessage>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="password" class="form-label">Passwort</label>
+                        <div>
+                            <Forms.InputText id="password" class="form-control" @bind-Value="_user.PasswordHash"></Forms.InputText>
+                            <ValidationMessage For="() => _user.PasswordHash"></ValidationMessage>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row justify-content-end">
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">Registrieren</button>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+@* TODO implement registration logic *@
+@code {
+	readonly User _user = new();
+    
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine("Valid");
+        Console.WriteLine(_user.Email);
+    }
+
+}

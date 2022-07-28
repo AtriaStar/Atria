@@ -1,7 +1,7 @@
-﻿namespace Atria.Models;
+﻿namespace Models;
 
 // TODO: Notification ist abstract with getBaseMessage()
-public record Notification(
-    string baseMessage,
-    DateTimeOffset creationTime
-);
+public class Notification {
+    public string BaseMessage { get; set; }
+    public DateTimeOffset CreationTime { get; set; }
+}

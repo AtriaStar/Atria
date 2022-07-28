@@ -1,7 +1,7 @@
-﻿using Atria.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Models;
 
-namespace Atria.Controllers;
+namespace Backend.Controllers;
 
 [ApiController]
 [Route("")]

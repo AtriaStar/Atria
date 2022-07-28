@@ -1,6 +1,6 @@
-﻿namespace Atria.Models; 
+﻿namespace Models; 
 
-public enum StarCount {
+public enum StarCount : byte {
     One = 1,
     Two = 2,
     Three = 3,
