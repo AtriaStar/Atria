@@ -1,4 +1,4 @@
-﻿namespace Atria.Models;
+﻿namespace Models;
 
 // TODO: Notification ist abstract with getBaseMessage()
 public record Notification(

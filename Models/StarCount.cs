@@ -1,4 +1,4 @@
-﻿namespace Atria.Models; 
+﻿namespace Models; 
 
 public enum StarCount {
     One = 1,

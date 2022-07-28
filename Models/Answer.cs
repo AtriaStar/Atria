@@ -1,4 +1,4 @@
-﻿namespace Atria.Models;
+﻿namespace Models;
 
 public record Answer(
     string Text,
