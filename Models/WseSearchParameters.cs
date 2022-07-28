@@ -1,10 +1,10 @@
 ﻿namespace Models;
 
-public class WseSearchParam {
-    public string Query { get; set; }
-    public bool IsOnline { get; set; }
-    public bool HasBookmark { get; set; }
-    public List<Tag> Tags { get; set; }
-    public StarCount MinReviewAvg { get; set; }
-    public Order Order { get; set; }
-}
+public record WseSearchParam(
+    string Query,
+    bool IsOnline,
+    bool HasBookmark,
+    List<Tag> Tags,
+    StarCount MinReviewAvg,
+    Order Order
+);
