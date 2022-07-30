@@ -12,12 +12,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Pages\SearchUser.razor.css" />
+    <Content Include="Pages\Main\SearchUser.razor.css" />
+    <Content Include="Pages\Main\Start.razor.css" />
+    <Content Include="Pages\UserManagement\Register.razor.css" />
+    <Content Include="Pages\UserManagement\ResetPassword.razor.css" />
     <Content Include="Shared\BottomBar.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Models\Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data" />
   </ItemGroup>
 
 </Project>
