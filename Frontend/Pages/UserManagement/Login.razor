@@ -1,25 +1,24 @@
-﻿@page "/ResetPassword"
+﻿@page "/login"
 @using Microsoft.AspNetCore.Components
-@using Models
 
 <div class="container overflow-hidden">
     <div class="row p-3 justify-content-center">
         <div class="col-md-5 text-center">
-            <h2>Passwort zurücksetzen</h2>
+            <h2>Login</h2>
         </div>
     </div>
     <div class="row p-3 justify-content-center">
         <div class="col-md-5 card">
             <div class="card-body">
-                <EditForm OnValidSubmit="HandleValidSubmit">
+                <EditForm Model="_login" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator></DataAnnotationsValidator>
                     <ValidationSummary></ValidationSummary>
                     <div class="row py-3">
                         <div class="col">
                             <label for="email" class="form-label">E-Mail</label>
                             <div>
-                                <InputText id="email" class="form-control" @bind-Value="email"></InputText>
-                                <ValidationMessage For="() => email"></ValidationMessage>
+                                <InputText type="email" id="email" class="form-control" @bind-Value="_login.Email"></InputText>
+                                <ValidationMessage For="() => _login.Email"></ValidationMessage>
                             </div>
                         </div>
                     </div>
@@ -27,8 +26,8 @@
                         <div class="col">
                             <label for="password" class="form-label">Passwort</label>
                             <div>
-                                <InputText id="password" class="form-control" @bind-Value="password"></InputText>
-                                <ValidationMessage For="() => password"></ValidationMessage>
+                                <InputText type="password" id="password" class="form-control" @bind-Value="_login.Password"></InputText>
+                                <ValidationMessage For="() => _login.Password"></ValidationMessage>
                             </div>
                         </div>
                     </div>
@@ -43,16 +42,14 @@
     </div>
     <div class="row p-3 justify-content-center">
         <div class="col-md-5 text-center">
-            <NavLink href="login">Stattdessen anmelden</NavLink>
+            <NavLink href="register">Stattdessen registrieren</NavLink>
         </div>
     </div>
 </div>
 
 @code {
-	string email = "";
-	string password = "";
-
-	private void HandleValidSubmit()
+    readonly Models.Login _login = new();
+    private void HandleValidSubmit()
     {
         throw new NotImplementedException();
     }

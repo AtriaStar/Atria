@@ -1,4 +1,4 @@
-﻿@page "/Register"
+﻿@page "/register"
 @using Microsoft.AspNetCore.Components
 @using Models
 
@@ -10,38 +10,38 @@
                 <h2>Registrieren</h2>
             </div>
             <div class="card-body container">
-                <EditForm OnValidSubmit="HandleValidSubmit">
+                <EditForm Model="_registration" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator></DataAnnotationsValidator>
                     <ValidationSummary></ValidationSummary>
                     <div class="form-group row">
                         <label for="lastName" class="form-label">Name</label>
                         <div>
-                            <InputText id="lastName" class="form-control" @bind-Value="lastName"></InputText>
-                            <ValidationMessage For="() => lastName"></ValidationMessage>
+                            <InputText id="lastName" class="form-control" @bind-Value="_registration.LastName"></InputText>
+                            <ValidationMessage For="() => _registration.LastName"></ValidationMessage>
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="firstName" class="form-label">Vorname</label>
                         <div>
-                            <InputText id="firstName" class="form-control" @bind-Value="firstNames"></InputText>
-                            <ValidationMessage For="() => firstNames"></ValidationMessage>
+                            <InputText id="firstName" class="form-control" @bind-Value="_registration.FirstName"></InputText>
+                            <ValidationMessage For="() => _registration.FirstName"></ValidationMessage>
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="email" class="form-label">E-Mail</label>
                         <div>
-                            <InputText id="email" class="form-control" @bind-Value="email"></InputText>
-                            <ValidationMessage For="() => email"></ValidationMessage>
+                            <InputText id="email" class="form-control" @bind-Value="_registration.Email"></InputText>
+                            <ValidationMessage For="() => _registration.Email"></ValidationMessage>
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="password" class="form-label">Passwort</label>
                         <div>
-                            <InputText id="password" class="form-control" @bind-Value="password"></InputText>
-                            <ValidationMessage For="() => password"></ValidationMessage>
+                            <InputText id="password" class="form-control" @bind-Value="_registration.Password"></InputText>
+                            <ValidationMessage For="() => _registration.Password"></ValidationMessage>
                         </div>
                     </div>
                     
@@ -59,15 +59,12 @@
 
 @* TODO implement registration logic *@
 @code {
-	string lastName = "";
-	string firstNames = "";
-	string email = "";
-	string password = "";
-    
+    readonly Registration _registration = new();
+
     private void HandleValidSubmit()
     {
         Console.WriteLine("Valid");
-        Console.WriteLine(email);
+        Console.WriteLine(_registration.Email);
     }
 
 }
