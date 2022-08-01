@@ -15,39 +15,47 @@
                     <DataAnnotationsValidator></DataAnnotationsValidator>
                     <ValidationSummary></ValidationSummary>
                     <div class="row py-3">
-                        <label for="lastName" class="form-label">Name</label>
-                        <div>
-                            <InputText id="lastName" class="form-control" @bind-Value="_registration.LastName"></InputText>
-                            <ValidationMessage For="() => _registration.LastName"></ValidationMessage>
+                        <div class="col">
+                            <label for="lastName" class="form-label">Name</label>
+                            <div>
+                                <InputText id="lastName" class="form-control" @bind-Value="_registration.LastName"></InputText>
+                                <ValidationMessage For="() => _registration.LastName"></ValidationMessage>
+                            </div>
                         </div>
                     </div>
 
                     <div class="row py-3">
-                        <label for="firstName" class="form-label">Vorname</label>
-                        <div>
-                            <InputText id="firstName" class="form-control" @bind-Value="_registration.FirstName"></InputText>
-                            <ValidationMessage For="() => _registration.FirstName"></ValidationMessage>
+                        <div class="col">
+                            <label for="firstName" class="form-label">Vorname</label>
+                            <div>
+                                <InputText id="firstName" class="form-control" @bind-Value="_registration.FirstName"></InputText>
+                                <ValidationMessage For="() => _registration.FirstName"></ValidationMessage>
+                            </div>
                         </div>
                     </div>
 
                     <div class="row py-3">
-                        <label for="email" class="form-label">E-Mail</label>
-                        <div>
-                            <InputText id="email" class="form-control" @bind-Value="_registration.Email"></InputText>
-                            <ValidationMessage For="() => _registration.Email"></ValidationMessage>
+                        <div class="col">
+                            <label for="email" class="form-label">E-Mail</label>
+                            <div>
+                                <InputText type="email" id="email" class="form-control" @bind-Value="_registration.Email"></InputText>
+                                <ValidationMessage For="() => _registration.Email"></ValidationMessage>
+                            </div>
                         </div>
                     </div>
 
                     <div class="row py-3">
-                        <label for="password" class="form-label">Passwort</label>
-                        <div>
-                            <InputText id="password" class="form-control" @bind-Value="_registration.Password"></InputText>
-                            <ValidationMessage For="() => _registration.Password"></ValidationMessage>
+                        <div class="col">
+                            <label for="password" class="form-label">Passwort</label>
+                            <div>
+                                <InputText type="password" id="password" class="form-control" @bind-Value="_registration.Password"></InputText>
+                                <ValidationMessage For="() => _registration.Password"></ValidationMessage>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="row py-3 justify-content-end">
-                        <div class="col-auto">
+                    <div class="row py-3 justify-content-center">
+                        <div class="col-6 d-grid">
                             <button type="submit" class="btn btn-primary">Registrieren</button>
                         </div>
                     </div>
