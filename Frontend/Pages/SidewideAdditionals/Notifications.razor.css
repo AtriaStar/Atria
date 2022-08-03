@@ -1,0 +1,33 @@
+﻿h1 {
+    margin-bottom: 30px;
+}
+
+.card {
+    height: 100px;
+    width: 100%;
+    background-color: rgba(232, 232, 232, 1);
+    border-color: rgba(232, 232, 232, 1);
+    margin-top: 5px;
+    border-radius: 15px;
+}
+
+.card card-body {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+img {
+    height: 60px;
+    width: 60px;
+    margin-left: 15px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    img {
+        height: 40px;
+        width: 40px;
+        margin-top: 30px;
+        margin-left: 15px;
+    }
+}
