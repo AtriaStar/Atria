@@ -1,9 +1,76 @@
 ﻿@page "/profile"
+@using Models
+@inject NavigationManager NavigationManager
 
-<PageTitle>AtriaTest - Profile</PageTitle>
-
-<h3>Profile</h3>
+<div class="container-xl">
+    <div class="row pt-4 px-md-2 mb-3">
+        <div class="col-3 d-flex">
+            <img src="images/default_avatar.png" class="avatar img-fluid"/>
+        </div>
+        <div class="col-9 d-flex flex-column justify-content-center">
+            <div class="">@_user.Title</div>
+            <div class="">@_user.FirstNames @_user.LastName</div>
+            <div class="mb-2">@_user.Email</div>
+            <div class="">Biographie: <br/> @_user.Biography</div>
+        </div>
+    </div>
+    <div class="row px-md-2 mb-3 justify-content-between">
+        <div class="col-3 offset-3">
+            <div class="">
+                Searchbar
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="">
+                Filter
+            </div>
+        </div>
+    </div>
+    <div class="row px-md-2">
+        <div class="col-3 d-none d-md-block">
+            <div class="list-group">
+                <NavLink href="profile?type=wse" class="list-group-item list-group-item-action" Match="NavLinkMatch.All">WSE</NavLink>
+                <NavLink href="profile?type=bookmarks" class="list-group-item list-group-item-action">Lesezeichen</NavLink>
+                <NavLink href="profile?type=ratings" class="list-group-item list-group-item-action">Bewertungen</NavLink>
+                <NavLink href="profile?type=drafts" class="list-group-item list-group-item-action">Entwürfe</NavLink>
+            </div>
+        </div>
+        <div class="col-9">
+            @switch (Type) {
+                case "wse":
+                    <WSE/>
+                    break;
+                case "bookmarks":
+                    <Bookmarks/>
+                    break;
+                case "ratings":
+                    <Ratings/>
+                    break;
+                case "drafts":
+                    <Drafts/>
+                    break;
+                default:
+                    NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", "wse"));
+                    break;
+            }
+        </div>
+    </div>
+</div>
 
 @code {
-    
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Type { get; set; } = "";
+
+
+    Models.User _user = null!;
+
+    protected override async Task OnInitializedAsync() {
+        _user = new User("Dr.", "Max", "Mustermann", "m@m.de", null!, "bio", " ", null!);
+        if (Type is null or "") {
+            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", "wse"));
+        }
+    }
+
 }
