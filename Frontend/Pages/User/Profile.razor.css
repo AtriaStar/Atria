@@ -1,0 +1,8 @@
+﻿img {
+    align-self: center;
+}
+
+.avatar {
+    border-radius: 50%;
+    aspect-ratio: 1/1;
+}
