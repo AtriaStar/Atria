@@ -1,9 +1,13 @@
-﻿namespace Models; 
+﻿using System.ComponentModel.DataAnnotations;
 
-public record Review(
-    string Title,
-    string Description,
-    StarCount StarCount,
-    DateTimeOffset CreationTime,
-    User Creator
-);
+namespace Models; 
+
+public class Review {
+    [Key]
+    public ulong Snowflake { get; set; }
+    public string Title { get; init; }
+    public string Description { get; init; }
+    public StarCount StarCount { get; init; }
+    public DateTimeOffset CreationTime { get; init; }
+    public User Creator { get; init; }
+}
