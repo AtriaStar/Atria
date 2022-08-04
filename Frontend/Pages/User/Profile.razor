@@ -66,7 +66,7 @@
 
     Models.User _user = null!;
 
-    protected override async Task OnInitializedAsync() {
+    protected override void OnInitialized() {
         _user = new User("Dr.", "Max", "Mustermann", "m@m.de", null!, "bio", " ", null!);
         if (Type is null or "") {
             NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", "wse"));
