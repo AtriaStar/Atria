@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend", "Backend\Backend.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frontend", "Frontend\Frontend.csproj", "{D3C2C7FC-4C31-430D-B80C-7D29B7E7AA61}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MigrationHelper", "MigrationHelper\MigrationHelper.csproj", "{F9D4E9E2-496C-463F-A107-1C857DC53FB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D3C2C7FC-4C31-430D-B80C-7D29B7E7AA61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3C2C7FC-4C31-430D-B80C-7D29B7E7AA61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3C2C7FC-4C31-430D-B80C-7D29B7E7AA61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9D4E9E2-496C-463F-A107-1C857DC53FB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9D4E9E2-496C-463F-A107-1C857DC53FB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9D4E9E2-496C-463F-A107-1C857DC53FB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9D4E9E2-496C-463F-A107-1C857DC53FB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

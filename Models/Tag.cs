@@ -4,7 +4,7 @@ namespace Models;
 
 public class Tag {
     [Key]
-    public string Name { get; init; }
-    public DateTimeOffset CreationTime { get; init; }
-    public uint UseCount { get; init; }
+    public string Name { get; set; } = null!;
+    public DateTimeOffset CreationTime { get; set; }
+    public uint UseCount { get; set; }
 }

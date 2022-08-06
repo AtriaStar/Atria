@@ -2,7 +2,7 @@
 
 public enum Order : byte {
     Relevance,
-    UseCount,
+    ViewCount,
     ReviewAverage,
     Recency,
 }

@@ -1,20 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models; 
 
 public class WebserviceEntry {
     [Key]
-    public string Name { get; init; }
-    public string ShortDescription { get; init; }
-    public Uri Link { get; init; }
-    public string FullDescription { get; init; }
-    public Uri DocumentationLink { get; init; }
-    public string Changelog { get; init; }
-    public int ViewCount { get; init; }
-    public DateTimeOffset CreationDate { get; init; }
-    public User ContactPerson { get; init; }
-    public Question[] Questions { get; init; }
-    public Tag[] Tags { get; init; }
-    public Review[] Reviews { get; init; }
-    //public Dictionary<User, WSERole> Collaborators { get; init; }
+    public string Name { get; set; } = null!;
+    public string ShortDescription { get; set; } = null!;
+    public Uri Link { get; set; } = null!;
+    public string FullDescription { get; set; } = null!;
+    public Uri DocumentationLink { get; set; } = null!;
+    public string Changelog { get; set; } = null!;
+    public int ViewCount { get; set; }
+    public DateTimeOffset CreationDate { get; set; }
+    public User ContactPerson { get; set; } = null!;
+    public ICollection<Question> Questions { get; set; } = null!;
+    public ICollection<Tag> Tags { get; set; } = null!;
+    public ICollection<Review> Reviews { get; set; } = null!;
+    public ICollection<Collaborator> Collaborators { get; set; } = null!;
 }

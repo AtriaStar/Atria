@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models; 
 
 public class Review {
-    [Key]
-    public ulong Snowflake { get; set; }
-    public string Title { get; init; }
-    public string Description { get; init; }
-    public StarCount StarCount { get; init; }
-    public DateTimeOffset CreationTime { get; init; }
-    public User Creator { get; init; }
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public ulong Id { get; set; }
+    public string Title { get; set; } = null!;
+    public string Description { get; set; } = null!;
+    public StarCount StarCount { get; set; }
+    public DateTimeOffset CreationTime { get; set; }
+    public User Creator { get; set; } = null!;
 }

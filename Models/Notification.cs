@@ -6,6 +6,6 @@ namespace Models;
 public class Notification {
     [Key]
     public ulong Id { get; set; }
-    public string baseMessage { get; init; }
-    public DateTimeOffset creationTime { get; init; }
+    public string baseMessage { get; set; } = null!;
+    public DateTimeOffset creationTime { get; set; }
 }
