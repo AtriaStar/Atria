@@ -1,15 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models;
 
 public class WSEDraft {
-    [Key]
-    public ulong Snowflake { get; set; }
-    public string Name { get; init; }
-    public string ShortDescription { get; init; }
-    public Uri Link { get; init; }
-    public string FullDescription { get; init; }
-    public Uri DocumentationLink { get; init; }
-    public string Changelog { get; init; }
-    public DateTimeOffset CreationDate { get; init; }
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public ulong Id { get; set; }
+    public string Name { get; set; } = null!;
+    public string ShortDescription { get; set; } = null!;
+    public Uri Link { get; set; } = null!;
+    public string FullDescription { get; set; } = null!;
+    public Uri DocumentationLink { get; set; } = null!;
+    public string Changelog { get; set; } = null!;
+    public DateTimeOffset CreationDate { get; set; }
 }

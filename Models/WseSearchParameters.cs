@@ -4,7 +4,7 @@ public record WseSearchParam(
     string Query,
     bool IsOnline,
     bool HasBookmark,
-    List<Tag> Tags,
+    ICollection<Tag> Tags,
     StarCount MinReviewAvg,
     Order Order
 );

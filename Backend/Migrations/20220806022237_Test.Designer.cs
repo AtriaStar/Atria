@@ -3,6 +3,7 @@ using System;
 using Backend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    partial class AtriaContextModelSnapshot : ModelSnapshot
+    [Migration("20220806022237_Test")]
+    partial class Test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,36 +26,37 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Answer", b =>
                 {
-                    b.Property<decimal>("Id")
+                    b.Property<decimal>("Snowflake")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)");
 
                     b.Property<DateTimeOffset>("CreationTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("CreatorId")
-                        .HasColumnType("numeric(20,0)");
+                    b.Property<string>("CreatorEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<decimal?>("QuestionId")
+                    b.Property<decimal?>("QuestionSnowflake")
                         .HasColumnType("numeric(20,0)");
 
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Snowflake");
 
-                    b.HasIndex("CreatorId");
+                    b.HasIndex("CreatorEmail");
 
-                    b.HasIndex("QuestionId");
+                    b.HasIndex("QuestionSnowflake");
 
                     b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("Models.Collaborator", b =>
                 {
-                    b.Property<decimal>("UserId")
-                        .HasColumnType("numeric(20,0)");
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("text");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
@@ -61,7 +64,7 @@ namespace Backend.Migrations
                     b.Property<string>("WebserviceEntryName")
                         .HasColumnType("text");
 
-                    b.HasKey("UserId");
+                    b.HasKey("UserEmail");
 
                     b.HasIndex("WebserviceEntryName");
 
@@ -70,15 +73,16 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Question", b =>
                 {
-                    b.Property<decimal>("Id")
+                    b.Property<decimal>("Snowflake")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)");
 
                     b.Property<DateTimeOffset>("CreationTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("CreatorId")
-                        .HasColumnType("numeric(20,0)");
+                    b.Property<string>("CreatorEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -87,9 +91,9 @@ namespace Backend.Migrations
                     b.Property<string>("WebserviceEntryName")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Snowflake");
 
-                    b.HasIndex("CreatorId");
+                    b.HasIndex("CreatorEmail");
 
                     b.HasIndex("WebserviceEntryName");
 
@@ -98,15 +102,16 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Review", b =>
                 {
-                    b.Property<decimal>("Id")
+                    b.Property<decimal>("Snowflake")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)");
 
                     b.Property<DateTimeOffset>("CreationTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("CreatorId")
-                        .HasColumnType("numeric(20,0)");
+                    b.Property<string>("CreatorEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -122,9 +127,9 @@ namespace Backend.Migrations
                     b.Property<string>("WebserviceEntryName")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Snowflake");
 
-                    b.HasIndex("CreatorId");
+                    b.HasIndex("CreatorEmail");
 
                     b.HasIndex("WebserviceEntryName");
 
@@ -154,15 +159,10 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.User", b =>
                 {
-                    b.Property<decimal>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("numeric(20,0)");
-
-                    b.Property<string>("Biography")
-                        .IsRequired()
+                    b.Property<string>("Email")
                         .HasColumnType("text");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Biography")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -186,7 +186,7 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Email");
 
                     b.ToTable("Users");
                 });
@@ -200,8 +200,8 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("ContactPersonId")
-                        .HasColumnType("numeric(20,0)");
+                    b.Property<string>("ContactPersonEmail")
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("CreationDate")
                         .HasColumnType("timestamp with time zone");
@@ -227,14 +227,14 @@ namespace Backend.Migrations
 
                     b.HasKey("Name");
 
-                    b.HasIndex("ContactPersonId");
+                    b.HasIndex("ContactPersonEmail");
 
                     b.ToTable("WebserviceEntries");
                 });
 
             modelBuilder.Entity("Models.WSEDraft", b =>
                 {
-                    b.Property<decimal>("Id")
+                    b.Property<decimal>("Snowflake")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)");
 
@@ -265,7 +265,7 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("Snowflake");
 
                     b.ToTable("Drafts");
                 });
@@ -274,13 +274,13 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Models.User", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorId")
+                        .HasForeignKey("CreatorEmail")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Models.Question", null)
                         .WithMany("Answers")
-                        .HasForeignKey("QuestionId");
+                        .HasForeignKey("QuestionSnowflake");
 
                     b.Navigation("Creator");
                 });
@@ -289,7 +289,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("UserEmail")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -304,7 +304,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Models.User", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorId")
+                        .HasForeignKey("CreatorEmail")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -319,7 +319,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Models.User", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorId")
+                        .HasForeignKey("CreatorEmail")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -341,9 +341,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Models.User", "ContactPerson")
                         .WithMany("Bookmarks")
-                        .HasForeignKey("ContactPersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ContactPersonEmail");
 
                     b.Navigation("ContactPerson");
                 });

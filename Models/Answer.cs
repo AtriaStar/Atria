@@ -5,8 +5,8 @@ namespace Models;
 
 public class Answer {
     [Key]
-    public ulong Snowflake { get; set; }
-    public string Text { get; set; }
+    public ulong Id { get; set; }
+    public string Text { get; set; } = null!;
     public DateTimeOffset CreationTime { get; set; }
-    public User Creator { get; set; }
+    public User Creator { get; set; } = null!;
 }

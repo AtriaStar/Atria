@@ -1,17 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Models;
 
 public class User {
-    public string Title { get; init; }
-    public string FirstNames { get; init; }
-    public string LastName { get; init; }
-    [Key]
-    public string Email { get; init; }
-    public Uri ProfilePicture { get; init; }
-    public string Biography { get; init; }
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public ulong Id { get; set; }
+    public string Title { get; set; } = null!;
+    public string FirstNames { get; set; } = null!;
+    public string LastName { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public Uri ProfilePicture { get; set; } = null!;
+    public string Biography { get; set; } = null!;
     [JsonIgnore]
-    public string PasswordHash { get; init; }
-    public WebserviceEntry[] Bookmarks { get; init; }
+    public string PasswordHash { get; set; } = null!;
+    public ICollection<WebserviceEntry> Bookmarks { get; set; } = null!;
 }
