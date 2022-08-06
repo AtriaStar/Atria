@@ -6,7 +6,7 @@ namespace Models;
 
 public class User {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public ulong Id { get; set; }
+    public long Id { get; set; }
     public string Title { get; set; } = null!;
     public string FirstNames { get; set; } = null!;
     public string LastName { get; set; } = null!;

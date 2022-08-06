@@ -12,6 +12,7 @@ void MainMenu() {
     Console.WriteLine("What would you like to do?");
     Console.WriteLine("[1] Update database");
     Console.WriteLine("[2] Generate new migration from code");
+    Console.WriteLine("[3] Drop database");
     Console.WriteLine("[0] Exit");
     switch (Console.ReadKey().KeyChar) {
         case '0':
@@ -25,6 +26,10 @@ void MainMenu() {
         case '2':
             Console.Clear();
             GenerateMigration();
+            break;
+        case '3':
+            Console.Clear();
+            DropDatabase();
             break;
     }
 }
@@ -52,7 +57,25 @@ void GenerateMigration() {
     }
 }
 
+void DropDatabase() {
+    string? resp;
+    do {
+        Console.WriteLine("Are you sure you want to drop the database? (y/n)");
+        resp = Console.ReadLine()?.ToLowerInvariant();
+    } while (resp != "y" && resp != "n");
+
+    if (resp == "n") {
+        return;
+    }
+
+    using var proc = Process.Start("dotnet", "ef database drop -f");
+    proc.WaitForExit();
+    Console.WriteLine("Deleting migrations...");
+    Directory.Delete("Migrations", true);
+    Pause();
+}
+
 void Pause() {
     Console.Write("Press any key to continue...");
-    Console.ReadLine();
+    Console.ReadKey();
 }

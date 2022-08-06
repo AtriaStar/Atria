@@ -13,6 +13,6 @@ namespace Backend {
         public DbSet<Tag> Tags => Set<Tag>();
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("Host=localhost;Database=Atria;Username=user;Password=password"); // TODO: Change
+            => optionsBuilder.UseNpgsql("Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true"); // TODO: Change
     }
 }
