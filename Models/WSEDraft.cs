@@ -5,7 +5,7 @@ namespace Models;
 
 public class WSEDraft {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public ulong Id { get; set; }
+    public long Id { get; set; }
     public string Name { get; set; } = null!;
     public string ShortDescription { get; set; } = null!;
     public Uri Link { get; set; } = null!;

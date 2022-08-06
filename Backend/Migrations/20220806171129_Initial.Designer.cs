@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220806022237_Test")]
-    partial class Test
+    [Migration("20220806171129_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,37 +26,38 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Answer", b =>
                 {
-                    b.Property<decimal>("Snowflake")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("numeric(20,0)");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTimeOffset>("CreationTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatorEmail")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("CreatorId")
+                        .HasColumnType("bigint");
 
-                    b.Property<decimal?>("QuestionSnowflake")
-                        .HasColumnType("numeric(20,0)");
+                    b.Property<long?>("QuestionId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Snowflake");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CreatorEmail");
+                    b.HasIndex("CreatorId");
 
-                    b.HasIndex("QuestionSnowflake");
+                    b.HasIndex("QuestionId");
 
                     b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("Models.Collaborator", b =>
                 {
-                    b.Property<string>("UserEmail")
-                        .HasColumnType("text");
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
@@ -64,7 +65,7 @@ namespace Backend.Migrations
                     b.Property<string>("WebserviceEntryName")
                         .HasColumnType("text");
 
-                    b.HasKey("UserEmail");
+                    b.HasKey("UserId");
 
                     b.HasIndex("WebserviceEntryName");
 
@@ -73,16 +74,17 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Question", b =>
                 {
-                    b.Property<decimal>("Snowflake")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("numeric(20,0)");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTimeOffset>("CreationTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatorEmail")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("CreatorId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -91,9 +93,9 @@ namespace Backend.Migrations
                     b.Property<string>("WebserviceEntryName")
                         .HasColumnType("text");
 
-                    b.HasKey("Snowflake");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CreatorEmail");
+                    b.HasIndex("CreatorId");
 
                     b.HasIndex("WebserviceEntryName");
 
@@ -102,16 +104,17 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Review", b =>
                 {
-                    b.Property<decimal>("Snowflake")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("numeric(20,0)");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTimeOffset>("CreationTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatorEmail")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("CreatorId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -127,9 +130,9 @@ namespace Backend.Migrations
                     b.Property<string>("WebserviceEntryName")
                         .HasColumnType("text");
 
-                    b.HasKey("Snowflake");
+                    b.HasKey("Id");
 
-                    b.HasIndex("CreatorEmail");
+                    b.HasIndex("CreatorId");
 
                     b.HasIndex("WebserviceEntryName");
 
@@ -159,10 +162,17 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.User", b =>
                 {
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Biography")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -186,7 +196,7 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Email");
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
@@ -200,8 +210,8 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ContactPersonEmail")
-                        .HasColumnType("text");
+                    b.Property<long>("ContactPersonId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("CreationDate")
                         .HasColumnType("timestamp with time zone");
@@ -227,16 +237,18 @@ namespace Backend.Migrations
 
                     b.HasKey("Name");
 
-                    b.HasIndex("ContactPersonEmail");
+                    b.HasIndex("ContactPersonId");
 
                     b.ToTable("WebserviceEntries");
                 });
 
             modelBuilder.Entity("Models.WSEDraft", b =>
                 {
-                    b.Property<decimal>("Snowflake")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("numeric(20,0)");
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Changelog")
                         .IsRequired()
@@ -265,7 +277,7 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Snowflake");
+                    b.HasKey("Id");
 
                     b.ToTable("Drafts");
                 });
@@ -274,13 +286,13 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Models.User", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorEmail")
+                        .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Models.Question", null)
                         .WithMany("Answers")
-                        .HasForeignKey("QuestionSnowflake");
+                        .HasForeignKey("QuestionId");
 
                     b.Navigation("Creator");
                 });
@@ -289,7 +301,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserEmail")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -304,7 +316,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Models.User", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorEmail")
+                        .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -319,7 +331,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Models.User", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorEmail")
+                        .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -341,7 +353,9 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Models.User", "ContactPerson")
                         .WithMany("Bookmarks")
-                        .HasForeignKey("ContactPersonEmail");
+                        .HasForeignKey("ContactPersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ContactPerson");
                 });

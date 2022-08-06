@@ -5,7 +5,7 @@ namespace Models;
 
 public class Review {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public ulong Id { get; set; }
+    public long Id { get; set; }
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
     public StarCount StarCount { get; set; }
