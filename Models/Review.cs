@@ -1,9 +1,14 @@
-﻿namespace Models; 
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public record Review(
-    string Title,
-    string Description,
-    StarCount StarCount,
-    DateTimeOffset CreationTime,
-    User Creator
-);
+namespace Models; 
+
+public class Review {
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public long Id { get; set; }
+    public string Title { get; set; } = null!;
+    public string Description { get; set; } = null!;
+    public StarCount StarCount { get; set; }
+    public DateTimeOffset CreationTime { get; set; }
+    public User Creator { get; set; } = null!;
+}

@@ -1,7 +1,10 @@
-﻿namespace Models; 
+﻿using System.ComponentModel.DataAnnotations;
 
-public record Tag(
-    string Name,
-    DateTimeOffset CreationTime,
-    uint UseCount
-);
+namespace Models; 
+
+public class Tag {
+    [Key]
+    public string Name { get; set; } = null!;
+    public DateTimeOffset CreationTime { get; set; }
+    public uint UseCount { get; set; }
+}

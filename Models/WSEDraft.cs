@@ -1,11 +1,16 @@
-﻿namespace Models;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public record WSEDraft(
-    string Name,
-    string ShortDescription,
-    Uri Link,
-    string FullDescription,
-    Uri DocumentationLink,
-    string Changelog,
-    DateTimeOffset CreationDate
-);
+namespace Models;
+
+public class WSEDraft {
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public long Id { get; set; }
+    public string Name { get; set; } = null!;
+    public string ShortDescription { get; set; } = null!;
+    public Uri Link { get; set; } = null!;
+    public string FullDescription { get; set; } = null!;
+    public Uri DocumentationLink { get; set; } = null!;
+    public string Changelog { get; set; } = null!;
+    public DateTimeOffset CreationDate { get; set; }
+}
