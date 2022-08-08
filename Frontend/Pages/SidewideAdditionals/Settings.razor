@@ -1,8 +1,181 @@
 ﻿@page "/settings"
 
-<PageTitle>AtriaTest - Settings</PageTitle>
+<PageTitle>Atria - Settings</PageTitle>
 
-<h3>Settings</h3>
+@*TODO: media, label before swich, margins between list items*@
+
+<div class="container-lg mt-3">
+    <h2>Einstellungen</h2>
+
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    Benachrichtigungen
+                </div>
+                <div class="col-1">
+                    <div class="form-check form-switch d-flex justify-content-between">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        <label class="form-check-label" for="flexSwitchCheckChecked">an</label>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="list-group">
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            eingehende Fragen
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            eingehende Antworten
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            eingehende Bewertungen
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            Hinzufügen zu einem Webservice-Eintrag
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            Entfernen aus einem Webservice-Eintrag
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            Löschen von Webservice-Einträge
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </li>
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    E-Mail-Benachrichtigungen
+                </div>
+                <div class="col-1">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    Sprache
+                </div>
+                <div class="col-1">
+                    <div class="btn-group">
+                        <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Deutsch
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    Dark/Light Mode
+                </div>
+                <div class="col-1">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    Passwort ändern
+                </div>
+                <div class="col-2">
+                    <div class="btn-group d-flex justify-content-end">
+                        <button class="btn-change" type="button">
+                            Passwort ändern
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    Konto löschen
+                </div>
+                <div class="col-2">
+                    <div class="btn-group d-flex justify-content-end">
+                        <button class="btn-delete" type="button">
+                            Konto löschen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
 
 @code {
     

@@ -1,0 +1,43 @@
+﻿h2 {
+    margin-bottom: 20px;
+}
+
+.list-group-item {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.form-check-input {
+    width: 40px;
+    height: 20px;
+}
+
+.btn {
+    background-color: none;
+    border-radius: 15px;
+    border: solid;
+    border-width: 1px;
+    border-color: black;
+}
+
+.btn-change {
+    width: 150px;
+    height: 35px;
+    background-color: rgba(0, 175, 138, 1);
+    color: white;
+    border-radius: 10px;
+    border: solid;
+    border-width: 1px;
+    border-color: black;
+}
+
+.btn-delete {
+    width: 150px;
+    height: 35px;
+    background-color: rgba(299, 85, 85, 1);
+    color: white;
+    border-radius: 10px;
+    border: solid;
+    border-width: 1px;
+    border-color: black;
+}
