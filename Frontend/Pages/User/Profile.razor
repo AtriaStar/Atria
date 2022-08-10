@@ -67,7 +67,9 @@
     Models.User _user = null!;
 
     protected override void OnInitialized() {
-        _user = new User("Dr.", "Max", "Mustermann", "m@m.de", null!, "bio", " ", null!);
+        _user = new User {
+            FirstNames = "Hans", Email = "hans@hansi.hansen", Biography = "Hans", Title = "Herr", LastName = "Hansemann"
+        };
         if (Type is null or "") {
             NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", "wse"));
         }
