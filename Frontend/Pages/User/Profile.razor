@@ -1,5 +1,6 @@
 ﻿@page "/profile"
 @using Models
+@using Models.DTO
 @inject NavigationManager NavigationManager
 
 <div class="container-xl">
@@ -35,10 +36,10 @@
                 <NavLink href="profile?type=drafts" class="list-group-item list-group-item-action">Entwürfe</NavLink>
             </div>
         </div>
-        <div class="col-9">
+        <div class="col-md-9">
             @switch (Type) {
                 case "wse":
-                    <WSE/>
+                    <WSE SummaryDtos="_summaryDtos"/>
                     break;
                 case "bookmarks":
                     <Bookmarks/>
@@ -63,13 +64,24 @@
     [SupplyParameterFromQuery]
     public string? Type { get; set; } = "";
 
+    private IList<WSESummaryDto> _summaryDtos = null!;
 
     Models.User _user = null!;
 
     protected override void OnInitialized() {
+        @* Mock Data generation *@
         _user = new User {
             FirstNames = "Hans", Email = "hans@hansi.hansen", Biography = "Hans", Title = "Herr", LastName = "Hansemann"
         };
+        _summaryDtos = new List<WSESummaryDto>();
+        WSESummaryDto wseSummaryDto1 = new WSESummaryDto("hans", "der hans", new List<Tag>(), DateTimeOffset.Now, true, 3.5, 10, new Uri("http://www.google.com"));
+        _summaryDtos.Add(wseSummaryDto1);
+
+        WSESummaryDto wseSummaryDto2 = new WSESummaryDto("günther", "der günther", new List<Tag>(), DateTimeOffset.Now, false, 3.5, 10, new Uri("http://www.duckduckgo.com"));
+        _summaryDtos.Add(wseSummaryDto2);
+        
+        @* mock data generation end *@
+        
         if (Type is null or "") {
             NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", "wse"));
         }
