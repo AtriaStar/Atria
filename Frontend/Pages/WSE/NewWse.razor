@@ -1,8 +1,106 @@
 ﻿@page "/newWse"
 
-<PageTitle>AtriaTest - NewWse</PageTitle>
+<PageTitle>Atria - NewWse</PageTitle>
 
-<h3>NewWse</h3>
+<div class="container-lg mt-3">
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <div class="btn-group d-flex justify-content-end">
+            <button class="btn-green" type="button">
+                Als Entwurf speichern
+            </button>
+        </div>
+        <div class="btn-group d-flex justify-content-end">
+            <button class="btn-green" type="button">
+                Veröffentlichen
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Name</label>
+        <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+    </div>
+
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Kurzbeschreibung</label>
+        <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+    </div>
+
+    @*TODO: checkboxes in select*@
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Tags</label>
+
+        <div class="btn-group d-flex justify-content-end">
+            <button class="btn-red" type="button">
+                Alle Löschen
+            </button>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <span class="badge bg-tag">
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"></button>
+                Tag1
+            </span>
+            <span class="badge bg-tag">
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"></button>
+                Tag2
+            </span>
+        </div>
+
+        @*TODO: search bar*@
+
+        <select class="form-select mt-2" size="6" aria-label="multiple select example">
+            <option>One</option>
+            <option>Two</option>
+            <option>Three</option>
+        </select>
+    </div>
+    
+
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">
+            neue Tags erstellen
+            <small class="text-muted">(kommagetrennt)</small>
+        </label>
+        <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+    </div>
+
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Verlinkung</label>
+        <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+    </div>
+
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Dokumentation</label>
+        <input type="text" class="form-control mb-2" id="exampleFormControlInput1" placeholder="Link">
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Text"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">Volltextbeschreibung</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">Änderungshistorie</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <div class="btn-group d-flex justify-content-end">
+            <button class="btn-green" type="button">
+                Als Entwurf speichern
+            </button>
+        </div>
+        <div class="btn-group d-flex justify-content-end">
+            <button class="btn-green" type="button">
+                Veröffentlichen
+            </button>
+        </div>
+    </div>
+
+</div>
 
 @code {
     

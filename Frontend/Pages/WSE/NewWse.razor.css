@@ -1,15 +1,9 @@
-﻿h2 {
-    margin-bottom: 20px;
+﻿input {
+    background-color: rgba(250, 250, 250, 1);
 }
 
-.list-group-item {
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-
-.form-check-input {
-    width: 40px;
-    height: 20px;
+textarea {
+    background-color: rgba(250, 250, 250, 1);
 }
 
 .btn {
@@ -20,7 +14,7 @@
     border-color: black;
 }
 
-.btn-change {
+.btn-green {
     height: 35px;
     background-color: rgba(0, 175, 138, 1);
     color: white;
@@ -30,12 +24,18 @@
     border-color: black;
 }
 
-.btn-delete {
-    height: 35px;
+.btn-red {
+    height: 20px;
     background-color: rgba(299, 85, 85, 1);
     color: white;
     border-radius: 10px;
     border: solid;
     border-width: 1px;
     border-color: black;
+    font-size: 10pt;
+}
+
+.bg-tag {
+    font-size: 10pt;
+    background-color: rgba(36, 189, 255, 1);
 }
