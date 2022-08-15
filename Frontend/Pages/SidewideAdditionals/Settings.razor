@@ -148,7 +148,7 @@
                 </div>
                 <div class="col-auto">
                     <div class="btn-group d-flex justify-content-end">
-                        <button class="btn-change" type="button">
+                        <button class="btn-change" type="button" @onclick="() => OpenChangePasswordDialog()">
                             Passwort ändern
                         </button>
 
@@ -166,7 +166,7 @@
                 </div>
                 <div class="col-auto">
                     <div class="btn-group d-flex justify-content-end">
-                        <button class="btn-delete" type="button"  @onclick="() => OpenDeleteDialog()">
+                        <button class="btn-delete" type="button" @onclick="() => OpenDeleteDialog()">
                             Konto löschen
                         </button>
                     </div>
@@ -176,14 +176,32 @@
     </ul>
 </div>
 
-@if (DeleteDialogOpen) {
+@if (ChangePasswordDialogOpen)
+{
+    <Frontend.Pages.Components.ChangePasswordModal OnClose="@OnChangePasswordDialogClose"></Frontend.Pages.Components.ChangePasswordModal>
+}
+
+@if (DeleteDialogOpen) 
+{
     <Frontend.Pages.Components.DeleteModal Title="Konto löschen" Text="Sind Sie sicher, dass Sie Ihr Konto löschen möchten?" OnClose="@OnDeleteDialogClose"></Frontend.Pages.Components.DeleteModal>
 }
 
 
 @code {
-
+    public bool ChangePasswordDialogOpen { get; set; }
     public bool DeleteDialogOpen { get; set; }
+
+    private void OnChangePasswordDialogClose(bool accepted)
+    {
+        ChangePasswordDialogOpen = false;
+        StateHasChanged();
+    }
+
+    private void OpenChangePasswordDialog()
+    {
+        ChangePasswordDialogOpen = true;
+        StateHasChanged();
+    }
 
     private void OnDeleteDialogClose(bool accepted)
     {
