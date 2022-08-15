@@ -1,0 +1,27 @@
+﻿.btn {
+    background-color: none;
+    border-radius: 15px;
+    border: solid;
+    border-width: 1px;
+    border-color: black;
+}
+
+.btn-cancel {
+    height: 35px;
+    background-color: rgba(0, 175, 138, 1);
+    color: white;
+    border-radius: 10px;
+    border: solid;
+    border-width: 1px;
+    border-color: black;
+}
+
+.btn-delete {
+    height: 35px;
+    background-color: rgba(299, 85, 85, 1);
+    color: white;
+    border-radius: 10px;
+    border: solid;
+    border-width: 1px;
+    border-color: black;
+}

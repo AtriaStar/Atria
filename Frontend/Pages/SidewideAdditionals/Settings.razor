@@ -151,6 +151,9 @@
                         <button class="btn-change" type="button">
                             Passwort ändern
                         </button>
+
+
+
                     </div>
                 </div>
             </div>
@@ -163,7 +166,7 @@
                 </div>
                 <div class="col-auto">
                     <div class="btn-group d-flex justify-content-end">
-                        <button class="btn-delete" type="button">
+                        <button class="btn-delete" type="button"  @onclick="() => OpenDeleteDialog()">
                             Konto löschen
                         </button>
                     </div>
@@ -173,6 +176,25 @@
     </ul>
 </div>
 
+@if (DeleteDialogOpen) {
+    <Frontend.Pages.Components.DeleteModal Title="Konto löschen" Text="Sind Sie sicher, dass Sie Ihr Konto löschen möchten?" OnClose="@OnDeleteDialogClose"></Frontend.Pages.Components.DeleteModal>
+}
+
+
 @code {
-    
+
+    public bool DeleteDialogOpen { get; set; }
+
+    private void OnDeleteDialogClose(bool accepted)
+    {
+        DeleteDialogOpen = false;
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog()
+    {
+        DeleteDialogOpen = true;
+        StateHasChanged();
+    }
+
 }
