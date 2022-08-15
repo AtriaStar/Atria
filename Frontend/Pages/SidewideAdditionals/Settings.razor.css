@@ -21,6 +21,7 @@
 }
 
 .btn-change {
+    width: 150px;
     height: 35px;
     background-color: rgba(0, 175, 138, 1);
     color: white;
@@ -31,6 +32,7 @@
 }
 
 .btn-delete {
+    width: 150px;
     height: 35px;
     background-color: rgba(299, 85, 85, 1);
     color: white;
