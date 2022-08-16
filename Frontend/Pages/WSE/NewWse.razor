@@ -1,9 +1,137 @@
 ﻿@page "/newWse"
+@using Microsoft.AspNetCore.Components
+@using Models
 
-<PageTitle>AtriaTest - NewWse</PageTitle>
+<PageTitle>Atria - NewWse</PageTitle>
 
-<h3>NewWse</h3>
+<div class="container-lg mt-3">
+
+    <EditForm Model="@wseRegistration" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <div class="btn-group d-flex justify-content-end">
+                <button class="btn-green" type="submit">
+                    Als Entwurf speichern
+                </button>
+            </div>
+            <div class="btn-group d-flex justify-content-end">
+                <button class="btn-green" type="submit">
+                    Veröffentlichen
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Name</label>
+            <InputText class="form-control fc-grey" id="name" @bind-Value="wseRegistration.Name"/>
+            <ValidationMessage For="() => wseRegistration.Name"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Kurzbeschreibung</label>
+            <InputText class="form-control" id="shortDescription" @bind-Value="wseRegistration.ShortDescription"/>
+            <ValidationMessage For="() => wseRegistration.ShortDescription"></ValidationMessage>
+        </div>
+
+        <div class="row">
+            <div class="col-auto">
+                <label class="form-label fw-bold">
+                    Tags
+                </label>
+            </div>
+            <div class="col-auto d-flex justify-content-end">
+                <div class="btn-group">
+                    <button class="btn-red" type="button" @onclick="() => deleteSelectedTags()">
+                        Alle Löschen
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-1">
+            @foreach (string tag in selectedTags)
+            {
+                string tagCopy = tag;
+                <div class="col-auto">
+                    <h6>
+                        <span class="badge bg-info">
+                            @tag
+                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => removeTag(tag)"/>
+                        </span>
+                    </h6>
+                </div>
+            }
+        </div>
+            
+        <InputSelect class="form-select mb-3" multiple @bind-Value="wseRegistration.Tags">
+            @for (int i = 0; i < 11; i++) {
+                <option value="@i">Tag @i</option>
+            }
+        </InputSelect>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">
+                neue Tags erstellen
+                <small class="text-muted">(kommagetrennt)</small>
+            </label>
+            <InputTextArea class="form-control" rows="3" id="newTags" @bind-Value="wseRegistration.NewTags"/>
+            <ValidationMessage For="() => wseRegistration.NewTags"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Verlinkung</label>
+            <InputText class="form-control" type="url" id="link" @bind-Value="wseRegistration.Link"/>
+            <ValidationMessage For="() => wseRegistration.Link"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Dokumentation</label>
+            <InputText class="form-control mb-2" type="url" placeholder="Link" id="docLink" @bind-Value="wseRegistration.DocumentationLink"/>
+            <InputTextArea class="form-control" rows="3" placeholder="Text" id="doc" @bind-Value="wseRegistration.Documentation"/>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Volltextbeschreibung</label>
+            <InputTextArea class="form-control" rows="3" id="fullDescription" @bind-Value="wseRegistration.FullDescription"/>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Änderungshistorie</label>
+            <InputTextArea class="form-control" rows="3" id="changeLog" @bind-Value="wseRegistration.ChangeLog"/>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <div class="btn-group d-flex justify-content-end">
+                <button class="btn-green" type="submit">
+                    Als Entwurf speichern
+                </button>
+            </div>
+            <div class="btn-group d-flex justify-content-end">
+                <button class="btn-green" type="submit">
+                    Veröffentlichen
+                </button>
+            </div>
+        </div>
+    </EditForm>
+</div>
 
 @code {
-    
+    readonly WSERegistration wseRegistration = new();
+    string[] selectedTags = new [] { "Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag very very long tag 1", "Tag 6", "Tag 7", "Tag 8", "Tag 9", "Tag very very long tag 2", "Tag very very long tag 3", "Tag very very long tag 4" };
+
+    private void HandleValidSubmit() {
+        Console.WriteLine("Valid");
+    }
+
+    private void deleteSelectedTags()
+    {
+        selectedTags = Array.Empty<string>();
+    }
+
+    private void removeTag(string tag)
+    {
+        selectedTags = selectedTags.Where(w => w != tag).ToArray();
+    }
 }

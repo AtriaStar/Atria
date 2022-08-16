@@ -48,7 +48,9 @@ void GenerateMigration() {
         mig = Console.ReadLine();
     } while (string.IsNullOrEmpty(mig));
     Console.WriteLine("Generating migration...");
+
     using var proc = Process.Start("dotnet", "ef migrations add " + mig.Replace(" ", ""));
+
     proc.WaitForExit();
     if (proc.ExitCode == 0) {
         UpdateDatabase();
@@ -70,11 +72,13 @@ void DropDatabase() {
 
     using var proc = Process.Start("dotnet", "ef database drop -f");
     proc.WaitForExit();
+
     const string MIGRATIONS_DIR = "Migrations";
     Console.WriteLine("Deleting migrations...");
     if (Directory.Exists(MIGRATIONS_DIR)) {
         Directory.Delete(MIGRATIONS_DIR, true);
     }
+
     Pause();
 }
 
