@@ -8,4 +8,8 @@
 	  <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.7" />
+  </ItemGroup>
+
 </Project>

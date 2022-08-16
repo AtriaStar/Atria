@@ -20,7 +20,6 @@ public class UserController : ControllerBase {
             Biography = "Russiasdf born and raised",
             Bookmarks = new List<WebserviceEntry>(),
             Email = "floppa@gmasdfil.com",
-            PasswordHash = "asdsdffsgdfg",
             ProfilePicture =
                 new(
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Gregory_and_watermelon.jpg/1280px-Gregory_and_watermelon.jpg"),

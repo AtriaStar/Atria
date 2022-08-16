@@ -5,7 +5,7 @@ namespace Models;
 public class Registration {
     
     [Required]
-    public string FirstName { get; set; } = null!;
+    public string FirstNames { get; set; } = null!;
 
     [Required]
     public string LastName { get; set; } = null!;
