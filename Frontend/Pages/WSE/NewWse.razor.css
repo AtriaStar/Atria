@@ -1,10 +1,7 @@
-﻿input {
+﻿/*not working
+form-control fc-grey {
     background-color: rgba(250, 250, 250, 1);
-}
-
-textarea {
-    background-color: rgba(250, 250, 250, 1);
-}
+}*/
 
 .btn-green {
     height: 35px;
@@ -27,7 +24,10 @@ textarea {
     border-color: rgba(150, 150, 150, 1);
 }
 
-.bg-tag {
-    font-size: 10pt;
-    background-color: rgba(36, 189, 255, 1);
+.btn-close-white {
+    width: 1px;
+    height 1px;
+    margin-left: 5pt;
 }
+
+
