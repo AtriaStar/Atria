@@ -1,40 +1,35 @@
-﻿<nav class="navbar navbar-custom">
-    <div class="fraunhofer">
-        <img src="/images/fraunhoferLogo.png">
-    </div>
-
-    <div class="nav">
-        <NavLink class="navbar-brand" href="" Match="NavLinkMatch.All">
-            <img src="/images/atriaLogo.png"/>
+﻿<nav class="navbar">
+    <div class="container-xxl gx-5">
+        <NavLink class="navbar-brand p-0" href="" Match="NavLinkMatch.All">
+            <img width="auto" height="32" src="/images/atriaLogo.png"/>
         </NavLink>
-    </div>
+        <div class="nav">
+            <div class="nav-item me-md-3 me-2">
+                <NavLink href="faq" ActiveClass="link-active">
+                    <ion-icon name="help-circle-outline"></ion-icon>
+                </NavLink>
+            </div>
+            <div class="nav-item me-md-3 me-2">
+                <NavLink href="settings" ActiveClass="link-active">
+                    <ion-icon name="settings-outline"></ion-icon>
+                </NavLink>
+            </div>
+            <div class="nav-item me-md-3 me-2">
+                <NavLink href="notifications" ActiveClass="link-active">
+                    <ion-icon name="notifications-outline"></ion-icon>
+                </NavLink>
+            </div>
 
-    <div class="nav">
-        <div class="nav-item">
-            <NavLink href="faq">
-                <ion-icon name="help-circle-outline"></ion-icon>
-            </NavLink>
-        </div>
-        <div class="nav-item">
-            <NavLink href="settings">
-                <ion-icon name="settings-outline"></ion-icon>
-            </NavLink>
-        </div>
-        <div class="nav-item">
-            <NavLink href="notifications">
-                <ion-icon name="notifications-outline"></ion-icon>
-            </NavLink>
-        </div>
-        
-        <div class="nav-item">
-            <NavLink href="newWse">
-                <ion-icon name="add-circle-outline"></ion-icon>
-            </NavLink>
-        </div>
-        <div class="nav-item">
-            <NavLink href="profile">
-                <ion-icon name="person-circle-outline"></ion-icon>
-            </NavLink>
+            <div class="nav-item me-md-3 me-2">
+                <NavLink href="newWse" ActiveClass="link-active">
+                    <ion-icon name="add-circle-outline"></ion-icon>
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink href="profile" ActiveClass="link-active">
+                    <ion-icon name="person-circle-outline"></ion-icon>
+                </NavLink>
+            </div>
         </div>
     </div>
 </nav>

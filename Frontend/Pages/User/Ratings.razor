@@ -1,0 +1,69 @@
+﻿@using Models.DTO
+@using Models
+@foreach (ReviewDto review in ReviewDtos) {
+    <div class="list-group-item d-flex flex-row p-3">
+        @*
+        <div class="row flex-shrink-0 me-0">
+            <div class="col">
+                @for (int i = 0; i < (int)review.StarCount; i++) {
+                    <i class="fa fa-star rating-color"></i>
+                }
+                @for (int i = (int)review.StarCount; i < 5; i++) {
+                    <i class="fa fa-star rating-uncolored"></i>
+                }
+            </div>
+        </div>
+        *@
+        <div class="w-100">
+            <div class="row mb-2">
+                <div class="col-auto">
+                    @for (int i = 0; i < (int)review.StarCount; i++) {
+                        <i class="fa fa-star rating-color"></i>
+                    }
+                    @for (int i = (int)review.StarCount; i < 5; i++) {
+                        <i class="fa fa-star rating-uncolored"></i>
+                    }
+                </div>
+                <div class="col">
+                    Verlinkung
+                </div>
+            </div>
+            <div class="row justify-content-between">
+                <div class="col">
+                    <h5>
+                        @review.Title
+                    </h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    @review.Description
+                </div>
+            </div>
+            <div class="row justify-content-between">
+                <div class="col">
+                    @review.CreationTime
+                </div>
+                <div class="col-auto">
+                    buttons
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public IList<ReviewDto> ReviewDtos { get; set; } = null!;
+
+    protected override void OnInitialized() {
+        ReviewDtos = new List<ReviewDto>();
+
+        ReviewDto reviewDto = new ReviewDto(1, "Katze", "süß", StarCount.Five, DateTimeOffset.Now);
+        ReviewDtos.Add(reviewDto);
+
+        ReviewDtos.Add(new ReviewDto(2, "Mensch", "cute", StarCount.Four, DateTimeOffset.Now));
+    }
+
+}
