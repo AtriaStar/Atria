@@ -5,10 +5,10 @@
 
 <div class="container-xl">
     <div class="row pt-4 px-md-2">
-        <div class="col-3">
+        <div class="col-md-3 mb-4">
             @if (!_displayForm) {
                 <div class="mb-4 text-center">
-                    <img src="images/default_avatar.png" class="avatar avatar-w"/>
+                    <img src="images/default_avatar.png" class="avatar avatar-w w-100"/>
                 </div>
                 <div>@User.Title</div>
                 <h5>@User.FirstNames @User.LastName</h5>
@@ -26,8 +26,8 @@
                 <EditForm Model="User" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator></DataAnnotationsValidator>
                     <div class="text-center mb-4">
-                        <label for="image_upload" class="w-100 avatar-w" style="cursor: pointer" title="Bild ändern">
-                            <img src="images/default_avatar.png" class="avatar avatar-w"/>
+                        <label for="image_upload" class="avatar-w" style="cursor: pointer" title="Bild ändern">
+                            <img src="images/default_avatar.png" class="avatar avatar-w w-100"/>
                         </label>
                         <InputFile OnChange="@LoadFiles" id="image_upload" style="display: none"></InputFile>
                     </div>
@@ -58,8 +58,8 @@
             }
         </div>
         <div class="col">
-            <div class="d-flex">
-                <div class="nav nav-tabs me-auto profile-nav">
+            <div class="d-flex flex-wrap justify-content-between">
+                <div class="nav nav-tabs profile-nav">
                     <NavLink href="profile?type=wse" class="nav-link" Match="NavLinkMatch.All">WSE</NavLink>
                     <NavLink href="profile?type=bookmarks" class="nav-link">Lesezeichen</NavLink>
                     <NavLink href="profile?type=ratings" class="nav-link">Bewertungen</NavLink>
