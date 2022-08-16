@@ -3,39 +3,40 @@
 @using Models.DTO
 @inject NavigationManager NavigationManager
 
-<div class="container-xl">
-    <div class="row pt-4 px-md-2">
-        <div class="col-lg-3 mb-4">
+<div class="container-xxl">
+    <div class="row mt-4">
+        <div class="col-12 col-xl-3">
+            <div class="p-3 mb-3" style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; border-radius: 0.375rem">
             @if (!_displayForm) {
-                <div class="d-lg-block d-flex flex-column">
-                <div class="flex-row d-flex d-lg-block align-items-center">
-                    <div class="mb-4 text-center me-3 me-lg-0 w-lg-25">
-                        <img src="images/default_avatar.png" class="avatar avatar-w w-100"/>
+                <div class="d-flex flex-column">
+                    <div class="d-flex flex-column flex-sm-row flex-xl-column">
+                        <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
+                            <img src="images/default_avatar.png" class="avatar avatar-w"/>
+                        </div>
+                        <div class="d-flex flex-column justify-content-center">
+                            <div>@User.Title</div>
+                            <h5>@User.FirstNames @User.LastName</h5>
+                            <div>@User.Biography</div>
+                            <div class="top-border pt-2 mt-2 mb-2">@User.Email</div>
+                        </div>
                     </div>
-                    <div>
-                        <div>@User.Title</div>
-                        <h5>@User.FirstNames @User.LastName</h5>
-                        <div>@User.Biography</div>
-                        <div class="top-border pt-2 mt-2">@User.Email</div>
-                    </div>
-                </div>
 
                     @*TODO logged in logic*@
-                @if (_isLoggedIn) {
-                    <div class="top-border pt-3 mt-2 d-flex">
-                        <button type="button" class="btn-success btn flex-fill" @onclick="() => _displayForm = !_displayForm">Profil bearbeiten</button>
-                    </div>
-                }
-                    </div>
+                    @if (_isLoggedIn) {
+                        <div class="top-border pt-3 d-flex">
+                            <button type="button" class="btn-success btn flex-fill" @onclick="() => _displayForm = !_displayForm">Profil bearbeiten</button>
+                        </div>
+                    }
+                </div>
             }
             else {
                 <EditForm Model="User" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator></DataAnnotationsValidator>
-                    <div class="d-lg-block d-flex flex-column">
-                        <div class="flex-row d-flex d-lg-block align-items-center">
-                            <div class="text-center mb-4 me-3 me-lg-0 w-lg-25">
-                                <label for="image_upload" class="avatar-w" style="cursor: pointer" title="Bild ändern">
-                                    <img src="images/default_avatar.png" class="avatar avatar-w w-100"/>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex flex-column flex-sm-row flex-xl-column">
+                            <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
+                                <label for="image_upload" style="cursor: pointer" title="Bild ändern">
+                                    <img src="images/default_avatar.png" class="avatar avatar-w"/>
                                 </label>
                                 <InputFile OnChange="@LoadFiles" id="image_upload" style="display: none"></InputFile>
                             </div>
@@ -49,10 +50,10 @@
                                     <label for="last_name" class="form-label">Nachname</label>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <InputTextArea @bind-Value="User.Biography" id="bio" class="form-control" ></InputTextArea>
+                                    <InputTextArea @bind-Value="User.Biography" id="bio" class="form-control"></InputTextArea>
                                     <label for="bio" class="form-label">Bio</label>
                                 </div>
-                                <div class="top-border pt-2 mb-3">
+                                <div class="top-border pt-2">
                                     <div class="form-floating">
                                         <InputText readonly type="email" id="email" class="form-control-plaintext" @bind-Value="User.Email" placeholder="Email"></InputText>
                                         <label for="email" class="form-label">Email-Adresse</label>
@@ -60,7 +61,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-between mb-3 px-lg-0 px-3">
+                        <div class="d-flex justify-content-between px-3 px-xl-0 pt-3 top-border">
                             <button type="submit" class="btn btn-success">Speichern</button>
                             <button type="button" class="btn btn-danger" @onclick="ResetDto">Zurücksetzen</button>
                         </div>
@@ -68,6 +69,7 @@
                     <ValidationSummary></ValidationSummary>
                 </EditForm>
             }
+            </div>
         </div>
         <div class="col">
             <div class="d-flex flex-wrap justify-content-between">

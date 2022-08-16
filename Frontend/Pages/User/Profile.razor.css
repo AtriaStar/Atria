@@ -9,7 +9,6 @@
 
 .avatar-w {
     max-width: 200px;
-    min-width: 100px;
 }
 
 .top-border {
@@ -40,9 +39,9 @@
      */
     color: black;
 }
-@media (max-width: 991.98px) {
-    .w-lg-25 {
-        width: 25%;
+@media (max-width: 575.98px) {
+    .avatar-w {
+        max-height: 100px;
     }
 }
 
