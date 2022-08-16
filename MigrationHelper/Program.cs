@@ -13,6 +13,7 @@ void MainMenu() {
     Console.WriteLine("[1] Update database");
     Console.WriteLine("[2] Generate new migration from code");
     Console.WriteLine("[3] Drop database");
+    Console.WriteLine("[4] Flatten migrations");
     Console.WriteLine("[0] Exit");
     switch (Console.ReadKey().KeyChar) {
         case '0':
@@ -31,6 +32,11 @@ void MainMenu() {
             Console.Clear();
             DropDatabase();
             break;
+        case '4':
+            Console.Clear();
+            DropDatabase(false);
+            GenerateMigrationDirect("Initial");
+            break;
     }
 }
 
@@ -41,16 +47,9 @@ void UpdateDatabase() {
     Pause();
 }
 
-void GenerateMigration() {
-    string? mig;
-    do {
-        Console.Write("Please enter a migration name: ");
-        mig = Console.ReadLine();
-    } while (string.IsNullOrEmpty(mig));
+void GenerateMigrationDirect(string name) {
     Console.WriteLine("Generating migration...");
-
-    using var proc = Process.Start("dotnet", "ef migrations add " + mig.Replace(" ", ""));
-
+    using var proc = Process.Start("dotnet", "ef migrations add " + name.Replace(" ", ""));
     proc.WaitForExit();
     if (proc.ExitCode == 0) {
         UpdateDatabase();
@@ -59,7 +58,16 @@ void GenerateMigration() {
     }
 }
 
-void DropDatabase() {
+void GenerateMigration() {
+    string? mig;
+    do {
+        Console.Write("Please enter a migration name: ");
+        mig = Console.ReadLine();
+    } while (string.IsNullOrEmpty(mig));
+    GenerateMigrationDirect(mig);
+}
+
+void DropDatabase(bool waitAfter = true) {
     string? resp;
     do {
         Console.WriteLine("Are you sure you want to drop the database? (y/n)");
