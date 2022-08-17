@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Backend; 
+namespace Backend.Services;
 
 public static class HashingService {
     public static byte[] GenerateSalt()

@@ -12,5 +12,5 @@ public class WSEDraft {
     public string FullDescription { get; set; } = null!;
     public Uri DocumentationLink { get; set; } = null!;
     public string Changelog { get; set; } = null!;
-    public DateTimeOffset CreationDate { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

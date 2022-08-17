@@ -22,7 +22,6 @@ public class WebserviceEntry {
     public string Documentation { get; set; } = null!;
     public string ChangeLog { get; set; } = null!;
     public int ViewCount { get; set; }
-    public DateTimeOffset CreationDate { get; set; }
     public User ContactPerson { get; set; } = null!;
     public ICollection<Question> Questions { get; set; } = null!;
 
@@ -34,4 +33,5 @@ public class WebserviceEntry {
 
     public ICollection<Review> Reviews { get; set; } = null!;
     public ICollection<Collaborator> Collaborators { get; set; } = null!;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

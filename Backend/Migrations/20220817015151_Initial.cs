@@ -22,7 +22,7 @@ namespace Backend.Migrations
                     FullDescription = table.Column<string>(type: "text", nullable: false),
                     DocumentationLink = table.Column<string>(type: "text", nullable: false),
                     Changelog = table.Column<string>(type: "text", nullable: false),
-                    CreationDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -41,12 +41,35 @@ namespace Backend.Migrations
                     Email = table.Column<string>(type: "text", nullable: false),
                     ProfilePicture = table.Column<string>(type: "text", nullable: true),
                     Biography = table.Column<string>(type: "text", nullable: true),
+                    SignUpIp = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<byte[]>(type: "bytea", nullable: false),
-                    PasswordSalt = table.Column<byte[]>(type: "bytea", nullable: false)
+                    PasswordSalt = table.Column<byte[]>(type: "bytea", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sessions",
+                columns: table => new
+                {
+                    Token = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    UserAgent = table.Column<string>(type: "text", nullable: false),
+                    Ip = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sessions", x => x.Token);
+                    table.ForeignKey(
+                        name: "FK_Sessions_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -62,8 +85,8 @@ namespace Backend.Migrations
                     DocumentationLink = table.Column<string>(type: "text", nullable: false),
                     Changelog = table.Column<string>(type: "text", nullable: false),
                     ViewCount = table.Column<int>(type: "integer", nullable: false),
-                    CreationDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    ContactPersonId = table.Column<long>(type: "bigint", nullable: false)
+                    ContactPersonId = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -238,7 +261,12 @@ namespace Backend.Migrations
                 column: "WebserviceEntryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_WebserviceEntryId",
+                name: "IX_Sessions_UserId",
+                table: "Sessions",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tags_WebserviceEntryName",
                 table: "Tags",
                 column: "WebserviceEntryId");
 
@@ -267,6 +295,9 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Reviews");
+
+            migrationBuilder.DropTable(
+                name: "Sessions");
 
             migrationBuilder.DropTable(
                 name: "Tags");

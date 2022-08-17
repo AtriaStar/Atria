@@ -1,46 +1,105 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Cryptography;
+using Backend.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
-namespace Backend.Controllers; 
+namespace Backend.Controllers;
 
 [ApiController]
-public class AuthenticationController : ControllerBase {
-    private readonly IConfiguration _config;
+public class AuthenticationController : AuthorizationSupportedController {
+    // TODO: Turn into options
+    private const string AUTH_COOKIE_NAME = "Authorization";
+    private const int SESSIONS_EXPIRE_DAYS = 7;
+
     private readonly AtriaContext _context;
 
-    public AuthenticationController(IConfiguration config, AtriaContext context) {
-        _config = config;
+    public AuthenticationController(AtriaContext context) {
         _context = context;
+    }
+
+    private void AuthenticateClient(User user) {
+        var token = Base64UrlTextEncoder.Encode(RandomNumberGenerator.GetBytes(64));
+
+        _context.Sessions.Add(new() {
+            Token = token,
+            User = user,
+            Ip = HttpContext.Connection.RemoteIpAddress!.ToString(),
+            UserAgent = Request.Headers["User-Agent"],
+            CreatedAt = DateTimeOffset.UtcNow,
+        });
+        _context.SaveChanges();
+
+        Response.Cookies.Append(AUTH_COOKIE_NAME, token, new() {
+            IsEssential = true,
+            HttpOnly = true,
+            Secure = true,
+            Domain = "localhost",
+            MaxAge = TimeSpan.FromDays(SESSIONS_EXPIRE_DAYS),
+            SameSite = SameSiteMode.None, // TODO: Reinvestigate, I fear this is necessary
+            //Path = "/api/", // TODO: Implement
+        });
     }
 
     [HttpPost("register")]
     public IActionResult Register(Registration registration) {
         var salt = HashingService.GenerateSalt();
 
-        _context.Users.Add(new() {
+        var user = new User {
             FirstNames = registration.FirstNames,
             LastName = registration.LastName,
             Email = registration.Email,
+            SignUpIp = HttpContext.Connection.RemoteIpAddress!.ToString(),
             PasswordHash = HashingService.Hash(registration.Password, salt),
             PasswordSalt = salt,
-        });
+        };
+        _context.Users.Add(user);
         try {
             _context.SaveChanges();
         } catch (DbUpdateException) {
             return BadRequest();
         }
+        AuthenticateClient(user);
 
         return Ok();
     }
 
-    [AllowAnonymous]
     [HttpPost("login")]
     public IActionResult Login(Login login) {
         var user = _context.Users.FirstOrDefault(x => x.Email == login.Email);
-        return user != null && user.PasswordHash.SequenceEqual(HashingService.Hash(login.Password, user.PasswordSalt))
-            ? Ok()
-            : NotFound("Email or password invalid");
+        if (user == null || !user.PasswordHash.SequenceEqual(HashingService.Hash(login.Password, user.PasswordSalt))) {
+            return Unauthorized("Email or password invalid");
+        }
+        AuthenticateClient(user);
+        return Ok();
+    }
+
+    [RequiresAuthentication]
+    [HttpPost("logout")]
+    public IActionResult Logout() {
+        Response.Cookies.Delete(AUTH_COOKIE_NAME);
+        _context.Sessions.Remove(GetAuthenticationSession());
+        _context.SaveChanges();
+        return Ok();
+    }
+
+    [RequiresAuthentication]
+    [HttpPost("logout/all")]
+    public IActionResult LogoutAll() {
+        Logout();
+        var user = GetAuthenticatedUser();
+        _context.Sessions.RemoveRange(_context.Sessions.Where(x => x.User == user));
+        _context.SaveChanges();
+        return Ok();
+    }
+
+    [RequiresAuthenticationAttribute]
+    [HttpGet("sessions")]
+    public IEnumerable<Session> GetSessions() {
+        var user = GetAuthenticatedUser();
+        return _context.Sessions
+            .Include(x => x.User)
+            .Where(x => x.User == user);
     }
 }
