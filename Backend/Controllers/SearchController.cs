@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Backend.Controllers;
@@ -27,8 +28,8 @@ public class SearchController : ControllerBase {
             .Take(pagination.EntriesPerPage);
 
     [HttpGet("count/wse")]
-    public int GetWseCount(string query) => _context.WebserviceEntries.Count();
+    public Task<long> GetWseCount(string query) => _context.WebserviceEntries.LongCountAsync();
 
     [HttpGet("count/user")]
-    public int GetUserCount(string query) => _context.WebserviceEntries.Count();
+    public Task<long> GetUserCount(string query) => _context.WebserviceEntries.LongCountAsync();
 }

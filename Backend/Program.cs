@@ -1,4 +1,6 @@
 ﻿using Backend;
+using Backend.Authentication;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +11,9 @@ builder.Services.AddControllers(options => options.UseCentralRoutePrefix(new Rou
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<SessionService>();
 builder.Services.AddDbContext<AtriaContext>();
+builder.Services.AddHostedService<SessionClearerService>();
 
 var app = builder.Build();
 
@@ -20,8 +24,6 @@ if (app.Environment.IsDevelopment()) {
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

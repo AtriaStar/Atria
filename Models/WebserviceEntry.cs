@@ -13,10 +13,10 @@ public class WebserviceEntry {
     public Uri DocumentationLink { get; set; } = null!;
     public string Changelog { get; set; } = null!;
     public int ViewCount { get; set; }
-    public DateTimeOffset CreationDate { get; set; }
     public User ContactPerson { get; set; } = null!;
     public ICollection<Question> Questions { get; set; } = null!;
     public ICollection<Tag> Tags { get; set; } = null!;
     public ICollection<Review> Reviews { get; set; } = null!;
     public ICollection<Collaborator> Collaborators { get; set; } = null!;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

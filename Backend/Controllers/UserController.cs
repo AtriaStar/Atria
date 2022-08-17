@@ -13,22 +13,7 @@ public class UserController : ControllerBase {
     }
 
     [HttpGet("{userId}")]
-    public User Get(int userId) {
-        _context.Users.Add(new() {
-            FirstNames = "Bisdfg",
-            LastName = "Flosdfppa",
-            Biography = "Russiasdf born and raised",
-            Bookmarks = new List<WebserviceEntry>(),
-            Email = "floppa@gmasdfil.com",
-            PasswordHash = "asdsdffsgdfg",
-            ProfilePicture =
-                new(
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Gregory_and_watermelon.jpg/1280px-Gregory_and_watermelon.jpg"),
-            Title = "Dr. mult."
-        });
-        _context.SaveChanges();
-        return null!;
-    }
+    public User Get(int userId) => null!;
 
     // TODO: WSESearchParam and Pagination missing in param
     [HttpGet("{userId}/wse")]
