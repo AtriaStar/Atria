@@ -1,6 +1,6 @@
 ﻿namespace Models;
 
-public record WseSearchParam(
+public record WSESearchParam(
     string Query,
     bool IsOnline,
     bool HasBookmark,

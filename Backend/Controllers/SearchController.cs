@@ -13,7 +13,7 @@ public class SearchController : ControllerBase {
     }
 
     [HttpGet("wse")]
-    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WseSearchParam param, [FromQuery] Pagination pagination)
+    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WSESearchParam param, [FromQuery] Pagination pagination)
         => _context.WebserviceEntries
             .Where(x => x.Reviews.Average(y => (int)y.StarCount) >= (int)param.MinReviewAvg)
             .OrderBy(x => x, param.Order.GetComparer())
