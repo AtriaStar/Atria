@@ -12,7 +12,7 @@ void MainMenu() {
     Console.WriteLine("What would you like to do?");
     Console.WriteLine("[1] Update database");
     Console.WriteLine("[2] Generate new migration from code");
-    Console.WriteLine("[3] Drop database");
+    Console.WriteLine("[3] Reset database");
     Console.WriteLine("[4] Flatten migrations");
     Console.WriteLine("[0] Exit");
     switch (Console.ReadKey().KeyChar) {
@@ -31,10 +31,12 @@ void MainMenu() {
         case '3':
             Console.Clear();
             DropDatabase();
+            UpdateDatabase();
             break;
         case '4':
             Console.Clear();
-            DropDatabase(false);
+            DropDatabase();
+            DeleteMigrations();
             GenerateMigrationDirect("Initial");
             break;
     }
@@ -67,7 +69,7 @@ void GenerateMigration() {
     GenerateMigrationDirect(mig);
 }
 
-void DropDatabase(bool waitAfter = true) {
+void DropDatabase() {
     string? resp;
     do {
         Console.WriteLine("Are you sure you want to drop the database? (y/n)");
@@ -80,14 +82,13 @@ void DropDatabase(bool waitAfter = true) {
 
     using var proc = Process.Start("dotnet", "ef database drop -f");
     proc.WaitForExit();
+}
+
+void DeleteMigrations() {
     const string MIGRATIONS_DIR = "Migrations";
     Console.WriteLine("Deleting migrations...");
     if (Directory.Exists(MIGRATIONS_DIR)) {
         Directory.Delete(MIGRATIONS_DIR, true);
-    }
-
-    if (waitAfter) {
-        Pause();
     }
 }
 

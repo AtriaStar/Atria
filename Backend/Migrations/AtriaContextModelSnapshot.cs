@@ -22,32 +22,6 @@ namespace Backend.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Backend.Session", b =>
-                {
-                    b.Property<string>("Token")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Ip")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserAgent")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Token");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Sessions");
-                });
-
             modelBuilder.Entity("Models.Answer", b =>
                 {
                     b.Property<long>("Id")
@@ -161,6 +135,32 @@ namespace Backend.Migrations
                     b.HasIndex("WebserviceEntryId");
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("Models.Session", b =>
+                {
+                    b.Property<string>("Token")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Ip")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserAgent")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Token");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Sessions");
                 });
 
             modelBuilder.Entity("Models.Tag", b =>
@@ -324,17 +324,6 @@ namespace Backend.Migrations
                     b.ToTable("Drafts");
                 });
 
-            modelBuilder.Entity("Backend.Session", b =>
-                {
-                    b.HasOne("Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Models.Answer", b =>
                 {
                     b.HasOne("Models.User", "Creator")
@@ -393,6 +382,17 @@ namespace Backend.Migrations
                         .HasForeignKey("WebserviceEntryId");
 
                     b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("Models.Session", b =>
+                {
+                    b.HasOne("Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Models.Tag", b =>
