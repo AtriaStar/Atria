@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 
 namespace Backend.Controllers;
@@ -6,28 +7,20 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("user")]
 public class UserController : ControllerBase {
-    private readonly AtriaContext _context;
+    [HttpGet("{user}")]
+    public User Get([FromDatabase] User user) => user;
 
-    public UserController(AtriaContext context) {
-        _context = context;
-    }
+    [HttpGet("{userId:long}/wse")]
+    public IEnumerable<WebserviceEntry> GetWseByUser([FromServices] AtriaContext db, long userId)
+        => db.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId));
 
-    [HttpGet("{userId}")]
-    public User Get(int userId) => null!;
+    [HttpGet("{user}/bookmarks")]
+    public IEnumerable<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user)
+        => user.Bookmarks;
 
-    // TODO: WSESearchParam and Pagination missing in param
-    [HttpGet("{userId}/wse")]
-    public IEnumerable<WebserviceEntry> GetWseByUser(int userId) => null!;
+    [HttpGet("{userId:long}/reviews")]
+    public IEnumerable<Review> GetReviewsByUser(long userId, string query) => null!;
 
-    // TODO: WSESearchParam and Pagination missing in param
-    [HttpGet("{userId}/bookmarks")]
-    public IEnumerable<WebserviceEntry> GetBookmarksByUser(int userId) => null!;
-
-    // TODO: Pagination missing in param
-    [HttpGet("{userId}/reviews")]
-    public IEnumerable<Review> GetReviewsByUser(int userId, string query) => null!;
-
-    // TODO: WSESearchParam and Pagination missing in param
     [HttpGet("{userId}/drafts")]
     public IEnumerable<WSEDraft> GetWseDrafts() => null!;
 
