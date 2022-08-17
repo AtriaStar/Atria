@@ -221,6 +221,9 @@ namespace Backend.Migrations
                     b.Property<string>("ProfilePicture")
                         .HasColumnType("text");
 
+                    b.Property<int>("Rights")
+                        .HasColumnType("integer");
+
                     b.Property<string>("SignUpIp")
                         .IsRequired()
                         .HasColumnType("text");

@@ -20,6 +20,7 @@ public class User {
     public byte[] PasswordHash { get; set; } = null!;
     [JsonIgnore]
     public byte[] PasswordSalt { get; set; } = null!;
+    public UserRights Rights { get; set; } = UserRights.Default;
     public ICollection<WebserviceEntry> Bookmarks { get; set; } = null!;
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

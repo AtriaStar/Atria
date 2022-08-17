@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220817065918_Initial")]
+    [Migration("20220817110723_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -222,6 +222,9 @@ namespace Backend.Migrations
 
                     b.Property<string>("ProfilePicture")
                         .HasColumnType("text");
+
+                    b.Property<int>("Rights")
+                        .HasColumnType("integer");
 
                     b.Property<string>("SignUpIp")
                         .IsRequired()

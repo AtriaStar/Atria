@@ -1,7 +1,5 @@
-﻿using System.Reflection;
-using Backend.Services;
+﻿using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -9,7 +7,9 @@ using Models;
 namespace Backend.Authentication;
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-public class RequiresAuthenticationAttribute : Attribute, IAsyncActionFilter {
+public class RequiresAuthenticationAttribute : Attribute, IAsyncActionFilter, IOrderedFilter {
+    public int Order => 0;
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next) {
         var services = context.HttpContext.RequestServices;
         var db = services.GetRequiredService<AtriaContext>();
@@ -30,13 +30,10 @@ public class RequiresAuthenticationAttribute : Attribute, IAsyncActionFilter {
         }
 
         void Reject() {
-            context.Result = new UnauthorizedObjectResult("This endpoint requires login");
+            context.Result = new UnauthorizedResult();
         }
 
-        foreach (var p in (context.ActionDescriptor as ControllerActionDescriptor)?.MethodInfo.GetParameters()
-                          .Where(x => x.Name != null && x.CustomAttributes
-                              .Any(y => y.AttributeType == typeof(FromAuthenticationAttribute)))
-                          ?? Enumerable.Empty<ParameterInfo>()) {
+        foreach (var p in context.GetParametersWithAttribute<FromAuthenticationAttribute>()) {
             if (p.ParameterType == typeof(Session)) {
                 context.ActionArguments[p.Name!] = session;
             } else if (p.ParameterType == typeof(User)) {
