@@ -19,7 +19,7 @@ public static class Extensions {
         = ComparerFromSelector<WebserviceEntry, double>(x => x.Reviews.Average(y => (byte)y.StarCount));
 
     private static readonly IComparer<WebserviceEntry> RecencyComparer
-        = ComparerFromSelector<WebserviceEntry, DateTimeOffset>(x => x.CreationDate);
+        = ComparerFromSelector<WebserviceEntry, DateTimeOffset>(x => x.CreatedAt);
 
     private static IComparer<T> ComparerFromSelector<T, TSel>(Func<T, TSel> selector)
         where TSel : IComparable

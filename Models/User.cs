@@ -15,9 +15,11 @@ public class User {
     public string Email { get; set; } = null!;
     public Uri? ProfilePicture { get; set; }
     public string? Biography { get; set; }
+    public string SignUpIp { get; set; } = null!;
     [JsonIgnore]
     public byte[] PasswordHash { get; set; } = null!;
     [JsonIgnore]
     public byte[] PasswordSalt { get; set; } = null!;
-    public ICollection<WebserviceEntry>? Bookmarks { get; set; }
+    public ICollection<WebserviceEntry> Bookmarks { get; set; } = null!;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
