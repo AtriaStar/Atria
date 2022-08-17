@@ -1,114 +1,94 @@
 ﻿@page "/"
+@using Models
+@using Models.DTO
+@inject NavigationManager NavigationManager
 
 <PageTitle>Atria</PageTitle>
 
-<div class="row">
-    <div class="col-lg-8 mx-auto">
-        <form action="">
-            <div class="input-group mb-4 border rounded-pill p-1">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                    <button type="submit" class="btn btn-link text-dark"><i class="fa fa-search"></i></button>
-                    </div>
-                <input type="search" placeholder="Search for ..." class="form-control rounded-pill border-0">
+<div class="container-xxl">
+    <div class="searchbar position-relative mb-3 mt-4">
+        <input type="text" class="form-control form-control-lg" placeholder="Suche nach..." @bind-value="SearchString"
+               @onkeyup="SearchInput">
+        <i class="fa fa-search position-absolute top-50 end-0 px-2 translate-middle"></i>
+    </div>
+    <div class="d-flex flex-wrap">
+        <div class="nav nav-pills mb-2">
+            <div class="nav-item">
+                <NavLink href="@Navigate("type", null)" class="nav-link" Match="NavLinkMatch.All">WSE</NavLink>
+            </div>
+            <div class="nav-item ms-3">
+                <NavLink href="@Navigate("type", "user")" class="nav-link">User</NavLink>
+            </div>
+        </div>
+        <div class="d-flex mb-2 ms-auto">
+            <div class="dropdown dropdown-menu-end">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Filter
+                </button>
+                <div class="dropdown-menu">
+                    Filter und Dinge
                 </div>
             </div>
-        </form>
-    </div>
-</div>
-
-@* TODO: change border color*@
-@* TODO: adjust font size*@
-<div class="row mb-2">
-    <div class="col-2">
-        <div class="list-group">
-            <a href="" class="list-group-item d-flex justify-content-between align-items-center active">Webservices
-                <span class="badge rounded-pill bg-primary">14</span>
-            </a>
-            <a href="searchUser" class="list-group-item d-flex justify-content-between align-items-center">Nutzer
-                <span class="badge rounded-pill bg-primary">14</span>
-            </a>
-        </div>
-    </div>
-</div>
-
-<div class="row mb-2">
-    <div class="col-2">
-        <div class="list-group">
-            <div class="list-group-item">
-                <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">Filter</h5>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="">
-                    <label class="form-check-label" for="flexCheckDefault">
-                        Online
-                        <span class="badge rounded-pill bg-primary">14</span>
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="">
-                    <label class="form-check-label" for="flexCheckChecked">
-                        Lesezeichen
-                        <span class="badge rounded-pill bg-primary">14</span>
-                    </label>
-                </div>
-
-                <h7 class="mb-1">Bewertung</h7>
-                <div class="rating">
-                    <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label>
-                    <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label>
-                    <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label>
-                    <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label>
-                    <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label>
-                </div>
-
-                <h7 class="mb-1">Tags</h7>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="">
-                    <label class="form-check-label" for="flexCheckDefault">
-                        Tag1
-                        <span class="badge rounded-pill bg-primary">14</span>
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="">
-                    <label class="form-check-label" for="flexCheckChecked">
-                        Tag2
-                        <span class="badge rounded-pill bg-primary">14</span>
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="">
-                    <label class="form-check-label" for="flexCheckChecked">
-                        Tag3
-                        <span class="badge rounded-pill bg-primary">14</span>
-                    </label>
-                </div>
-                <div style="text-align:right; font-size:80%;">
-                    <!-- <a href="#tagModal">weitere Tags</a> -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tagModal">
-                        weitere Tags
-                    </button>
-                </div>
-                <div class="modal fade" id="tagModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                ...
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="dropdown ms-3">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sortieren nach
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <NavLink href="@Navigate("sort", null)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>
+                    <NavLink href="@Navigate("sort", "useCount")" class="dropdown-item">Aufrufzahl</NavLink>
+                    <NavLink href="@Navigate("sort", "reviewAverage")" class="dropdown-item">Bewertungsdurchschnitt</NavLink>
+                    <NavLink href="@Navigate("sort", "recency")" class="dropdown-item">Neueste</NavLink>
+                </ul>
             </div>
         </div>
     </div>
+    <div class="list-group list-group-flush search-data-list">
+        <WseSummaryList SummaryDtos="_summaryDtos"></WseSummaryList>
+    </div>
 </div>
+
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Sort { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Type { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Query { get; set; }
+
+    private string? SearchString { get; set; }
+
+    private IList<WseSummaryDto> _summaryDtos = null!;
+
+    private void SearchInput(KeyboardEventArgs evt) {
+        if (evt.Key == "Enter") {
+            Search();
+        }
+    }
+
+    private void Search() {
+        NavigationManager.NavigateTo(Navigate("query", SearchString));
+    }
+
+    protected override void OnInitialized() {
+        @* Mock data gen *@
+        _summaryDtos = new List<WseSummaryDto>();
+        WseSummaryDto wseSummaryDto1 = new WseSummaryDto("hans", "der hans", new List<Tag>(), DateTimeOffset.Now, true, 3.5, 10, new Uri("http://www.google.com"));
+        _summaryDtos.Add(wseSummaryDto1);
+
+        WseSummaryDto wseSummaryDto2 = new WseSummaryDto("günther", "der günther", new List<Tag>(), DateTimeOffset.Now, false, 3.5, 10, new Uri("http://www.duckduckgo.com"));
+        _summaryDtos.Add(wseSummaryDto2);
+        _summaryDtos.Add(wseSummaryDto1);
+    }
+
+
+    private string Navigate(string key, string? value) {
+        return NavigationManager.GetUriWithQueryParameter(key, value);
+    }
+
+}
