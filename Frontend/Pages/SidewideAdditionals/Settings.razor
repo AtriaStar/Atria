@@ -1,9 +1,216 @@
 ﻿@page "/settings"
 
-<PageTitle>AtriaTest - Settings</PageTitle>
+<PageTitle>Atria - Settings</PageTitle>
 
-<h3>Settings</h3>
+<div class="container-lg mt-3">
+    <h2>Einstellungen</h2>
+
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    Benachrichtigungen
+                </div>
+                <div class="col-auto">
+                    <div class="form-check form-switch d-flex justify-content-between">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="list-group">
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            eingehende Fragen
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            eingehende Antworten
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            eingehende Bewertungen
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            Hinzufügen zu einem Webservice-Eintrag
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            Entfernen aus einem Webservice-Eintrag
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item border-0">
+                    <div class="row d-flex align-content-between">
+                        <div class="col">
+                            Löschen von Webservice-Einträge
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </li>
+
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    E-Mail-Benachrichtigungen
+                </div>
+                <div class="col-auto">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    Dark/Light Mode
+                </div>
+                <div class="col-auto">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    Sprache
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group">
+                        <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Deutsch
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Deutsch</a></li>
+                            <li><a class="dropdown-item" href="#">English</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    Passwort ändern
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group d-flex justify-content-end">
+                        <button class="btn-change" type="button" @onclick="() => OpenChangePasswordDialog()">
+                            Passwort ändern
+                        </button>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item">
+            <div class="row d-flex align-content-between">
+                <div class="col">
+                    Konto löschen
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group d-flex justify-content-end">
+                        <button class="btn-delete" type="button" @onclick="() => OpenDeleteDialog()">
+                            Konto löschen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+
+@if (ChangePasswordDialogOpen)
+{
+    <Frontend.Pages.Components.ChangePasswordModal OnClose="@OnChangePasswordDialogClose"></Frontend.Pages.Components.ChangePasswordModal>
+}
+
+@if (DeleteDialogOpen) 
+{
+    <Frontend.Pages.Components.DeleteModal Title="Konto löschen" Text="Sind Sie sicher, dass Sie Ihr Konto löschen möchten?" OnClose="@OnDeleteDialogClose"></Frontend.Pages.Components.DeleteModal>
+}
+
 
 @code {
-    
+    public bool ChangePasswordDialogOpen { get; set; }
+    public bool DeleteDialogOpen { get; set; }
+
+    private void OnChangePasswordDialogClose(bool accepted)
+    {
+        ChangePasswordDialogOpen = false;
+        StateHasChanged();
+    }
+
+    private void OpenChangePasswordDialog()
+    {
+        ChangePasswordDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private void OnDeleteDialogClose(bool accepted)
+    {
+        DeleteDialogOpen = false;
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog()
+    {
+        DeleteDialogOpen = true;
+        StateHasChanged();
+    }
+
 }

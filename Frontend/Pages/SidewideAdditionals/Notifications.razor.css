@@ -1,0 +1,55 @@
+﻿h2 {
+    margin-bottom: 20px;
+}
+
+.card {
+    height: 100px;
+    width: 100%;
+    background-color: rgba(232, 232, 232, 1);
+    border: none;
+    border-radius: 15px;
+}
+
+.card card-body {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+img {
+    height: 60px;
+    width: 60px;
+    margin-left: 15px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .card {
+        height: 80px;
+        width: 100%;
+        background-color: rgba(232, 232, 232, 1);
+        border: none;
+        border-radius: 15px;
+    }
+
+    .card-body {
+        height: 70px;
+        margin-left: 15px;
+        margin-right: 15px;
+        font-size: 11px;
+    }
+
+    .card-title{
+        font-size: 15px;
+    }
+
+    .card-link{
+        font-size: 15px;
+    }
+
+    img {
+        height: 40px;
+        width: 40px;
+        margin-top: 20px;
+        margin-left: 15px;
+    }
+}
