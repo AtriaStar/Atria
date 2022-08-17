@@ -91,16 +91,16 @@
             <div class="list-group list-group-flush profile-data-list">
                 @switch (Type) {
                     case "wse":
-                        <WSE SummaryDtos="_summaryDtos"/>
+                        <WseSummaryList SummaryDtos="_summaryDtos"/>
                         break;
                     case "bookmarks":
-                        <WSE SummaryDtos="_summaryDtos"/>
+                        <WseSummaryList SummaryDtos="_summaryDtos"/>
                         break;
                     case "ratings":
                         <Ratings/>
                         break;
                     case "drafts":
-                        <WSE SummaryDtos="_summaryDtos"/>
+                        <WseSummaryList SummaryDtos="_summaryDtos"/>
                         break;
                     default:
                         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", "wse"));
