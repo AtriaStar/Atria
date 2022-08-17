@@ -52,6 +52,8 @@ namespace Backend.Migrations
                 name: "WebserviceEntries",
                 columns: table => new
                 {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     ShortDescription = table.Column<string>(type: "text", nullable: false),
                     Link = table.Column<string>(type: "text", nullable: false),
@@ -64,7 +66,7 @@ namespace Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WebserviceEntries", x => x.Name);
+                    table.PrimaryKey("PK_WebserviceEntries", x => x.Id);
                     table.ForeignKey(
                         name: "FK_WebserviceEntries_Users_ContactPersonId",
                         column: x => x.ContactPersonId,
@@ -79,7 +81,7 @@ namespace Backend.Migrations
                 {
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
-                    WebserviceEntryName = table.Column<string>(type: "text", nullable: true)
+                    WebserviceEntryId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -91,10 +93,10 @@ namespace Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Collaborator_WebserviceEntries_WebserviceEntryName",
-                        column: x => x.WebserviceEntryName,
+                        name: "FK_Collaborator_WebserviceEntries_WebserviceEntryId",
+                        column: x => x.WebserviceEntryId,
                         principalTable: "WebserviceEntries",
-                        principalColumn: "Name");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -106,7 +108,7 @@ namespace Backend.Migrations
                     Text = table.Column<string>(type: "text", nullable: false),
                     CreationTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatorId = table.Column<long>(type: "bigint", nullable: false),
-                    WebserviceEntryName = table.Column<string>(type: "text", nullable: true)
+                    WebserviceEntryId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -118,10 +120,10 @@ namespace Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Questions_WebserviceEntries_WebserviceEntryName",
-                        column: x => x.WebserviceEntryName,
+                        name: "FK_Questions_WebserviceEntries_WebserviceEntryId",
+                        column: x => x.WebserviceEntryId,
                         principalTable: "WebserviceEntries",
-                        principalColumn: "Name");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -135,7 +137,7 @@ namespace Backend.Migrations
                     StarCount = table.Column<int>(type: "integer", nullable: false),
                     CreationTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatorId = table.Column<long>(type: "bigint", nullable: false),
-                    WebserviceEntryName = table.Column<string>(type: "text", nullable: true)
+                    WebserviceEntryId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -147,10 +149,10 @@ namespace Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Reviews_WebserviceEntries_WebserviceEntryName",
-                        column: x => x.WebserviceEntryName,
+                        name: "FK_Reviews_WebserviceEntries_WebserviceEntryId",
+                        column: x => x.WebserviceEntryId,
                         principalTable: "WebserviceEntries",
-                        principalColumn: "Name");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -160,16 +162,16 @@ namespace Backend.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     CreationTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     UseCount = table.Column<long>(type: "bigint", nullable: false),
-                    WebserviceEntryName = table.Column<string>(type: "text", nullable: true)
+                    WebserviceEntryId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Name);
                     table.ForeignKey(
-                        name: "FK_Tags_WebserviceEntries_WebserviceEntryName",
-                        column: x => x.WebserviceEntryName,
+                        name: "FK_Tags_WebserviceEntries_WebserviceEntryId",
+                        column: x => x.WebserviceEntryId,
                         principalTable: "WebserviceEntries",
-                        principalColumn: "Name");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -210,9 +212,9 @@ namespace Backend.Migrations
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Collaborator_WebserviceEntryName",
+                name: "IX_Collaborator_WebserviceEntryId",
                 table: "Collaborator",
-                column: "WebserviceEntryName");
+                column: "WebserviceEntryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_CreatorId",
@@ -220,9 +222,9 @@ namespace Backend.Migrations
                 column: "CreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Questions_WebserviceEntryName",
+                name: "IX_Questions_WebserviceEntryId",
                 table: "Questions",
-                column: "WebserviceEntryName");
+                column: "WebserviceEntryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_CreatorId",
@@ -230,14 +232,14 @@ namespace Backend.Migrations
                 column: "CreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_WebserviceEntryName",
+                name: "IX_Reviews_WebserviceEntryId",
                 table: "Reviews",
-                column: "WebserviceEntryName");
+                column: "WebserviceEntryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_WebserviceEntryName",
+                name: "IX_Tags_WebserviceEntryId",
                 table: "Tags",
-                column: "WebserviceEntryName");
+                column: "WebserviceEntryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WebserviceEntries_ContactPersonId",

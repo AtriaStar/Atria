@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220806171129_Initial")]
+    [Migration("20220817065241_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,12 +62,12 @@ namespace Backend.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
-                    b.Property<string>("WebserviceEntryName")
-                        .HasColumnType("text");
+                    b.Property<long?>("WebserviceEntryId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("WebserviceEntryName");
+                    b.HasIndex("WebserviceEntryId");
 
                     b.ToTable("Collaborator");
                 });
@@ -90,14 +90,14 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("WebserviceEntryName")
-                        .HasColumnType("text");
+                    b.Property<long?>("WebserviceEntryId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
 
-                    b.HasIndex("WebserviceEntryName");
+                    b.HasIndex("WebserviceEntryId");
 
                     b.ToTable("Questions");
                 });
@@ -127,14 +127,14 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("WebserviceEntryName")
-                        .HasColumnType("text");
+                    b.Property<long?>("WebserviceEntryId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
 
-                    b.HasIndex("WebserviceEntryName");
+                    b.HasIndex("WebserviceEntryId");
 
                     b.ToTable("Reviews");
                 });
@@ -150,12 +150,12 @@ namespace Backend.Migrations
                     b.Property<long>("UseCount")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("WebserviceEntryName")
-                        .HasColumnType("text");
+                    b.Property<long?>("WebserviceEntryId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Name");
 
-                    b.HasIndex("WebserviceEntryName");
+                    b.HasIndex("WebserviceEntryId");
 
                     b.ToTable("Tags");
                 });
@@ -203,8 +203,11 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Changelog")
                         .IsRequired()
@@ -228,6 +231,10 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ShortDescription")
                         .IsRequired()
                         .HasColumnType("text");
@@ -235,7 +242,7 @@ namespace Backend.Migrations
                     b.Property<int>("ViewCount")
                         .HasColumnType("integer");
 
-                    b.HasKey("Name");
+                    b.HasKey("Id");
 
                     b.HasIndex("ContactPersonId");
 
@@ -307,7 +314,7 @@ namespace Backend.Migrations
 
                     b.HasOne("Models.WebserviceEntry", null)
                         .WithMany("Collaborators")
-                        .HasForeignKey("WebserviceEntryName");
+                        .HasForeignKey("WebserviceEntryId");
 
                     b.Navigation("User");
                 });
@@ -322,7 +329,7 @@ namespace Backend.Migrations
 
                     b.HasOne("Models.WebserviceEntry", null)
                         .WithMany("Questions")
-                        .HasForeignKey("WebserviceEntryName");
+                        .HasForeignKey("WebserviceEntryId");
 
                     b.Navigation("Creator");
                 });
@@ -337,7 +344,7 @@ namespace Backend.Migrations
 
                     b.HasOne("Models.WebserviceEntry", null)
                         .WithMany("Reviews")
-                        .HasForeignKey("WebserviceEntryName");
+                        .HasForeignKey("WebserviceEntryId");
 
                     b.Navigation("Creator");
                 });
@@ -346,7 +353,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Models.WebserviceEntry", null)
                         .WithMany("Tags")
-                        .HasForeignKey("WebserviceEntryName");
+                        .HasForeignKey("WebserviceEntryId");
                 });
 
             modelBuilder.Entity("Models.WebserviceEntry", b =>
