@@ -1,7 +1,5 @@
-﻿using System.Security.Cryptography;
-using Backend.Authentication;
+﻿using Backend.Authentication;
 using Backend.Services;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -10,41 +8,16 @@ namespace Backend.Controllers;
 
 [ApiController]
 public class AuthenticationController : ControllerBase {
-    // TODO: Turn into options
-    private const string AUTH_COOKIE_NAME = "Authorization";
-    private const int SESSIONS_EXPIRE_DAYS = 7;
-
     private readonly AtriaContext _context;
+    private readonly SessionService _sessionService;
 
-    public AuthenticationController(AtriaContext context) {
+    public AuthenticationController(AtriaContext context, SessionService sessionService) {
         _context = context;
-    }
-
-    private void AuthenticateClient(User user) {
-        var token = Base64UrlTextEncoder.Encode(RandomNumberGenerator.GetBytes(64));
-
-        _context.Sessions.Add(new() {
-            Token = token,
-            User = user,
-            Ip = HttpContext.Connection.RemoteIpAddress!.ToString(),
-            UserAgent = Request.Headers["User-Agent"],
-            CreatedAt = DateTimeOffset.UtcNow,
-        });
-        _context.SaveChanges();
-
-        Response.Cookies.Append(AUTH_COOKIE_NAME, token, new() {
-            IsEssential = true,
-            HttpOnly = true,
-            Secure = true,
-            Domain = "localhost",
-            MaxAge = TimeSpan.FromDays(SESSIONS_EXPIRE_DAYS),
-            SameSite = SameSiteMode.None, // TODO: Reinvestigate, I fear this is necessary
-            //Path = "/api/", // TODO: Implement
-        });
+        _sessionService = sessionService;
     }
 
     [HttpPost("register")]
-    public IActionResult Register(Registration registration) {
+    public async Task<IActionResult> Register(Registration registration, [FromServices] SessionService ss) {
         var salt = HashingService.GenerateSalt();
 
         var user = new User {
@@ -55,42 +28,40 @@ public class AuthenticationController : ControllerBase {
             PasswordHash = HashingService.Hash(registration.Password, salt),
             PasswordSalt = salt,
         };
-        _context.Users.Add(user);
+        await _context.Users.AddAsync(user);
         try {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         } catch (DbUpdateException) {
             return BadRequest();
         }
-        AuthenticateClient(user);
+        await ss.GenerateSession(user, _context, HttpContext);
 
         return Ok();
     }
 
     [HttpPost("login")]
-    public IActionResult Login(Login login) {
-        var user = _context.Users.FirstOrDefault(x => x.Email == login.Email);
+    public async Task<IActionResult> Login(Login login, [FromServices] SessionService ss) {
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == login.Email);
         if (user == null || !user.PasswordHash.SequenceEqual(HashingService.Hash(login.Password, user.PasswordSalt))) {
             return Unauthorized("Email or password invalid");
         }
-        AuthenticateClient(user);
+        await ss.GenerateSession(user, _context, HttpContext);
         return Ok();
     }
 
     [RequiresAuthentication]
     [HttpPost("logout")]
-    public IActionResult Logout([FromAuthentication] Session session) {
-        Response.Cookies.Delete(AUTH_COOKIE_NAME);
-        _context.Sessions.Remove(session);
-        _context.SaveChanges();
+    public async Task<IActionResult> Logout([FromAuthentication] Session session, [FromServices] SessionService ss) {
+        await ss.DeleteSession(session, _context, Response);
         return Ok();
     }
 
     [RequiresAuthentication]
     [HttpPost("logout/all")]
-    public IActionResult LogoutAll([FromAuthentication] Session session) {
-        Logout(session);
+    public async Task<IActionResult> LogoutAll([FromAuthentication] Session session, [FromServices] SessionService ss) {
+        await ss.DeleteSession(session, _context, Response);
         _context.Sessions.RemoveRange(_context.Sessions.Where(x => x.User == session.User));
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return Ok();
     }
 

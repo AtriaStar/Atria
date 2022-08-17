@@ -10,5 +10,5 @@ public class Session {
     public User User { get; set; } = null!;
     public string UserAgent { get; set; } = null!;
     public string Ip { get; set; } = null!;
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
