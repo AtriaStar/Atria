@@ -266,7 +266,7 @@ namespace Backend.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_WebserviceEntryName",
+                name: "IX_Tags_WebserviceEntryId",
                 table: "Tags",
                 column: "WebserviceEntryId");
 
