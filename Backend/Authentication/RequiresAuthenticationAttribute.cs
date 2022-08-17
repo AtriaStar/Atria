@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -7,16 +8,29 @@ using Models;
 
 namespace Backend.Authentication;
 
-public class RequiresAuthenticationAttribute : ActionFilterAttribute {
-    public override void OnActionExecuting(ActionExecutingContext context) {
-        var db = context.HttpContext.RequestServices.GetService<AtriaContext>()!;
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
+public class RequiresAuthenticationAttribute : Attribute, IAsyncActionFilter {
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next) {
+        var services = context.HttpContext.RequestServices;
+        var db = services.GetRequiredService<AtriaContext>();
+        var ss = services.GetRequiredService<SessionService>();
         Session? session;
-        if (!context.HttpContext.Request.Cookies.TryGetValue("Authorization", out var token)
-            || (session = db.Sessions
+        if (!context.HttpContext.Request.Cookies.TryGetValue(ss.AuthorizationCookieName, out var token)
+            || (session = await db.Sessions
                 .Include(x => x.User)
-                .FirstOrDefault(x => x.Token == token)) == null) {
-            context.Result = new UnauthorizedObjectResult("This endpoint requires login");
+                .FirstOrDefaultAsync(x => x.Token == token)) == null) {
+            Reject();
             return;
+        }
+
+        if (!ss.IsValid(session)) {
+            await ss.DeleteSession(session, db, context.HttpContext.Response);
+            Reject();
+            return;
+        }
+
+        void Reject() {
+            context.Result = new UnauthorizedObjectResult("This endpoint requires login");
         }
 
         foreach (var p in (context.ActionDescriptor as ControllerActionDescriptor)?.MethodInfo.GetParameters()
@@ -29,5 +43,7 @@ public class RequiresAuthenticationAttribute : ActionFilterAttribute {
                 context.ActionArguments[p.Name!] = session.User;
             }
         }
+
+        await next();
     }
 }
