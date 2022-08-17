@@ -27,10 +27,9 @@ public class SessionService {
             IsEssential = true,
             HttpOnly = true,
             Secure = true,
-            Domain = "localhost",
             MaxAge = ExpireDuration,
-            SameSite = SameSiteMode.None, // TODO: Reinvestigate, I fear this is necessary
-            //Path = "/api/", // TODO: Implement
+            SameSite = SameSiteMode.Strict,
+            Path = "/api/",
         });
     }
 
