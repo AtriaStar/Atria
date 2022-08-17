@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Models;
 
-namespace Backend; 
+namespace Models; 
 
 public class Session {
     [Key, JsonIgnore]

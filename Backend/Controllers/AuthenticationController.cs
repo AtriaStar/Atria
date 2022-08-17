@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using Backend.Authentication;
 using Backend.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@ using Models;
 namespace Backend.Controllers;
 
 [ApiController]
-public class AuthenticationController : AuthorizationSupportedController {
+public class AuthenticationController : ControllerBase {
     // TODO: Turn into options
     private const string AUTH_COOKIE_NAME = "Authorization";
     private const int SESSIONS_EXPIRE_DAYS = 7;
@@ -77,29 +78,26 @@ public class AuthenticationController : AuthorizationSupportedController {
 
     [RequiresAuthentication]
     [HttpPost("logout")]
-    public IActionResult Logout() {
+    public IActionResult Logout([FromAuthentication] Session session) {
         Response.Cookies.Delete(AUTH_COOKIE_NAME);
-        _context.Sessions.Remove(GetAuthenticationSession());
+        _context.Sessions.Remove(session);
         _context.SaveChanges();
         return Ok();
     }
 
     [RequiresAuthentication]
     [HttpPost("logout/all")]
-    public IActionResult LogoutAll() {
-        Logout();
-        var user = GetAuthenticatedUser();
-        _context.Sessions.RemoveRange(_context.Sessions.Where(x => x.User == user));
+    public IActionResult LogoutAll([FromAuthentication] Session session) {
+        Logout(session);
+        _context.Sessions.RemoveRange(_context.Sessions.Where(x => x.User == session.User));
         _context.SaveChanges();
         return Ok();
     }
 
-    [RequiresAuthenticationAttribute]
+    [RequiresAuthentication]
     [HttpGet("sessions")]
-    public IEnumerable<Session> GetSessions() {
-        var user = GetAuthenticatedUser();
-        return _context.Sessions
+    public IEnumerable<Session> GetSessions([FromAuthentication] User user)
+        => _context.Sessions
             .Include(x => x.User)
             .Where(x => x.User == user);
-    }
 }
