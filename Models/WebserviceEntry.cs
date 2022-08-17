@@ -14,11 +14,11 @@ public class WebserviceEntry {
 
     [Required]
     [Url]
-    public Uri Link { get; set; } = null!;
+    public string Link { get; set; } = null!;
     public string FullDescription { get; set; } = null!;
 
     [Url]
-    public Uri DocumentationLink { get; set; } = null!;
+    public string DocumentationLink { get; set; } = null!;
 
     public string Documentation { get; set; } = null!;
     public string ChangeLog { get; set; } = null!;
