@@ -1,5 +1,5 @@
 ﻿@using Models.DTO
-@foreach (WSESummaryDto wseSummaryDto in SummaryDtos) {
+@foreach (WseSummaryDto wseSummaryDto in SummaryDtos) {
     <div class="list-group-item d-flex flex-row p-3">
         <div class="row me-0">
             <div class="col">
@@ -47,9 +47,9 @@
 @code {
 
     [Parameter]
-    public IList<WSESummaryDto> SummaryDtos { get; set; } = null!;
+    public IList<WseSummaryDto> SummaryDtos { get; set; } = null!;
 
-    private string StyleOnlineStatus(WSESummaryDto wseSummaryDto) {
+    private string StyleOnlineStatus(WseSummaryDto wseSummaryDto) {
         return wseSummaryDto.IsOnline ? "text-success" : "text-danger";
     }
 

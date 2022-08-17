@@ -1,6 +1,7 @@
 ﻿@page "/register"
 @using Microsoft.AspNetCore.Components
 @using Models
+@using Models.DTO
 
 @* TODO page title*@
 
@@ -52,6 +53,16 @@
                             <div>
                                 <InputText type="password" id="password" class="form-control" @bind-Value="_registration.Password"></InputText>
                                 <ValidationMessage For="() => _registration.Password"></ValidationMessage>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row py-3">
+                        <div class="col">
+                            <label for="confirmPassword" class="form-label">Passwort</label>
+                            <div>
+                                <InputText type="password" id="confirmPassword" class="form-control" @bind-Value="_registration.ConfirmPassword"></InputText>
+                                <ValidationMessage For="() => _registration.ConfirmPassword"></ValidationMessage>
                             </div>
                         </div>
                     </div>

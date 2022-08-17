@@ -1,6 +1,6 @@
 ﻿namespace Models.DTO; 
 
-public class WSESummaryDto {
+public class WseSummaryDto {
     
     public string Name { get; }
     public string ShortDescription { get; }
@@ -11,7 +11,7 @@ public class WSESummaryDto {
     public int ViewCount { get; }
     public Uri Link { get; }
 
-    public WSESummaryDto(string name, string shortDescription, ICollection<Tag> tags, DateTimeOffset creationDate, bool isOnline, double averageRating, int viewCount, Uri link) {
+    public WseSummaryDto(string name, string shortDescription, ICollection<Tag> tags, DateTimeOffset creationDate, bool isOnline, double averageRating, int viewCount, Uri link) {
         Name = name;
         ShortDescription = shortDescription;
         Tags = tags;
