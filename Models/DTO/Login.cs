@@ -1,19 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Models; 
+namespace Models.DTO; 
 
-public class Registration {
+public class Login {
     
-    [Required]
-    public string FirstName { get; set; } = null!;
-
-    [Required]
-    public string LastName { get; set; } = null!;
-
     [Required]
     [EmailAddress]
     public string Email { get; set; } = null!;
 
     [Required]
+    [DataType(DataType.Password)]
     public string Password { get; set; } = null!;
 }
