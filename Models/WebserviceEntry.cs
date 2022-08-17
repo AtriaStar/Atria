@@ -3,7 +3,8 @@
 namespace Models; 
 
 public class WebserviceEntry {
-    [Key]
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public long Id { get; set; }
     public string Name { get; set; } = null!;
     public string ShortDescription { get; set; } = null!;
     public Uri Link { get; set; } = null!;

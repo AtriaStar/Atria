@@ -29,11 +29,11 @@ public class UserController : ControllerBase {
         return null!;
     }
 
-    // TODO: WseSearchParam and Pagination missing in param
+    // TODO: WSESearchParam and Pagination missing in param
     [HttpGet("{userId}/wse")]
     public IEnumerable<WebserviceEntry> GetWseByUser(int userId) => null!;
 
-    // TODO: WseSearchParam and Pagination missing in param
+    // TODO: WSESearchParam and Pagination missing in param
     [HttpGet("{userId}/bookmarks")]
     public IEnumerable<WebserviceEntry> GetBookmarksByUser(int userId) => null!;
 
@@ -41,7 +41,7 @@ public class UserController : ControllerBase {
     [HttpGet("{userId}/reviews")]
     public IEnumerable<Review> GetReviewsByUser(int userId, string query) => null!;
 
-    // TODO: WseSearchParam and Pagination missing in param
+    // TODO: WSESearchParam and Pagination missing in param
     [HttpGet("{userId}/drafts")]
     public IEnumerable<WSEDraft> GetWseDrafts() => null!;
 
