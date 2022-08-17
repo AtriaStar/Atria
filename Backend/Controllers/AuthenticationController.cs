@@ -3,17 +3,16 @@ using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.DTO;
 
 namespace Backend.Controllers;
 
 [ApiController]
 public class AuthenticationController : ControllerBase {
     private readonly AtriaContext _context;
-    private readonly SessionService _sessionService;
 
-    public AuthenticationController(AtriaContext context, SessionService sessionService) {
+    public AuthenticationController(AtriaContext context) {
         _context = context;
-        _sessionService = sessionService;
     }
 
     [HttpPost("register")]
