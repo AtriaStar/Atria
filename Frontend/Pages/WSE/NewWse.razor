@@ -6,7 +6,8 @@
 
 <div class="container-lg mt-3">
 
-    <EditForm Model="@wseRegistration" OnValidSubmit="HandleValidSubmit">
+    @*TODO: draft only needs name; to publish name, short description and link needed*@
+    <EditForm Model="@webserviceEntry" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator/>
         <ValidationSummary/>
 
@@ -25,14 +26,18 @@
 
         <div class="mb-3">
             <label class="form-label fw-bold">Name</label>
-            <InputText class="form-control fc-grey" id="name" @bind-Value="wseRegistration.Name"/>
-            <ValidationMessage For="() => wseRegistration.Name"></ValidationMessage>
+            <div class="input-field">
+                <InputText class="form-control" id="name" @bind-Value="webserviceEntry.Name"/>
+            </div>
+            <ValidationMessage For="() => webserviceEntry.Name"></ValidationMessage>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">Kurzbeschreibung</label>
-            <InputText class="form-control" id="shortDescription" @bind-Value="wseRegistration.ShortDescription"/>
-            <ValidationMessage For="() => wseRegistration.ShortDescription"></ValidationMessage>
+            <div class="input-field">
+                <InputText class="form-control" id="shortDescription" @bind-Value="webserviceEntry.ShortDescription"/>
+            </div>
+            <ValidationMessage For="() => webserviceEntry.ShortDescription"></ValidationMessage>
         </div>
 
         <div class="row">
@@ -53,7 +58,6 @@
         <div class="row mb-1">
             @foreach (string tag in selectedTags)
             {
-                string tagCopy = tag;
                 <div class="col-auto">
                     <h6>
                         <span class="badge bg-info">
@@ -64,42 +68,54 @@
                 </div>
             }
         </div>
-            
-        <InputSelect class="form-select mb-3" multiple @bind-Value="wseRegistration.Tags">
+        
+        <select class="form-select mb-3" multiple>
             @for (int i = 0; i < 11; i++) {
                 <option value="@i">Tag @i</option>
             }
-        </InputSelect>
+        </select>
 
         <div class="mb-3">
             <label class="form-label fw-bold">
                 neue Tags erstellen
                 <small class="text-muted">(kommagetrennt)</small>
             </label>
-            <InputTextArea class="form-control" rows="3" id="newTags" @bind-Value="wseRegistration.NewTags"/>
-            <ValidationMessage For="() => wseRegistration.NewTags"></ValidationMessage>
+            <div class="input-field">
+                <InputTextArea class="form-control" rows="3" id="newTags" @bind-Value="webserviceEntry.NewTags"/>
+            </div>
+            <ValidationMessage For="() => webserviceEntry.NewTags"></ValidationMessage>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">Verlinkung</label>
-            <InputText class="form-control" type="url" id="link" @bind-Value="wseRegistration.Link"/>
-            <ValidationMessage For="() => wseRegistration.Link"></ValidationMessage>
+            <div class="input-field">
+                <InputText class="form-control" type="url" id="link" @bind-Value="webserviceEntry.Link"/>
+            </div>
+            <ValidationMessage For="() => webserviceEntry.Link"></ValidationMessage>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">Dokumentation</label>
-            <InputText class="form-control mb-2" type="url" placeholder="Link" id="docLink" @bind-Value="wseRegistration.DocumentationLink"/>
-            <InputTextArea class="form-control" rows="3" placeholder="Text" id="doc" @bind-Value="wseRegistration.Documentation"/>
+            <div class="input-field">
+                <InputText class="form-control mb-2" type="url" placeholder="Link" id="docLink" @bind-Value="webserviceEntry.DocumentationLink"/> 
+            </div>
+            <div class="input-field">
+                <InputTextArea class="form-control" rows="3" placeholder="Text" id="doc" @bind-Value="webserviceEntry.Documentation"/>
+            </div>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">Volltextbeschreibung</label>
-            <InputTextArea class="form-control" rows="3" id="fullDescription" @bind-Value="wseRegistration.FullDescription"/>
+            <div class="input-field">
+                <InputTextArea class="form-control" rows="3" id="fullDescription" @bind-Value="webserviceEntry.FullDescription"/>
+            </div>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">Änderungshistorie</label>
-            <InputTextArea class="form-control" rows="3" id="changeLog" @bind-Value="wseRegistration.ChangeLog"/>
+            <div class="input-field">
+                <InputTextArea class="form-control" rows="3" id="changeLog" @bind-Value="webserviceEntry.ChangeLog"/>
+            </div>
         </div>
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -118,7 +134,7 @@
 </div>
 
 @code {
-    readonly WSERegistration wseRegistration = new();
+    readonly WebserviceEntry webserviceEntry = new();
     string[] selectedTags = new [] { "Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag very very long tag 1", "Tag 6", "Tag 7", "Tag 8", "Tag 9", "Tag very very long tag 2", "Tag very very long tag 3", "Tag very very long tag 4" };
 
     private void HandleValidSubmit() {
