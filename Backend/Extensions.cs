@@ -1,4 +1,9 @@
 ﻿using System.ComponentModel;
+using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Models;
 
 namespace Backend; 
@@ -33,4 +38,14 @@ public static class Extensions {
             Order.Recency => RecencyComparer,
             _ => throw new InvalidEnumArgumentException(nameof(order), (int)order, typeof(Order)),
         };
+
+    public static IEnumerable<ParameterInfo> GetParametersWithAttribute<T>(this ActionExecutingContext context)
+        => (context.ActionDescriptor as ControllerActionDescriptor)?.MethodInfo.GetParameters()
+            .Where(x => x.Name != null && x.CustomAttributes
+                .Any(y => y.AttributeType == typeof(T)))
+            ?? Enumerable.Empty<ParameterInfo>();
+
+    public static void UseCentralRoutePrefix(this MvcOptions opt, IRouteTemplateProvider routeAttribute) {
+        opt.Conventions.Insert(0, new RouteConvention(routeAttribute));
+    }
 }
