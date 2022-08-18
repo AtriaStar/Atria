@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220817110723_Initial")]
-    partial class Initial
+    [Migration("20220818172446_Yes")]
+    partial class Yes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -59,7 +59,7 @@ namespace Backend.Migrations
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("Role")
+                    b.Property<int>("Rights")
                         .HasColumnType("integer");
 
                     b.Property<long?>("WebserviceEntryId")
@@ -250,7 +250,6 @@ namespace Backend.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Changelog")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<long>("ContactPersonId")
@@ -260,11 +259,9 @@ namespace Backend.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DocumentationLink")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FullDescription")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Link")
