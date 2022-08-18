@@ -38,7 +38,7 @@
                     </div>
                     <h5 class="card-subtitle mb-2 text-muted">
                         Ansprechpartner
-                        <a class="card-link fs-6" href="/wse">Kollaboratoren</a>
+                        <a class="card-link fs-6" @onclick="() => OpenCollabDialog()">Kollaboratoren</a>
                     </h5>
                     <div class="card-text">Kurzbeschreibung</div>
                 </div>
@@ -71,8 +71,8 @@
 
         <div class="col-3">
             <div class="card mb-3">
+                <h5 class="card-header">Bewertung</h5>
                 <div class="card-body">
-                    <h5 class="card-title">Bewertung</h5>
                     <div class="card-text">
                         <div class="row">
                             <div class="col-auto">
@@ -91,8 +91,8 @@
                 </div>
             </div>
             <div class="card mb-3">
+                <h5 class="card-header">Tags</h5>
                 <div class="card-body">
-                    <h5 class="card-title">Tags</h5>
                     @*mock tags*@
                     <div class="card-text">
                         @for (int i = 0; i <= 20; i++) {
@@ -106,3 +106,24 @@
     
 
 </div>
+
+@if (CollabDialogOpen) 
+{
+    <Frontend.Pages.Components.CollabModal OnClose="@OnCollabDialogClose"></Frontend.Pages.Components.CollabModal>
+}
+
+@code {
+    public bool CollabDialogOpen { get; set; }
+
+    private void OpenCollabDialog()
+    {
+        CollabDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private void OnCollabDialogClose(bool accepted)
+    {
+        CollabDialogOpen = false;
+        StateHasChanged();
+    }
+}
