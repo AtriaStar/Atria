@@ -14,7 +14,7 @@ public class SearchController : ControllerBase {
     }
 
     [HttpGet("wse")]
-    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WSESearchParam param, [FromQuery] Pagination pagination)
+    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WSESearchParam? param, [FromQuery] Pagination pagination)
         => _context.WebserviceEntries
             .Where(x => x.Reviews.Average(y => (int)y.StarCount) >= (int)param.MinReviewAvg)
             .OrderBy(x => x, param.Order.GetComparer())
@@ -22,14 +22,14 @@ public class SearchController : ControllerBase {
             .Take(pagination.EntriesPerPage);
 
     [HttpGet("user")]
-    public IEnumerable<User> GetUserList(string query, [FromQuery] Pagination pagination)
+    public IEnumerable<User> GetUserList(string? query, [FromQuery] Pagination pagination)
         => _context.Users
             .Skip(pagination.Page * pagination.EntriesPerPage)
             .Take(pagination.EntriesPerPage);
 
     [HttpGet("count/wse")]
-    public Task<long> GetWseCount(string query) => _context.WebserviceEntries.LongCountAsync();
+    public Task<long> GetWseCount(string? query) => _context.WebserviceEntries.LongCountAsync();
 
     [HttpGet("count/user")]
-    public Task<long> GetUserCount(string query) => _context.WebserviceEntries.LongCountAsync();
+    public Task<long> GetUserCount(string? query) => _context.WebserviceEntries.LongCountAsync();
 }
