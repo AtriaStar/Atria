@@ -57,7 +57,7 @@ namespace Backend.Migrations
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("Role")
+                    b.Property<int>("Rights")
                         .HasColumnType("integer");
 
                     b.Property<long?>("WebserviceEntryId")

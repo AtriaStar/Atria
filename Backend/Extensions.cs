@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Models;
 
 namespace Backend; 
@@ -46,6 +45,7 @@ public static class Extensions {
             ?? Enumerable.Empty<ParameterInfo>();
 
     public static IEnumerable<ParameterInfo> GetParametersWithAttribute<T>(this ActionExecutingContext context)
+        where T : Attribute
         => context.GetBasicParameters().Where(x => x.CustomAttributes
                 .Any(y => y.AttributeType == typeof(T)));
 
