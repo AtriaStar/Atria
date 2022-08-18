@@ -1,8 +1,6 @@
-﻿using Frontend.Pages.User;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
-using System.Runtime.Intrinsics.X86;
 
 namespace Backend.Controllers;
 
@@ -19,9 +17,7 @@ public class WSEController : ControllerBase {
     public async Task<IActionResult> Get(long wseId) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-        if (existingWse == null) {
-            return NotFound();
-        }
+        if (existingWse == null) return NotFound();
 
         return Ok(existingWse);
     }
@@ -29,16 +25,11 @@ public class WSEController : ControllerBase {
 
     [HttpPost("{wseId}")]
     public async Task<IActionResult> EditWse(long wseId, WebserviceEntry wse) {
-        if (wseId != wse.Id) {
-            return BadRequest();
-        }
+        if (wseId != wse.Id) return BadRequest();
 
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-        if (existingWse == null)
-        {
-            return NotFound();
-        }
+        if (existingWse == null) return NotFound();
         existingWse.Changelog = wse.Changelog;
         existingWse.Collaborators = wse.Collaborators;
         existingWse.ContactPerson = wse.ContactPerson;
@@ -62,16 +53,11 @@ public class WSEController : ControllerBase {
     public async Task<IActionResult> EditReview(long wseId, long reviewID, Review review) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-        if (existingWse == null)
-        {
-            return NotFound();
-        }
+        if (existingWse == null) return NotFound();
 
         var existingReview = existingWse.Reviews.FirstOrDefault(x => x.Id == reviewID);
 
-        if (existingReview == null) {
-            return NotFound();
-        }
+        if (existingReview == null) return NotFound();
 
         existingReview.CreationTime = review.CreationTime;
         existingReview.Creator = review.Creator;
@@ -86,12 +72,11 @@ public class WSEController : ControllerBase {
 
     [HttpPut("")]
     public async Task<IActionResult> CreateWse(WebserviceEntry wse) {
-        if(ModelState.IsValid)
-        {
+        if (ModelState.IsValid) {
             await _context.WebserviceEntries.AddAsync(wse);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(WSEController.Get), new { wseId = wse.Id }, wse);
+            return CreatedAtAction(nameof(Get), new { wseId = wse.Id }, wse);
         }
 
         return new JsonResult("Something went wrong") { StatusCode = 500 };
@@ -99,21 +84,18 @@ public class WSEController : ControllerBase {
 
     [HttpPut("{wseId}/question")]
     public async Task<IActionResult> CreateQuestion(long wseId, Question question) {
-
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-        if (existingWse == null) {
-            return BadRequest();
-        }
+        if (existingWse == null) return BadRequest();
 
         if (ModelState.IsValid) {
-
             existingWse.Questions.Add(question);
             await _context.WebserviceEntries.AddAsync(existingWse);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
         return new JsonResult("Something went wrong") { StatusCode = 500 };
     }
 
@@ -122,25 +104,20 @@ public class WSEController : ControllerBase {
     public async Task<IActionResult> CreateAnswer(long wseId, long questionId, Answer answer) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-        if (existingWse == null)
-        {
-            return BadRequest();
-        }
+        if (existingWse == null) return BadRequest();
 
         var existingQuestion = existingWse.Questions.FirstOrDefault(x => x.Id == questionId);
 
-        if (existingQuestion == null) {
-            return BadRequest();
-        }
+        if (existingQuestion == null) return BadRequest();
 
         if (ModelState.IsValid) {
-            
             existingWse.Questions.FirstOrDefault(x => x.Id == questionId).Answers.Add(answer);
-            
+
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
         return new JsonResult("Something went wrong") { StatusCode = 500 };
     }
 
@@ -148,17 +125,14 @@ public class WSEController : ControllerBase {
     public async Task<IActionResult> CreateReview(long wseId, Review review) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-        if (existingWse == null)
-        {
-            return BadRequest();
-        }
+        if (existingWse == null) return BadRequest();
 
-        if (ModelState.IsValid)
-        {
+        if (ModelState.IsValid) {
             existingWse.Reviews.Add(review);
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
         return new JsonResult("Something went wrong") { StatusCode = 500 };
     }
 
@@ -166,10 +140,7 @@ public class WSEController : ControllerBase {
     public async Task<IActionResult> DeleteWse(long wseId) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-        if (existingWse == null)
-        {
-            return BadRequest();
-        }
+        if (existingWse == null) return BadRequest();
 
         _context.WebserviceEntries.Remove(existingWse);
         await _context.SaveChangesAsync();
@@ -181,17 +152,11 @@ public class WSEController : ControllerBase {
     public async Task<IActionResult> DeleteQuestion(long wseId, long questionId) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-        if (existingWse == null)
-        {
-            return BadRequest();
-        }
+        if (existingWse == null) return BadRequest();
 
         var existingQuestion = existingWse.Questions.FirstOrDefault(x => x.Id == questionId);
 
-        if (existingQuestion == null) 
-        {
-            return BadRequest();
-        }
+        if (existingQuestion == null) return BadRequest();
 
         existingWse.Questions.Remove(existingQuestion);
         await _context.SaveChangesAsync();
@@ -203,23 +168,15 @@ public class WSEController : ControllerBase {
     public async Task<IActionResult> DeleteAnswer(long wseId, long questionId, long answerId) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-        if (existingWse == null)
-        {
-            return BadRequest();
-        }
+        if (existingWse == null) return BadRequest();
 
         var existingQuestion = existingWse.Questions.FirstOrDefault(x => x.Id == questionId);
 
-        if (existingQuestion == null)
-        {
-            return BadRequest();
-        }
+        if (existingQuestion == null) return BadRequest();
 
         var existingAnswer = existingQuestion.Answers.FirstOrDefault(x => x.Id == answerId);
 
-        if (existingAnswer == null) {
-            return BadRequest();
-        }
+        if (existingAnswer == null) return BadRequest();
 
         existingQuestion.Answers.Remove(existingAnswer);
         await _context.SaveChangesAsync();
@@ -231,17 +188,11 @@ public class WSEController : ControllerBase {
     public async Task<IActionResult> DeleteReview(long wseId, long reviewId) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-        if (existingWse == null)
-        {
-            return BadRequest();
-        }
+        if (existingWse == null) return BadRequest();
 
         var existingReview = existingWse.Questions.FirstOrDefault(x => x.Id == reviewId);
 
-        if (existingReview == null)
-        {
-            return BadRequest();
-        }
+        if (existingReview == null) return BadRequest();
 
         existingWse.Questions.Remove(existingReview);
         await _context.SaveChangesAsync();
