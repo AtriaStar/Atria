@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Backend.ParameterHelpers;
+using Microsoft.AspNetCore.Mvc;
+using Frontend.Pages.User;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
@@ -13,14 +15,16 @@ public class WSEController : ControllerBase {
         _context = context;
     }
 
-    [HttpGet("{wseId}")]
-    public async Task<IActionResult> Get(long wseId) {
-        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-        if (existingWse == null) return NotFound();
-
-        return Ok(existingWse);
+    [HttpGet("{wseId:long}")]
+    public WebserviceEntry Get(
+        // TODO: Using Include should NOT be necessary here, yet it is apparently for stupid validation reasons..
+        [FromDatabase, Include(nameof(WebserviceEntry.ContactPerson))] WebserviceEntry wse) {
+        return wse;
     }
+
+    [HttpPost("{wseId:long}")]
+    public void EditWse(WebserviceEntry wse) { }
 
 
     [HttpPost("{wseId}")]
@@ -48,6 +52,7 @@ public class WSEController : ControllerBase {
 
         return NoContent();
     }
+
 
     [HttpPost("{wseId}/review/{reviewId}")]
     public async Task<IActionResult> EditReview(long wseId, long reviewID, Review review) {

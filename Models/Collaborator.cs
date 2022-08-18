@@ -9,5 +9,5 @@ public class Collaborator {
     public long UserId { get; set; }
 
     public User User { get; set; } = null!;
-    public WSERole Role { get; set; }
+    public WseRights Rights { get; set; }
 }
