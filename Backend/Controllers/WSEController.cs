@@ -118,7 +118,7 @@ public class WSEController : ControllerBase {
     }
 
 
-    [HttpPut("{wseId}/answer")]
+    [HttpPut("{wseId}/question/{questionId}/answer")]
     public async Task<IActionResult> CreateAnswer(long wseId, long questionId, Answer answer) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
@@ -145,18 +145,107 @@ public class WSEController : ControllerBase {
     }
 
     [HttpPut("{wseId}/review")]
-    public int CreateReview(Review review) => 0;
+    public async Task<IActionResult> CreateReview(long wseId, Review review) {
+        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
+
+        if (existingWse == null)
+        {
+            return BadRequest();
+        }
+
+        if (ModelState.IsValid)
+        {
+            existingWse.Reviews.Add(review);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        return new JsonResult("Something went wrong") { StatusCode = 500 };
+    }
 
     [HttpDelete("{wseId}")]
-    public void DeleteWse(int wseId) { }
+    public async Task<IActionResult> DeleteWse(long wseId) {
+        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
+
+        if (existingWse == null)
+        {
+            return BadRequest();
+        }
+
+        _context.WebserviceEntries.Remove(existingWse);
+        await _context.SaveChangesAsync();
+
+        return Ok(existingWse);
+    }
 
     [HttpDelete("{wseId}/question/{questionId}")]
-    public void DeleteQuestion(int questionId) { }
+    public async Task<IActionResult> DeleteQuestion(long wseId, long questionId) {
+        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
-    [HttpDelete("{wseId}/answer/{answerId}")]
-    public void DeleteAnswer(int answerId) { }
+        if (existingWse == null)
+        {
+            return BadRequest();
+        }
+
+        var existingQuestion = existingWse.Questions.FirstOrDefault(x => x.Id == questionId);
+
+        if (existingQuestion == null) 
+        {
+            return BadRequest();
+        }
+
+        existingWse.Questions.Remove(existingQuestion);
+        await _context.SaveChangesAsync();
+
+        return Ok(existingQuestion);
+    }
+
+    [HttpDelete("{wseId}/question/{questionId}/answer/{answerId}")]
+    public async Task<IActionResult> DeleteAnswer(long wseId, long questionId, long answerId) {
+        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
+
+        if (existingWse == null)
+        {
+            return BadRequest();
+        }
+
+        var existingQuestion = existingWse.Questions.FirstOrDefault(x => x.Id == questionId);
+
+        if (existingQuestion == null)
+        {
+            return BadRequest();
+        }
+
+        var existingAnswer = existingQuestion.Answers.FirstOrDefault(x => x.Id == answerId);
+
+        if (existingAnswer == null) {
+            return BadRequest();
+        }
+
+        existingQuestion.Answers.Remove(existingAnswer);
+        await _context.SaveChangesAsync();
+
+        return Ok(existingAnswer);
+    }
 
     [HttpDelete("{wseId}/review/{reviewId}")]
-    public void DeleteReview(int reviewId) { }
+    public async Task<IActionResult> DeleteReview(long wseId, long reviewId) {
+        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
 
+        if (existingWse == null)
+        {
+            return BadRequest();
+        }
+
+        var existingReview = existingWse.Questions.FirstOrDefault(x => x.Id == reviewId);
+
+        if (existingReview == null)
+        {
+            return BadRequest();
+        }
+
+        existingWse.Questions.Remove(existingReview);
+        await _context.SaveChangesAsync();
+
+        return Ok(existingReview);
+    }
 }
