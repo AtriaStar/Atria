@@ -9,9 +9,9 @@ public class WebserviceEntry {
     public string Name { get; set; } = null!;
     public string ShortDescription { get; set; } = null!;
     public Uri Link { get; set; } = null!;
-    public string FullDescription { get; set; } = null!;
-    public Uri DocumentationLink { get; set; } = null!;
-    public string Changelog { get; set; } = null!;
+    public string? FullDescription { get; set; }
+    public Uri? DocumentationLink { get; set; }
+    public string? Changelog { get; set; }
     public int ViewCount { get; set; }
     public User ContactPerson { get; set; } = null!;
     public ICollection<Question> Questions { get; set; } = null!;
