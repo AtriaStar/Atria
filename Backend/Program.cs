@@ -4,6 +4,18 @@ using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:44368/login",
+                "https://localhost:44368"
+                );
+        });
+});
 
 // Add services to the container.
 builder.Services.AddControllers(options => options.UseCentralRoutePrefix(new RouteAttribute("api")))
@@ -22,9 +34,9 @@ if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseRouting();
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseHttpsRedirection();
-
 app.MapControllers();
-
 app.Run();

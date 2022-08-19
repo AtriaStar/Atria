@@ -1,5 +1,9 @@
 ﻿@page "/login"
 @using Microsoft.AspNetCore.Components
+@using System.Text
+@using Newtonsoft.Json
+@inject NavigationManager NavManager
+@inject IHttpClientFactory ClientFactory
 
 @* TODO page title*@
 
@@ -52,8 +56,23 @@
 @code {
     readonly Models.DTO.Login _login = new();
 
-    private void HandleValidSubmit() {
-        throw new NotImplementedException();
-    }
+    private async void HandleValidSubmit() {
+        var request = new HttpRequestMessage(HttpMethod.Post,
+            "https://localhost:7038/api/login");
+        request.Content = new StringContent(JsonConvert.SerializeObject(_login), Encoding.UTF8, "application/json");
 
+        var client = ClientFactory.CreateClient();
+
+        var response = await client.SendAsync(request);
+
+        
+        if (response.IsSuccessStatusCode)
+        {
+            NavManager.NavigateTo("/");
+        }
+        else
+        {
+            NavManager.NavigateTo("/register");
+        }
+    }
 }
