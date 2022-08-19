@@ -1,3 +1,4 @@
+using Backend.Authentication;
 using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Frontend.Pages.User;
@@ -16,17 +17,18 @@ public class WSEController : ControllerBase {
     }
 
 
-    [HttpGet("{wseId:long}")]
-    public WebserviceEntry Get(
-        // TODO: Using Include should NOT be necessary here, yet it is apparently for stupid validation reasons..
-        [FromDatabase, Include(nameof(WebserviceEntry.ContactPerson))] WebserviceEntry wse) {
-        return wse;
+    [HttpGet("{wseId}")]
+    public async Task<IActionResult> Get (long wseId){
+        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
+
+        if (existingWse == null) {
+            return NotFound();
+        }
+
+        return Ok(existingWse);
     }
 
-    [HttpPost("{wseId:long}")]
-    public void EditWse(WebserviceEntry wse) { }
-
-
+    [RequiresAuthentication]
     [HttpPost("{wseId}")]
     public async Task<IActionResult> EditWse(long wseId, WebserviceEntry wse) {
         if (wseId != wse.Id) return BadRequest();
@@ -53,7 +55,7 @@ public class WSEController : ControllerBase {
         return NoContent();
     }
 
-
+    [RequiresAuthentication]
     [HttpPost("{wseId}/review/{reviewId}")]
     public async Task<IActionResult> EditReview(long wseId, long reviewID, Review review) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
@@ -75,6 +77,7 @@ public class WSEController : ControllerBase {
         return NoContent();
     }
 
+    [RequiresAuthentication]
     [HttpPut("")]
     public async Task<IActionResult> CreateWse(WebserviceEntry wse) {
         if (ModelState.IsValid) {
@@ -87,6 +90,7 @@ public class WSEController : ControllerBase {
         return new JsonResult("Something went wrong") { StatusCode = 500 };
     }
 
+    [RequiresAuthentication]
     [HttpPut("{wseId}/question")]
     public async Task<IActionResult> CreateQuestion(long wseId, Question question) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
@@ -104,7 +108,7 @@ public class WSEController : ControllerBase {
         return new JsonResult("Something went wrong") { StatusCode = 500 };
     }
 
-
+    [RequiresAuthentication]
     [HttpPut("{wseId}/question/{questionId}/answer")]
     public async Task<IActionResult> CreateAnswer(long wseId, long questionId, Answer answer) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
@@ -126,6 +130,7 @@ public class WSEController : ControllerBase {
         return new JsonResult("Something went wrong") { StatusCode = 500 };
     }
 
+    [RequiresAuthentication]
     [HttpPut("{wseId}/review")]
     public async Task<IActionResult> CreateReview(long wseId, Review review) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
@@ -141,6 +146,7 @@ public class WSEController : ControllerBase {
         return new JsonResult("Something went wrong") { StatusCode = 500 };
     }
 
+    [RequiresAuthentication]
     [HttpDelete("{wseId}")]
     public async Task<IActionResult> DeleteWse(long wseId) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
@@ -153,6 +159,7 @@ public class WSEController : ControllerBase {
         return Ok(existingWse);
     }
 
+    [RequiresAuthentication]
     [HttpDelete("{wseId}/question/{questionId}")]
     public async Task<IActionResult> DeleteQuestion(long wseId, long questionId) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
@@ -169,6 +176,7 @@ public class WSEController : ControllerBase {
         return Ok(existingQuestion);
     }
 
+    [RequiresAuthentication]
     [HttpDelete("{wseId}/question/{questionId}/answer/{answerId}")]
     public async Task<IActionResult> DeleteAnswer(long wseId, long questionId, long answerId) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
@@ -189,6 +197,7 @@ public class WSEController : ControllerBase {
         return Ok(existingAnswer);
     }
 
+    [RequiresAuthentication]
     [HttpDelete("{wseId}/review/{reviewId}")]
     public async Task<IActionResult> DeleteReview(long wseId, long reviewId) {
         var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
