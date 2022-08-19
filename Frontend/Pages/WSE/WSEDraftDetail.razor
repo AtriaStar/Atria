@@ -1,0 +1,92 @@
+﻿@page "/wseDraft"
+@using Models
+
+<PageTitle>Atria - WseDraftName</PageTitle>
+
+<div class="container-xxl mt-4">
+    
+    @*------------HEADER CARD------------*@
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-auto mt-sm-1">
+                    <i class="fa-solid fa-circle text-success"/>
+                </div>
+                <div class="col ps-0">
+                    <h3 class="card-title fw-bold">
+                        Name
+                    </h3>
+                </div>
+                <div class="col-auto d-flex align-content-end">
+                    <h5><a class="fa-solid fa-arrow-up-right-from-square text-decoration-none" title="Zur Webservice" href=""/></h5>
+                </div>
+            </div>
+            <h5 class="card-subtitle mb-2 text-muted">
+                Ansprechpartner
+            </h5>
+            <div class="card-text">Kurzbeschreibung</div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        @*------------REVIEW AND TAGS------------*@
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title fw-bold">Tags</h6>
+                    @*mock tags*@
+                    <div class="card-text">
+                        @for (int i = 0; i <= 20; i++) {
+                            <div class="badge bg-info me-1" value="@i">Tag @i</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*------------LOG, DOC, DESC.------------*@
+        <div class="col-md-9">
+
+            <div class="card mb-4">
+                <h6 class="card-header fw-bold">Änderungshistorie</h6>
+                <div class="card-body">
+                    <div class="card-text">This is some text within a card body.</div>
+                </div>
+            </div>
+    
+            <div class="card mb-4">
+                <h6 class="card-header fw-bold">
+                    Dokumentation
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none" title="Zur Dokumetation"/>
+                </h6>
+                <div class="card-body">
+                    <div class="card-text">This is some text within a card body.</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h6 class="card-header fw-bold">Volltextbeschreibung</h6>
+                <div class="card-body">
+                    <div class="card-text">This is some text within a card body.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+        <button class="btn btn-success" type="button">
+            Bearbeiten
+        </button>
+        <button class="btn btn-success" type="button">
+            Veröffentlichen
+        </button>
+        <button class="btn btn-danger" type="button">
+            Löschen
+        </button>
+    </div>
+
+</div>
+
+@code {
+
+}
