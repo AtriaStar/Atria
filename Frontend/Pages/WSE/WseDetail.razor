@@ -8,7 +8,7 @@
     @if (isCollab)
     {
         <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-            <button class="btn btn-success" type="button">
+            <button class="btn btn-success" type="button" @onclick="() => OpenDeleteWSEDialog()">
                 Bearbeiten
             </button>
             <button class="btn btn-danger" type="button">
@@ -253,7 +253,7 @@
             <button class="btn btn-success" type="button">
                 Bearbeiten
             </button>
-            <button class="btn btn-danger" type="button">
+            <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
                 Löschen
             </button>
         </div>
@@ -281,11 +281,17 @@
     <Frontend.Pages.Components.DeleteModal Title="Bewertung löschen" Text="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?" OnClose="@OnDeleteReviewDialogClose"/>
 }
 
+@if (DeleteWSEDialogOpen) 
+{
+    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihr Eintrag löschen möchten?" OnClose="@OnDeleteWSEDialogClose"/>
+}
+
 @code {
     public bool CollabDialogOpen { get; set; }
     public bool DeleteQuestionDialogOpen { get; set; }
     public bool DeleteAnswerDialogOpen { get; set; }
     public bool DeleteReviewDialogOpen { get; set; }
+    public bool DeleteWSEDialogOpen { get; set; }
     public bool isLoggedIn = true;
     public bool isCollab = true;
     public bool isCreator = true;
@@ -338,4 +344,15 @@
         StateHasChanged();
     }
 
+    private void OpenDeleteWSEDialog()
+    {
+        DeleteWSEDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private void OnDeleteWSEDialogClose(bool accepted)
+    {
+        DeleteWSEDialogOpen = false;
+        StateHasChanged();
+    }
 }

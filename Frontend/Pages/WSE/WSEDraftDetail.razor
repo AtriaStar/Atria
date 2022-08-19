@@ -80,13 +80,30 @@
         <button class="btn btn-success" type="button">
             Veröffentlichen
         </button>
-        <button class="btn btn-danger" type="button">
+        <button class="btn btn-danger" type="button"  @onclick="() => OpenDeleteWSEDraftDialog()">
             Löschen
         </button>
     </div>
 
 </div>
 
-@code {
+@if (DeleteWSEDraftDialogOpen) 
+{
+    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihr Eintrag löschen möchten?" OnClose="@OnDeleteWSEDraftDialogClose"/>
+}
 
+@code {
+    public bool DeleteWSEDraftDialogOpen { get; set; }
+
+    private void OpenDeleteWSEDraftDialog()
+    {
+        DeleteWSEDraftDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private void OnDeleteWSEDraftDialogClose(bool accepted)
+    {
+        DeleteWSEDraftDialogOpen = false;
+        StateHasChanged();
+    }
 }
