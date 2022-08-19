@@ -3,25 +3,9 @@
     border-radius: 0.4rem;
 }
 
-.btn-green {
-    height: 35px;
-    background-color: rgba(0, 175, 138, 1);
-    color: white;
-    border-radius: 10px;
-    border: solid;
-    border-width: 1px;
-    border-color: rgba(150, 150, 150, 1);
-}
-
-.btn-red {
-    font-size: 10pt;
-    height: 25px;
-    background-color: rgba(299, 85, 85, 1);
-    color: white;
-    border-radius: 10px;
-    border: solid;
-    border-width: 1px;
-    border-color: rgba(150, 150, 150, 1);
+.btn-small {
+    font-size: 12px;
+    padding-block: 1px;
 }
 
 .btn-close-white {

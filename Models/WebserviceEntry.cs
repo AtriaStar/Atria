@@ -10,6 +10,7 @@ public class WebserviceEntry {
     public string Name { get; set; } = null!;
 
     [Required]
+    [MaxLength(50)]
     public string ShortDescription { get; set; } = null!;
 
     [Required]

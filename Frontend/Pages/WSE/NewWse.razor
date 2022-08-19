@@ -6,23 +6,12 @@
 
 <div class="container-lg mt-3">
 
+    <h2>Neuer Eintrag</h2>
+
     @*TODO: draft only needs name; to publish name, short description and link needed*@
     <EditForm Model="@webserviceEntry" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator/>
         <ValidationSummary/>
-
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <div class="btn-group d-flex justify-content-end">
-                <button class="btn-green" type="submit">
-                    Als Entwurf speichern
-                </button>
-            </div>
-            <div class="btn-group d-flex justify-content-end">
-                <button class="btn-green" type="submit">
-                    Veröffentlichen
-                </button>
-            </div>
-        </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">Name</label>
@@ -33,7 +22,10 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label fw-bold">Kurzbeschreibung</label>
+            <label class="form-label fw-bold">
+                Kurzbeschreibung
+                <small class="text-muted">(max. 50 Zeichen)</small>
+            </label>
             <div class="input-field">
                 <InputText class="form-control" id="shortDescription" @bind-Value="webserviceEntry.ShortDescription"/>
             </div>
@@ -46,9 +38,9 @@
                     Tags
                 </label>
             </div>
-            <div class="col-auto d-flex justify-content-end">
+            <div class="col-auto">
                 <div class="btn-group">
-                    <button class="btn-red" type="button" @onclick="() => deleteSelectedTags()">
+                    <button class="btn btn-danger btn-small" type="button" @onclick="() => deleteSelectedTags()">
                         Alle Löschen
                     </button>
                 </div>
@@ -81,7 +73,7 @@
                 <small class="text-muted">(kommagetrennt)</small>
             </label>
             <div class="input-field">
-                <InputTextArea class="form-control" rows="3" id="newTags" @bind-Value="webserviceEntry.NewTags"/>
+                <InputTextArea class="form-control" rows="3" placeholder="tag1,tag2,..." id="newTags" @bind-Value="webserviceEntry.NewTags"/>
             </div>
             <ValidationMessage For="() => webserviceEntry.NewTags"></ValidationMessage>
         </div>
@@ -89,7 +81,7 @@
         <div class="mb-3">
             <label class="form-label fw-bold">Verlinkung</label>
             <div class="input-field">
-                <InputText class="form-control" type="url" id="link" @bind-Value="webserviceEntry.Link"/>
+                <InputText class="form-control" type="url" placeholder="http(s)://..." id="link" @bind-Value="webserviceEntry.Link"/>
             </div>
             <ValidationMessage For="() => webserviceEntry.Link"></ValidationMessage>
         </div>
@@ -118,14 +110,14 @@
             </div>
         </div>
 
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <div class="btn-group d-flex justify-content-end">
-                <button class="btn-green" type="submit">
+        <div class="d-grid gap-2 d-flex justify-content-end">
+            <div class="btn-group">
+                <button class="btn btn-success" type="submit">
                     Als Entwurf speichern
                 </button>
             </div>
-            <div class="btn-group d-flex justify-content-end">
-                <button class="btn-green" type="submit">
+            <div class="btn-group">
+                <button class="btn btn-success" type="submit">
                     Veröffentlichen
                 </button>
             </div>
@@ -135,7 +127,6 @@
 
 @code {
     readonly WebserviceEntry webserviceEntry = new();
-    /*string[] selectedTags = new [] { "Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag very very long tag 1", "Tag 6", "Tag 7", "Tag 8", "Tag 9", "Tag very very long tag 2", "Tag very very long tag 3", "Tag very very long tag 4" };*/
     string[] selectedTags = new string[] { };
 
     private void HandleValidSubmit() {
