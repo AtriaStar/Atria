@@ -4,7 +4,6 @@ using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 // Add services to the container.
 builder.Services.AddControllers(options => options.UseCentralRoutePrefix(new RouteAttribute("api")))
