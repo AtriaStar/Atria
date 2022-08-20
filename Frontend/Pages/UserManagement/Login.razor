@@ -3,6 +3,7 @@
 @using System.Text
 @using Newtonsoft.Json
 @using Microsoft.AspNetCore.Components.Authorization
+@using System.Net
 @inject NavigationManager NavManager
 @inject IHttpClientFactory ClientFactory
 
@@ -73,7 +74,21 @@
         }
         else
         {
-            NavManager.NavigateTo("/register");
+
+            var statusCode = response.StatusCode;
+
+            switch (statusCode)
+            {
+                case HttpStatusCode.OK:
+                    NavManager.NavigateTo("/register");
+                    break;
+                case HttpStatusCode.Unauthorized:
+                    NavManager.NavigateTo("/unauthorized");
+                    break;
+                default:
+                    NavManager.NavigateTo("/500");
+                    break;
+            }
         }
     }
 }

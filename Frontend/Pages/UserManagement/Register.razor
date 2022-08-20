@@ -3,6 +3,7 @@
 @using Models.DTO
 @using Newtonsoft.Json
 @using System.Text
+@using System.Net
 @inject NavigationManager NavManager
 @inject IHttpClientFactory ClientFactory
 
@@ -86,7 +87,6 @@
     </div>
 </div>
 
-@* TODO implement registration logic *@
 
 @code {
     readonly Registration _registration = new();
@@ -107,7 +107,7 @@
         }
         else
         {
-            //Todo error
+            NavManager.NavigateTo("/500");
         }
     }
 
