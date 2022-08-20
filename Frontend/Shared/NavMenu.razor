@@ -26,9 +26,18 @@
                 </NavLink>
             </div>
             <div class="nav-item">
-                <NavLink href="profile" ActiveClass="link-active">
-                    <ion-icon name="person-circle-outline"></ion-icon>
-                </NavLink>
+                <div class="dropdown" role="button" data-bs-toggle="dropdown">
+                    <NavLink ActiveClass="link-active">
+                        <ion-icon name="person-circle-outline"></ion-icon>
+                    </NavLink>
+                    <ul class="dropdown-menu dropdown-menu-end mt-3">
+                        <li><a class="dropdown-item" href="profile">Mein Konto</a></li>
+                        <li><a class="dropdown-item" href="profile">Mein Lesezeichen</a></li>
+                        <li><a class="dropdown-item" href="profile">Mein Entwürfe</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item fw-bold text-danger">Abmelden</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

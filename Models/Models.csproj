@@ -8,4 +8,8 @@
 	  <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="WSERegistration.cs" />
+  </ItemGroup>
+
 </Project>
