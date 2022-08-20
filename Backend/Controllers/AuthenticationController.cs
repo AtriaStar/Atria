@@ -1,4 +1,5 @@
-﻿using Backend.Authentication;
+﻿using System.Text;
+using Backend.Authentication;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Models.DTO;
 namespace Backend.Controllers;
 
 [ApiController]
+[Route("auth")]
 public class AuthenticationController : ControllerBase {
     private readonly AtriaContext _context;
 
@@ -70,4 +72,8 @@ public class AuthenticationController : ControllerBase {
         => _context.Sessions
             .Include(x => x.User)
             .Where(x => x.User == user);
+
+    [RequiresAuthentication]
+    [HttpGet("")]
+    public User GetAuthUser([FromAuthentication] User user) => user;
 }
