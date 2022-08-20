@@ -1,0 +1,63 @@
+﻿@page "/editReview"
+
+<div class="container-xxl mt-4">
+
+    @if (newReview)
+    {
+        <h2 class="mb-4">Bewertung erstellen</h2>
+    } else if (editReview)
+    {
+        <h2 class="mb-4">Bewertung bearbeiten</h2>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title fw-bold mb-2">Bewertung zu</h5>
+            <a class="card-link">Name WSE</a>
+
+            <h5 class="card-title fw-bold mt-3 mb-2">Sternbewertung</h5>
+            <div class="row mb-2">
+                <div class="col-auto star-rating">
+                    <input type="radio" id="star5" value="5"/>
+                    <label for="star5" title="5 star">
+                        <i class="fa fa-star"></i>
+                    </label>
+                    <input type="radio" id="star4" value="4"/>
+                    <label for="star4" title="4 star">
+                        <i class="fa fa-star"></i>
+                    </label>
+                    <input type="radio" id="star3" value="3"/>
+                    <label for="star3" title="3 star">
+                        <i class="fa fa-star"></i>
+                    </label>
+                    <input type="radio" id="star2" value="2"/>
+                    <label for="star2" title="2 star">
+                        <i class="fa fa-star"></i>
+                    </label>
+                    <input type="radio" id="star1" value="1"/>
+                    <label for="star1" title="1 star">
+                        <i class="fa fa-star"></i>
+                    </label>
+                </div>
+            </div>
+
+            <label class="form-label fw-bold mt-2">Titel der Bewertung</label>
+            <input type="text" class="form-control mb-2"/>
+
+            <label class="form-label fw-bold">schriftliche Bewertung</label>
+            <textarea type="text" class="form-control"/>
+        </div>
+    </div>
+
+    <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+        <button class="btn btn-success" type="button">
+            Absenden
+        </button>
+    </div>
+
+</div>
+
+@code {
+    public bool newReview = true;
+    public bool editReview = false;
+}
