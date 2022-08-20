@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220818130526_NewMig")]
-    partial class NewMig
+    [Migration("20220818172446_Yes")]
+    partial class Yes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -59,7 +59,7 @@ namespace Backend.Migrations
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("Role")
+                    b.Property<int>("Rights")
                         .HasColumnType("integer");
 
                     b.Property<long?>("WebserviceEntryId")

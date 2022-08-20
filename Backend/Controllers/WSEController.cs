@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.ParameterHelpers;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 
 namespace Backend.Controllers;
@@ -7,10 +8,14 @@ namespace Backend.Controllers;
 [Route("wse")]
 public class WSEController : ControllerBase {
 
-    [HttpGet("{wseId}")]
-    public WebserviceEntry Get(int wseId) => null!;
+    [HttpGet("{wseId:long}")]
+    public WebserviceEntry Get(
+        // TODO: Using Include should NOT be necessary here, yet it is apparently for stupid validation reasons..
+        [FromDatabase, Include(nameof(WebserviceEntry.ContactPerson))] WebserviceEntry wse) {
+        return wse;
+    }
 
-    [HttpPost("{wseId}")]
+    [HttpPost("{wseId:long}")]
     public void EditWse(WebserviceEntry wse) { }
 
     [HttpPost("{wseId}/review/{reviewId}")]

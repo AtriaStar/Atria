@@ -8,21 +8,16 @@ WebserviceEntry entry = new WebserviceEntry {
     Name = "Test",
     ShortDescription = "SD",
     FullDescription = "FUlld",
-    Link = new Uri("https://google.de"),
+    Link = new("https://google.de"),
     ViewCount = 1,
-    ContactPerson = new User() {
+    ContactPerson = new() {
         FirstNames = "John",
         LastName = "Smith",
         Email = "floppa@floppa.de",
         PasswordSalt = Array.Empty<byte>(),
         PasswordHash = Array.Empty<byte>(),
-        SignUpIp = "192"
+        SignUpIp = "127.0.0.1",
     },
-    Questions = new List<Question>(),
-    Tags = new List<Tag>(),
-    Reviews = new List<Review>(),
-    Collaborators = new List<Collaborator>(),
-    CreatedAt = DateTimeOffset.UtcNow
 };
 
 await context.WebserviceEntries.AddAsync(entry);
