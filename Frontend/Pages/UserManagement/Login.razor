@@ -45,6 +45,10 @@
                         </div>
                     </div>
                 </EditForm>
+                
+                <div class="col-12 row" style="text-align:center; color: red; font-weight:bold">
+                    <span class="col-12">@LoginMesssage</span>
+                </div>
             </div>
         </div>
     </div>
@@ -57,6 +61,7 @@
 
 @code {
     readonly Models.DTO.Login _login = new();
+    public string LoginMesssage { get; set; }
 
     private async void HandleValidSubmit() {
         var request = new HttpRequestMessage(HttpMethod.Post,
@@ -74,21 +79,7 @@
         }
         else
         {
-
-            var statusCode = response.StatusCode;
-
-            switch (statusCode)
-            {
-                case HttpStatusCode.OK:
-                    NavManager.NavigateTo("/register");
-                    break;
-                case HttpStatusCode.Unauthorized:
-                    NavManager.NavigateTo("/unauthorized");
-                    break;
-                default:
-                    NavManager.NavigateTo("/500");
-                    break;
-            }
+            LoginMesssage = "Invalid username or password";
         }
     }
 }
