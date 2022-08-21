@@ -60,16 +60,17 @@
             <div class="col-auto">
                 <label class="form-label fw-bold">
                     Tags
+                    <small class="text-muted">(zum Auswählen Strg gedrückt halten)</small>
                 </label>
             </div>
-            <div class="col-auto">
+            <div class="col-auto pt-1 ms-auto">
                 <div class="btn-group">
                     <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => deleteSelectedTags()">
                         Alle Löschen
                     </button>
                 </div>
             </div>
-            <div class="col-auto mb-2 ms-auto">
+            <div class="col-auto mb-2">
                 <div class="form-control form-control-sm rounded-pill border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
                     <div class="input-group input-group-sm">
                         <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
