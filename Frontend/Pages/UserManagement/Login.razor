@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Net
 @inject NavigationManager NavManager
-@inject IHttpClientFactory ClientFactory
+@inject HttpClient HttpClient
 
 @* TODO page title*@
 
@@ -61,17 +61,15 @@
 
 @code {
     readonly Models.DTO.Login _login = new();
-    public string LoginMesssage { get; set; }
+    public string LoginMesssage { get; set; } = null!;
 
     private async void HandleValidSubmit() {
         var request = new HttpRequestMessage(HttpMethod.Post,
-            "https://localhost:7038/api/login");
+            "login");
 
         request.Content = new StringContent(JsonConvert.SerializeObject(_login), Encoding.UTF8, "application/json");
-        
-        var client = ClientFactory.CreateClient();
 
-        var response = await client.SendAsync(request);
+        var response = await HttpClient.SendAsync(request);
 
         if (response.IsSuccessStatusCode)
         {
