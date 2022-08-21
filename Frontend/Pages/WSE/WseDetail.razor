@@ -1,5 +1,6 @@
 ﻿@page "/wse"
 @using Models
+@using Models.DTO
 
 <PageTitle>Atria - WseName</PageTitle>
 
@@ -29,8 +30,15 @@
                         Name
                     </h3>
                 </div>
+                <div class="col-auto d-flex align-content-end me-1">
+                    @{
+                        var bookmarkState = isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
+                        var bookmarkTitle = isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                    }
+                    <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="() => ChangeBookmarkStatus()"></i>
+                </div>
                 <div class="col-auto d-flex align-content-end">
-                    <h5><a class="fa-solid fa-arrow-up-right-from-square text-decoration-none" title="Zur Webservice" href=""/></h5>
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href=""/>
                 </div>
             </div>
             <h5 class="card-subtitle mb-2 text-muted">
@@ -91,7 +99,7 @@
             <div class="card mb-4">
                 <h6 class="card-header fw-bold">
                     Dokumentation
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none" title="Zur Dokumetation"/>
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation"/>
                 </h6>
                 <div class="card-body">
                     <div class="card-text">This is some text within a card body.</div>
@@ -295,6 +303,12 @@
     public bool isLoggedIn = true;
     public bool isCollab = true;
     public bool isCreator = true;
+    public bool isBookmark = false;
+
+    private void ChangeBookmarkStatus() {
+        isBookmark = !isBookmark;
+        @* TODO logic *@
+    }
 
     private void OpenCollabDialog()
     {
