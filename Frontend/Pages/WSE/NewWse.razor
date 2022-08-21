@@ -6,7 +6,14 @@
 
 <div class="container-lg mt-3">
 
-    <h2>Neuer Eintrag</h2>
+    @if (newWse)
+    {
+        <h2>Neuer Eintrag</h2>
+    } else if (editWse) 
+    {
+        @*TODO inputs with data*@
+        <h2>Eintrag bearbeiten</h2>
+    }
 
     @*TODO: draft only needs name; to publish name, short description and link needed*@
     <EditForm Model="@webserviceEntry" OnValidSubmit="HandleValidSubmit">
@@ -128,6 +135,8 @@
 @code {
     readonly WebserviceEntry webserviceEntry = new();
     string[] selectedTags = new string[] { };
+    public bool newWse = true;
+    public bool editWse = false;
 
     private void HandleValidSubmit() {
         Console.WriteLine("Valid");
