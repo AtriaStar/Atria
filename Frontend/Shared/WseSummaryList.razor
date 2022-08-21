@@ -19,9 +19,7 @@
                                 var bookmarkState = wseSummaryDto.IsBookmark ? "bi-bookmark-fill" : "bi-bookmark";
                                 var bookmarkTitle = wseSummaryDto.IsBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
                             }
-                            <button class="btn btn-outline-danger btn-sm fa-bookmark-color" type="button" title="@bookmarkTitle" @onclick="() => ChangeBookmarkStatus(wseSummaryDto)">
-                                <i class="bi @bookmarkState" style="font-size: 1rem"></i>
-                            </button>
+                            <i class="bi @bookmarkState fs-5" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="() => ChangeBookmarkStatus(wseSummaryDto)"></i>
                         </div>
                         <div class="ms-3" style="min-width: fit-content">
                             @{
@@ -62,7 +60,7 @@
                 </div>
                 <div class="col-sm-auto">
                     <NavLink href="@wseSummaryDto.Link" class="btn btn-link" role="button">
-                        <i class="bi bi-box-arrow-up-right"></i>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-4" title="Zur Webservice" href=""/>
                     </NavLink>
                 </div>
             </div>
