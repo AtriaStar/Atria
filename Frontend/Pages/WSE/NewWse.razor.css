@@ -1,4 +1,4 @@
-﻿.input-field {
+﻿.ui-field {
     box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px; 
     border-radius: 0.4rem;
 }
@@ -14,4 +14,10 @@
     margin-left: 5px;
 }
 
+hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.8);
+}
 
