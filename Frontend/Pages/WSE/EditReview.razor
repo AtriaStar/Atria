@@ -7,7 +7,7 @@
         <h2 class="mb-4">Bewertung erstellen</h2>
     } else if (editReview)
     {
-        @*TODO inputs with data*@
+        @*TODO fill inputs with data*@
         <h2 class="mb-4">Bewertung bearbeiten</h2>
     }
 
@@ -16,7 +16,10 @@
             <h5 class="card-title fw-bold mb-2">Bewertung zu</h5>
             <a class="card-link">Name WSE</a>
 
-            <h5 class="card-title fw-bold mt-3 mb-2">Sternbewertung</h5>
+            <h5 class="card-title fw-bold mt-3 mb-2">
+                Sternbewertung
+                <small style="color: red">*Pflicht</small>
+            </h5>
             <div class="row mb-2">
                 <div class="col-auto star-rating">
                     <input type="radio" id="star5" value="5"/>
@@ -42,17 +45,26 @@
                 </div>
             </div>
 
-            <label class="form-label fw-bold mt-2">Titel der Bewertung</label>
-            <input type="text" class="form-control mb-2"/>
+            <label class="form-label fw-bold mt-2">
+                Titel der Bewertung
+                <small style="color: red">*Pflicht</small>
+            </label>
+            <div class="ui-field">
+                @*TODO change to InputText when EditForm included*@
+                <input type="text" class="form-control mb-2"/>
+            </div>
 
             <label class="form-label fw-bold">schriftliche Bewertung</label>
-            <textarea type="text" class="form-control"/>
+            <div class="ui-field">
+                @*TODO change to InputTextArea when EditForm included*@
+                <textarea type="text" class="form-control"/>
+            </div>
         </div>
     </div>
 
     <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-        <button class="btn btn-success" type="button">
-            Absenden
+        <button class="btn btn-success" type="submit">
+            Speichern
         </button>
     </div>
 

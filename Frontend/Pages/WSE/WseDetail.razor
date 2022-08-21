@@ -9,10 +9,10 @@
     @if (isCollab)
     {
         <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-            <button class="btn btn-success" type="button" @onclick="() => OpenDeleteWSEDialog()">
+            <button class="btn btn-success" type="button">
                 Bearbeiten
             </button>
-            <button class="btn btn-danger" type="button">
+            <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
                 Löschen
             </button>
         </div>
@@ -92,7 +92,7 @@
             <div class="card mb-4">
                 <h6 class="card-header fw-bold">Änderungshistorie</h6>
                 <div class="card-body">
-                    <div class="card-text">This is some text within a card body.</div>
+                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
                 </div>
             </div>
     
@@ -102,14 +102,14 @@
                     <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation"/>
                 </h6>
                 <div class="card-body">
-                    <div class="card-text">This is some text within a card body.</div>
+                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
                 </div>
             </div>
 
             <div class="card">
                 <h6 class="card-header fw-bold">Volltextbeschreibung</h6>
                 <div class="card-body">
-                    <div class="card-text">This is some text within a card body.</div>
+                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
                 </div>
             </div>
         </div>
@@ -122,10 +122,13 @@
 
     @if (isLoggedIn)
     {
-        <textarea class="form-control mt-4 mb-2" type="text" placeholder="Haben Sie eine Frage?"/>
+        <div class="ui-field">
+            @*TODO change to InputTextArea when EditForm added*@
+            <textarea class="form-control mt-4 mb-3" type="text" placeholder="Haben Sie eine Frage?"/>
+        </div>
         <div class="d-grid gap-2 mt-2 mb-4 d-flex justify-content-end">
             <button class="btn btn-outline-success btn-small" type="button">
-                Absenden
+                Speichern
             </button>
         </div>
     }
