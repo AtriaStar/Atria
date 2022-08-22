@@ -29,7 +29,7 @@ public class SessionService {
             Secure = true,
             MaxAge = ExpireDuration,
             SameSite = SameSiteMode.Strict,
-            Path = "/",
+            Path = "/api/",
         });
     }
 

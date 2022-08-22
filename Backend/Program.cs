@@ -32,7 +32,6 @@ if (app.Environment.IsDevelopment()) {
 app.UseRouting();
 app.UseCors(policy => 
     policy.WithOrigins("https://localhost:7206")
-        .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());
 
