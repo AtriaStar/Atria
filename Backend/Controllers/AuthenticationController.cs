@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Backend.Authentication;
+﻿using Backend.Authentication;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

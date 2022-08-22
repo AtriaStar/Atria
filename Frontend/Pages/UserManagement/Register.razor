@@ -1,9 +1,7 @@
 ﻿@page "/register"
 @using Microsoft.AspNetCore.Components
-@using Models.DTO
-@using Newtonsoft.Json
-@using System.Text
 @using Models
+@using Models.DTO
 @inject NavigationManager NavManager
 @inject HttpClient HttpClient
 
@@ -86,15 +84,15 @@
 		</div>
 	</div>
 	<button @onclick="Test">Test</button>
+	<p>FUNNY @CurrentUser?.FirstNames</p>
 </div>
 
 
 @code {
+	[CascadingParameter] public User? CurrentUser { get; private set; }
 
 	private async Task Test() {
-		var req = new HttpRequestMessage(HttpMethod.Get, "auth/sessions");
-		req.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
-        var response = await HttpClient.SendAsync(req);
+		var response = await HttpClient.GetAsync("auth/sessions");
 		Console.WriteLine("POGGERS!");
 	}
 
