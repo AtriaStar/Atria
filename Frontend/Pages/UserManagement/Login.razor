@@ -1,9 +1,5 @@
 ﻿@page "/login"
 @using Microsoft.AspNetCore.Components
-@using System.Text
-@using Newtonsoft.Json
-@using Microsoft.AspNetCore.Components.Authorization
-@using System.Net
 @inject NavigationManager NavManager
 @inject HttpClient HttpClient
 
@@ -47,7 +43,7 @@
                 </EditForm>
                 
                 <div class="col-12 row" style="text-align:center; color: red; font-weight:bold">
-                    <span class="col-12">@LoginMesssage</span>
+                    <span class="col-12">@LoginMessage</span>
                 </div>
             </div>
         </div>
@@ -61,24 +57,15 @@
 
 @code {
     readonly Models.DTO.Login _login = new();
-    public string LoginMesssage { get; set; } = null!;
+    public string LoginMessage { get; set; } = null!;
 
     private async void HandleValidSubmit() {
-        var request = new HttpRequestMessage(HttpMethod.Post,
-            "auth/login");
+	    var response = await HttpClient.PostAsJsonAsync("auth/login", _login);
 
-        request.Content = new StringContent(JsonConvert.SerializeObject(_login), Encoding.UTF8, "application/json");
-        request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
-        
-        var response = await HttpClient.SendAsync(request);
-
-        if (response.IsSuccessStatusCode)
-        {
+        if (response.IsSuccessStatusCode) {
             NavManager.NavigateTo("/");
-        }
-        else
-        {
-            LoginMesssage = "Invalid username or password";
+        } else {
+            LoginMessage = "Invalid username or password";
         }
     }
 }
