@@ -1,6 +1,11 @@
 ﻿@page "/register"
 @using Microsoft.AspNetCore.Components
 @using Models.DTO
+@using Newtonsoft.Json
+@using System.Text
+@using System.Net
+@inject NavigationManager NavManager
+@inject IHttpClientFactory ClientFactory
 
 @* TODO page title*@
 
@@ -82,14 +87,28 @@
     </div>
 </div>
 
-@* TODO implement registration logic *@
 
 @code {
     readonly Registration _registration = new();
 
-    private void HandleValidSubmit() {
-        Console.WriteLine("Valid");
-        Console.WriteLine(_registration.Email);
+    private async void HandleValidSubmit() {
+        var request = new HttpRequestMessage(HttpMethod.Post,
+            "https://localhost:7038/api/register");
+
+        request.Content = new StringContent(JsonConvert.SerializeObject(_registration), Encoding.UTF8, "application/json");
+
+        var client = ClientFactory.CreateClient();
+
+        var response = await client.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            NavManager.NavigateTo("/");
+        }
+        else
+        {
+            NavManager.NavigateTo("/internal-server-error");
+        }
     }
 
 }
