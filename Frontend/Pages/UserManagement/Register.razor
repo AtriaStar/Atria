@@ -3,9 +3,9 @@
 @using Models.DTO
 @using Newtonsoft.Json
 @using System.Text
-@using System.Net
+@using Models
 @inject NavigationManager NavManager
-@inject IHttpClientFactory ClientFactory
+@inject HttpClient HttpClient
 
 @* TODO page title*@
 
@@ -80,35 +80,28 @@
             </div>
         </div>
     </div>
-    <div class="row p-2 justify-content-center">
-        <div class="col-auto text-center">
-            Sie sind bereits registriert? <NavLink href="register">Hier anmelden</NavLink>
-        </div>
-    </div>
+	<div class="row p-2 justify-content-center">
+		<div class="col-auto text-center">
+			Sie sind bereits registriert? <NavLink href="register">Hier anmelden</NavLink>
+		</div>
+	</div>
+	<button @onclick="Test">Test</button>
 </div>
 
 
 @code {
+
+	private async Task Test() {
+		var req = new HttpRequestMessage(HttpMethod.Get, "auth/sessions");
+		req.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
+        var response = await HttpClient.SendAsync(req);
+		Console.WriteLine("POGGERS!");
+	}
+
     readonly Registration _registration = new();
 
     private async void HandleValidSubmit() {
-        var request = new HttpRequestMessage(HttpMethod.Post,
-            "https://localhost:7038/api/register");
-
-        request.Content = new StringContent(JsonConvert.SerializeObject(_registration), Encoding.UTF8, "application/json");
-
-        var client = ClientFactory.CreateClient();
-
-        var response = await client.SendAsync(request);
-
-        if (response.IsSuccessStatusCode)
-        {
-            NavManager.NavigateTo("/");
-        }
-        else
-        {
-            NavManager.NavigateTo("/internal-server-error");
-        }
+	    var response = await HttpClient.PostAsJsonAsync("auth/register", _registration);
+	    //NavManager.NavigateTo(response.IsSuccessStatusCode ? "/" : "/internal-server-error");
     }
-
 }
