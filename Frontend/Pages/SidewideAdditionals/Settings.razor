@@ -1,15 +1,19 @@
 ﻿@page "/settings"
 
-<PageTitle>Atria - Settings</PageTitle>
+<PageTitle>Atria - Einstellungen</PageTitle>
 
 <div class="container-lg mt-3">
-    <h2>Einstellungen</h2>
+    <h2 class="mb-3">Einstellungen</h2>
 
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-            <div class="row d-flex align-content-between">
+    <div class="card mt-1 mb-4">
+        <h5 class="card-header fw-bold">
+            Benachrichtigungen
+        </h5>
+
+        <div class="card-body">
+            <div class="row d-flex align-content-between mb-1">
                 <div class="col">
-                    Benachrichtigungen
+                    Alle Benachrichtigungen
                 </div>
                 <div class="col-auto">
                     <div class="form-check form-switch d-flex justify-content-between">
@@ -18,84 +22,87 @@
                 </div>
             </div>
 
-            <ul class="list-group">
-                <li class="list-group-item border-0">
-                    <div class="row d-flex align-content-between">
-                        <div class="col">
-                            eingehende Fragen
-                        </div>
-                        <div class="col-auto">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item border-0">
-                    <div class="row d-flex align-content-between">
-                        <div class="col">
-                            eingehende Antworten
-                        </div>
-                        <div class="col-auto">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item border-0">
-                    <div class="row d-flex align-content-between">
-                        <div class="col">
-                            eingehende Bewertungen
-                        </div>
-                        <div class="col-auto">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item border-0">
-                    <div class="row d-flex align-content-between">
-                        <div class="col">
-                            Hinzufügen zu einem Webservice-Eintrag
-                        </div>
-                        <div class="col-auto">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item border-0">
-                    <div class="row d-flex align-content-between">
-                        <div class="col">
-                            Entfernen aus einem Webservice-Eintrag
-                        </div>
-                        <div class="col-auto">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list-group-item border-0">
-                    <div class="row d-flex align-content-between">
-                        <div class="col">
-                            Löschen von Webservice-Einträge
-                        </div>
-                        <div class="col-auto">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </li>
+            <hr/>
 
-        <li class="list-group-item">
-            <div class="row d-flex align-content-between">
+            <div class="row d-flex align-content-between ms-2">
+                <div class="col">
+                    eingehende Fragen
+                </div>
+                <div class="col-auto">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    </div>
+                </div>
+            </div>
+
+            <hr/>
+                
+            <div class="row d-flex align-content-between ms-2">
+                <div class="col">
+                    eingehende Antworten
+                </div>
+                <div class="col-auto">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    </div>
+                </div>
+            </div>
+
+            <hr/>
+                
+            <div class="row d-flex align-content-between ms-2">
+                <div class="col">
+                    eingehende Bewertungen
+                </div>
+                <div class="col-auto">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    </div>
+                </div>
+            </div>
+
+            <hr/>
+                
+            <div class="row d-flex align-content-between ms-2">
+                <div class="col">
+                    Hinzufügen zu einem Webservice-Eintrag
+                </div>
+                <div class="col-auto">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    </div>
+                </div>
+            </div>
+
+            <hr/>
+                
+            <div class="row d-flex align-content-between ms-2">
+                <div class="col">
+                    Entfernen aus einem Webservice-Eintrag
+                </div>
+                <div class="col-auto">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    </div>
+                </div>
+            </div>
+
+            <hr/>
+                
+            <div class="row d-flex align-content-between ms-2">
+                <div class="col">
+                    Löschen von Webservice-Einträge
+                </div>
+                <div class="col-auto">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    </div>
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="row d-flex align-content-between ms-2">
                 <div class="col">
                     E-Mail-Benachrichtigungen
                 </div>
@@ -105,9 +112,10 @@
                     </div>
                 </div>
             </div>
-        </li>
+        </div>
+    </div>
 
-        <li class="list-group-item">
+        @*<li class="list-group-item">
             <div class="row d-flex align-content-between">
                 <div class="col">
                     Dark/Light Mode
@@ -137,9 +145,13 @@
                     </div>
                 </div>
             </div>
-        </li>
+        </li>*@
 
-        <li class="list-group-item">
+    <div class="card mb-4">
+        <h5 class="card-header fw-bold">
+            Konto
+        </h5>
+        <div class="card-body">
             <div class="row d-flex align-content-between">
                 <div class="col">
                     Passwort ändern
@@ -152,9 +164,9 @@
                     </div>
                 </div>
             </div>
-        </li>
 
-        <li class="list-group-item">
+            <hr/>
+        
             <div class="row d-flex align-content-between">
                 <div class="col">
                     Konto löschen
@@ -167,8 +179,9 @@
                     </div>
                 </div>
             </div>
-        </li>
-    </ul>
+        </div>
+    </div>
+        
 </div>
 
 @if (ChangePasswordDialogOpen)
