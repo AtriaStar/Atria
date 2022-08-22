@@ -97,12 +97,15 @@
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Sortieren nach
                 </button>
-                @*TODO every option has ascending and descending*@
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <NavLink href="@Navigate("sort", null)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>
-                    <NavLink href="@Navigate("sort", "useCount")" class="dropdown-item">Aufrufzahl</NavLink>
-                    <NavLink href="@Navigate("sort", "reviewAverage")" class="dropdown-item">Bewertungsdurchschnitt</NavLink>
+                    @*relevance is default, no extra item needed
+                    <NavLink href="@Navigate("sort", null)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>*@
+                    <NavLink href="@Navigate("sort", "useCount")" class="dropdown-item">Aufrufzahl aufsteigend</NavLink>
+                    <NavLink href="@Navigate("sort", "useCount")" class="dropdown-item">Aufrufzahl absteigend</NavLink>
+                    <NavLink href="@Navigate("sort", "reviewAverage")" class="dropdown-item">Bewertungsdurchschnitt aufsteigend</NavLink>
+                    <NavLink href="@Navigate("sort", "reviewAverage")" class="dropdown-item">Bewertungsdurchschnitt absteigend</NavLink>
                     <NavLink href="@Navigate("sort", "recency")" class="dropdown-item">Neueste</NavLink>
+                    <NavLink href="@Navigate("sort", "recency")" class="dropdown-item">Älteste</NavLink>
                 </ul>
             </div>
         </div>
