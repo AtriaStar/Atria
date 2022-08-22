@@ -1,0 +1,37 @@
+﻿<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kollaborator entfernen</h5>
+            </div>
+            <div class="modal-body">
+                <p>Sind Sie sicher, dass Sie den/die Kollaborator*in entfernen möchten?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" @onclick="@ModalCancel">Abbrechen</button>
+                <button type="button" class="btn btn-danger" @onclick="@ModalDelete">Entfernen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = null!;
+
+    [Parameter]
+    public string Text { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    public Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    public Task ModalDelete()
+    {
+        return OnClose.InvokeAsync(true);
+    }
+}
