@@ -96,7 +96,7 @@
         
         @*TODO change to InputSelect*@
         <div class="ui-field">
-            <select class="form-select mb-3" size="8" multiple @onchange="SelectedCarsChanged">
+            <select class="form-select mb-3" size="8" multiple @onchange="SelectedTagsChanged">
                 @for (int i = 0; i < 21; i++) {
                     <option value="Tag @i">Tag @i</option>
                 }
@@ -175,7 +175,7 @@
         selectedTags = selectedTags.Where(w => w != tag).ToArray();
     }
 
-    private void SelectedCarsChanged(ChangeEventArgs e)
+    private void SelectedTagsChanged(ChangeEventArgs e)
     {
         if (e.Value is not null)
         {
