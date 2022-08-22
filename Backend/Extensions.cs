@@ -39,6 +39,15 @@ public static class Extensions {
             _ => throw new InvalidEnumArgumentException(nameof(order), (int)order, typeof(Order)),
         };
 
+    public static Func<WebserviceEntry, double> GetMapper(this Order order)
+        => order switch {
+            Order.Relevance => x => Random.Shared.NextDouble(),
+            Order.ViewCount => x => x.ViewCount,
+            Order.ReviewAverage => x => x.Reviews.Average(y => (int)y.StarCount),
+            Order.Recency => x => x.CreatedAt.UtcTicks,
+            _ => throw new InvalidEnumArgumentException(nameof(order), (int)order, typeof(Order)),
+        };
+
     public static IEnumerable<ParameterInfo> GetBasicParameters(this ActionExecutingContext context)
         => (context.ActionDescriptor as ControllerActionDescriptor)?.MethodInfo.GetParameters()
             .Where(x => x.Name != null)

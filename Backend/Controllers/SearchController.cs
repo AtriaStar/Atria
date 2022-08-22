@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
@@ -13,13 +14,19 @@ public class SearchController : ControllerBase {
         _context = context;
     }
 
-    [HttpGet("wse")]
-    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WSESearchParam param, [FromQuery] Pagination pagination)
+    private IEnumerable<WebserviceEntry> GetWseBaseEnumerable(WSESearchParam param)
         => _context.WebserviceEntries
-            .Where(x => x.Reviews.Average(y => (int)y.StarCount) >= (int)param.MinReviewAvg)
-            .OrderBy(x => x, param.Order.GetComparer())
+            .Where(x => x.Reviews.Average(y => (int) y.StarCount) >= (int) param.MinReviewAvg);
+
+    [HttpGet("wse")]
+    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WSESearchParam param, [FromQuery] Pagination pagination) =>
+        GetWseBaseEnumerable(param)
+            .OrderBy(x => param.Order.GetMapper().Invoke(x) * FuzzingService.CalculateScore(param.Query, x))
             .Skip(pagination.Page * pagination.EntriesPerPage)
             .Take(pagination.EntriesPerPage);
+
+    [HttpGet("wse/count")]
+    public long GetWseCount([FromQuery] WSESearchParam param) => GetWseBaseEnumerable(param).LongCount();
 
     [HttpGet("user")]
     public IEnumerable<User> GetUserList(string? query, [FromQuery] Pagination pagination)
@@ -27,9 +34,6 @@ public class SearchController : ControllerBase {
             .Skip(pagination.Page * pagination.EntriesPerPage)
             .Take(pagination.EntriesPerPage);
 
-    [HttpGet("count/wse")]
-    public Task<long> GetWseCount(string? query) => _context.WebserviceEntries.LongCountAsync();
-
-    [HttpGet("count/user")]
+    [HttpGet("user/count")]
     public Task<long> GetUserCount(string? query) => _context.WebserviceEntries.LongCountAsync();
 }
