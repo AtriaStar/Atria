@@ -77,18 +77,34 @@
         </div>
         <div class="col">
             <div class="d-flex flex-wrap justify-content-between">
-                <div class="nav nav-tabs profile-nav">
-                    <NavLink href="profile?type=wse" class="nav-link" Match="NavLinkMatch.All">WSE</NavLink>
-                    <NavLink href="profile?type=bookmarks" class="nav-link">Lesezeichen</NavLink>
-                    <NavLink href="profile?type=ratings" class="nav-link">Bewertungen</NavLink>
+                <div class="nav nav-pills mb-2">
+                    <NavLink href="profile?type=wse" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
+                    <NavLink href="profile?type=bookmarks" class="nav-link me-2">Lesezeichen</NavLink>
+                    <NavLink href="profile?type=ratings" class="nav-link me-2">Bewertungen</NavLink>
                     <NavLink href="profile?type=drafts" class="nav-link">Entwürfe</NavLink>
                 </div>
-                <div class="py-2 px-3">
-                    <input class="profile-searchbar" type="search" @bind-value="_filter" placeholder="Search by Name">
+
+                <div class="d-flex mb-2 ms-auto">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle me-4" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                            Filter
+                        </button>
+                        @*TODO dropdown menu according to current type*@
+                        <div class="dropdown-menu dropdown-menu-end ps-2"></div>
+                    </div>
+                </div>
+
+                <div class="search-bar">
+                    <div class="form-control form-control-sm border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
+                        <div class="input-group input-group-sm">
+                            <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
+                            <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach...">
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="list-group list-group-flush profile-data-list">
+            <div class="w-100 mt-2 mb-4">
                 @switch (Type) {
                     case "wse":
                         <WseSummaryList SummaryDtos="_summaryDtos"/>
