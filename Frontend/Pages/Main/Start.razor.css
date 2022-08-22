@@ -1,4 +1,4 @@
-﻿.search-data-list {
+﻿/*.search-data-list {
     border: 1px solid #ced4da;
     border-radius: 0.375rem;
 }
@@ -6,7 +6,7 @@
 .start-searchbar {
     border-radius: 0.375rem;
     border: 2px solid #dee2e6;
-}
+}*/
 
 .rating-uncolored {
     color: #cecece;
@@ -15,3 +15,10 @@
 .rating-color {
     color: #fbc634;
 }
+
+.btn-small {
+    border-width: 2px;
+    font-size: 12px;
+    padding-block: 1px;
+}
+

@@ -15,7 +15,7 @@
     border-top: 1px solid #c9d1d9;
 }
 
-.profile-nav {
+/*.profile-nav {
     border-bottom: none;
 }
 
@@ -34,14 +34,17 @@
 }
 
 ::deep .nav-link {
-    /*
-        color: #495057;
-     */
+    color: #495057;
     color: black;
-}
+}*/
+
 @media (max-width: 575.98px) {
     .avatar-w {
         max-height: 100px;
+    }
+
+    .search-bar {
+        width: 100%;
     }
 }
 

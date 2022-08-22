@@ -1,20 +1,20 @@
 ﻿@using Models.DTO
 @using Models
 @foreach (WseSummaryDto wseSummaryDto in SummaryDtos) {
-    <div class="list-group-item d-flex flex-row p-3">
-        <div class="row me-0">
-            <div class="col">
-                <i class="fa-solid fa-circle @StyleOnlineStatus(wseSummaryDto)"></i>
-            </div>
-        </div>
-        <div class="w-100">
-            <div class="row justify-content-sm-between justify-content-start">
-                <div class="col-sm-6 d-flex d-sm-block">
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-auto">
+                    <i class="fa-solid fa-circle @StyleOnlineStatus(wseSummaryDto)"></i>
+                </div>
+            
+                <div class="col-auto ps-0 d-flex d-block">
                     <NavLink href="@GetWseLink(wseSummaryDto)">
                         <h5>@wseSummaryDto.Name</h5>
                     </NavLink>
                 </div>
-                <div class="col-sm-6 d-flex d-sm-block">
+
+                <div class="col-auto ps-0 ms-auto d-flex d-block">
                     <div class="d-flex justify-content-sm-end justify-content-start flex-wrap">
                         <div class="">
                             @{
@@ -40,29 +40,32 @@
                                 }
                             }
                         </div>
-                        <div class="ms-3 text-end flex-grow-1" style="max-width: 5rem">
-                            @wseSummaryDto.ViewCount Aufrufe
+                        <div class="ms-3 text-end flex-grow-1" style="max-width: 10rem">
+                            @wseSummaryDto.ViewCount Aufruf(e)
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row">
+
+            <div class="row mb-1">
                 <div class="col">
                     @wseSummaryDto.ShortDescription
                 </div>
             </div>
-            <div class="row">
+
+            <div class="row mb-2">
                 @foreach (Tag tag in wseSummaryDto.Tags) {
                     <div class="col-auto pe-0">
                         <span class="badge bg-info me-2">@tag.Name</span>
                     </div>
                 }
             </div>
+
             <div class="row justify-content-between">
                 <div class="col">
                     @wseSummaryDto.CreationDate
                 </div>
-                <div class="col-sm-auto">
+                <div class="col-auto">
                     <NavLink href="@wseSummaryDto.Link">
                         <i class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-4" title="Zur Webservice"/>
                     </NavLink>
