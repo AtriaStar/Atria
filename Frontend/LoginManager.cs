@@ -5,20 +5,14 @@ using Models;
 namespace Frontend; 
 
 public class LoginManager {
-    private readonly HttpClient HttpClient;
-    private readonly IJSRuntime JS;
+    private readonly HttpClient _httpClient;
 
-    public LoginManager(HttpClient client, IJSRuntime js) {
-        HttpClient = client;
-        JS = js;
+    public LoginManager(HttpClient client) {
+        _httpClient = client;
     }
 
-    public ValueTask<bool> IsLoggedInAsync()
-        => JS.InvokeAsync<bool>("checkCookie", "Authorization");
-
     public async Task<User?> GetLoggedInUserAsync() {
-        if (!await IsLoggedInAsync()) { return null; }
-        var cnt = await HttpClient.GetAsync("api/auth");
+        var cnt = await _httpClient.GetAsync("api/auth");
         if (!cnt.IsSuccessStatusCode) { return null; }
         return await cnt.Content.ReadFromJsonAsync<User>();
     }
