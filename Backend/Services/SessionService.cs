@@ -26,16 +26,16 @@ public class SessionService {
         httpContext.Response.Cookies.Append(AuthorizationCookieName, token, new() {
             IsEssential = true,
             HttpOnly = false,
-            Secure = true,
-            MaxAge = ExpireDuration,
+            Secure = false,
+            //MaxAge = ExpireDuration,
             SameSite = SameSiteMode.None,
             Path = "/",
         });
         httpContext.Response.Cookies.Append("test", "asd", new() {
             IsEssential = true,
             HttpOnly = false,
-            Secure = true,
-            MaxAge = TimeSpan.FromHours(1000),
+            Secure = false,
+            //MaxAge = TimeSpan.FromHours(1000),
             SameSite = SameSiteMode.None,
             Path = "/",
         });

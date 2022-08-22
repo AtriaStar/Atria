@@ -102,6 +102,6 @@
 
     private async void HandleValidSubmit() {
 	    var response = await HttpClient.PostAsJsonAsync("auth/register", _registration);
-	    NavManager.NavigateTo(response.IsSuccessStatusCode ? "/" : "/internal-server-error");
+	    //NavManager.NavigateTo(response.IsSuccessStatusCode ? "/" : "/internal-server-error");
     }
 }
