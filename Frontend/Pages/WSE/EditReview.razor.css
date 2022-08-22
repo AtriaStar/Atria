@@ -11,21 +11,10 @@
     border-radius: 0.375rem;
 }
 
-.star-rating {
-    direction: rtl !important;
-}
-
-.star-rating > input {
-    display: none;
-}
-
-.star-rating > label {
+.rating-uncolored {
     color: #cecece;
-    cursor: pointer
 }
 
-/*input not working if less stars are selected*/
-.star-rating > input:hover ~ label,
-.star-rating > input:checked ~ label {
+.rating-color {
     color: #ffca08;
 }

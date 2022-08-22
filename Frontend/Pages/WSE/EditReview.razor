@@ -1,14 +1,16 @@
 ﻿@page "/editReview"
 
+<PageTitle>Atria - Bewertung</PageTitle>
+
 <div class="container-xxl mt-4">
 
     @if (newReview)
     {
-        <h2 class="mb-4">Bewertung erstellen</h2>
+        <h2 class="mb-3">Bewertung erstellen</h2>
     } else if (editReview)
     {
         @*TODO fill inputs with data*@
-        <h2 class="mb-4">Bewertung bearbeiten</h2>
+        <h2 class="mb-3">Bewertung bearbeiten</h2>
     }
 
     <div class="card">
@@ -20,28 +22,30 @@
                 Sternbewertung
                 <small style="color: red">*Pflicht</small>
             </h5>
-            <div class="row mb-2">
-                <div class="col-auto star-rating">
-                    <input type="radio" id="star5" value="5"/>
-                    <label for="star5" title="5 star">
-                        <i class="fa fa-star"></i>
-                    </label>
-                    <input type="radio" id="star4" value="4"/>
-                    <label for="star4" title="4 star">
-                        <i class="fa fa-star"></i>
-                    </label>
-                    <input type="radio" id="star3" value="3"/>
-                    <label for="star3" title="3 star">
-                        <i class="fa fa-star"></i>
-                    </label>
-                    <input type="radio" id="star2" value="2"/>
-                    <label for="star2" title="2 star">
-                        <i class="fa fa-star"></i>
-                    </label>
-                    <input type="radio" id="star1" value="1"/>
-                    <label for="star1" title="1 star">
-                        <i class="fa fa-star"></i>
-                    </label>
+            
+            <div class="row mt-2">
+                <div class="col-2">
+                    <select class="form-select form-select-sm" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px" @bind="selectedStarNum">
+                        <option value="0" selected>0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    @for (int i = 1; i <= selectedStarNum; i++)
+                    {
+                        <i class="fa fa-star rating-color me-1"></i>
+                    }
+                    @if (selectedStarNum != 5)
+                    {
+                        @for (int i = 1; i <= (5 - selectedStarNum); i++)
+                        {
+                            <i class="fa fa-star rating-uncolored me-1"></i>
+                        }
+                    }
                 </div>
             </div>
 
@@ -73,4 +77,5 @@
 @code {
     public bool newReview = true;
     public bool editReview = false;
+    public int selectedStarNum = 0;
 }
