@@ -77,64 +77,18 @@
                         </div>
                     </div>
                     <div style="text-align:right; font-size:80%;">
-                        <button type="button" class="btn btn-Link btn-sm" data-bs-toggle="modal" data-bs-target="#tagModal">
+                        <button type="button" class="btn btn-Link btn-sm" @onclick="() => OpenTagDialog()">
                             <u>weitere Tags</u>
                         </button>
                     </div>
                 </div>
-                <div class="modal" id="tagModal" tabindex="-1" aria-labelledby="tagModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered ">
-                        <div class="modal-content">
 
-
-                            <div class="modal-header pb-1 pt-2" style="border:none">
-                                <h5 class="modal-title" id="tagModalLabel">Tags</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-
-
-                            <div class="modal-body pt-1 pb-1">
-                                <div class="row pb-2">
-                                    <div class="col">
-                                        <div class="card rounded-1" style="background-color:lightgray">
-                                            <div class="card-body pt-0 pb-0 ps-1">
-                                                taglogic.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row small pb-2 justify-content-end">
-                                    <div class="col-sm-5">
-                                        <input class="form-control form-control-sm rounded-pill" type="search" placeholder="Suche nach..."> @*TODO searchbar überarbeiten*@
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="border mb-2">
-                                            <div class="overflow-auto" style="max-height: 200px">
-                                                Tags with logicx
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between pt-1 pb-2">
-                                    <button type="button" class="btn btn-danger btn-sm me-2" data-bs-dismiss="modal">
-                                        Alle Löschen
-                                    </button>
-                                    <button type="button" class="btn btn-success btn-sm" data-bs-dismiss="modal">
-                                        Anwenden
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="dropdown ms-3">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Sortieren nach
                 </button>
+                @*TODO every option has ascending and descending*@
                 <ul class="dropdown-menu dropdown-menu-end">
                     <NavLink href="@Navigate("sort", null)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>
                     <NavLink href="@Navigate("sort", "useCount")" class="dropdown-item">Aufrufzahl</NavLink>
@@ -148,6 +102,11 @@
         <WseSummaryList SummaryDtos="_summaryDtos"></WseSummaryList>
     </div>
 </div>
+
+@if (TagDialogOpen)
+{
+    <Frontend.Pages.Components.TagModal OnClose="@OnTagDialogClose"></Frontend.Pages.Components.TagModal>
+}
 
 @code {
 
@@ -223,4 +182,18 @@
         return NavigationManager.GetUriWithQueryParameter(key, value);
     }
 
+    @*for tag modal*@
+    public bool TagDialogOpen { get; set; }
+
+    private void OnTagDialogClose(bool accepted)
+    {
+        TagDialogOpen = false;
+        StateHasChanged();
+    }
+
+    private void OpenTagDialog()
+    {
+        TagDialogOpen = true;
+        StateHasChanged();
+    }
 }

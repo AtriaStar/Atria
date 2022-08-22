@@ -1,0 +1,85 @@
+﻿<div class="modal" id="tagModal" tabindex="-1" aria-labelledby="tagModalLabel" aria-hidden="true" style="display:block; background-color: rgba(10,10,10,.8);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tagModalLabel">Tags</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="() => ModalClose()"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="col-auto d-flex justify-content-end mb-2">
+                    <div class="form-control form-control-sm rounded-pill border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
+                        <div class="input-group input-group-sm">
+                            <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
+                            <input type="search" class="form-control form-control-sm rounded-pill border-0" placeholder="Suche nach...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-1">
+                    @foreach (string tag in selectedTags)
+                    {
+                        <div class="col-auto">
+                            <h6>
+                                <span class="badge bg-info">
+                                    @tag
+                                    <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => removeTag(tag)"/>
+                                </span>
+                            </h6>
+                        </div>
+                    }
+                </div>
+
+                <label class="text-muted">(zum Auswählen Strg gedrückt halten)</label>
+                <select class="form-select mb-1" size="8" multiple @onchange="SelectedCarsChanged">
+                    @for (int i = 0; i < 21; i++) {
+                        <option value="Tag @i">Tag @i</option>
+                    }
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" @onclick="() => deleteSelectedTags()">Alle Löschen</button>
+                <button type="button" class="btn btn-success" @onclick="() => ModalApply()">Anwenden</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    @*mock tags*@
+
+    string[] selectedTags = new string[] { };
+
+    private void deleteSelectedTags()
+    {
+        selectedTags = Array.Empty<string>();
+    }
+
+    private void removeTag(string tag)
+    {
+        selectedTags = selectedTags.Where(w => w != tag).ToArray();
+    }
+
+    private void SelectedCarsChanged(ChangeEventArgs e)
+    {
+        if (e.Value is not null)
+        {
+            selectedTags = (string[])e.Value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    public Task ModalClose()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    public Task ModalApply()
+    {
+        return OnClose.InvokeAsync(true);
+    }
+}
