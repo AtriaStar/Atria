@@ -89,7 +89,7 @@
 
 
 @code {
-	[CascadingParameter] public User? CurrentUser { get; private set; }
+	[CascadingParameter] private User? CurrentUser { get; set; }
 
 	private async Task Test() {
 		var response = await HttpClient.GetAsync("auth/sessions");
