@@ -68,7 +68,8 @@
             "auth/login");
 
         request.Content = new StringContent(JsonConvert.SerializeObject(_login), Encoding.UTF8, "application/json");
-
+        request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
+        
         var response = await HttpClient.SendAsync(request);
 
         if (response.IsSuccessStatusCode)
