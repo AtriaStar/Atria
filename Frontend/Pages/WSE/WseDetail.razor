@@ -41,7 +41,7 @@
                     <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href=""/>
                 </div>
             </div>
-            <h5 class="card-subtitle mb-2 text-muted">
+            <h5 class="card-subtitle mb-2 me-2 text-muted">
                 Ansprechpartner
                 <button class="btn btn-outline-secondary btn-small" @onclick="() => OpenCollabDialog()">weitere Kollaboratoren</button>
             </h5>
@@ -132,60 +132,97 @@
             </button>
         </div>
     }
-    
+
     @*foreach question*@
-    <div class="card mt-4 mb-4">
-        <div class="card-header">
-            <div class="row">
-                <div class="col-auto">
-                    <h6 class="fw-bold mt-1">Frage:</h6>
-                </div>
-                <div class="col">
-                    <h6 class="fw-bold mt-1 mb-1">
-                        Creator
-                        <small class="text-muted">Date</small>
-                    </h6>
-                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-                </div>
-            </div>
-            @if (isLoggedIn)
-            {
-                <div class="d-grid gap-2 mt-2 mb-2 d-flex justify-content-end">
-                    <button class="btn btn-outline-success btn-small" type="button">
-                        Antworten
-                    </button>
-                    @if (isCreator)
-                    {
-                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteQuestionDialog()">
-                            Löschen
-                        </button>
-                    }
-                </div>
-            }
-        </div>
-        @*if answers exist*@
-        <ul class="list-group list-group-flush">
-            @*foreach answer*@
-            <li class="list-group-item">
+    <div class="accordion mb-4" id="questionAccordion">
+        <div class="accordion-item">
+            <div class="accordion-header px-4 py-3 bg-light border-bottom" id="question">
                 <div class="row">
                     <div class="col-auto">
-                        <h6 class="fw-bold mt-1">Antwort:</h6>
+                        <h6 class="fw-bold mt-1">Frage:</h6>
                     </div>
-                    <div class="col">
+                    <div class="col ms-3">
                         <h6 class="fw-bold mt-1 mb-1">
                             Creator
                             <small class="text-muted">Date</small>
                         </h6>
                         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
                     </div>
+                    @*if answers exist*@
                 </div>
-                <div class="d-grid gap-2 mt-2 mb-2 d-flex justify-content-end">
-                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteAnswerDialog()">
-                        Löschen
+                <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
+                @if (isLoggedIn)
+                {
+                        <button class="btn btn-outline-success btn-small" type="button">
+                            Antworten
+                        </button>
+                        @if (isCreator)
+                        {
+                            <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteQuestionDialog()">
+                                Löschen
+                            </button>
+                        }
+                }
+                    @*if answers exist*@
+                    <button class="btn btn-small btn-outline-secondary collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#answerOne" aria-expanded="false" aria-controls="answerOne">
+                            Antworten anzeigen
                     </button>
                 </div>
-            </li>
-        </ul>
+            </div>
+
+            @*if answers exist*@
+            <div id="answerOne" class="accordion-collapse collapse" aria-labelledby="question" data-bs-parent="#questionAccordion">
+                <div class="accordion-body">
+                    <ul class="list-group list-group-flush py-0">
+                        @*foreach answer*@
+                        <li class="list-group-item px-0">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <h6 class="fw-bold mt-1">Antwort:</h6>
+                                </div>
+                                <div class="col">
+                                    <h6 class="fw-bold mt-1 mb-1">
+                                        Creator
+                                        <small class="text-muted">Date</small>
+                                    </h6>
+                                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+                                </div>
+                            </div>
+                            @if (isCreator)
+                           {
+                               <div class="d-grid mt-2 d-flex justify-content-end">
+                                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteAnswerDialog()">
+                                        Löschen
+                                    </button>
+                               </div>
+                           }
+                        </li>
+                        <li class="list-group-item px-0">
+                            <div class="row">
+                                <div class="col-auto">
+                                    <h6 class="fw-bold mt-1">Antwort:</h6>
+                                </div>
+                                <div class="col">
+                                    <h6 class="fw-bold mt-1 mb-1">
+                                        Creator
+                                        <small class="text-muted">Date</small>
+                                    </h6>
+                                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+                                </div>
+                            </div>
+                            @if (isCreator)
+                           {
+                               <div class="d-grid mt-2 d-flex justify-content-end">
+                                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteAnswerDialog()">
+                                        Löschen
+                                    </button>
+                               </div>
+                           }
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     @*if more questions exist*@
