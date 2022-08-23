@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="d-flex mb-2 ms-auto">
-            <button class="btn btn-outline-primary" type="button" @onclick="() => OpenFilterDialog()">
+            <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
                 Filter
             </button>
 
@@ -118,7 +118,7 @@
             IsOnline = true,
             AverageRating = 3.5,
             ViewCount = 1,
-            Link = new Uri("http://www.google.com"),
+            Link = new Uri("https://www.google.com"),
             IsBookmark = true
         };
         _summaryDtos.Add(wseSummaryDto1);
@@ -132,11 +132,11 @@
             IsOnline = false,
             AverageRating = 5,
             ViewCount = 15,
-            Link = new Uri("http://www.google.com"),
+            Link = new Uri("https://www.google.com")
         };
         _summaryDtos.Add(wseSummaryDto2);
 
-        UserDto userDto = new UserDto() {
+        UserDto userDto = new UserDto {
             Email = "hans@peter",
             FirstNames = "Hans",
             LastName = "Peter",
