@@ -11,8 +11,8 @@
         <div class="w-100 mb-2">
             <div class="form-control form-control-lg border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
                 <div class="input-group input-group-lg">
-                    <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
-                    <input type="search" class="form-control form-control-lg border-0" placeholder="Suche nach..." @bind-value="SearchString" @onkeyup="SearchInput">
+                    <button class="btn btn-sm btn-link text-dark" @onclick="Search"><i class="fa fa-search"></i></button>
+                    <input type="search" class="form-control form-control-lg border-0" placeholder="Suche nach..." @bind-value="Query" @onkeyup="SearchInput">
                 </div>
             </div>
         </div>
@@ -83,8 +83,6 @@
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
 
-    private string? SearchString { get; set; }
-
     private IList<WseSummaryDto> _summaryDtos = new List<WseSummaryDto>();
     private IList<UserDto> _userDtos = new List<UserDto>();
 
@@ -95,7 +93,7 @@
     }
 
     private void Search() {
-        NavigationManager.NavigateTo(Navigate("query", SearchString));
+        NavigationManager.NavigateTo(Navigate("query", Query));
     }
 
     protected override void OnInitialized() {
