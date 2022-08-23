@@ -78,10 +78,10 @@
         <div class="col">
             <div class="d-flex flex-wrap justify-content-between">
                 <div class="nav nav-pills mb-2">
-                    <NavLink href="profile?type=wse" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
-                    <NavLink href="profile?type=bookmarks" class="nav-link me-2">Lesezeichen</NavLink>
-                    <NavLink href="profile?type=ratings" class="nav-link me-2">Bewertungen</NavLink>
-                    <NavLink href="profile?type=drafts" class="nav-link">Entwürfe</NavLink>
+                    <NavLink href="@Navigate("type", null)" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
+                    <NavLink href="@Navigate("type", "bookmarks")" class="nav-link me-2">Lesezeichen</NavLink>
+                    <NavLink href="@Navigate("type", "ratings")" class="nav-link me-2">Bewertungen</NavLink>
+                    <NavLink href="@Navigate("type", "drafts")" class="nav-link">Entwürfe</NavLink>
                 </div>
 
                 <div class="d-flex mb-2 ms-auto">
@@ -106,7 +106,7 @@
 
             <div class="w-100 mt-2 mb-4">
                 @switch (Type) {
-                    case "wse":
+                    case null or "wse":
                         <WseSummaryList SummaryDtos="_summaryDtos"/>
                         break;
                     case "bookmarks":
@@ -119,7 +119,7 @@
                         <WseSummaryList SummaryDtos="_summaryDtos"/>
                         break;
                     default:
-                        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", "wse"));
+                        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string) null!));
                         break;
                 }
             </div>
@@ -186,10 +186,6 @@
         _summaryDtos.Add(wseSummaryDto1);
 
         @* mock data generation end *@
-
-        if (Type is null or "") {
-            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", "wse"));
-        }
     }
 
     private void ResetDto() {
@@ -219,6 +215,10 @@
             Title = User.Title,
             Biography = User.Biography
         };
+    }
+    
+    private string Navigate(string key, string? value) {
+        return NavigationManager.GetUriWithQueryParameter(key, value);
     }
 
 }
