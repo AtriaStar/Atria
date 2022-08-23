@@ -1,39 +1,23 @@
 using Backend.Authentication;
 using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
-using Frontend.Pages.User;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Backend.Controllers;
-
+//TODO: add wse specific authorization
 [ApiController]
 [Route("wse")]
 public class WSEController : ControllerBase {
-    private readonly AtriaContext _context;
-
-    public WSEController(AtriaContext context) {
-        _context = context;
-    }
-
-
-    [HttpGet("{wseId}")]
-    public async Task<IActionResult> Get (long wseId){
-        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
-
-        if (existingWse == null) {
-            return NotFound();
-        }
-
-        return Ok(existingWse);
+    [HttpGet("{wseId:long}")]
+    public async Task<IActionResult> Get([FromServices] AtriaContext db, [FromDatabase] WebserviceEntry wse) {
+        return Ok(wse);
     }
 
     [RequiresAuthentication]
-    [HttpPost("{wseId}")]
-    public async Task<IActionResult> EditWse(long wseId, WebserviceEntry wse) {
-        if (wseId != wse.Id) return BadRequest();
-
-        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
+    [HttpPost("{wseId:long}")]
+    public async Task<IActionResult> EditWse([FromServices] AtriaContext db, WebserviceEntry wse) {
+        var existingWse = await db.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wse.Id);
 
         if (existingWse == null) return NotFound();
         existingWse.Changelog = wse.Changelog;
@@ -50,19 +34,16 @@ public class WSEController : ControllerBase {
         existingWse.Tags = wse.Tags;
         existingWse.ViewCount = wse.ViewCount;
 
-        await _context.SaveChangesAsync();
+        await db.SaveChangesAsync();
 
         return NoContent();
     }
 
     [RequiresAuthentication]
-    [HttpPost("{wseId}/review/{reviewId}")]
-    public async Task<IActionResult> EditReview(long wseId, long reviewID, Review review) {
-        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
-
-        if (existingWse == null) return NotFound();
-
-        var existingReview = existingWse.Reviews.FirstOrDefault(x => x.Id == reviewID);
+    [HttpPost("{wseId:long}/review/{reviewId:long}")]
+    public async Task<IActionResult> EditReview([FromServices] AtriaContext db, [FromDatabase] WebserviceEntry wse,
+        Review review) {
+        var existingReview = wse.Reviews.FirstOrDefault(x => x.Id == review.Id);
 
         if (existingReview == null) return NotFound();
 
@@ -72,17 +53,17 @@ public class WSEController : ControllerBase {
         existingReview.StarCount = review.StarCount;
         existingReview.Title = review.Title;
 
-        await _context.SaveChangesAsync();
+        await db.SaveChangesAsync();
 
         return NoContent();
     }
 
     [RequiresAuthentication]
     [HttpPut("")]
-    public async Task<IActionResult> CreateWse(WebserviceEntry wse) {
+    public async Task<IActionResult> CreateWse([FromServices] AtriaContext db, WebserviceEntry wse) {
         if (ModelState.IsValid) {
-            await _context.WebserviceEntries.AddAsync(wse);
-            await _context.SaveChangesAsync();
+            await db.WebserviceEntries.AddAsync(wse);
+            await db.SaveChangesAsync();
 
             return CreatedAtAction(nameof(Get), new { wseId = wse.Id }, wse);
         }
@@ -91,17 +72,14 @@ public class WSEController : ControllerBase {
     }
 
     [RequiresAuthentication]
-    [HttpPut("{wseId}/question")]
-    public async Task<IActionResult> CreateQuestion(long wseId, Question question) {
-        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
-
-        if (existingWse == null) return BadRequest();
+    [HttpPut("{wseId:long}/question")]
+    public async Task<IActionResult> CreateQuestion([FromServices] AtriaContext db, [FromDatabase] WebserviceEntry wse,
+        Question question) {
 
         if (ModelState.IsValid) {
-            existingWse.Questions.Add(question);
-            await _context.WebserviceEntries.AddAsync(existingWse);
-            await _context.SaveChangesAsync();
-
+            wse.Questions.Add(question);
+            await db.SaveChangesAsync();
+            //Todo: created at action?
             return NoContent();
         }
 
@@ -109,21 +87,13 @@ public class WSEController : ControllerBase {
     }
 
     [RequiresAuthentication]
-    [HttpPut("{wseId}/question/{questionId}/answer")]
-    public async Task<IActionResult> CreateAnswer(long wseId, long questionId, Answer answer) {
-        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
-
-        if (existingWse == null) return BadRequest();
-
-        var existingQuestion = existingWse.Questions.FirstOrDefault(x => x.Id == questionId);
-
-        if (existingQuestion == null) return BadRequest();
-
+    [HttpPut("{wseId:long}/question/{questionId:long}/answer")]
+    public async Task<IActionResult> CreateAnswer([FromServices] AtriaContext db, [FromDatabase] Question question,
+        Answer answer) {
         if (ModelState.IsValid) {
-            existingWse.Questions.FirstOrDefault(x => x.Id == questionId).Answers.Add(answer);
-
-            await _context.SaveChangesAsync();
-
+            question.Answers.Add(answer);
+            await db.SaveChangesAsync();
+            //Todo: created at action?
             return NoContent();
         }
 
@@ -131,15 +101,12 @@ public class WSEController : ControllerBase {
     }
 
     [RequiresAuthentication]
-    [HttpPut("{wseId}/review")]
-    public async Task<IActionResult> CreateReview(long wseId, Review review) {
-        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
-
-        if (existingWse == null) return BadRequest();
-
+    [HttpPut("{wseId:long}/review")]
+    public async Task<IActionResult> CreateReview([FromServices] AtriaContext db, [FromDatabase] WebserviceEntry wse,
+        Review review) {
         if (ModelState.IsValid) {
-            existingWse.Reviews.Add(review);
-            await _context.SaveChangesAsync();
+            wse.Reviews.Add(review);
+            //Todo: created at action?
             return NoContent();
         }
 
@@ -148,69 +115,39 @@ public class WSEController : ControllerBase {
 
     [RequiresAuthentication]
     [HttpDelete("{wseId}")]
-    public async Task<IActionResult> DeleteWse(long wseId) {
-        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
-
-        if (existingWse == null) return BadRequest();
-
-        _context.WebserviceEntries.Remove(existingWse);
-        await _context.SaveChangesAsync();
-
-        return Ok(existingWse);
+    public async Task<IActionResult> DeleteWse([FromServices] AtriaContext db, [FromDatabase] WebserviceEntry wse) {
+        db.WebserviceEntries.Remove(wse);
+        await db.SaveChangesAsync();
+        return Ok(wse);
     }
 
     [RequiresAuthentication]
-    [HttpDelete("{wseId}/question/{questionId}")]
-    public async Task<IActionResult> DeleteQuestion(long wseId, long questionId) {
-        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
+    [HttpDelete("{wseId:long}/question/{questionId:long}")]
+    public async Task<IActionResult> DeleteQuestion([FromServices] AtriaContext db, [FromDatabase] WebserviceEntry wse,
+        [FromDatabase] Question question) {
+        wse.Questions.Remove(question);
+        await db.SaveChangesAsync();
 
-        if (existingWse == null) return BadRequest();
-
-        var existingQuestion = existingWse.Questions.FirstOrDefault(x => x.Id == questionId);
-
-        if (existingQuestion == null) return BadRequest();
-
-        existingWse.Questions.Remove(existingQuestion);
-        await _context.SaveChangesAsync();
-
-        return Ok(existingQuestion);
+        return Ok(question);
     }
 
     [RequiresAuthentication]
-    [HttpDelete("{wseId}/question/{questionId}/answer/{answerId}")]
-    public async Task<IActionResult> DeleteAnswer(long wseId, long questionId, long answerId) {
-        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
+    [HttpDelete("{wseId:long}/question/{questionId:long}/answer/{answerId:long}")]
+    public async Task<IActionResult> DeleteAnswer([FromServices] AtriaContext db, [FromDatabase] Question question,
+        [FromDatabase] Answer answer) {
+        question.Answers.Remove(answer);
+        await db.SaveChangesAsync();
 
-        if (existingWse == null) return BadRequest();
-
-        var existingQuestion = existingWse.Questions.FirstOrDefault(x => x.Id == questionId);
-
-        if (existingQuestion == null) return BadRequest();
-
-        var existingAnswer = existingQuestion.Answers.FirstOrDefault(x => x.Id == answerId);
-
-        if (existingAnswer == null) return BadRequest();
-
-        existingQuestion.Answers.Remove(existingAnswer);
-        await _context.SaveChangesAsync();
-
-        return Ok(existingAnswer);
+        return Ok(answer);
     }
 
     [RequiresAuthentication]
-    [HttpDelete("{wseId}/review/{reviewId}")]
-    public async Task<IActionResult> DeleteReview(long wseId, long reviewId) {
-        var existingWse = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wseId);
-
-        if (existingWse == null) return BadRequest();
-
-        var existingReview = existingWse.Questions.FirstOrDefault(x => x.Id == reviewId);
-
-        if (existingReview == null) return BadRequest();
-
-        existingWse.Questions.Remove(existingReview);
-        await _context.SaveChangesAsync();
-
-        return Ok(existingReview);
+    [HttpDelete("{wseId:long}/review/{reviewId:long}")]
+    public async Task<IActionResult> DeleteReview([FromServices] AtriaContext db, [FromDatabase] WebserviceEntry wse,
+        [FromDatabase] Review review) {
+        wse.Reviews.Remove(review);
+        await db.SaveChangesAsync();
+        
+        return Ok(review);
     }
 }
