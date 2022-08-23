@@ -49,12 +49,23 @@
         </div>
     </div>
     <div class="w-100 mt-2 mb-4">
-        <WseSummaryList SummaryDtos="_summaryDtos"></WseSummaryList>
+        @switch (Type) {
+            case null or "wse":
+                <WseSummaryList SummaryDtos="@_summaryDtos"></WseSummaryList>
+                break;
+            case "user":
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    <UserSummaryList UserDtos="@_userDtos"></UserSummaryList>
+                </div>
+                break;
+            default:
+                NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string)null!));
+                break;
+        }
     </div>
 </div>
 
-@if (FilterDialogOpen)
-{
+@if (FilterDialogOpen) {
     <Frontend.Pages.Components.FilterModal OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
@@ -74,7 +85,8 @@
 
     private string? SearchString { get; set; }
 
-    private IList<WseSummaryDto> _summaryDtos = null!;
+    private IList<WseSummaryDto> _summaryDtos = new List<WseSummaryDto>();
+    private IList<UserDto> _userDtos = new List<UserDto>();
 
     private void SearchInput(KeyboardEventArgs evt) {
         if (evt.Key == "Enter") {
@@ -88,26 +100,26 @@
 
     protected override void OnInitialized() {
         @* Mock data gen *@
-        _summaryDtos = new List<WseSummaryDto>();
         WseSummaryDto wseSummaryDto1 = new WseSummaryDto {
             Id = 1,
-            Name = "hans peter und der der sich selbst sehr mag", 
-            ShortDescription = "der hans", 
+            Name = "hans peter und der der sich selbst sehr mag",
+            ShortDescription = "der hans",
             Tags = new List<Tag> {
                 new() {
                     Name = "Tag1",
                     CreationTime = DateTimeOffset.Now,
                     UseCount = 1
-                }, new() {
+                },
+                new() {
                     Name = "Tag2",
                     CreationTime = DateTimeOffset.Now,
                     UseCount = 100
                 }
-            }, 
-            CreationDate = DateTimeOffset.Now, 
-            IsOnline = true, 
-            AverageRating = 3.5, 
-            ViewCount = 1, 
+            },
+            CreationDate = DateTimeOffset.Now,
+            IsOnline = true,
+            AverageRating = 3.5,
+            ViewCount = 1,
             Link = new Uri("http://www.google.com"),
             IsBookmark = true
         };
@@ -115,16 +127,30 @@
 
         WseSummaryDto wseSummaryDto2 = new WseSummaryDto {
             Id = 1,
-            Name = "peter", 
-            ShortDescription = "hans peter", 
-            Tags = new List<Tag>(), 
-            CreationDate = DateTimeOffset.Now, 
-            IsOnline = false, 
-            AverageRating = 5, 
-            ViewCount = 15, 
+            Name = "peter",
+            ShortDescription = "hans peter",
+            Tags = new List<Tag>(),
+            CreationDate = DateTimeOffset.Now,
+            IsOnline = false,
+            AverageRating = 5,
+            ViewCount = 15,
             Link = new Uri("http://www.google.com"),
         };
         _summaryDtos.Add(wseSummaryDto2);
+
+        UserDto userDto = new UserDto() {
+            Email = "hans@peter",
+            FirstNames = "Hans",
+            LastName = "Peter",
+            Biography = "Ich bin der Hans Peter und ich bin Alkoholiker",
+            Title = "Dr."
+        };
+
+        _userDtos.Add(userDto);
+        _userDtos.Add(userDto);
+        _userDtos.Add(userDto);
+        _userDtos.Add(userDto);
+        _userDtos.Add(userDto);
     }
 
 
@@ -135,14 +161,12 @@
     @*for tag modal*@
     public bool FilterDialogOpen { get; set; }
 
-    private void OnFilterDialogClose(bool accepted)
-    {
+    private void OnFilterDialogClose(bool accepted) {
         FilterDialogOpen = false;
         StateHasChanged();
     }
 
-    private void OpenFilterDialog()
-    {
+    private void OpenFilterDialog() {
         FilterDialogOpen = true;
         StateHasChanged();
     }
