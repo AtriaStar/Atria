@@ -407,6 +407,58 @@ User user11 = new User
     SignUpIp = "127.0.0.1",
 };
 
+User user12 = new User
+{
+    Title = "Dr.",
+    FirstNames = "John",
+    LastName = "Watson",
+    Email = "jw@london.at",
+    PasswordSalt = Array.Empty<byte>(),
+    PasswordHash = Array.Empty<byte>(),
+    SignUpIp = "127.0.0.1",
+};
+
+User user13 = new User
+{
+    Title = "Dr.",
+    FirstNames = "Meredith",
+    LastName = "Grey",
+    Email = "megr@seatlle.us",
+    PasswordSalt = Array.Empty<byte>(),
+    PasswordHash = Array.Empty<byte>(),
+    SignUpIp = "127.0.0.1",
+};
+
+User user14 = new User
+{
+    FirstNames = "Tyrion",
+    LastName = "Lannister",
+    Email = "tlannister@lan.got",
+    PasswordSalt = Array.Empty<byte>(),
+    PasswordHash = Array.Empty<byte>(),
+    SignUpIp = "127.0.0.1",
+};
+
+User user15 = new User
+{
+    FirstNames = "Cersei",
+    LastName = "Lannister",
+    Email = "clannister@lan.got",
+    PasswordSalt = Array.Empty<byte>(),
+    PasswordHash = Array.Empty<byte>(),
+    SignUpIp = "127.0.0.1",
+};
+
+User user16 = new User
+{
+    FirstNames = "Jaime",
+    LastName = "Lannister",
+    Email = "jlannister@lan.got",
+    PasswordSalt = Array.Empty<byte>(),
+    PasswordHash = Array.Empty<byte>(),
+    SignUpIp = "127.0.0.1",
+};
+
 await context.WebserviceEntries.AddAsync(entry);
 await context.WebserviceEntries.AddAsync(entry2);
 await context.WebserviceEntries.AddAsync(entry3);
@@ -434,6 +486,10 @@ await context.Users.AddAsync(user8);
 await context.Users.AddAsync(user9);
 await context.Users.AddAsync(user10);
 await context.Users.AddAsync(user11);
-
+await context.Users.AddAsync(user12);
+await context.Users.AddAsync(user13);
+await context.Users.AddAsync(user14);
+await context.Users.AddAsync(user15);
+await context.Users.AddAsync(user16);
 
 await context.SaveChangesAsync();
