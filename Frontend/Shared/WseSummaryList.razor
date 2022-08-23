@@ -7,11 +7,13 @@
                 <div class="col-auto">
                     <i class="fa-solid fa-circle @StyleOnlineStatus(wseSummaryDto)"></i>
                 </div>
-            
+
                 <div class="col-auto ps-0 d-flex d-block">
-                    <NavLink href="@GetWseLink(wseSummaryDto)">
-                        <h5>@wseSummaryDto.Name</h5>
-                    </NavLink>
+                    <h5>
+                        <NavLink href="@GetWseLink(wseSummaryDto)">
+                            @wseSummaryDto.Name
+                        </NavLink>
+                    </h5>
                 </div>
 
                 <div class="col-auto ps-0 ms-auto d-flex d-block">
