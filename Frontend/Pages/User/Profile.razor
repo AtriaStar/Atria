@@ -11,7 +11,12 @@
                     <div class="d-flex flex-column">
                         <div class="d-flex flex-column flex-sm-row flex-xl-column">
                             <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
-                                <img alt="default avatar" src="images/default_avatar.png" class="avatar avatar-w"/>
+                                @if (User.ProfilePictureUrl is not null) {
+                                    <img class="avatar avatar-w" alt="" src="@User.ProfilePictureUrl">
+                                }
+                                else {
+                                    <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
+                                }
                             </div>
                             <div class="d-flex flex-column justify-content-center">
                                 <div>@User.Title</div>
@@ -36,7 +41,12 @@
                             <div class="d-flex flex-column flex-sm-row flex-xl-column">
                                 <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
                                     <label for="image_upload" style="cursor: pointer" title="Bild ändern">
-                                        <img alt="default avatar" src="images/default_avatar.png" class="avatar avatar-w"/>
+                                        @if (User.ProfilePictureUrl is not null) {
+                                            <img class="avatar avatar-w" alt="" src="@User.ProfilePictureUrl">
+                                        }
+                                        else {
+                                            <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
+                                        }
                                     </label>
                                     <InputFile OnChange="@LoadFiles" id="image_upload" style="display: none"></InputFile>
                                 </div>
