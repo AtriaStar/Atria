@@ -157,15 +157,14 @@
     }
 
     @*for tag modal*@
-    public bool FilterDialogOpen { get; set; }
+    private bool FilterDialogOpen { get; set; }
 
     private void OnFilterDialogClose(bool accepted) {
         FilterDialogOpen = false;
-        StateHasChanged();
     }
 
     private void OpenFilterDialog() {
         FilterDialogOpen = true;
-        StateHasChanged();
     }
+
 }
