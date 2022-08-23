@@ -18,7 +18,7 @@
 
                 <div class="col-auto ps-0 ms-auto d-flex d-block">
                     <div class="d-flex justify-content-sm-end justify-content-start flex-wrap">
-                        <div class="">
+                        <div class="ms-3">
                             @{
                                 var bookmarkState = wseSummaryDto.IsBookmark ? "bi-bookmark-fill" : "bi-bookmark";
                                 var bookmarkTitle = wseSummaryDto.IsBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
@@ -42,9 +42,6 @@
                                 }
                             }
                         </div>
-                        <div class="ms-3 text-end flex-grow-1" style="max-width: 10rem">
-                            @wseSummaryDto.ViewCount Aufruf(e)
-                        </div>
                     </div>
                 </div>
             </div>
@@ -53,6 +50,17 @@
                 <div class="col">
                     @wseSummaryDto.ShortDescription
                 </div>
+                @if (@wseSummaryDto.ViewCount == 1) {
+                    <div class="col-auto ms-auto">
+                        @wseSummaryDto.ViewCount Aufruf
+                    </div>
+                }
+                else {
+                    <div class="col-auto ms-auto">
+                        @wseSummaryDto.ViewCount Aufrufe
+                    </div>
+                }
+                
             </div>
 
             <div class="row mb-2">
