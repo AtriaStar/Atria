@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components
 @inject NavigationManager NavManager
 @inject HttpClient HttpClient
+@inject IJSRuntime JS
 
 @* TODO page title*@
 
@@ -63,7 +64,7 @@
 	    var response = await HttpClient.PostAsJsonAsync("auth/login", _login);
 
         if (response.IsSuccessStatusCode) {
-            NavManager.NavigateTo("/");
+            await JS.InvokeVoidAsync("history.back");
         } else {
             LoginMessage = "Invalid username or password";
         }
