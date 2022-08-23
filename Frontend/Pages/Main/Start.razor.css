@@ -1,50 +1,17 @@
-﻿.col {
-    border-color: rgba(98, 98, 98, 1);
+﻿.search-data-list {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
 }
 
-
-.list-group-item {
-    color: black;
+.start-searchbar {
+    border-radius: 0.375rem;
+    border: 2px solid #dee2e6;
 }
 
-.active {
-    border-color: rgba(152, 152, 152, 1);
-    background-color: rgba(224, 224, 224, 1);
+.rating-uncolored {
+    color: #cecece;
 }
 
-.rating {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: center;
-}
-
-.rating > input {
-    display: none;
-}
-
-.rating > label {
-    position: relative;
-    width: 100px;
-    font-size: 30px;
-    color: #FFD600;
-    cursor: pointer;
-}
-
-.rating > label::before {
-    content: "\2605";
-    position: absolute;
-    opacity: 0;
-}
-
-.rating > label:hover:before,
-.rating > label:hover ~ label:before {
-    opacity: 1 !important;
-}
-
-.rating > input:checked ~ label:before {
-    opacity: 1;
-}
-
-.rating:hover > input:checked ~ label:before {
-    opacity: 0;
+.rating-color {
+    color: #fbc634;
 }
