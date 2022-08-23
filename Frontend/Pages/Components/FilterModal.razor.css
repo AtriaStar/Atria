@@ -18,3 +18,8 @@
     font-size: 12px;
     padding-block: 1px;
 }
+
+.ui-field {
+    box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
+    border-radius: 0.375rem;
+}

@@ -28,13 +28,15 @@
                 <div>Bewertung</div>
                 <div class="row mt-2">
                     <div class="col-5">
-                        <select class="form-select form-select-sm" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px" @bind="_selectedStarNum">
-                            <option value="0" selected>0 oder mehr</option>
-                            <option value="1">1 oder mehr</option>
-                            <option value="2">2 oder mehr</option>
-                            <option value="3">3 oder mehr</option>
-                            <option value="4">4 oder mehr</option>
-                        </select>
+                        <div class="ui-field">
+                            <select class="form-select form-select-sm" @bind="_selectedStarNum">
+                                <option value="0" selected>0 oder mehr</option>
+                                <option value="1">1 oder mehr</option>
+                                <option value="2">2 oder mehr</option>
+                                <option value="3">3 oder mehr</option>
+                                <option value="4">4 oder mehr</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="col-auto">
                         @for (int i = 1; i <= _selectedStarNum; i++)
@@ -52,10 +54,12 @@
                 <hr/>
 
                 <div class="col-auto d-flex justify-content-end mb-2">
-                    <div class="form-control form-control-sm border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
-                        <div class="input-group input-group-sm">
-                            <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
-                            <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach...">
+                    <div class="ui-field">
+                        <div class="form-control form-control-sm border p-0">
+                            <div class="input-group input-group-sm">
+                                <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
+                                <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach...">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -76,12 +80,14 @@
 
                 <label class="text-muted">(zum Auswählen Strg gedrückt halten)</label>
                 @*TODO InputSelect when EditForm added*@
-                <select class="form-select mb-1" size="8" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px" multiple @onchange="SelectedTagsChanged">
-                    @for (int i = 0; i < 21; i++) {
-                        <option value="Tag @i">Tag @i</option>
-                    }
-                </select>
-                <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
+                <div class="ui-field">
+                    <select class="form-select mt-1" size="8" multiple @onchange="SelectedTagsChanged">
+                        @for (int i = 0; i < 21; i++) {
+                            <option value="Tag @i">Tag @i</option>
+                        }
+                    </select>
+                </div>
+                <div class="d-grid gap-2 mt-3 d-flex justify-content-end">
                     <button type="button" class="btn btn-outline-danger btn-small" @onclick="() => DeleteSelectedTags()">Alle Tags Löschen</button>
                 </div>
             </div>
