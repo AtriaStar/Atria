@@ -28,7 +28,7 @@
                 <div>Bewertung</div>
                 <div class="row mt-2">
                     <div class="col-5">
-                        <select class="form-select form-select-sm" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px" @bind="selectedStarNum">
+                        <select class="form-select form-select-sm" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px" @bind="_selectedStarNum">
                             <option value="0" selected>0 oder mehr</option>
                             <option value="1">1 oder mehr</option>
                             <option value="2">2 oder mehr</option>
@@ -37,12 +37,12 @@
                         </select>
                     </div>
                     <div class="col-auto">
-                        @for (int i = 1; i <= selectedStarNum; i++)
+                        @for (int i = 1; i <= _selectedStarNum; i++)
                         {
                             <i class="fa fa-star rating-color me-1"></i>
                         }
 
-                        @for (int i = 1; i <= (5 - selectedStarNum); i++)
+                        @for (int i = 1; i <= (5 - _selectedStarNum); i++)
                         {
                             <i class="fa fa-star rating-uncolored me-1"></i>
                         }
@@ -61,13 +61,13 @@
                 </div>
 
                 <div class="row mt-3 mb-1">
-                    @foreach (string tag in selectedTags)
+                    @foreach (string tag in _selectedTags)
                     {
                         <div class="col-auto">
                             <h6>
                                 <span class="badge bg-info">
                                     @tag
-                                    <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => removeTag(tag)"/>
+                                    <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"></button>
                                 </span>
                             </h6>
                         </div>
@@ -82,7 +82,7 @@
                     }
                 </select>
                 <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
-                    <button type="button" class="btn btn-outline-danger btn-small" @onclick="() => deleteSelectedTags()">Alle Tags Löschen</button>
+                    <button type="button" class="btn btn-outline-danger btn-small" @onclick="() => DeleteSelectedTags()">Alle Tags Löschen</button>
                 </div>
             </div>
 
@@ -108,26 +108,26 @@
     }
 
     @*mock tags*@
-    string[] selectedTags = new string[] { };
+    string[] _selectedTags = new string[] { };
 
-    private void deleteSelectedTags()
+    private void DeleteSelectedTags()
     {
-        selectedTags = Array.Empty<string>();
+        _selectedTags = Array.Empty<string>();
     }
 
-    private void removeTag(string tag)
+    private void RemoveTag(string tag)
     {
-        selectedTags = selectedTags.Where(w => w != tag).ToArray();
+        _selectedTags = _selectedTags.Where(w => w != tag).ToArray();
     }
 
     private void SelectedTagsChanged(ChangeEventArgs e)
     {
         if (e.Value is not null)
         {
-            selectedTags = (string[])e.Value;
+            _selectedTags = (string[])e.Value;
         }
     }
 
     @*star rating logic*@
-    private int selectedStarNum = 0;
+    private int _selectedStarNum = 0;
 }

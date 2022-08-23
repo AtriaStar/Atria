@@ -14,7 +14,7 @@
                 <div class="d-flex flex-column justify-content-center">
                     <div class="card-text">@userDto.Title</div>
                     <h5 class="card-title">
-                        <NavLink href="@getHref(userDto)">@userDto.FirstNames @userDto.LastName</NavLink>
+                        <NavLink href="@GetHref(userDto)">@userDto.FirstNames @userDto.LastName</NavLink>
                     </h5>
                     <div class="card-text">@userDto.Biography</div>
                     <div class="card-text">
@@ -31,7 +31,7 @@
     [Parameter]
     public IList<UserDto> UserDtos { get; set; } = null!;
 
-    private string getHref(UserDto userDto) {
+    private string GetHref(UserDto userDto) {
         return "user/" + userDto.Id;
     }
 
