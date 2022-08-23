@@ -37,8 +37,7 @@
                     Sortieren nach
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    @*relevance is default, no extra item needed
-                    <NavLink href="@Navigate("sort", null)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>*@
+                    <NavLink href="@Navigate("sort", null)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>
                     <NavLink href="@Navigate("sort", "useCount")" class="dropdown-item">Aufrufzahl aufsteigend</NavLink>
                     <NavLink href="@Navigate("sort", "useCount")" class="dropdown-item">Aufrufzahl absteigend</NavLink>
                     <NavLink href="@Navigate("sort", "reviewAverage")" class="dropdown-item">Bewertungsdurchschnitt aufsteigend</NavLink>
