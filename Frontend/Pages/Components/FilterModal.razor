@@ -76,7 +76,7 @@
 
                 <label class="text-muted">(zum Auswählen Strg gedrückt halten)</label>
                 @*TODO InputSelect when EditForm added*@
-                <select class="form-select mb-1" size="8" multiple @onchange="SelectedTagsChanged">
+                <select class="form-select mb-1" size="8" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px" multiple @onchange="SelectedTagsChanged">
                     @for (int i = 0; i < 21; i++) {
                         <option value="Tag @i">Tag @i</option>
                     }
