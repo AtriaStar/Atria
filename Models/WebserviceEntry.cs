@@ -9,7 +9,7 @@ public class WebserviceEntry {
     public long Id { get; set; }
     public string Name { get; set; } = null!;
     public string ShortDescription { get; set; } = null!;
-    public Uri Link { get; set; } = null!;
+    public string Link { get; set; } = null!;
     public string? FullDescription { get; set; }
     public Uri? DocumentationLink { get; set; }
     public string? Changelog { get; set; }
