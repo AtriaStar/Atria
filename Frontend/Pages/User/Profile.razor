@@ -85,20 +85,18 @@
                 </div>
 
                 <div class="d-flex mb-2 ms-auto">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle me-4" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
-                            Filter
-                        </button>
-                        @*TODO dropdown menu according to current type*@
-                        <div class="dropdown-menu dropdown-menu-end"></div>
-                    </div>
-                </div>
+                    <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
+                        Filter
+                    </button>
 
-                <div class="search-bar">
-                    <div class="form-control form-control-sm border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
-                        <div class="input-group input-group-sm">
-                            <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
-                            <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind-value="_filter">
+                    <div class="ms-3 d-flex">
+                        <div class="form-control form-control-sm border" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
+                            <div class="input-group input-group-sm">
+                                <button class="btn btn-sm btn-link text-dark" @onclick="Search">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                                <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind-value="Query" @onkeyup="SearchInput">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -119,13 +117,18 @@
                         <WseSummaryList SummaryDtos="_summaryDtos"/>
                         break;
                     default:
-                        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string) null!));
+                        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string)null!));
                         break;
                 }
             </div>
         </div>
     </div>
 </div>
+
+
+@if (FilterDialogOpen) {
+    <Frontend.Pages.Components.FilterModal OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+}
 
 @code {
 
@@ -134,11 +137,11 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public string? Type { get; set; } = "";
+    public string? Type { get; set; }
+
+    public string? Query { get; set; }
 
     private IList<WseSummaryDto> _summaryDtos = null!;
-
-    private string? _filter;
 
     [Parameter]
     public UserDto User { get; set; } = null!;
@@ -160,26 +163,26 @@
         _summaryDtos = new List<WseSummaryDto>();
         WseSummaryDto wseSummaryDto1 = new WseSummaryDto {
             Id = 1,
-            Name = "hans peter und der der sich selbst sehr mag", 
-            ShortDescription = "der hans", 
-            Tags = new List<Tag>(), 
-            CreationDate = DateTimeOffset.Now, 
-            IsOnline = true, 
-            AverageRating = 3.5, 
-            ViewCount = 10, 
+            Name = "hans peter und der der sich selbst sehr mag",
+            ShortDescription = "der hans",
+            Tags = new List<Tag>(),
+            CreationDate = DateTimeOffset.Now,
+            IsOnline = true,
+            AverageRating = 3.5,
+            ViewCount = 10,
             Link = new Uri("http://www.google.com")
         };
         _summaryDtos.Add(wseSummaryDto1);
 
         WseSummaryDto wseSummaryDto2 = new WseSummaryDto {
             Id = 1,
-            Name = "hans", 
-            ShortDescription = "der hans", 
-            Tags = new List<Tag>(), 
-            CreationDate = DateTimeOffset.Now, 
-            IsOnline = true, 
-            AverageRating = 3.5, 
-            ViewCount = 100000, 
+            Name = "hans",
+            ShortDescription = "der hans",
+            Tags = new List<Tag>(),
+            CreationDate = DateTimeOffset.Now,
+            IsOnline = true,
+            AverageRating = 3.5,
+            ViewCount = 100000,
             Link = new Uri("http://www.google.com")
         };
         _summaryDtos.Add(wseSummaryDto2);
@@ -216,9 +219,29 @@
             Biography = User.Biography
         };
     }
-    
+
     private string Navigate(string key, string? value) {
         return NavigationManager.GetUriWithQueryParameter(key, value);
+    }
+
+    private void SearchInput(KeyboardEventArgs evt) {
+        if (evt.Key == "Enter") {
+            Search();
+        }
+    }
+
+    private void Search() {
+        NavigationManager.NavigateTo(Navigate("query", Query));
+    }
+
+    private bool FilterDialogOpen { get; set; }
+
+    private void OnFilterDialogClose(bool accepted) {
+        FilterDialogOpen = false;
+    }
+
+    private void OpenFilterDialog() {
+        FilterDialogOpen = true;
     }
 
 }
