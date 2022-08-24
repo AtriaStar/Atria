@@ -80,13 +80,15 @@ namespace Backend.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    ShortDescription = table.Column<string>(type: "text", nullable: false),
+                    ShortDescription = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Link = table.Column<string>(type: "text", nullable: false),
                     FullDescription = table.Column<string>(type: "text", nullable: false),
                     DocumentationLink = table.Column<string>(type: "text", nullable: false),
-                    Changelog = table.Column<string>(type: "text", nullable: false),
+                    Documentation = table.Column<string>(type: "text", nullable: false),
+                    ChangeLog = table.Column<string>(type: "text", nullable: false),
                     ViewCount = table.Column<int>(type: "integer", nullable: false),
                     ContactPersonId = table.Column<long>(type: "bigint", nullable: false),
+                    NewTags = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -105,7 +107,7 @@ namespace Backend.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
+                    Rights = table.Column<int>(type: "integer", nullable: false),
                     WebserviceEntryId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
