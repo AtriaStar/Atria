@@ -8,6 +8,7 @@ using Models.DTO;
 namespace Backend.Controllers;
 
 [ApiController]
+[Route("auth")]
 public class AuthenticationController : ControllerBase {
     private readonly AtriaContext _context;
 
@@ -70,4 +71,8 @@ public class AuthenticationController : ControllerBase {
         => _context.Sessions
             .Include(x => x.User)
             .Where(x => x.User == user);
+
+    [RequiresAuthentication]
+    [HttpGet("")]
+    public User GetAuthUser([FromAuthentication] User user) => user;
 }
