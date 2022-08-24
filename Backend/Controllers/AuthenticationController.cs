@@ -54,6 +54,7 @@ public class AuthenticationController : ControllerBase {
     public async Task<IActionResult> Logout([FromAuthentication] Session session, [FromServices] SessionService ss) {
         await ss.DeleteSession(session, _context, Response);
         return Ok();
+
     }
 
     [RequiresAuthentication]
@@ -65,7 +66,7 @@ public class AuthenticationController : ControllerBase {
         return Ok();
     }
 
-    [RequiresAuthentication]
+    [RequiresAuthentication] 
     [HttpGet("sessions")]
     public IEnumerable<Session> GetSessions([FromAuthentication] User user)
         => _context.Sessions
@@ -75,4 +76,5 @@ public class AuthenticationController : ControllerBase {
     [RequiresAuthentication]
     [HttpGet("")]
     public User GetAuthUser([FromAuthentication] User user) => user;
+
 }

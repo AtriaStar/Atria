@@ -1,25 +1,23 @@
 ﻿@page "/notifications"
 
-<PageTitle>Atria - Notifications</PageTitle>
+<PageTitle>Atria - Benachrichtigungen</PageTitle>
 
 <div class="container-lg mt-3">
-    <h2>Benachrichtigungen</h2>
+    <h2 class="mb-3">Benachrichtigungen</h2>
 
-    <div class="card">
-
-        <div class="row">
-            <div class="col-1">
-                <img src="/images/questionIcon.png"/>
-            </div>
-            <div class="col-11">
-                <div class="card-body">
-                    <h6 class="card-title">Eine neue Frage wurde erstellt.</h6>
-                    <a class="card-link" href="/notifications">Name WSE</a>
-                    <p class="text-end">
-                        <small class="text-muted">
-                            Datum
-                        </small>
-                    </p>
+    @*foreach notification*@
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-auto d-flex justify-content-center">
+                    <i class="bi bi-envelope-exclamation fs-1 ms-1"></i>
+                </div>
+                <div class="col">
+                    <h5 class="card-title">
+                        notification.baseMessage
+                        <small class="text-muted">Datum</small>
+                    </h5>
+                    <NavLink class="card-link" href="#">Name WSE</NavLink>
                 </div>
             </div>
         </div>
