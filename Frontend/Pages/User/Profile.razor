@@ -232,7 +232,7 @@ else if (_userNotFound) {
     }
 
     private void ResetDto() {
-        User.FirstNames = _cloneUserDto.FirstNames;
+        User!.FirstNames = _cloneUserDto.FirstNames;
         User.LastName = _cloneUserDto.LastName;
         User.Email = _cloneUserDto.Email;
         User.Biography = _cloneUserDto.Biography;
@@ -252,7 +252,7 @@ else if (_userNotFound) {
 
     private void CloneUser() {
         _cloneUserDto = new UserDto {
-            FirstNames = User.FirstNames,
+            FirstNames = User!.FirstNames,
             LastName = User.LastName,
             Email = User.Email,
             Title = User.Title,
