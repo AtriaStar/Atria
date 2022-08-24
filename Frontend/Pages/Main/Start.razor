@@ -37,7 +37,7 @@
                     Sortieren nach
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <NavLink href="@Navigate("sort", "relevance")" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>
+                    <NavLink href="@Navigate("sort", null)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>
                     <NavLink href="@Navigate("sort", "useCountAsc")" class="dropdown-item">Aufrufzahl aufsteigend</NavLink>
                     <NavLink href="@Navigate("sort", "useCountDesc")" class="dropdown-item">Aufrufzahl absteigend</NavLink>
                     <NavLink href="@Navigate("sort", "reviewAverageAsc")" class="dropdown-item">Bewertungsdurchschnitt aufsteigend</NavLink>
@@ -153,7 +153,7 @@
     }
 
 
-    private string Navigate(string key, string value) {
+    private string Navigate(string key, string? value) {
         return NavigationManager.GetUriWithQueryParameter(key, value);
     }
 
