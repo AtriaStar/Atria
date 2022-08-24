@@ -18,7 +18,7 @@ public class WebserviceEntry {
     [JsonIgnore]
     public virtual User ContactPerson { get; set; } = null!;
     public ICollection<Question> Questions { get; set; } = new List<Question>();
-    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+    public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
     public ICollection<Collaborator> Collaborators { get; set; } = new List<Collaborator>();
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;

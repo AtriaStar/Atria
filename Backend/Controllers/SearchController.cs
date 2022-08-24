@@ -16,7 +16,10 @@ public class SearchController : ControllerBase {
 
     private IQueryable<WebserviceEntry> GetBaseWses(WSESearchParam param)
         => _context.WebserviceEntries
-            .Where(x => x.Reviews.Average(y => (int) y.StarCount) >= (int) param.MinReviewAvg);
+            .Where(x => x.Reviews.Average(y => (int) y.StarCount) >= (int) param.MinReviewAvg
+            && x.Tags.Intersect(param.Tags).Count() == param.Tags.Count
+            && (param.IsOnline == null || true /* TODO */)
+            && (param.HasBookmark == null || true /* TODO */));
 
     [HttpGet("wse")]
     public IQueryable<WebserviceEntry> GetWseList([FromQuery] WSESearchParam param, [FromQuery] Pagination pagination)
