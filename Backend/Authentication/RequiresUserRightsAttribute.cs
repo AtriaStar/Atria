@@ -33,7 +33,8 @@ public class RequiresUserRightsAttribute : Attribute, IActionFilter, IOrderedFil
     }
 
     public void OnActionExecuted(ActionExecutedContext context) { }
-}
+
     public sealed override bool Authorize(User user, ActionExecutingContext context) => (user.Rights & UserRights) == UserRights;
 }
+    
 
