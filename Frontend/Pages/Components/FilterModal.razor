@@ -1,4 +1,7 @@
-﻿<div class="modal" id="tagModal" tabindex="-1" aria-labelledby="tagModalLabel" aria-hidden="true" style="display:block; background-color: rgba(10,10,10,.8);">
+﻿@using Models
+@inject NavigationManager NavigationManager
+
+<div class="modal" id="tagModal" tabindex="-1" aria-labelledby="tagModalLabel" aria-hidden="true" style="display:block; background-color: rgba(10,10,10,.8);">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,16 +12,17 @@
             <div class="modal-body">
 
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckOnline">
+                    <input class="form-check-input" type="checkbox" id="flexCheckOnline" @bind-value="_isOnline"/>
                     <label class="form-check-label" for="flexCheckOnline">
                         <i class="fa-solid fa-circle text-success"></i>
                         Online
                     </label>
                 </div>
+
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckBookmarks">
+                    <input class="form-check-input" type="checkbox" id="flexCheckBookmarks" @bind-value="_isBookmark"/>
                     <label class="form-check-label" for="flexCheckBookmarks">
-                        <i class="fa-solid fa-bookmark" style="color: red"></i> @*TODO bookmark under online is not in line dur to online icon being more broad*@
+                        <i class="fa-solid fa-bookmark pe-1" style="color: red"></i>
                         Lesezeichen
                     </label>
                 </div>
@@ -58,7 +62,7 @@
                         <div class="form-control form-control-sm border p-0">
                             <div class="input-group input-group-sm">
                                 <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
-                                <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach...">
+                                <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="TagQuery" @onkeyup="SearchTags">
                             </div>
                         </div>
                     </div>
@@ -82,8 +86,8 @@
                 @*TODO InputSelect when EditForm added*@
                 <div class="ui-field">
                     <select class="form-select mt-1" size="8" multiple @onchange="SelectedTagsChanged">
-                        @for (int i = 0; i < 21; i++) {
-                            <option value="Tag @i">Tag @i</option>
+                        @foreach (string tag in SearchedTags) {
+                            <option value="@tag">@tag</option>
                         }
                     </select>
                 </div>
@@ -100,9 +104,33 @@
 </div>
 
 @code {
+
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool _isOnline { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool _isBookmark { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int _selectedStarNum { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string[] _selectedTags { get; set; } = new string[] { };
+
+    private List<string> MockTags = new List<string> { };
+
+    private List<string> SearchedTags = new List<string> { };
+
+    private string? TagQuery { get; set; }
+
+    @*------------MODAL------------*@
     public Task ModalClose()
     {
         return OnClose.InvokeAsync(false);
@@ -110,11 +138,50 @@
 
     public Task ModalApply()
     {
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(
+            new Dictionary<string, object?>
+            {
+                ["online"] = _isOnline,
+                ["bookmark"] = _isBookmark,
+                ["minRating"] = _selectedStarNum,
+                ["tags"] = _selectedTags
+            }));
+
         return OnClose.InvokeAsync(true);
     }
 
-    @*mock tags*@
-    string[] _selectedTags = new string[] { };
+    @*------------TAG SEARCH------------*@
+    private void SearchTags(KeyboardEventArgs evt) {
+        SearchedTags = new List<string> { };
+
+        if (evt.Key == "Enter" && TagQuery is not null ) {
+            foreach (string str in MockTags)
+            {
+                if (str.Contains(TagQuery, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    SearchedTags.Add(str);
+                }
+            }
+        }
+    }
+
+    @*------------TAGS------------*@
+    protected override void OnInitialized()
+    {
+        @* Mock data gen *@
+        MockTags.Add("Suchmaschine1");
+        MockTags.Add("Lexikon");
+        MockTags.Add("Wörterbuch6");
+        MockTags.Add("Tool2");
+        MockTags.Add("Webservice");
+        MockTags.Add("Suchmaschine2");
+        MockTags.Add("Wörterbuch4");
+        MockTags.Add("Tool3");
+
+        SearchedTags = MockTags;
+
+        SearchedTags = SearchedTags.OrderBy(str => str).ToList();
+    }
 
     private void DeleteSelectedTags()
     {
@@ -134,6 +201,13 @@
         }
     }
 
-    @*star rating logic*@
-    private int _selectedStarNum = 0;
+    /**private List<Tag> stringToTag(string[] tags)
+    {
+        List<Tag> convertedTags = new List<Tag>();
+        foreach (string tagString in tags) 
+        {
+            convertedTags.Add(new() {Name = tagString, CreationTime = DateTimeOffset.Now, UseCount = 1});
+        }
+        return convertedTags;
+    }**/
 }
