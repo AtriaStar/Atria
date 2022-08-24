@@ -11,6 +11,7 @@ public class Answer {
     public WebserviceEntry Wse { get; set; } = null!;
     [Key]
     public long QuestionId { get; set; }
+    [ForeignKey($"{nameof(WseId)},{nameof(QuestionId)}")]
     public Question Question { get; set; } = null!;
     public string Text { get; set; } = null!;
     public DateTimeOffset CreationTime { get; set; }
