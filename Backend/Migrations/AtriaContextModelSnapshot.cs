@@ -248,7 +248,6 @@ namespace Backend.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ChangeLog")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<long>("ContactPersonId")
@@ -258,15 +257,12 @@ namespace Backend.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Documentation")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("DocumentationLink")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FullDescription")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Link")
@@ -274,10 +270,6 @@ namespace Backend.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("NewTags")
                         .IsRequired()
                         .HasColumnType("text");
 
