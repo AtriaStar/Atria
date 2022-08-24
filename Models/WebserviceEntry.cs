@@ -15,11 +15,8 @@ public class WebserviceEntry {
     public string? Changelog { get; set; }
     public int ViewCount { get; set; }
     public long ContactPersonId { get; set; }
-    [JsonIgnore]
     public virtual User ContactPerson { get; set; } = null!;
-    public ICollection<Question> Questions { get; set; } = new List<Question>();
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
-    public ICollection<Review> Reviews { get; set; } = new List<Review>();
     public ICollection<Collaborator> Collaborators { get; set; } = new List<Collaborator>();
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
