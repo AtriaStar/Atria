@@ -66,7 +66,7 @@ public class AuthenticationController : ControllerBase {
 
     [RequiresAuthentication]
     [HttpGet("sessions")]
-    public IEnumerable<Session> GetSessions([FromAuthentication] User user)
+    public IQueryable<Session> GetSessions([FromAuthentication] User user)
         => _context.Sessions
             .Include(x => x.User)
             .Where(x => x.User == user);

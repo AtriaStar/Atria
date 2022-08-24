@@ -29,5 +29,9 @@ public class FuzzingService {
         return totalScore / totalWeight;
     }
 
+    public static double CalculateScore(string query, User user)
+        => Math.Max(_scorer.Score(query, user.Email),
+            _scorer.Score(query, $"{user.Title ?? string.Empty} {user.FirstNames} {user.LastName}"));
+
     private record Factor(Func<WebserviceEntry, string?> Mapper, int Weight);
 }

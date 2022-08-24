@@ -1,7 +1,7 @@
 ﻿namespace Models;
 
 public record WSESearchParam(
-    string Query,
+    string? Query,
     bool IsOnline,
     bool HasBookmark,
     ICollection<Tag> Tags,

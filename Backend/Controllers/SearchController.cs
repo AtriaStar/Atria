@@ -14,26 +14,31 @@ public class SearchController : ControllerBase {
         _context = context;
     }
 
-    private IEnumerable<WebserviceEntry> GetWseBaseEnumerable(WSESearchParam param)
+    private IQueryable<WebserviceEntry> GetBaseWses(WSESearchParam param)
         => _context.WebserviceEntries
             .Where(x => x.Reviews.Average(y => (int) y.StarCount) >= (int) param.MinReviewAvg);
 
     [HttpGet("wse")]
-    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WSESearchParam param, [FromQuery] Pagination pagination) =>
-        GetWseBaseEnumerable(param)
-            .OrderBy(x => param.Order.GetMapper().Invoke(x) * FuzzingService.CalculateScore(param.Query, x))
-            .Skip(pagination.Page * pagination.EntriesPerPage)
-            .Take(pagination.EntriesPerPage);
+    public IQueryable<WebserviceEntry> GetWseList([FromQuery] WSESearchParam param, [FromQuery] Pagination pagination)
+        => GetBaseWses(param)
+            .OrderBy(x => param.Order.GetMapper().Invoke(x)
+                          * (param.Query == null ? 1 : FuzzingService.CalculateScore(param.Query, x)))
+            .Paginate(pagination);
 
     [HttpGet("wse/count")]
-    public long GetWseCount([FromQuery] WSESearchParam param) => GetWseBaseEnumerable(param).LongCount();
+    public long GetWseCount([FromQuery] WSESearchParam param) => GetBaseWses(param).LongCount();
+
+    private IQueryable<User> GetBaseUsers(string query)
+        => _context.Users
+            .Select(x => new { user = x, score = FuzzingService.CalculateScore(query, x) })
+            .OrderBy(x => x.score)
+            .TakeWhile(x => x.score > 0.5)
+            .Select(x => x.user);
 
     [HttpGet("user")]
-    public IEnumerable<User> GetUserList(string? query, [FromQuery] Pagination pagination)
-        => _context.Users
-            .Skip(pagination.Page * pagination.EntriesPerPage)
-            .Take(pagination.EntriesPerPage);
+    public IQueryable<User> GetUserList(string query, [FromQuery] Pagination pagination)
+        => GetBaseUsers(query).Paginate(pagination);
 
     [HttpGet("user/count")]
-    public Task<long> GetUserCount(string? query) => _context.WebserviceEntries.LongCountAsync();
+    public Task<long> GetUserCount(string query) => GetBaseUsers(query).LongCountAsync();
 }
