@@ -5,8 +5,21 @@
     border-top: 1px solid rgba(0, 0, 0, 0.8);
 }
 
-.card {
-    border-color: rgba(250, 250, 250, 1);
+.rating-uncolored {
+    color: #cecece;
+}
+
+.rating-color {
+    color: #fbc634;
+}
+
+.btn-small {
+    border-width: 2px;
+    font-size: 12px;
+    padding-block: 1px;
+}
+
+.ui-field {
     box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
     border-radius: 0.375rem;
 }

@@ -39,6 +39,7 @@ public static class Extensions {
             _ => throw new InvalidEnumArgumentException(nameof(order), (int)order, typeof(Order)),
         };
 
+
     public static IEnumerable<ParameterInfo> GetBasicParameters(this ActionExecutingContext context)
         => (context.ActionDescriptor as ControllerActionDescriptor)?.MethodInfo.GetParameters()
             .Where(x => x.Name != null)
@@ -48,6 +49,7 @@ public static class Extensions {
         where T : Attribute
         => context.GetBasicParameters().Where(x => x.CustomAttributes
                 .Any(y => y.AttributeType == typeof(T)));
+
 
     public static void UseCentralRoutePrefix(this MvcOptions opt, IRouteTemplateProvider routeAttribute) {
         opt.Conventions.Insert(0, new RouteConvention(routeAttribute));
