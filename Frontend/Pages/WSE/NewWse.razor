@@ -108,7 +108,9 @@
                 neue Tags erstellen
                 <small class="text-muted">(kommagetrennt)</small>
             </label>
-	        <ValidationMessage For="() => webserviceEntry.Tags"></ValidationMessage>
+            <div class="ui-field">
+                <InputTextArea class="form-control" rows="3" placeholder="tag1,tag2,..." id="newTags"/>
+            </div>
         </div>
 
         <hr/>
