@@ -88,7 +88,6 @@ namespace Backend.Migrations
                     ChangeLog = table.Column<string>(type: "text", nullable: true),
                     ViewCount = table.Column<int>(type: "integer", nullable: false),
                     ContactPersonId = table.Column<long>(type: "bigint", nullable: false),
-                    NewTags = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>

@@ -273,10 +273,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("NewTags")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("ShortDescription")
                         .IsRequired()
                         .HasMaxLength(50)
