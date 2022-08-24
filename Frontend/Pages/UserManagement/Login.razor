@@ -1,8 +1,10 @@
 ﻿@page "/login"
 @using Microsoft.AspNetCore.Components
+@using Models
+@using System.Net
 @inject NavigationManager NavManager
 @inject HttpClient HttpClient
-@inject IJSRuntime JS
+@inject IJSRuntime Js
 
 @* TODO page title*@
 
@@ -42,31 +44,44 @@
                         </div>
                     </div>
                 </EditForm>
-                
-                <div class="col-12 row" style="text-align:center; color: red; font-weight:bold">
-                    <span class="col-12">@LoginMessage</span>
+
+                <div class="text-center fw-bold text-danger">
+                    @LoginMessage
                 </div>
             </div>
         </div>
     </div>
-    <div class="row p-2 justify-content-center">
-        <div class="col-auto text-center">
-            Sie sind noch nicht registriert? <NavLink href="register">Hier registrieren</NavLink>
-        </div>
+    <div class="text-center p-2">
+        Sie sind noch nicht registriert? <NavLink href="register">Hier registrieren</NavLink>
     </div>
 </div>
 
 @code {
-    readonly Models.DTO.Login _login = new();
-    public string LoginMessage { get; set; } = null!;
+    
+    [CascadingParameter]
+    private User? CurrentUser { get; set; }
+    
+    private readonly Models.DTO.Login _login = new();
+    private string LoginMessage { get; set; } = null!;
+
+    protected override void OnParametersSet() {
+        if (CurrentUser is not null) {
+            NavManager.NavigateTo("");
+        }
+    }
 
     private async void HandleValidSubmit() {
-	    var response = await HttpClient.PostAsJsonAsync("auth/login", _login);
+        var response = await HttpClient.PostAsJsonAsync("auth/login", _login);
 
         if (response.IsSuccessStatusCode) {
-            await JS.InvokeVoidAsync("history.back");
-        } else {
+            await Js.InvokeVoidAsync("history.back");
+        }
+        else if (response.StatusCode == HttpStatusCode.Unauthorized) {
             LoginMessage = "Invalid username or password";
+            StateHasChanged();
+        }
+        else {
+            NavManager.NavigateTo("/internal-server-error");
         }
     }
 }
