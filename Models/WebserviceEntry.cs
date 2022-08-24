@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Models; 
 
@@ -12,6 +13,7 @@ public class WebserviceEntry {
     [Required]
     [MaxLength(50)]
     public string ShortDescription { get; set; } = null!;
+
 
     [Required]
     [Url]
@@ -35,5 +37,6 @@ public class WebserviceEntry {
 
     public ICollection<Review> Reviews { get; set; } = null!;
     public ICollection<Collaborator> Collaborators { get; set; } = null!;
+
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

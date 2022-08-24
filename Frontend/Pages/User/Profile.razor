@@ -11,7 +11,12 @@
                     <div class="d-flex flex-column">
                         <div class="d-flex flex-column flex-sm-row flex-xl-column">
                             <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
-                                <img alt="default avatar" src="images/default_avatar.png" class="avatar avatar-w"/>
+                                @if (User.ProfilePictureUrl is not null) {
+                                    <img class="avatar avatar-w" alt="" src="@User.ProfilePictureUrl">
+                                }
+                                else {
+                                    <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
+                                }
                             </div>
                             <div class="d-flex flex-column justify-content-center">
                                 <div>@User.Title</div>
@@ -36,7 +41,12 @@
                             <div class="d-flex flex-column flex-sm-row flex-xl-column">
                                 <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
                                     <label for="image_upload" style="cursor: pointer" title="Bild ändern">
-                                        <img alt="default avatar" src="images/default_avatar.png" class="avatar avatar-w"/>
+                                        @if (User.ProfilePictureUrl is not null) {
+                                            <img class="avatar avatar-w" alt="" src="@User.ProfilePictureUrl">
+                                        }
+                                        else {
+                                            <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
+                                        }
                                     </label>
                                     <InputFile OnChange="@LoadFiles" id="image_upload" style="display: none"></InputFile>
                                 </div>
@@ -77,39 +87,58 @@
         </div>
         <div class="col">
             <div class="d-flex flex-wrap justify-content-between">
-                <div class="nav nav-tabs profile-nav">
-                    <NavLink href="profile?type=wse" class="nav-link" Match="NavLinkMatch.All">WSE</NavLink>
-                    <NavLink href="profile?type=bookmarks" class="nav-link">Lesezeichen</NavLink>
-                    <NavLink href="profile?type=ratings" class="nav-link">Bewertungen</NavLink>
-                    <NavLink href="profile?type=drafts" class="nav-link">Entwürfe</NavLink>
+                <div class="nav nav-pills mb-2">
+                    <NavLink href="@Navigate("type", null)" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
+                    <NavLink href="@Navigate("type", "bookmarks")" class="nav-link me-2">Lesezeichen</NavLink>
+                    <NavLink href="@Navigate("type", "ratings")" class="nav-link me-2">Bewertungen</NavLink>
+                    <NavLink href="@Navigate("type", "drafts")" class="nav-link">Entwürfe</NavLink>
                 </div>
-                <div class="py-2 px-3">
-                    <input class="profile-searchbar" type="search" @bind-value="_filter" placeholder="Search by Name">
+
+                <div class="d-flex mb-2 ms-auto">
+                    <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
+                        Filter
+                    </button>
+
+                    <div class="ms-3 d-flex">
+                        <div class="form-control form-control-sm border" style="box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px; border-radius: 0.375rem">
+                            <div class="input-group input-group-sm">
+                                <button class="btn btn-sm btn-link text-dark" @onclick="Search">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                                <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind-value="Query" @onkeyup="SearchInput">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="list-group list-group-flush profile-data-list">
+            <div class="w-100 mt-2 mb-4">
                 @switch (Type) {
-                    case "wse":
-                        <WSE SummaryDtos="_summaryDtos"/>
+                    case null or "wse":
+                        <WseSummaryList SummaryDtos="_summaryDtos"/>
                         break;
                     case "bookmarks":
-                        <WSE SummaryDtos="_summaryDtos"/>
+                        <WseSummaryList SummaryDtos="_summaryDtos"/>
                         break;
                     case "ratings":
                         <Ratings/>
                         break;
                     case "drafts":
-                        <WSE SummaryDtos="_summaryDtos"/>
+                        <WseSummaryList SummaryDtos="_summaryDtos"/>
                         break;
                     default:
-                        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", "wse"));
+                        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string)null!));
                         break;
                 }
             </div>
         </div>
     </div>
 </div>
+
+
+@if (FilterDialogOpen) {
+    <Frontend.Pages.Components.FilterModal OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+}
 
 @code {
 
@@ -118,11 +147,11 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public string? Type { get; set; } = "";
+    public string? Type { get; set; }
+
+    public string? Query { get; set; }
 
     private IList<WseSummaryDto> _summaryDtos = null!;
-
-    private string? _filter;
 
     [Parameter]
     public UserDto User { get; set; } = null!;
@@ -142,18 +171,34 @@
         CloneUser();
 
         _summaryDtos = new List<WseSummaryDto>();
-        WseSummaryDto wseSummaryDto1 = new WseSummaryDto("hans", "der hans", new List<Tag>(), DateTimeOffset.Now, true, 3.5, 10, new Uri("http://www.google.com"));
+        WseSummaryDto wseSummaryDto1 = new WseSummaryDto {
+            Id = 1,
+            Name = "hans peter und der der sich selbst sehr mag",
+            ShortDescription = "der hans",
+            Tags = new List<Tag>(),
+            CreationDate = DateTimeOffset.Now,
+            IsOnline = true,
+            AverageRating = 3.5,
+            ViewCount = 10,
+            Link = new Uri("http://www.google.com")
+        };
         _summaryDtos.Add(wseSummaryDto1);
 
-        WseSummaryDto wseSummaryDto2 = new WseSummaryDto("günther", "der günther", new List<Tag>(), DateTimeOffset.Now, false, 3.5, 10, new Uri("http://www.duckduckgo.com"));
+        WseSummaryDto wseSummaryDto2 = new WseSummaryDto {
+            Id = 1,
+            Name = "hans",
+            ShortDescription = "der hans",
+            Tags = new List<Tag>(),
+            CreationDate = DateTimeOffset.Now,
+            IsOnline = true,
+            AverageRating = 3.5,
+            ViewCount = 100000,
+            Link = new Uri("http://www.google.com")
+        };
         _summaryDtos.Add(wseSummaryDto2);
         _summaryDtos.Add(wseSummaryDto1);
 
         @* mock data generation end *@
-
-        if (Type is null or "") {
-            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", "wse"));
-        }
     }
 
     private void ResetDto() {
@@ -183,6 +228,30 @@
             Title = User.Title,
             Biography = User.Biography
         };
+    }
+
+    private string Navigate(string key, string? value) {
+        return NavigationManager.GetUriWithQueryParameter(key, value);
+    }
+
+    private void SearchInput(KeyboardEventArgs evt) {
+        if (evt.Key == "Enter") {
+            Search();
+        }
+    }
+
+    private void Search() {
+        NavigationManager.NavigateTo(Navigate("query", Query));
+    }
+
+    private bool FilterDialogOpen { get; set; }
+
+    private void OnFilterDialogClose(bool accepted) {
+        FilterDialogOpen = false;
+    }
+
+    private void OpenFilterDialog() {
+        FilterDialogOpen = true;
     }
 
 }

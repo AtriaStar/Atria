@@ -1,0 +1,107 @@
+﻿@using Models.DTO
+@using Models
+@foreach (WseSummaryDto wseSummaryDto in SummaryDtos) {
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-auto">
+                    <i class="fa-solid fa-circle @StyleOnlineStatus(wseSummaryDto)"></i>
+                </div>
+
+                <div class="col-auto ps-0 d-flex d-block">
+                    <h5>
+                        <NavLink href="@GetWseLink(wseSummaryDto)">
+                            @wseSummaryDto.Name
+                        </NavLink>
+                    </h5>
+                </div>
+
+                <div class="col-auto ps-0 ms-auto d-flex d-block">
+                    <div class="d-flex justify-content-sm-end justify-content-start flex-wrap">
+                        <div class="ms-3">
+                            @{
+                                var bookmarkState = wseSummaryDto.IsBookmark ? "bi-bookmark-fill" : "bi-bookmark";
+                                var bookmarkTitle = wseSummaryDto.IsBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                            }
+                            <button class="btn-outline-light btn p-0" title="@bookmarkTitle" @onclick="() => ChangeBookmarkStatus(wseSummaryDto)">
+                                <i class="bi @bookmarkState fs-5" style="color: #dc3545"></i>
+                            </button>
+                        </div>
+                        <div class="ms-3" style="min-width: fit-content">
+                            @{
+                                int i = 0;
+                                for (; i < (int)wseSummaryDto.AverageRating; i++) {
+                                    <i class="fa fa-star rating-color"></i>
+                                }
+                                if (wseSummaryDto.AverageRating - i >= 0.5) {
+                                    <i class="fa-regular fa-star-half-stroke rating-color"></i>
+                                    i++;
+                                }
+                                for (; i < 5; i++) {
+                                    <i class="fa fa-star rating-uncolored"></i>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-1">
+                <div class="col">
+                    @wseSummaryDto.ShortDescription
+                </div>
+                @if (@wseSummaryDto.ViewCount == 1) {
+                    <div class="col-auto ms-auto">
+                        @wseSummaryDto.ViewCount Aufruf
+                    </div>
+                }
+                else {
+                    <div class="col-auto ms-auto">
+                        @wseSummaryDto.ViewCount Aufrufe
+                    </div>
+                }
+                
+            </div>
+
+            <div class="row mb-2">
+                @foreach (Tag tag in wseSummaryDto.Tags) {
+                    <div class="col-auto pe-0">
+                        <span class="badge bg-info me-2">@tag.Name</span>
+                    </div>
+                }
+            </div>
+
+            <div class="row justify-content-between">
+                <div class="col">
+                    @wseSummaryDto.CreationDate
+                </div>
+                <div class="col-auto">
+                    <NavLink href="@wseSummaryDto.Link">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-4" title="Zur Webservice"></i>
+                    </NavLink>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+
+    [Parameter]
+    public IList<WseSummaryDto> SummaryDtos { get; set; } = null!;
+
+    private string StyleOnlineStatus(WseSummaryDto wseSummaryDto) {
+        return wseSummaryDto.IsOnline ? "text-success" : "text-danger";
+    }
+
+    private string GetWseLink(WseSummaryDto wseSummaryDto) {
+        return "/wse/" + wseSummaryDto.Id;
+    }
+
+    private void ChangeBookmarkStatus(WseSummaryDto wseSummaryDto) {
+        wseSummaryDto.IsBookmark = !wseSummaryDto.IsBookmark;
+        @* TODO http call *@
+    }
+
+}

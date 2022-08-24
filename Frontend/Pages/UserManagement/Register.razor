@@ -2,6 +2,9 @@
 @using Microsoft.AspNetCore.Components
 @using Models
 @using Models.DTO
+@using System.Net
+@inject NavigationManager NavManager
+@inject HttpClient HttpClient
 
 @* TODO page title*@
 
@@ -73,24 +76,58 @@
                         </div>
                     </div>
                 </EditForm>
+
+                <div class="text-center fw-bold text-danger">
+                    @RegisterMessage
+                </div>
             </div>
         </div>
     </div>
-    <div class="row p-2 justify-content-center">
-        <div class="col-auto text-center">
-            Sie sind bereits registriert? <NavLink href="register">Hier anmelden</NavLink>
-        </div>
+
+
+    <div class="text-center p-2">
+        Sie sind bereits registriert? <NavLink href="register">Hier anmelden</NavLink>
     </div>
+    @* TEST, DELETE LATER
+    <button @onclick="Test">Test</button>
+    <p>FUNNY @CurrentUser?.FirstNames</p>
+*@
 </div>
 
-@* TODO implement registration logic *@
 
 @code {
-    readonly Registration _registration = new();
 
-    private void HandleValidSubmit() {
-        Console.WriteLine("Valid");
-        Console.WriteLine(_registration.Email);
+    [CascadingParameter]
+    private User? CurrentUser { get; set; }
+
+    private string RegisterMessage { get; set; } = null!;
+
+    private readonly Registration _registration = new();
+        @* TEST, DELETE LATER
+	private async Task Test() {
+		var response = await HttpClient.GetAsync("auth/sessions");
+		Console.WriteLine("POGGERS!");
+	}
+*@
+
+    protected override void OnParametersSet() {
+        if (CurrentUser is not null) {
+            NavManager.NavigateTo("");
+        }
     }
 
+    private async void HandleValidSubmit() {
+        var response = await HttpClient.PostAsJsonAsync("auth/register", _registration);
+
+        if (response.IsSuccessStatusCode) {
+            NavManager.NavigateTo("");
+        }
+        else if (response.StatusCode == HttpStatusCode.Conflict) {
+            RegisterMessage = "Email is already taken";
+            StateHasChanged();
+        }
+        else {
+            NavManager.NavigateTo("/internal-server-error");
+        }
+    }
 }

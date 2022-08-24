@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.ParameterHelpers;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 
 namespace Backend.Controllers;
@@ -6,43 +7,36 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("user")]
 public class UserController : ControllerBase {
-    private readonly AtriaContext _context;
 
-    public UserController(AtriaContext context) {
-        _context = context;
-    }
+    [HttpGet("{userId:long}")]
+    public User Get([FromDatabase] User user) => user;
 
-    [HttpGet("{userId}")]
-    public User Get(int userId) => null!;
+    [HttpGet("{userId:long}/wse")]
+    public IEnumerable<WebserviceEntry> GetWseByUser([FromServices] AtriaContext db, long userId)
+        => db.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId));
 
-    // TODO: WSESearchParam and Pagination missing in param
-    [HttpGet("{userId}/wse")]
-    public IEnumerable<WebserviceEntry> GetWseByUser(int userId) => null!;
+    [HttpGet("{userId:long}/bookmarks")]
+    public IEnumerable<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user)
+        => user.Bookmarks;
 
-    // TODO: WSESearchParam and Pagination missing in param
-    [HttpGet("{userId}/bookmarks")]
-    public IEnumerable<WebserviceEntry> GetBookmarksByUser(int userId) => null!;
+    [HttpGet("{userId:long}/reviews")]
+    public IEnumerable<Review> GetReviewsByUser(long userId, string query) => null!;
 
-    // TODO: Pagination missing in param
-    [HttpGet("{userId}/reviews")]
-    public IEnumerable<Review> GetReviewsByUser(int userId, string query) => null!;
-
-    // TODO: WSESearchParam and Pagination missing in param
-    [HttpGet("{userId}/drafts")]
+    [HttpGet("{userId:long}/drafts")]
     public IEnumerable<WSEDraft> GetWseDrafts() => null!;
 
-    [HttpGet("{userId}/notifications")]
+    [HttpGet("{userId:long}/notifications")]
     public IReadOnlyList<Notification> GetNotifications() => null!;
 
-    [HttpPost("{userId}")]
+    [HttpPost("{userId:long}")]
     public void Edit(User user) { }
 
-    [HttpPost("{userId}/bookmarks")]
+    [HttpPost("{userId:long}/bookmarks")]
     public void SetBookmark(int wseId, bool state) { }
 
     [HttpPut("")]
     public int Create(User user) => 0;
 
-    [HttpDelete("{userId}")]
+    [HttpDelete("{userId:long}")]
     public void Delete(int userId) { }
 }

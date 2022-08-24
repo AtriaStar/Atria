@@ -39,11 +39,17 @@ public static class Extensions {
             _ => throw new InvalidEnumArgumentException(nameof(order), (int)order, typeof(Order)),
         };
 
-    public static IEnumerable<ParameterInfo> GetParametersWithAttribute<T>(this ActionExecutingContext context)
+
+    public static IEnumerable<ParameterInfo> GetBasicParameters(this ActionExecutingContext context)
         => (context.ActionDescriptor as ControllerActionDescriptor)?.MethodInfo.GetParameters()
-            .Where(x => x.Name != null && x.CustomAttributes
-                .Any(y => y.AttributeType == typeof(T)))
+            .Where(x => x.Name != null)
             ?? Enumerable.Empty<ParameterInfo>();
+
+    public static IEnumerable<ParameterInfo> GetParametersWithAttribute<T>(this ActionExecutingContext context)
+        where T : Attribute
+        => context.GetBasicParameters().Where(x => x.CustomAttributes
+                .Any(y => y.AttributeType == typeof(T)));
+
 
     public static void UseCentralRoutePrefix(this MvcOptions opt, IRouteTemplateProvider routeAttribute) {
         opt.Conventions.Insert(0, new RouteConvention(routeAttribute));
