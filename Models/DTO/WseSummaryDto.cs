@@ -2,23 +2,15 @@
 
 public class WseSummaryDto {
     
-    public string Name { get; }
-    public string ShortDescription { get; }
-    public ICollection<Tag> Tags { get; }
-    public DateTimeOffset CreationDate { get; }
-    public bool IsOnline { get; }
-    public double AverageRating { get; }
-    public int ViewCount { get; }
-    public Uri Link { get; }
+    public long Id { get; set; }
+    public string Name { get; set; } = null!;
+    public string ShortDescription { get; set; } = null!;
+    public ICollection<Tag> Tags { get; set; } = null!;
+    public DateTimeOffset CreationDate { get; set; }
+    public bool IsOnline { get; set; }
+    public double AverageRating { get; set; }
+    public int ViewCount { get; set; }
+    public Uri Link { get; set; } = null!;
+    public bool IsBookmark { get; set; }
 
-    public WseSummaryDto(string name, string shortDescription, ICollection<Tag> tags, DateTimeOffset creationDate, bool isOnline, double averageRating, int viewCount, Uri link) {
-        Name = name;
-        ShortDescription = shortDescription;
-        Tags = tags;
-        CreationDate = creationDate;
-        IsOnline = isOnline;
-        AverageRating = averageRating;
-        ViewCount = viewCount;
-        Link = link;
-    }
 }

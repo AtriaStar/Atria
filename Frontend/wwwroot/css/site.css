@@ -18,6 +18,18 @@ a, .btn-link {
     border-color: #1861ac;
 }
 
+.fa-bookmark-color {
+    color: crimson;
+}
+
+.rating-uncolored{
+    color:#cecece;
+}
+
+.rating-color{
+    color:#fbc634;
+}
+
 .content {
     padding-top: 1.1rem;
 }

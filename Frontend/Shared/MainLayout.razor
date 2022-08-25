@@ -1,16 +1,29 @@
-﻿@inherits LayoutComponentBase
+﻿@using Models
+@inherits LayoutComponentBase
 
 <PageTitle>AtriaTest</PageTitle>
 
 <HeadContent>
-	<link rel="icon" href="/images/atriaLogo.png" />
+	<link rel="icon" href="/images/atriaImg.png" />
 </HeadContent>
 
 <div class="page">
-    <NavMenu/>
-    @* TODO bottom bar height here as padding *@
-    <main style="padding-bottom: 40px">
-        @Body
-    </main>
-    <BottomBar/>
+	<NavMenu/>
+	@* TODO bottom bar height here as padding *@
+	<main style="padding-bottom: 40px">
+		<CascadingValue Value="@CurrentUser">
+			@Body
+		</CascadingValue>
+	</main>
+	<BottomBar/>
 </div>
+
+@code {
+	[Inject]
+	private Task<User?> CurrentUserAsync { get; set; } = null!;
+	private User? CurrentUser { get; set; }
+
+	protected override async Task OnInitializedAsync() {
+		CurrentUser = await CurrentUserAsync;
+	}
+}

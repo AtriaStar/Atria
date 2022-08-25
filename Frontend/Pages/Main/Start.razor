@@ -7,147 +7,68 @@
 
 <div class="container-xxl">
     <div class="searchbar position-relative mb-3 mt-4">
-        <input type="text" class="form-control form-control-lg" placeholder="Suche nach..." @bind-value="SearchString"
-               @onkeyup="SearchInput">
-        <i class="fa fa-search position-absolute top-50 end-0 px-2 translate-middle"></i>
+
+        <div class="mb-2">
+            <div class="form-control form-control-lg border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px; border-radius: 0.375rem">
+                <div class="input-group input-group-lg">
+                    <button class="btn btn-sm btn-link text-dark" @onclick="Search"><i class="fa fa-search"></i></button>
+                    <input type="search" class="form-control form-control-lg border-0" placeholder="Suche nach..." @bind-value="Query" @onkeyup="SearchInput">
+                </div>
+            </div>
+        </div>
+
     </div>
     <div class="d-flex flex-wrap">
         <div class="nav nav-pills mb-2">
             <div class="nav-item">
-                <NavLink href="@Navigate("type", null)" class="nav-link" Match="NavLinkMatch.All">WSE</NavLink>
+                <NavLink href="@Navigate("type", null)" class="nav-link" Match="NavLinkMatch.All">Webservice</NavLink>
             </div>
             <div class="nav-item ms-3">
-                <NavLink href="@Navigate("type", "user")" class="nav-link">User</NavLink>
+                <NavLink href="@Navigate("type", "user")" class="nav-link">Nutzer</NavLink>
             </div>
         </div>
         <div class="d-flex mb-2 ms-auto">
-            <div class="dropdown ms-3">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
-                    Filter
-                </button>
-                <div class="dropdown-menu dropdown-menu-end ps-2">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckOnline">
-                        <label class="form-check-label" for="flexCheckOnline">
-                            <i class="fa-solid fa-circle text-success"></i>
-                            Online
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckBookmarks">
-                        <label class="form-check-label" for="flexCheckBookmarks">
-                            <i class="fa-solid fa-bookmark" style="color:crimson"></i> @*TODO bookmark under online is not in line dur to online icon being more broad*@
-                            Lesezeichen
-                        </label>
-                    </div>
-                    <div>
-                        Bewertung
-                    </div>
+            <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
+                Filter
+            </button>
 
-                    <div class="rating">
-                        <i class="fa fa-star rating-color"></i>
-                        <i class="fa fa-star rating-color"></i>
-                        <i class="fa fa-star rating-color"></i>
-                        <i class="fa fa-star rating-uncolored"></i>
-                        <i class="fa fa-star rating-uncolored"></i>
-                        @*TODO change star layout and make add logic to stars*@
-                        <!--
-                        <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> 
-                        <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> 
-                        <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> 
-                        <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> 
-                        <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label>
-                        -->
-                    </div>
-                    <div>
-                        Tags
-                    </div>
-                    <div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckBookmarks">
-                            Popular Tag 1
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckBookmarks">
-                            Popular Tag 2
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="flexCheckBookmarks">
-                            Popular Tag 3
-                        </div>
-                    </div>
-                    <div style="text-align:right; font-size:80%;">
-                        <button type="button" class="btn btn-Link btn-sm" data-bs-toggle="modal" data-bs-target="#tagModal">
-                            <u>weitere Tags</u>
-                        </button>
-                    </div>
-                </div>
-                <div class="modal" id="tagModal" tabindex="-1" aria-labelledby="tagModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered ">
-                        <div class="modal-content">
-
-
-                            <div class="modal-header pb-1 pt-2" style="border:none">
-                                <h5 class="modal-title" id="tagModalLabel">Tags</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-
-
-                            <div class="modal-body pt-1 pb-1">
-                                <div class="row pb-2">
-                                    <div class="col">
-                                        <div class="card rounded-1" style="background-color:lightgray">
-                                            <div class="card-body pt-0 pb-0 ps-1">
-                                                taglogic.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row small pb-2 justify-content-end">
-                                    <div class="col-sm-5">
-                                        <input class="form-control form-control-sm rounded-pill" type="search" placeholder="Suche nach..."> @*TODO searchbar überarbeiten*@
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="border mb-2">
-                                            <div class="overflow-auto" style="max-height: 200px">
-                                                Tags with logicx
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between pt-1 pb-2">
-                                    <button type="button" class="btn btn-danger btn-sm me-2" data-bs-dismiss="modal">
-                                        Alle Löschen
-                                    </button>
-                                    <button type="button" class="btn btn-success btn-sm" data-bs-dismiss="modal">
-                                        Anwenden
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="dropdown ms-3">
+            <div class="dropdown ms-3 d-flex">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Sortieren nach
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <NavLink href="@Navigate("sort", null)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>
-                    <NavLink href="@Navigate("sort", "useCount")" class="dropdown-item">Aufrufzahl</NavLink>
-                    <NavLink href="@Navigate("sort", "reviewAverage")" class="dropdown-item">Bewertungsdurchschnitt</NavLink>
-                    <NavLink href="@Navigate("sort", "recency")" class="dropdown-item">Neueste</NavLink>
+                    <NavLink href="@Navigate("sort", "useCountAsc")" class="dropdown-item">Aufrufzahl aufsteigend</NavLink>
+                    <NavLink href="@Navigate("sort", "useCountDesc")" class="dropdown-item">Aufrufzahl absteigend</NavLink>
+                    <NavLink href="@Navigate("sort", "reviewAverageAsc")" class="dropdown-item">Bewertungsdurchschnitt aufsteigend</NavLink>
+                    <NavLink href="@Navigate("sort", "reviewAverageDesc")" class="dropdown-item">Bewertungsdurchschnitt absteigend</NavLink>
+                    <NavLink href="@Navigate("sort", "recencyDesc")" class="dropdown-item">Neueste</NavLink>
+                    <NavLink href="@Navigate("sort", "recencyAsc")" class="dropdown-item">Älteste</NavLink>
                 </ul>
             </div>
         </div>
     </div>
-    <div class="list-group list-group-flush search-data-list">
-        <WseSummaryList SummaryDtos="_summaryDtos"></WseSummaryList>
+    <div class="w-100 mt-2 mb-4">
+        @switch (Type)
+        {
+            case null or "wse":
+                <WseSummaryList SummaryDtos="@_summaryDtos"></WseSummaryList>
+                break;
+            case "user":
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    <UserSummaryList UserDtos="@_userDtos"></UserSummaryList>
+                </div>
+                break;
+            default:
+                NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string)null!));
+                break;
+        }
     </div>
 </div>
+
+@if (FilterDialogOpen) {
+    <Frontend.Pages.Components.FilterModal OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+}
 
 @code {
 
@@ -163,9 +84,8 @@
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
 
-    private string? SearchString { get; set; }
-
-    private IList<WseSummaryDto> _summaryDtos = null!;
+    private IList<WseSummaryDto> _summaryDtos = new List<WseSummaryDto>();
+    private IList<UserDto> _userDtos = new List<UserDto>();
 
     private void SearchInput(KeyboardEventArgs evt) {
         if (evt.Key == "Enter") {
@@ -174,23 +94,78 @@
     }
 
     private void Search() {
-        NavigationManager.NavigateTo(Navigate("query", SearchString));
+        NavigationManager.NavigateTo(Navigate("query", Query));
     }
 
     protected override void OnInitialized() {
         @* Mock data gen *@
-        _summaryDtos = new List<WseSummaryDto>();
-        WseSummaryDto wseSummaryDto1 = new WseSummaryDto("hans", "der hans", new List<Tag>(), DateTimeOffset.Now, true, 3.5, 10, new Uri("http://www.google.com"));
+        WseSummaryDto wseSummaryDto1 = new WseSummaryDto {
+            Id = 1,
+            Name = "hans peter und der der sich selbst sehr mag",
+            ShortDescription = "der hans der gerne mal einen apfel pflückt und isst",
+            Tags = new List<Tag> {
+                new() {
+                    Name = "Tag1",
+                    CreationTime = DateTimeOffset.Now,
+                    UseCount = 1
+                },
+                new() {
+                    Name = "Tag2",
+                    CreationTime = DateTimeOffset.Now,
+                    UseCount = 100
+                }
+            },
+            CreationDate = DateTimeOffset.Now,
+            IsOnline = true,
+            AverageRating = 3.5,
+            ViewCount = 1,
+            Link = new Uri("https://www.google.com"),
+            IsBookmark = true
+        };
         _summaryDtos.Add(wseSummaryDto1);
 
-        WseSummaryDto wseSummaryDto2 = new WseSummaryDto("günther", "der günther", new List<Tag>(), DateTimeOffset.Now, false, 3.5, 10, new Uri("http://www.duckduckgo.com"));
+        WseSummaryDto wseSummaryDto2 = new WseSummaryDto {
+            Id = 1,
+            Name = "peter",
+            ShortDescription = "hans peter",
+            Tags = new List<Tag>(),
+            CreationDate = DateTimeOffset.Now,
+            IsOnline = false,
+            AverageRating = 5,
+            ViewCount = 15,
+            Link = new Uri("https://www.google.com")
+        };
         _summaryDtos.Add(wseSummaryDto2);
-        _summaryDtos.Add(wseSummaryDto1);
+
+        UserDto userDto = new UserDto {
+            Email = "hans@peter",
+            FirstNames = "Hans",
+            LastName = "Peter",
+            Biography = "Ich bin der Hans Peter und ich bin Alkoholiker",
+            Title = "Dr."
+        };
+
+        _userDtos.Add(userDto);
+        _userDtos.Add(userDto);
+        _userDtos.Add(userDto);
+        _userDtos.Add(userDto);
+        _userDtos.Add(userDto);
     }
 
 
     private string Navigate(string key, string? value) {
         return NavigationManager.GetUriWithQueryParameter(key, value);
+    }
+
+    @*for tag modal*@
+    private bool FilterDialogOpen { get; set; }
+
+    private void OnFilterDialogClose(bool accepted) {
+        FilterDialogOpen = false;
+    }
+
+    private void OpenFilterDialog() {
+        FilterDialogOpen = true;
     }
 
 }
