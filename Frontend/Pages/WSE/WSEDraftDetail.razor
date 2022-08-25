@@ -108,6 +108,11 @@
 @code {
     public bool DeleteWSEDraftDialogOpen { get; set; }
 
+    [Parameter]
+    public WSEDraft WseDraft { get; set; } = null!;
+
+    private WSEDraft _cloneWseDraft = null!;
+
     private void OpenDeleteWSEDraftDialog()
     {
         DeleteWSEDraftDialogOpen = true;
@@ -119,4 +124,21 @@
         DeleteWSEDraftDialogOpen = false;
         StateHasChanged();
     }
+
+     protected override void OnInitialized() {
+            @* Mock Data generation *@
+        WseDraft = new WSEDraft {
+            Name = "Google",
+            ShortDescription = "Lorem ipsum dolor sit amet",
+            Link = "https://www.google.de/",
+            FullDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
+            ChangeLog = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam non",
+            DocumentationLink = "https://de.wikipedia.org/wiki/Google",
+            Documentation = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
+        };
+
+        CloneWse();
+    }
+
+
 }
