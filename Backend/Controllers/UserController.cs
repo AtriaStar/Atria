@@ -1,5 +1,6 @@
 ﻿using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Backend.Controllers;
@@ -28,11 +29,30 @@ public class UserController : ControllerBase {
     [HttpGet("{userId:long}/notifications")]
     public IReadOnlyList<Notification> GetNotifications() => null!;
 
-    [HttpPost("{userId:long}")]
-    public void Edit(User user) { }
+    [HttpPost("")]
+    public async Task<IActionResult> Edit([FromServices] AtriaContext db, User user) {
+        User existingUser = db.Users.FirstOrDefault(x => x.Id == user.Id);
+        
+        if (existingUser == null) {
+            return BadRequest();
+        }
+
+        existingUser.Email = user.Email;
+        existingUser.Biography = user.Biography;
+        existingUser.FirstNames = user.FirstNames;
+        existingUser.ProfilePicture = user.ProfilePicture;
+        existingUser.Title = user.Title;
+        
+        await db.SaveChangesAsync();
+        return Ok(existingUser);
+    }
 
     [HttpPost("{userId:long}/bookmarks")]
-    public void SetBookmark(int wseId, bool state) { }
+    public async Task<IActionResult> SetBookmark([FromServices] AtriaContext db, [FromDatabase] User user, [FromDatabase] WebserviceEntry wse) {
+        user.Bookmarks.Add(wse);
+        await db.SaveChangesAsync();
+        return Ok();
+    }
 
     [HttpPut("")]
     public int Create(User user) => 0;
