@@ -12,7 +12,7 @@ public class FuzzingService {
         new(w => w.Name, 100),
         new(w => w.ShortDescription, 50),
         new(w => w.FullDescription, 30),
-        new(w => w.Changelog, 5),
+        new(w => w.ChangeLog, 5),
     };
 
     /// <param name="query"></param>
