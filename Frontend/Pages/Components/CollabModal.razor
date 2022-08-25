@@ -1,0 +1,80 @@
+﻿<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Kollaboratoren</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="@ModalClose"></button>
+            </div>
+
+            <div class="modal-body">
+                @*foreach collab*@
+                <div class="card mb-2">
+                    <div class="row">
+                        <div class="col-2">
+                            @*TODO user profile*@
+                            <img src=""/>
+                        </div>
+                        <div class="col">
+                            <div class="card-body">
+                                <div class="card-title">
+                                    Max Mustermann
+                                    <small style="color: red">*Ansprechpartner</small>
+                                 </div>
+                                <div class="card-subtitle">mm@email.de</div>
+                                <div class="d-grid d-flex justify-content-end">
+                                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteCollabDialog()">
+                                        Entfernen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <label class="form-label mt-2">E-Mail oder Name des neuen Kollaborators</label>
+                <div class="ui-field">
+                    <input class="form-control"/>
+                </div>
+                <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
+                    <button type="button" class="btn btn-success" @onclick="@ModalAddCollab">Hinzufügen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (DeleteCollabDialogOpen) 
+{
+    <Frontend.Pages.Components.DeleteCollabModal OnClose="@OnDeleteCollabDialogClose"/>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+
+    public Task ModalClose()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    public Task ModalAddCollab()
+    {
+        return OnClose.InvokeAsync(true);
+    }
+
+    @*delete modal*@
+    public bool DeleteCollabDialogOpen { get; set; }
+
+    private void OpenDeleteCollabDialog()
+    {
+        DeleteCollabDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private void OnDeleteCollabDialogClose(bool accepted)
+    {
+        DeleteCollabDialogOpen = false;
+        StateHasChanged();
+    }
+}

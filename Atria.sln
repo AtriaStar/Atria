@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frontend", "Frontend\Fronte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MigrationHelper", "MigrationHelper\MigrationHelper.csproj", "{F9D4E9E2-496C-463F-A107-1C857DC53FB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseMocker", "DatabaseMocker\DatabaseMocker.csproj", "{8E497D4F-6826-4E1B-870C-4B2C935F082E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseMocker", "DatabaseMocker\DatabaseMocker.csproj", "{8E497D4F-6826-4E1B-870C-4B2C935F082E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

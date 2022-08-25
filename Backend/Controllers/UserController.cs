@@ -7,6 +7,7 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("user")]
 public class UserController : ControllerBase {
+
     [HttpGet("{userId:long}")]
     public User Get([FromDatabase] User user) => user;
 

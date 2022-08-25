@@ -1,0 +1,122 @@
+﻿@page "/wseDraft"
+@using Models
+
+<PageTitle>Atria - WseDraftName</PageTitle>
+
+<div class="container-xxl mt-4">
+    
+    <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+        <button class="btn btn-success" type="button">
+            Bearbeiten
+        </button>
+        @*TODO logic*@
+        <button class="btn btn-success" type="button">
+            Veröffentlichen
+        </button>
+        <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDraftDialog()">
+            Löschen
+        </button>
+    </div>
+
+    @*------------HEADER CARD------------*@
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-auto mt-sm-1">
+                    <i class="fa-solid fa-circle text-success"/>
+                </div>
+                <div class="col ps-0">
+                    <h3 class="card-title fw-bold">
+                        Name
+                    </h3>
+                </div>
+                <div class="col-auto d-flex align-content-end">
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href=""/>
+                </div>
+            </div>
+            <h5 class="card-subtitle mb-2 text-muted">Ansprechpartner</h5>
+            <div class="card-text">Kurzbeschreibung</div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        @*------------REVIEW AND TAGS------------*@
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title fw-bold">Tags</h6>
+                    @*mock tags*@
+                    <div class="card-text">
+                        @for (int i = 0; i <= 20; i++) {
+                            <div class="badge bg-info me-1" value="@i">Tag @i</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*------------LOG, DOC, DESC.------------*@
+        <div class="col-md-9">
+
+            <div class="card mb-4">
+                <h6 class="card-header fw-bold">Änderungshistorie</h6>
+                <div class="card-body">
+                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
+                </div>
+            </div>
+    
+            <div class="card mb-4">
+                <h6 class="card-header fw-bold">
+                    Dokumentation
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation"/>
+                </h6>
+                <div class="card-body">
+                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h6 class="card-header fw-bold">Volltextbeschreibung</h6>
+                <div class="card-body">
+                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+        <button class="btn btn-success" type="button">
+            Bearbeiten
+        </button>
+        @*TODO logic*@
+        <button class="btn btn-success" type="button">
+            Veröffentlichen
+        </button>
+        <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDraftDialog()">
+            Löschen
+        </button>
+    </div>
+
+</div>
+
+@if (DeleteWSEDraftDialogOpen) 
+{
+    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihr Eintrag löschen möchten?" OnClose="@OnDeleteWSEDraftDialogClose"/>
+}
+
+@code {
+    public bool DeleteWSEDraftDialogOpen { get; set; }
+
+    private void OpenDeleteWSEDraftDialog()
+    {
+        DeleteWSEDraftDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private void OnDeleteWSEDraftDialogClose(bool accepted)
+    {
+        DeleteWSEDraftDialogOpen = false;
+        StateHasChanged();
+    }
+}

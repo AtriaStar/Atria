@@ -1,7 +1,7 @@
 ﻿@using Models.DTO
 @using Models
 @foreach (ReviewDto review in ReviewDtos) {
-    <div class="list-group-item d-flex flex-row p-3">
+    <div class="card mb-3">
         @*
         <div class="row flex-shrink-0 me-0">
             <div class="col">
@@ -14,7 +14,7 @@
             </div>
         </div>
         *@
-        <div class="w-100">
+        <div class="card-body">
             <div class="row mb-2">
                 <div class="col-auto">
                     @for (int i = 0; i < (int)review.StarCount; i++) {
@@ -25,7 +25,9 @@
                     }
                 </div>
                 <div class="col">
-                    Verlinkung
+                    <NavLink href="">
+                        <h5>wseName</h5>
+                    </NavLink>
                 </div>
             </div>
             <div class="row justify-content-between">
@@ -35,21 +37,27 @@
                     </h5>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col">
                     @review.Description
                 </div>
             </div>
-            <div class="row justify-content-between">
+            <div class="row mb-2">
                 <div class="col">
                     @review.CreationTime
                 </div>
-                <div class="col-auto">
-                    buttons
-                </div>
+            </div>
+            <div class="d-grid gap-2 d-flex justify-content-end">
+                <button class="btn btn-small btn-outline-danger" type="button"  @onclick="() => OpenDeleteDialog()">Löschen</button>
+                <button class="btn btn-small btn-outline-success" type="button">Bearbeiten</button>
             </div>
         </div>
     </div>
+}
+
+@if (DeleteDialogOpen) 
+{
+    <Frontend.Pages.Components.DeleteModal Title="Bewertung löschen" Text="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?" OnClose="@OnDeleteDialogClose"/>
 }
 
 @code {
@@ -64,6 +72,21 @@
         ReviewDtos.Add(reviewDto);
 
         ReviewDtos.Add(new ReviewDto(2, "Mensch", "cute", StarCount.Four, DateTimeOffset.Now));
+    }
+
+    @*for delete modal*@
+    public bool DeleteDialogOpen { get; set; }
+
+    private void OpenDeleteDialog()
+    {
+        DeleteDialogOpen = true;
+        StateHasChanged();
+    }
+
+    private void OnDeleteDialogClose(bool accepted)
+    {
+        DeleteDialogOpen = false;
+        StateHasChanged();
     }
 
 }

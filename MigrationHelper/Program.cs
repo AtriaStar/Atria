@@ -35,8 +35,8 @@ void MainMenu() {
             break;
         case '4':
             Console.Clear();
-            DropDatabase();
             DeleteMigrations();
+            DropDatabase();
             GenerateMigrationDirect("Initial");
             break;
     }
