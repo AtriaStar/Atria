@@ -46,8 +46,7 @@ public static class Extensions {
 
     public static IEnumerable<ParameterInfo> GetParametersWithAttribute<T>(this ActionExecutingContext context)
         where T : Attribute
-        => context.GetBasicParameters().Where(x => x.CustomAttributes
-                .Any(y => y.AttributeType == typeof(T)));
+        => context.GetBasicParameters().Where(x => x.GetCustomAttributes(typeof(T)).Any());
 
     public static void UseCentralRoutePrefix(this MvcOptions opt, IRouteTemplateProvider routeAttribute) {
         opt.Conventions.Insert(0, new RouteConvention(routeAttribute));
