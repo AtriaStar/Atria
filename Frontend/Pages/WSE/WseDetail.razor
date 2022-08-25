@@ -34,39 +34,39 @@
         }
     }
 
-        @*------------HEADER CARD------------*@
-        <div class="card mb-4">
-            <div class="card-body">
-                <div class="row mb-2">
-                    <div class="col-auto mt-sm-1">
-                        <i class="fa-solid fa-circle text-success" />
-                    </div>
-                    <div class="col ps-0">
-                        <h3 class="card-title fw-bold">
-                            @if (!_displayForm)
-    {
-                                @Wse.Name
-                            }
-                            else
-                            {
-                                <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
-                                    <DataAnnotationsValidator></DataAnnotationsValidator>
-                                    <InputText @bind-Value="Wse.Name" id="name" type="text" class="form-control" placeholder="Name"></InputText>
-                                    <ValidationSummary></ValidationSummary>
-                                </EditForm>
-                            }
-                        </h3>
-                    </div>
-                    <div class="col-auto d-flex align-content-end me-1">
-                        @{
-                            var bookmarkState = isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
-                            var bookmarkTitle = isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+    @*------------HEADER CARD------------*@
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-auto mt-sm-1">
+                    <i class="fa-solid fa-circle text-success" />
+                </div>
+                <div class="col ps-0">
+                    <h3 class="card-title fw-bold">
+                        @if (!_displayForm)
+                        {
+                            @Wse.Name
                         }
-                        <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="() => ChangeBookmarkStatus()"></i>
-                    </div>
-                    <div class="col-auto d-flex align-content-end">
-                        <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="https://www.google.de/" />
-                    </div>
+                        else
+                        {
+                            <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                                <DataAnnotationsValidator></DataAnnotationsValidator>
+                                <InputText @bind-Value="Wse.Name" id="name" type="text" class="form-control" placeholder="Name"></InputText>
+                                <ValidationSummary></ValidationSummary>
+                            </EditForm>
+                        }
+                    </h3>
+                </div>
+                <div class="col-auto d-flex align-content-end me-1">
+                    @{
+                        var bookmarkState = isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
+                        var bookmarkTitle = isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                    }
+                    <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="() => ChangeBookmarkStatus()"></i>
+                </div>
+                <div class="col-auto d-flex align-content-end">
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="https://www.google.de/" />
+                </div>
             </div>
             <h5 class="card-subtitle mb-2 me-2 text-muted">
                 Ansprechpartner
@@ -84,8 +84,27 @@
                     <ValidationSummary></ValidationSummary>
                 </EditForm>
             }
+
         </div>
     </div>
+
+    @if (_displayForm)
+    {
+
+        <div class="col-auto mt-sm-1">
+
+            <div class="card mb-4">
+                <h6 class="card-header fw-bold">Link</h6>
+                <div class="card-body">
+                    <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator></DataAnnotationsValidator>
+                        <InputText @bind-Value="Wse.Link" id="link" type="text" class="form-control" placeholder="Link"></InputText>
+                        <ValidationSummary></ValidationSummary>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+     }
 
         <div class="row mb-4">
             @*------------REVIEW AND TAGS------------*@
@@ -168,6 +187,24 @@
                     }
                 </div>
             </div>
+
+            @if (_displayForm)
+            {
+
+                <div class="col-auto mt-sm-1">
+
+                    <div class="card mb-4">
+                        <h6 class="card-header fw-bold">Dokumentations-Link</h6>
+                        <div class="card-body">
+                            <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                                <DataAnnotationsValidator></DataAnnotationsValidator>
+                                <InputText @bind-Value="Wse.DocumentationLink" id="documentationLink" type="text" class="form-control" placeholder="Dokumentations-Link"></InputText>
+                                <ValidationSummary></ValidationSummary>
+                            </EditForm>
+                        </div>
+                    </div>
+                </div>
+            }
 
             <div class="card">
                 <h6 class="card-header fw-bold">Volltextbeschreibung</h6>
@@ -374,7 +411,7 @@
         @if (!_displayForm)
         {
             <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-                <button class="btn btn-success" type="button">
+                <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
                     Bearbeiten
                 </button>
                 <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
