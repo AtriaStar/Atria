@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using System.Runtime.Intrinsics.X86;
 
 namespace Backend.Controllers;
 
@@ -55,8 +56,18 @@ public class UserController : ControllerBase {
     }
 
     [HttpPut("")]
-    public int Create(User user) => 0;
+    public async Task<IActionResult> Create([FromServices] AtriaContext db, User user) {
+        await db.Users.AddAsync(user);
+        await db.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(Get), new {userId = user.Id }, user);
+    }
+
 
     [HttpDelete("{userId:long}")]
-    public void Delete(int userId) { }
+    public async Task<IActionResult> Delete([FromServices] AtriaContext db, [FromDatabase] User user) {
+        db.Users.Remove(user);
+        await db.SaveChangesAsync();
+        return Ok(user);
+    }
 }
