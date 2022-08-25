@@ -5,17 +5,17 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Backend.Controllers;
-//TODO: add wse specific authorization
+
 [ApiController]
 [Route("wse")]
 public class WSEController : ControllerBase {
     [HttpGet("{wseId:long}")]
-    public WebserviceEntry Get([FromServices] AtriaContext _, [FromDatabase] WebserviceEntry wse) => wse;
+    public WebserviceEntry Get([FromDatabase] WebserviceEntry wse) => wse;
 
     [RequiresAuthentication]
-    [HttpPost("{wseId:long}")]
+    [HttpPost]
     public async Task<IActionResult> EditWse([FromServices] AtriaContext db, WebserviceEntry wse, [FromAuthentication] User user) {
-        var existingWse = await db.WebserviceEntries.FirstOrDefaultAsync(x => x.Id == wse.Id);
+        var existingWse = await db.WebserviceEntries.FindAsync(wse.Id);
         if (existingWse == null) { return NotFound(); }
         var rights = existingWse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights;
         if (rights == null) { return Forbid("User is not a collaborator"); }
@@ -36,6 +36,9 @@ public class WSEController : ControllerBase {
             return BadRequest("The creation timestamp cannot be modified");
         }
 
+        wse.Questions = existingWse.Questions;
+        wse.Reviews = existingWse.Reviews;
+
         db.WebserviceEntries.Update(wse);
         await db.SaveChangesAsync();
 
@@ -43,16 +46,16 @@ public class WSEController : ControllerBase {
     }
 
     [RequiresAuthentication]
-    [HttpPost("{wseId:long}/review/{reviewId:long}")]
-    public async Task<IActionResult> EditReview([FromServices] AtriaContext db, long wseId, Review review, [FromAuthentication] User user) {
+    [HttpPost("review")]
+    public async Task<IActionResult> EditReview([FromServices] AtriaContext db, Review review, [FromAuthentication] User user) {
         var existingReview = await db.Reviews.FirstOrDefaultAsync(x => x.Id == review.Id && x.WseId == review.WseId);
         if (existingReview == null) { return NotFound(); }
 
-        if (existingReview.Creator.Id != user.Id) {
+        if (existingReview.CreatorId != user.Id) {
             return Forbid("Only the creator of a review can edit it");
         }
 
-        if (review.Creator.Id != user.Id) {
+        if (review.CreatorId != user.Id) {
             return BadRequest("The creator of a review cannot be changed");
         }
 
@@ -67,7 +70,7 @@ public class WSEController : ControllerBase {
     }
 
     [RequiresAuthentication]
-    [HttpPut("")]
+    [HttpPut]
     public async Task<IActionResult> CreateWse([FromServices] AtriaContext db, WebserviceEntry wse, [FromAuthentication] User user) {
         wse.Id = 0;
         wse.CreatedAt = DateTimeOffset.UtcNow;
@@ -79,45 +82,41 @@ public class WSEController : ControllerBase {
     }
 
     [RequiresAuthentication]
-    [HttpPut("{wseId:long}/question")]
-    public async Task<IActionResult> CreateQuestion([FromServices] AtriaContext db, long wseId, Question question,
+    [HttpPut("question")]
+    public async Task<IActionResult> CreateQuestion([FromServices] AtriaContext db, Question question,
         [FromAuthentication] User user) {
         question.Id = 0;
-        question.WseId = wseId;
         question.CreationTime = DateTimeOffset.UtcNow;
         question.Creator = user;
         await db.Questions.AddAsync(question);
         await db.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(CreateQuestion), new { wseId, questionId = question.Id }, question);
+        return CreatedAtAction(nameof(CreateQuestion), new { wseId = question.WseId, questionId = question.Id }, question);
     }
 
     [RequiresAuthentication]
-    [HttpPut("{wseId:long}/question/{questionId:long}/answer")]
-    public async Task<IActionResult> CreateAnswer([FromServices] AtriaContext db, long wseId, long questionId, Answer answer,
+    [HttpPut("answer")]
+    public async Task<IActionResult> CreateAnswer([FromServices] AtriaContext db, Answer answer,
         [FromAuthentication] User user) {
         answer.Id = 0;
-        answer.WseId = wseId;
-        answer.QuestionId = questionId;
         answer.CreationTime = DateTimeOffset.UtcNow;
         answer.Creator = user;
         await db.Answers.AddAsync(answer);
         await db.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(CreateAnswer), new { wseId, questionId, answerId = answer.Id }, answer);
+        return CreatedAtAction(nameof(CreateAnswer), new { wseId = answer.WseId, questionId = answer.QuestionId, answerId = answer.Id }, answer);
     }
 
     [RequiresAuthentication]
-    [HttpPut("{wseId:long}/review")]
-    public async Task<IActionResult> CreateReview([FromServices] AtriaContext db, long wseId, Review review, [FromAuthentication] User user) {
+    [HttpPut("review")]
+    public async Task<IActionResult> CreateReview([FromServices] AtriaContext db, Review review, [FromAuthentication] User user) {
         review.Id = 0;
-        review.WseId = wseId;
         review.CreationTime = DateTimeOffset.UtcNow;
         review.Creator = user;
         await db.Reviews.AddAsync(review);
         await db.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(CreateReview), new { wseId, reviewId = review.Id }, review);
+        return CreatedAtAction(nameof(CreateReview), new { wseId = review.WseId, reviewId = review.Id }, review);
     }
 
     [RequiresAuthentication]
@@ -133,7 +132,7 @@ public class WSEController : ControllerBase {
     [HttpDelete("{wseId:long}/question/{questionId:long}")]
     public async Task<IActionResult> DeleteQuestion([FromServices] AtriaContext db, long wseId,
         long questionId, [FromAuthentication] User user) {
-        var question = await db.Questions.FirstOrDefaultAsync(x => x.WseId == wseId && x.Id == questionId);
+        var question = await db.Questions.FindAsync(questionId, wseId);
         if (question == null) {
             return NotFound();
         }
@@ -152,7 +151,7 @@ public class WSEController : ControllerBase {
     [HttpDelete("{wseId:long}/question/{questionId:long}/answer/{answerId:long}")]
     public async Task<IActionResult> DeleteAnswer([FromServices] AtriaContext db, long wseId, long questionId,
         long answerId, [FromAuthentication] User user) {
-        var answer = await db.Answers.FirstOrDefaultAsync(x => x.WseId == wseId && x.QuestionId == questionId && x.Id == answerId);
+        var answer = await db.Answers.FindAsync(answerId, questionId, wseId);
         if (answer == null) {
             return NotFound();
         }
@@ -170,7 +169,7 @@ public class WSEController : ControllerBase {
     [RequiresAuthentication]
     [HttpDelete("{wseId:long}/review/{reviewId:long}")]
     public async Task<IActionResult> DeleteReview([FromServices] AtriaContext db, long wseId, long reviewId, [FromAuthentication] User user) {
-        var review = await db.Reviews.FirstOrDefaultAsync(x => x.WseId == wseId && x.Id == reviewId);
+        var review = await db.Reviews.FindAsync(reviewId, wseId);
         if (review == null) {
             return NotFound();
         }

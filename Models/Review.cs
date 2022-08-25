@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Models; 
 
@@ -13,5 +14,7 @@ public class Review {
     public string Description { get; set; } = null!;
     public StarCount StarCount { get; set; }
     public DateTimeOffset CreationTime { get; set; }
-    public User Creator { get; set; } = null!;
+    public long CreatorId { get; set; }
+    [JsonIgnore]
+    public virtual User Creator { get; set; } = null!;
 }
