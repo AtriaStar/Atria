@@ -9,6 +9,7 @@ public class Review {
     public long Id { get; set; }
     [Key]
     public long WseId { get; set; }
+    [JsonIgnore]
     public WebserviceEntry Wse { get; set; } = null!;
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;

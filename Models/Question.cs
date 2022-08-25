@@ -9,6 +9,7 @@ public class Question {
     public long Id { get; set; }
     [Key]
     public long WseId { get; set; }
+    [JsonIgnore]
     public WebserviceEntry Wse { get; set; } = null!;
     public string Text { get; set; } = null!;
     public DateTimeOffset CreationTime { get; set; }
