@@ -10,10 +10,10 @@ namespace Backend.Controllers;
 [Route("wse")]
 public class WSEController : ControllerBase {
 
-    private readonly AtriaContext _atriaDbContext;
+    private readonly AtriaContext _context;
 
-    public WSEController(AtriaContext atriaDbContext) {
-        _atriaDbContext = atriaDbContext;
+    public WSEController(AtriaContext context) {
+        _context = context;
     }
 
     [HttpGet("{wseId:long}")]
@@ -22,7 +22,7 @@ public class WSEController : ControllerBase {
     [RequiresAuthentication]
     [HttpPost]
     public async Task<IActionResult> EditWse(WebserviceEntry wse, [FromAuthentication] User user) {
-        var existingWse = await _atriaDbContext.WebserviceEntries.FindAsync(wse.Id);
+        var existingWse = await _context.WebserviceEntries.FindAsync(wse.Id);
         if (existingWse == null) { return NotFound(); }
         var rights = existingWse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights;
         if (rights == null) { return Forbid("User is not a collaborator"); }
@@ -46,8 +46,8 @@ public class WSEController : ControllerBase {
         wse.Questions = existingWse.Questions;
         wse.Reviews = existingWse.Reviews;
 
-        _atriaDbContext.WebserviceEntries.Update(wse);
-        await _atriaDbContext.SaveChangesAsync();
+        _context.WebserviceEntries.Update(wse);
+        await _context.SaveChangesAsync();
 
         return Ok();
     }
@@ -55,7 +55,7 @@ public class WSEController : ControllerBase {
     [RequiresAuthentication]
     [HttpPost("review")]
     public async Task<IActionResult> EditReview(Review review, [FromAuthentication] User user) {
-        var existingReview = await _atriaDbContext.Reviews.FirstOrDefaultAsync(x => x.Id == review.Id && x.WseId == review.WseId);
+        var existingReview = await _context.Reviews.FirstOrDefaultAsync(x => x.Id == review.Id && x.WseId == review.WseId);
         if (existingReview == null) { return NotFound(); }
 
         if (existingReview.CreatorId != user.Id) {
@@ -70,8 +70,8 @@ public class WSEController : ControllerBase {
             return BadRequest("The creation timestamp cannot be modified");
         }
 
-        _atriaDbContext.Reviews.Update(review);
-        await _atriaDbContext.SaveChangesAsync();
+        _context.Reviews.Update(review);
+        await _context.SaveChangesAsync();
 
         return Ok();
     }
@@ -82,8 +82,8 @@ public class WSEController : ControllerBase {
         wse.Id = 0;
         wse.CreatedAt = DateTimeOffset.UtcNow;
         wse.Collaborators = new List<Collaborator> { new() { User = user, Rights = WseRights.Owner } };
-        await _atriaDbContext.WebserviceEntries.AddAsync(wse);
-        await _atriaDbContext.SaveChangesAsync();
+        await _context.WebserviceEntries.AddAsync(wse);
+        await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(CreateWse), new { wseId = wse.Id }, wse);
     }
@@ -95,8 +95,8 @@ public class WSEController : ControllerBase {
         question.Id = 0;
         question.CreationTime = DateTimeOffset.UtcNow;
         question.Creator = user;
-        await _atriaDbContext.Questions.AddAsync(question);
-        await _atriaDbContext.SaveChangesAsync();
+        await _context.Questions.AddAsync(question);
+        await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(CreateQuestion), new { wseId = question.WseId, questionId = question.Id }, question);
     }
@@ -108,8 +108,8 @@ public class WSEController : ControllerBase {
         answer.Id = 0;
         answer.CreationTime = DateTimeOffset.UtcNow;
         answer.Creator = user;
-        await _atriaDbContext.Answers.AddAsync(answer);
-        await _atriaDbContext.SaveChangesAsync();
+        await _context.Answers.AddAsync(answer);
+        await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(CreateAnswer), new { wseId = answer.WseId, questionId = answer.QuestionId, answerId = answer.Id }, answer);
     }
@@ -120,8 +120,8 @@ public class WSEController : ControllerBase {
         review.Id = 0;
         review.CreationTime = DateTimeOffset.UtcNow;
         review.Creator = user;
-        await _atriaDbContext.Reviews.AddAsync(review);
-        await _atriaDbContext.SaveChangesAsync();
+        await _context.Reviews.AddAsync(review);
+        await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(CreateReview), new { wseId = review.WseId, reviewId = review.Id }, review);
     }
@@ -130,15 +130,15 @@ public class WSEController : ControllerBase {
     [RequiresWseRights(WseRights.DeleteWse)]
     [HttpDelete("{wseId}")]
     public async Task<IActionResult> DeleteWse([FromDatabase] WebserviceEntry wse) {
-        _atriaDbContext.WebserviceEntries.Remove(wse);
-        await _atriaDbContext.SaveChangesAsync();
+        _context.WebserviceEntries.Remove(wse);
+        await _context.SaveChangesAsync();
         return Ok();
     }
 
     [RequiresAuthentication]
     [HttpDelete("{wseId:long}/question/{questionId:long}")]
     public async Task<IActionResult> DeleteQuestion(long wseId, long questionId, [FromAuthentication] User user) {
-        var question = await _atriaDbContext.Questions.FindAsync(questionId, wseId);
+        var question = await _context.Questions.FindAsync(questionId, wseId);
         if (question == null) {
             return NotFound();
         }
@@ -147,8 +147,8 @@ public class WSEController : ControllerBase {
             return Forbid("Only the creator can delete a question");
         }
 
-        _atriaDbContext.Questions.Remove(question);
-        await _atriaDbContext.SaveChangesAsync();
+        _context.Questions.Remove(question);
+        await _context.SaveChangesAsync();
 
         return Ok();
     }
@@ -157,7 +157,7 @@ public class WSEController : ControllerBase {
     [HttpDelete("{wseId:long}/question/{questionId:long}/answer/{answerId:long}")]
     public async Task<IActionResult> DeleteAnswer(long wseId, long questionId,
         long answerId, [FromAuthentication] User user) {
-        var answer = await _atriaDbContext.Answers.FindAsync(answerId, questionId, wseId);
+        var answer = await _context.Answers.FindAsync(answerId, questionId, wseId);
         if (answer == null) {
             return NotFound();
         }
@@ -166,8 +166,8 @@ public class WSEController : ControllerBase {
             return Forbid("Only the creator can delete an answer");
         }
 
-        _atriaDbContext.Answers.Remove(answer);
-        await _atriaDbContext.SaveChangesAsync();
+        _context.Answers.Remove(answer);
+        await _context.SaveChangesAsync();
 
         return Ok();
     }
@@ -175,7 +175,7 @@ public class WSEController : ControllerBase {
     [RequiresAuthentication]
     [HttpDelete("{wseId:long}/review/{reviewId:long}")]
     public async Task<IActionResult> DeleteReview(long wseId, long reviewId, [FromAuthentication] User user) {
-        var review = await _atriaDbContext.Reviews.FindAsync(reviewId, wseId);
+        var review = await _context.Reviews.FindAsync(reviewId, wseId);
         if (review == null) {
             return NotFound();
         }
@@ -184,8 +184,8 @@ public class WSEController : ControllerBase {
             return Forbid("Only the creator can delete a review");
         }
 
-        _atriaDbContext.Reviews.Remove(review);
-        await _atriaDbContext.SaveChangesAsync();
+        _context.Reviews.Remove(review);
+        await _context.SaveChangesAsync();
 
         return Ok();
     }
