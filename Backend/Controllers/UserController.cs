@@ -1,8 +1,7 @@
 ﻿using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Models;
-using System.Runtime.Intrinsics.X86;
+
 
 namespace Backend.Controllers;
 
@@ -11,11 +10,11 @@ namespace Backend.Controllers;
 public class UserController : ControllerBase {
 
     [HttpGet("{userId:long}")]
-    public User Get([FromDatabase] User user) => user;
+    public async Task<IActionResult> Get([FromDatabase] User user) => Ok(user);
 
     [HttpGet("{userId:long}/wse")]
-    public IEnumerable<WebserviceEntry> GetWseByUser([FromServices] AtriaContext db, long userId)
-        => db.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId));
+    public async Task<IActionResult> GetWseByUser([FromServices] AtriaContext db, long userId)
+        => Ok(db.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId))));
 
     [HttpGet("{userId:long}/bookmarks")]
     public IEnumerable<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user)
