@@ -475,9 +475,9 @@
     private bool _displayForm = false;
 
     [Parameter]
-    public WseDto Wse { get; set; } = null!;
+    public WebserviceEntry Wse { get; set; } = null!;
 
-    private WseDto _cloneWseDto = null!;
+    private WebserviceEntry _cloneWse = null!;
 
     private void ChangeBookmarkStatus()
     {
@@ -547,7 +547,7 @@
 
     protected override void OnInitialized() {
             @* Mock Data generation *@
-        Wse = new WseDto {
+        Wse = new WebserviceEntry {
             Name = "Google",
             ShortDescription = "Lorem ipsum dolor sit amet",
             Link = "https://www.google.de/",
@@ -568,7 +568,7 @@
     }
 
     private void CloneWse() {
-        _cloneWseDto = new WseDto {
+        _cloneWse = new WebserviceEntry {
             Name = Wse.Name,
             ShortDescription = Wse.ShortDescription,
             Link = Wse.Link,
