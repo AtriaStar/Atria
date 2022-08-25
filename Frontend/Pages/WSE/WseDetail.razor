@@ -1,6 +1,4 @@
-﻿@page "/wse"
-@using Models
-@using Models.DTO
+﻿@page "/wse/{WseId:long}"
 
 <PageTitle>Atria - WseName</PageTitle>
 
@@ -410,4 +408,8 @@
         DeleteWSEDialogOpen = false;
         StateHasChanged();
     }
+    
+    /* API STUFF, DO MERGE */
+    [Parameter]
+    public long WseId { get; set; }
 }
