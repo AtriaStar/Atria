@@ -80,11 +80,12 @@ namespace Backend.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    ShortDescription = table.Column<string>(type: "text", nullable: false),
+                    ShortDescription = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Link = table.Column<string>(type: "text", nullable: false),
                     FullDescription = table.Column<string>(type: "text", nullable: true),
                     DocumentationLink = table.Column<string>(type: "text", nullable: true),
-                    Changelog = table.Column<string>(type: "text", nullable: true),
+                    Documentation = table.Column<string>(type: "text", nullable: true),
+                    ChangeLog = table.Column<string>(type: "text", nullable: true),
                     ViewCount = table.Column<int>(type: "integer", nullable: false),
                     ContactPersonId = table.Column<long>(type: "bigint", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
@@ -207,8 +208,8 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    WseId = table.Column<long>(type: "bigint", nullable: false),
                     QuestionId = table.Column<long>(type: "bigint", nullable: false),
+                    WseId = table.Column<long>(type: "bigint", nullable: false),
                     Text = table.Column<string>(type: "text", nullable: false),
                     CreationTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatorId = table.Column<long>(type: "bigint", nullable: false)

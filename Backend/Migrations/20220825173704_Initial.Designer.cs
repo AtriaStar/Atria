@@ -12,20 +12,26 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220824232523_Initial")]
+    [Migration("20220825173704_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.7")
+                .HasAnnotation("ProductVersion", "6.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Models.Answer", b =>
                 {
+                    b.Property<long>("WseId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("QuestionId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
@@ -38,18 +44,13 @@ namespace Backend.Migrations
                     b.Property<long>("CreatorId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("QuestionId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("WseId", "QuestionId", "Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("QuestionId");
 
                     b.ToTable("Answers");
                 });
@@ -74,6 +75,9 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Question", b =>
                 {
+                    b.Property<long>("WseId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
@@ -90,20 +94,18 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("WebserviceEntryId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
+                    b.HasKey("WseId", "Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("WebserviceEntryId");
 
                     b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("Models.Review", b =>
                 {
+                    b.Property<long>("WseId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
@@ -127,14 +129,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("WebserviceEntryId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
+                    b.HasKey("WseId", "Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("WebserviceEntryId");
 
                     b.ToTable("Reviews");
                 });
@@ -338,11 +335,23 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.Question", null)
-                        .WithMany("Answers")
-                        .HasForeignKey("QuestionId");
+                    b.HasOne("Models.WebserviceEntry", "Wse")
+                        .WithMany()
+                        .HasForeignKey("WseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("WseId", "QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Creator");
+
+                    b.Navigation("Question");
+
+                    b.Navigation("Wse");
                 });
 
             modelBuilder.Entity("Models.Collaborator", b =>
@@ -368,11 +377,15 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.WebserviceEntry", null)
+                    b.HasOne("Models.WebserviceEntry", "Wse")
                         .WithMany("Questions")
-                        .HasForeignKey("WebserviceEntryId");
+                        .HasForeignKey("WseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Creator");
+
+                    b.Navigation("Wse");
                 });
 
             modelBuilder.Entity("Models.Review", b =>
@@ -383,11 +396,15 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Models.WebserviceEntry", null)
+                    b.HasOne("Models.WebserviceEntry", "Wse")
                         .WithMany("Reviews")
-                        .HasForeignKey("WebserviceEntryId");
+                        .HasForeignKey("WseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Creator");
+
+                    b.Navigation("Wse");
                 });
 
             modelBuilder.Entity("Models.Session", b =>
@@ -417,11 +434,6 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("ContactPerson");
-                });
-
-            modelBuilder.Entity("Models.Question", b =>
-                {
-                    b.Navigation("Answers");
                 });
 
             modelBuilder.Entity("Models.User", b =>
