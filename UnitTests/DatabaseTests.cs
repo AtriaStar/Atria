@@ -7,7 +7,6 @@ namespace UnitTests;
 public class DatabaseTests {
     public DatabaseTests() {
         using var db = new AtriaContext();
-        var props = typeof(AtriaContext).GetProperties();
         foreach (var property in typeof(AtriaContext).GetProperties()
                      .Where(x => x.PropertyType.IsGenericType
                                  && x.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))) {
