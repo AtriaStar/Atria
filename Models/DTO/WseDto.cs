@@ -16,6 +16,8 @@ public class WseDto
     [Url]
     public string Link { get; set; } = null!;
     public string? FullDescription { get; set; } = null!;
+    public string? ChangeLog { get; set; } = null!;
+
 
     [Url]
     public string? DocumentationLink { get; set; } = null!;
