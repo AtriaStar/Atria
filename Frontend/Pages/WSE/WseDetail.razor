@@ -1,4 +1,6 @@
 ﻿@page "/wse/{WseId:long}"
+@using Models
+@inject HttpClient HttpClient
 
 <PageTitle>Atria - WseName</PageTitle>
 
@@ -384,7 +386,6 @@
                     <p class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
                 </div>
             </div>
-            @if (!_displayForm)
             @if (isCreator) 
             {
                 <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
@@ -469,9 +470,9 @@
     private bool _displayForm = false;
 
     [Parameter]
-    public WseDto Wse { get; set; } = null!;
+    public WebserviceEntry Wse { get; set; } = null!;
 
-    private WseDto _cloneWseDto = null!;
+    private WebserviceEntry _cloneWseDto = null!;
 
     private void ChangeBookmarkStatus()
     {
@@ -541,7 +542,7 @@
 
     protected override void OnInitialized() {
             @* Mock Data generation *@
-        Wse = new WseDto {
+        Wse = new WebserviceEntry() {
             Name = "Google",
             ShortDescription = "Lorem ipsum dolor sit amet",
             Link = "google.com",
@@ -561,7 +562,7 @@
     }
 
     private void CloneWse() {
-        _cloneWseDto = new WseDto {
+        _cloneWseDto = new WebserviceEntry() {
             Name = Wse.Name,
             ShortDescription = Wse.ShortDescription,
             Link = Wse.Link,
@@ -574,4 +575,16 @@
     /* API STUFF, DO MERGE */
     [Parameter]
     public long WseId { get; set; }
+
+    protected override async Task OnParametersSetAsync() {
+        await base.OnParametersSetAsync();
+        var response = await HttpClient.GetAsync($"wse/{WseId}");
+        if (response.IsSuccessStatusCode) {
+            Wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
+        }
+        else {
+            @* TODO not found *@
+        }
+    }
+
 }
