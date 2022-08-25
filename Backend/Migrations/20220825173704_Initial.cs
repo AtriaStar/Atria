@@ -131,14 +131,14 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    WseId = table.Column<long>(type: "bigint", nullable: false),
                     Text = table.Column<string>(type: "text", nullable: false),
                     CreationTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatorId = table.Column<long>(type: "bigint", nullable: false),
-                    WebserviceEntryId = table.Column<long>(type: "bigint", nullable: true)
+                    CreatorId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Questions", x => x.Id);
+                    table.PrimaryKey("PK_Questions", x => new { x.WseId, x.Id });
                     table.ForeignKey(
                         name: "FK_Questions_Users_CreatorId",
                         column: x => x.CreatorId,
@@ -146,10 +146,11 @@ namespace Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Questions_WebserviceEntries_WebserviceEntryId",
-                        column: x => x.WebserviceEntryId,
+                        name: "FK_Questions_WebserviceEntries_WseId",
+                        column: x => x.WseId,
                         principalTable: "WebserviceEntries",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -158,16 +159,16 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    WseId = table.Column<long>(type: "bigint", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     StarCount = table.Column<int>(type: "integer", nullable: false),
                     CreationTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatorId = table.Column<long>(type: "bigint", nullable: false),
-                    WebserviceEntryId = table.Column<long>(type: "bigint", nullable: true)
+                    CreatorId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reviews", x => x.Id);
+                    table.PrimaryKey("PK_Reviews", x => new { x.WseId, x.Id });
                     table.ForeignKey(
                         name: "FK_Reviews_Users_CreatorId",
                         column: x => x.CreatorId,
@@ -175,10 +176,11 @@ namespace Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Reviews_WebserviceEntries_WebserviceEntryId",
-                        column: x => x.WebserviceEntryId,
+                        name: "FK_Reviews_WebserviceEntries_WseId",
+                        column: x => x.WseId,
                         principalTable: "WebserviceEntries",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -206,23 +208,31 @@ namespace Backend.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    QuestionId = table.Column<long>(type: "bigint", nullable: false),
+                    WseId = table.Column<long>(type: "bigint", nullable: false),
                     Text = table.Column<string>(type: "text", nullable: false),
                     CreationTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatorId = table.Column<long>(type: "bigint", nullable: false),
-                    QuestionId = table.Column<long>(type: "bigint", nullable: true)
+                    CreatorId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Answers", x => x.Id);
+                    table.PrimaryKey("PK_Answers", x => new { x.WseId, x.QuestionId, x.Id });
                     table.ForeignKey(
-                        name: "FK_Answers_Questions_QuestionId",
-                        column: x => x.QuestionId,
+                        name: "FK_Answers_Questions_WseId_QuestionId",
+                        columns: x => new { x.WseId, x.QuestionId },
                         principalTable: "Questions",
-                        principalColumn: "Id");
+                        principalColumns: new[] { "WseId", "Id" },
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Answers_Users_CreatorId",
                         column: x => x.CreatorId,
                         principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Answers_WebserviceEntries_WseId",
+                        column: x => x.WseId,
+                        principalTable: "WebserviceEntries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -231,11 +241,6 @@ namespace Backend.Migrations
                 name: "IX_Answers_CreatorId",
                 table: "Answers",
                 column: "CreatorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Answers_QuestionId",
-                table: "Answers",
-                column: "QuestionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Collaborator_WebserviceEntryId",
@@ -248,19 +253,9 @@ namespace Backend.Migrations
                 column: "CreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Questions_WebserviceEntryId",
-                table: "Questions",
-                column: "WebserviceEntryId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Reviews_CreatorId",
                 table: "Reviews",
                 column: "CreatorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Reviews_WebserviceEntryId",
-                table: "Reviews",
-                column: "WebserviceEntryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sessions_UserId",

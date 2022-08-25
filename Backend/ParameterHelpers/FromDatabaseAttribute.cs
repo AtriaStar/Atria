@@ -25,6 +25,7 @@ public class FromDatabaseAttribute : ModelBinderAttribute {
                 await db.Entry(obj).Reference(property.Name).LoadAsync();
             }
 
+            bindingContext.ValidationState.Add(obj, new() { SuppressValidation = true });
             bindingContext.Result = ModelBindingResult.Success(obj);
         }
     }
