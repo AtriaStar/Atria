@@ -5,118 +5,227 @@
 <PageTitle>Atria - WseName</PageTitle>
 
 <div class="container-xxl mt-4">
-
-    @if (isCollab)
+    @if (!_displayForm)
     {
-        <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-            <button class="btn btn-success" type="button">
-                Bearbeiten
-            </button>
-            <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
-                Löschen
-            </button>
+
+        @if (isCollab)
+        {
+            <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+                <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
+                    Bearbeiten
+                </button>
+                <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
+                    Löschen
+                </button>
+            </div>
+        }
+
+        @*------------HEADER CARD------------*@
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-auto mt-sm-1">
+                        <i class="fa-solid fa-circle text-success" />
+                    </div>
+                    <div class="col ps-0">
+                        <h3 class="card-title fw-bold">
+                            @Wse.Name
+                        </h3>
+                    </div>
+                    <div class="col-auto d-flex align-content-end me-1">
+                        @{
+                            var bookmarkState = isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
+                            var bookmarkTitle = isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                        }
+                        <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="() => ChangeBookmarkStatus()"></i>
+                    </div>
+                    <div class="col-auto d-flex align-content-end">
+                        <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="" />
+                    </div>
+                </div>
+                <h5 class="card-subtitle mb-2 me-2 text-muted">
+                    Ansprechpartner
+                    <button class="btn btn-outline-secondary btn-small" @onclick="() => OpenCollabDialog()">weitere Kollaboratoren</button>
+                </h5>
+                <div class="card-text">@Wse.ShortDescription</div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            @*------------REVIEW AND TAGS------------*@
+            <div class="col-md-3 mb-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold">Bewertung</h6>
+                        <div class="row">
+                            <div class="col-auto">
+                                <i class="fa fa-star rating-color" />
+                                <i class="fa fa-star rating-color" />
+                                <i class="fa fa-star rating-color" />
+                                <i class="fa fa-star rating-color" />
+                                <i class="fa fa-star rating-color" />
+                            </div>
+                            <div class="col-auto">
+                                <p>xx Bewertungen</p>
+                            </div>
+                        </div>
+                        @* TODO scrollspy or leave it out
+                    <div class="d-grid d-flex justify-content-end">
+                    <button class="btn btn-outline-secondary btn-small" type="button">zu den Bewertungen</button>
+                    </div>*@
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold">Tags</h6>
+                        @*mock tags*@
+                        <div class="card-text">
+                            @for (int i = 0; i <= 20; i++)
+                            {
+                                <div class="badge bg-info me-1" value="@i">Tag @i</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @*------------LOG, DOC, DESC.------------*@
+            <div class="col-md-9">
+
+                <div class="card mb-4">
+                    <h6 class="card-header fw-bold">Änderungshistorie</h6>
+                    <div class="card-body">
+                        <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <h6 class="card-header fw-bold">
+                        Documentation
+                        <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation" />
+                    </h6>
+                    <div class="card-body">
+                        <div class="card-text">@Wse.Documentation</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h6 class="card-header fw-bold">Volltextbeschreibung</h6>
+                    <div class="card-body">
+                        <div class="card-text">@Wse.FullDescription</div>
+                    </div>
+                </div>
+            </div>
         </div>
     }
-
-    @*------------HEADER CARD------------*@
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row mb-2">
-                <div class="col-auto mt-sm-1">
-                    <i class="fa-solid fa-circle text-success"/>
-                </div>
-                <div class="col ps-0">
-                    <h3 class="card-title fw-bold">
-                        Name
-                    </h3>
-                </div>
-                <div class="col-auto d-flex align-content-end me-1">
-                    @{
-                        var bookmarkState = isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
-                        var bookmarkTitle = isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
-                    }
-                    <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="() => ChangeBookmarkStatus()"></i>
-                </div>
-                <div class="col-auto d-flex align-content-end">
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href=""/>
-                </div>
-            </div>
-            <h5 class="card-subtitle mb-2 me-2 text-muted">
-                Ansprechpartner
-                <button class="btn btn-outline-secondary btn-small" @onclick="() => OpenCollabDialog()">weitere Kollaboratoren</button>
-            </h5>
-            <div class="card-text">Kurzbeschreibung</div>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        @*------------REVIEW AND TAGS------------*@
-        <div class="col-md-3 mb-4">
+    else
+    {
+        <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
             <div class="card mb-4">
                 <div class="card-body">
-                    <h6 class="card-title fw-bold">Bewertung</h6>
-                    <div class="row">
-                        <div class="col-auto">
-                            <i class="fa fa-star rating-color"/>
-                            <i class="fa fa-star rating-color"/>
-                            <i class="fa fa-star rating-color"/>
-                            <i class="fa fa-star rating-color"/>
-                            <i class="fa fa-star rating-color"/>
+                    <div class="row mb-2">
+                        <div class="col-auto mt-sm-1">
+                            <i class="fa-solid fa-circle text-success" />
                         </div>
-                        <div class="col-auto">
-                            <p>xx Bewertungen</p>
+                        <div class="col ps-0">
+                            <h3 class="card-title fw-bold">
+                                <InputText @bind-Value="Wse.Name" id="name" type="text" class="form-control" placeholder="Name"></InputText>
+                               
+                            </h3>
+                        </div>
+                        <div class="col-auto d-flex align-content-end me-1">
+                            @{
+                                var bookmarkState = isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
+                                var bookmarkTitle = isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                            }
+                            <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="() => ChangeBookmarkStatus()"></i>
+                        </div>
+                        <div class="col-auto d-flex align-content-end">
+                            <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="" />
                         </div>
                     </div>
-                    @* TODO scrollspy or leave it out
-                    <div class="d-grid d-flex justify-content-end">
+                    <h5 class="card-subtitle mb-2 me-2 text-muted">
+                        Ansprechpartner
+                        <button class="btn btn-outline-secondary btn-small" @onclick="() => OpenCollabDialog()">weitere Kollaboratoren</button>
+                    </h5>
+                    <div class="card-text">@Wse.ShortDescription</div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                @*------------REVIEW AND TAGS------------*@
+                <div class="col-md-3 mb-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title fw-bold">Bewertung</h6>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <i class="fa fa-star rating-color" />
+                                    <i class="fa fa-star rating-color" />
+                                    <i class="fa fa-star rating-color" />
+                                    <i class="fa fa-star rating-color" />
+                                    <i class="fa fa-star rating-color" />
+                                </div>
+                                <div class="col-auto">
+                                    <p>xx Bewertungen</p>
+                                </div>
+                            </div>
+                            @* TODO scrollspy or leave it out
+                        <div class="d-grid d-flex justify-content-end">
                         <button class="btn btn-outline-secondary btn-small" type="button">zu den Bewertungen</button>
-                    </div>*@
-                </div>
-            </div>
+                        </div>*@
+                        </div>
+                    </div>
 
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="card-title fw-bold">Tags</h6>
-                    @*mock tags*@
-                    <div class="card-text">
-                        @for (int i = 0; i <= 20; i++) {
-                            <div class="badge bg-info me-1" value="@i">Tag @i</div>
-                        }
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title fw-bold">Tags</h6>
+                            @*mock tags*@
+                            <div class="card-text">
+                                @for (int i = 0; i <= 20; i++)
+                                {
+                                    <div class="badge bg-info me-1" value="@i">Tag @i</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @*------------LOG, DOC, DESC.------------*@
+                <div class="col-md-9">
+
+                    <div class="card mb-4">
+                        <h6 class="card-header fw-bold">Änderungshistorie</h6>
+                        <div class="card-body">
+                            <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <h6 class="card-header fw-bold">
+                            Documentation
+                            <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation" />
+                        </h6>
+                        <div class="card-body">
+                            <div class="card-text">@Wse.Documentation</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h6 class="card-header fw-bold">Volltextbeschreibung</h6>
+                        <div class="card-body">
+                            <div class="card-text">@Wse.FullDescription</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <ValidationSummary></ValidationSummary>
+        </EditForm>
+    }
 
-        @*------------LOG, DOC, DESC.------------*@
-        <div class="col-md-9">
-
-            <div class="card mb-4">
-                <h6 class="card-header fw-bold">Änderungshistorie</h6>
-                <div class="card-body">
-                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
-                </div>
-            </div>
-    
-            <div class="card mb-4">
-                <h6 class="card-header fw-bold">
-                    Dokumentation
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation"/>
-                </h6>
-                <div class="card-body">
-                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h6 class="card-header fw-bold">Volltextbeschreibung</h6>
-                <div class="card-body">
-                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <hr/>
+    <hr />
 
     @*------------QNA------------*@
     <h6 class="fw-bold mt-2 mb-2">Q&A</h6>
@@ -125,7 +234,7 @@
     {
         <div class="ui-field">
             @*TODO change to InputTextArea when EditForm added*@
-            <textarea class="form-control mt-4 mb-3" type="text" placeholder="Haben Sie eine Frage?"/>
+            <textarea class="form-control mt-4 mb-3" type="text" placeholder="Haben Sie eine Frage?" />
         </div>
         <div class="d-grid gap-2 mt-2 mb-4 d-flex justify-content-end">
             <button class="btn btn-outline-success btn-small" type="button">
@@ -277,10 +386,11 @@
                     <p class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
                 </div>
             </div>
+            @if (!_displayForm)
             @if (isCreator) 
             {
                 <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
-                    <button class="btn btn-outline-success btn-small" type="button">
+                    <button class="btn btn-outline-success btn-small" type="button" @onclick="() => _displayForm = !_displayForm">
                         Bearbeiten
                     </button>
                     <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteReviewDialog()">
@@ -295,25 +405,37 @@
     <div class="d-grid d-flex mt-2 mb-2 justify-content-center">
         <button class="btn btn-outline-secondary btn-small" type="button" href="">weitere Bewertungen</button>
     </div>
-    
+
     @if (isCollab)
     {
-        <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-            <button class="btn btn-success" type="button">
-                Bearbeiten
-            </button>
-            <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
-                Löschen
-            </button>
-        </div>
+        @if (!_displayForm)
+        {
+            <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+                <button class="btn btn-success" type="button">
+                    Bearbeiten
+                </button>
+                <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
+                    Löschen
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+                <button class="btn btn-success" type="submit">
+                    Speichern
+                </button>
+            </div>
+        }
     }
-    
-</div>
+    </div>
 
-@if (CollabDialogOpen) 
-{
-    <Frontend.Pages.Components.CollabModal OnClose="@OnCollabDialogClose"/>
-}
+
+
+    @if (CollabDialogOpen)
+            {
+                <Frontend.Pages.Components.CollabModal OnClose="@OnCollabDialogClose" />
+            }
 
 @if (DeleteQuestionDialogOpen) 
 {
@@ -346,9 +468,17 @@
     public bool isCreator = true;
     public bool isBookmark = false;
 
-    private void ChangeBookmarkStatus() {
+    private bool _displayForm = false;
+
+    [Parameter]
+    public WseDto Wse { get; set; } = null!;
+
+    private WseDto _cloneWseDto = null!;
+
+    private void ChangeBookmarkStatus()
+    {
         isBookmark = !isBookmark;
-        @* TODO logic *@
+            @* TODO logic *@
     }
 
     private void OpenCollabDialog()
@@ -409,5 +539,37 @@
     {
         DeleteWSEDialogOpen = false;
         StateHasChanged();
+    }
+
+    protected override void OnInitialized() {
+            @* Mock Data generation *@
+        Wse = new WseDto {
+            Name = "Google",
+            ShortDescription = "Lorem ipsum dolor sit amet",
+            Link = "google.com",
+            FullDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
+            DocumentationLink = "https://de.wikipedia.org/wiki/Google",
+            Documentation = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
+        };
+
+        CloneWse();
+    }
+
+    
+    private void HandleValidSubmit() {
+        _displayForm = !_displayForm;
+        CloneWse();
+            @* TODO implement backend communication *@
+    }
+
+    private void CloneWse() {
+        _cloneWseDto = new WseDto {
+            Name = Wse.Name,
+            ShortDescription = Wse.ShortDescription,
+            Link = Wse.Link,
+            FullDescription = Wse.FullDescription,
+            DocumentationLink = Wse.DocumentationLink,
+            Documentation = Wse.Documentation
+        };
     }
 }
