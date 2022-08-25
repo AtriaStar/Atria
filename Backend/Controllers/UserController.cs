@@ -14,7 +14,7 @@ public class UserController : ControllerBase {
 
     [HttpGet("{userId:long}/wse")]
     public async Task<IActionResult> GetWseByUser([FromServices] AtriaContext db, long userId)
-        => Ok(db.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId))));
+        => Ok(db.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId)));
 
     [HttpGet("{userId:long}/bookmarks")]
     public IEnumerable<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user)
