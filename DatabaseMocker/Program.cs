@@ -1,26 +1,17 @@
 ﻿using Backend;
-using Models;
+using DatabaseMocker;
 
 await using var context = new AtriaContext();
-Console.WriteLine(string.Join(", ", context.Users.Select(x => x.Email)));
 
-WebserviceEntry entry = new WebserviceEntry {
-    Name = "Test",
-    ShortDescription = "SD",
-    FullDescription = "FUlld",
-    Link = new("https://google.de"),
-    ViewCount = 1,
-    ContactPerson = new() {
-        FirstNames = "John",
-        LastName = "Smith",
-        Email = "floppa@floppa.de",
-        PasswordSalt = Array.Empty<byte>(),
-        PasswordHash = Array.Empty<byte>(),
-        SignUpIp = "127.0.0.1",
-    },
-};
+context.WebserviceEntries.RemoveRange(context.WebserviceEntries);
+context.Users.RemoveRange(context.Users);
+await context.SaveChangesAsync();
 
-await context.WebserviceEntries.AddAsync(entry);
+await context.Users.AddRangeAsync(Enumerable.Range(0, 100)
+    .Select(_ => UserMocker.GenerateUser())
+    .DistinctBy(x => x.Email));
+await context.SaveChangesAsync();
 
+await WseMocker.AddWse(context, context.Users.RandomElement().Id);
 
 await context.SaveChangesAsync();

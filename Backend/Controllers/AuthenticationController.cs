@@ -18,6 +18,10 @@ public class AuthenticationController : ControllerBase {
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(Registration registration, [FromServices] SessionService ss) {
+        if (await _context.Users.AnyAsync(x => x.Email == registration.Email)) {
+            return Conflict("Email is already taken");
+        }
+
         var salt = HashingService.GenerateSalt();
 
         var user = new User {
@@ -28,12 +32,9 @@ public class AuthenticationController : ControllerBase {
             PasswordHash = HashingService.Hash(registration.Password, salt),
             PasswordSalt = salt,
         };
+
         await _context.Users.AddAsync(user);
-        try {
-            await _context.SaveChangesAsync();
-        } catch (DbUpdateException) {
-            return BadRequest();
-        }
+        await _context.SaveChangesAsync();
         await ss.GenerateSession(user, _context, HttpContext);
 
         return Ok();
@@ -54,6 +55,7 @@ public class AuthenticationController : ControllerBase {
     public async Task<IActionResult> Logout([FromAuthentication] Session session, [FromServices] SessionService ss) {
         await ss.DeleteSession(session, _context, Response);
         return Ok();
+
     }
 
     [RequiresAuthentication]
@@ -65,7 +67,7 @@ public class AuthenticationController : ControllerBase {
         return Ok();
     }
 
-    [RequiresAuthentication]
+    [RequiresAuthentication] 
     [HttpGet("sessions")]
     public IEnumerable<Session> GetSessions([FromAuthentication] User user)
         => _context.Sessions
@@ -75,4 +77,5 @@ public class AuthenticationController : ControllerBase {
     [RequiresAuthentication]
     [HttpGet("")]
     public User GetAuthUser([FromAuthentication] User user) => user;
+
 }
