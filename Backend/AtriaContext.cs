@@ -14,5 +14,14 @@ namespace Backend {
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseNpgsql("Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true"); // TODO: Change
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            modelBuilder.Entity<Review>()
+                .HasKey(x => new { x.WseId, x.Id });
+            modelBuilder.Entity<Question>()
+                .HasKey(x => new { x.WseId, x.Id });
+            modelBuilder.Entity<Answer>()
+                .HasKey(x => new { x.WseId, x.QuestionId, x.Id });
+        }
     }
 }
