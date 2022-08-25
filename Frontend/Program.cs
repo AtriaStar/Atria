@@ -18,7 +18,7 @@ builder.Services
         if (!cnt.IsSuccessStatusCode) { return null; }
         return await cnt.Content.ReadFromJsonAsync<User>();
     })
-    .AddSingleton<CookieHandler>()
+    .AddScoped<CookieHandler>()
     .AddHttpClient(Options.DefaultName, client => client.BaseAddress =
         new(builder.Configuration["BaseAddress"] ?? throw new InvalidOperationException("No backend address provided")))
     .AddHttpMessageHandler<CookieHandler>();
