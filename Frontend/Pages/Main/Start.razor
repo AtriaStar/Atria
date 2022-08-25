@@ -2,6 +2,7 @@
 @using Models
 @using Models.DTO
 @inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
 
 <PageTitle>Atria</PageTitle>
 
@@ -11,7 +12,9 @@
         <div class="mb-2">
             <div class="form-control form-control-lg border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px; border-radius: 0.375rem">
                 <div class="input-group input-group-lg">
-                    <button class="btn btn-sm btn-link text-dark" @onclick="Search"><i class="fa fa-search"></i></button>
+                    <button class="btn btn-sm btn-link text-dark" @onclick="Search">
+                        <i class="fa fa-search"></i>
+                    </button>
                     <input type="search" class="form-control form-control-lg border-0" placeholder="Suche nach..." @bind-value="Query" @onkeyup="SearchInput">
                 </div>
             </div>
@@ -56,7 +59,7 @@
                 break;
             case "user":
                 <div class="row row-cols-1 row-cols-md-2 g-3">
-                    <UserSummaryList UserDtos="@_userDtos"></UserSummaryList>
+                    <UserSummaryList Users="@_userList"></UserSummaryList>
                 </div>
                 break;
             default:
@@ -85,7 +88,7 @@
     public string? Query { get; set; }
 
     private IList<WseSummaryDto> _summaryDtos = new List<WseSummaryDto>();
-    private IList<UserDto> _userDtos = new List<UserDto>();
+    private IList<User> _userList = new List<User>();
 
     private void SearchInput(KeyboardEventArgs evt) {
         if (evt.Key == "Enter") {
@@ -97,67 +100,37 @@
         NavigationManager.NavigateTo(Navigate("query", Query));
     }
 
-    protected override void OnInitialized() {
-        @* Mock data gen *@
-        WseSummaryDto wseSummaryDto1 = new WseSummaryDto {
-            Id = 1,
-            Name = "hans peter und der der sich selbst sehr mag",
-            ShortDescription = "der hans der gerne mal einen apfel pflückt und isst",
-            Tags = new List<Tag> {
-                new() {
-                    Name = "Tag1",
-                    CreationTime = DateTimeOffset.Now,
-                    UseCount = 1
-                },
-                new() {
-                    Name = "Tag2",
-                    CreationTime = DateTimeOffset.Now,
-                    UseCount = 100
-                }
-            },
-            CreationDate = DateTimeOffset.Now,
-            IsOnline = true,
-            AverageRating = 3.5,
-            ViewCount = 1,
-            Link = new Uri("https://www.google.com"),
-            IsBookmark = true
-        };
-        _summaryDtos.Add(wseSummaryDto1);
-
-        WseSummaryDto wseSummaryDto2 = new WseSummaryDto {
-            Id = 1,
-            Name = "peter",
-            ShortDescription = "hans peter",
-            Tags = new List<Tag>(),
-            CreationDate = DateTimeOffset.Now,
-            IsOnline = false,
-            AverageRating = 5,
-            ViewCount = 15,
-            Link = new Uri("https://www.google.com")
-        };
-        _summaryDtos.Add(wseSummaryDto2);
-
-        UserDto userDto = new UserDto {
-            Email = "hans@peter",
-            FirstNames = "Hans",
-            LastName = "Peter",
-            Biography = "Ich bin der Hans Peter und ich bin Alkoholiker",
-            Title = "Dr."
-        };
-
-        _userDtos.Add(userDto);
-        _userDtos.Add(userDto);
-        _userDtos.Add(userDto);
-        _userDtos.Add(userDto);
-        _userDtos.Add(userDto);
+    protected override async Task OnParametersSetAsync() {
+        await base.OnParametersSetAsync();
+        switch (Type) {
+            case "wse":
+            case null:
+                await GetAndSetWseList();
+                break;
+            case "user":
+                await GetAndSetUserList();
+                break;
+            default:
+                Navigate("type", null);
+                break;
+        }
     }
 
+    private async Task GetAndSetWseList() {
+        var response = await HttpClient.GetAsync($"search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        _summaryDtos = await response.Content.ReadFromJsonAsync<List<WseSummaryDto>>() ?? new List<WseSummaryDto>();
+    }
+
+    private async Task GetAndSetUserList() {
+        var response = await HttpClient.GetAsync("search/user" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        _userList = await response.Content.ReadFromJsonAsync<List<User>>() ?? new List<User>();
+    }
 
     private string Navigate(string key, string? value) {
         return NavigationManager.GetUriWithQueryParameter(key, value);
     }
 
-    @*for tag modal*@
+        @*for tag modal*@
     private bool FilterDialogOpen { get; set; }
 
     private void OnFilterDialogClose(bool accepted) {
