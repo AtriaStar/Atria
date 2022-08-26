@@ -28,15 +28,17 @@ public class WebserviceEntry {
     public int ViewCount { get; set; }
 
     public long ContactPersonId { get; set; }
-    public User ContactPerson { get; set; } = null!;
-
+    [JsonIgnore]
+    public virtual User ContactPerson { get; set; } = null!;
+    
+    [JsonIgnore]
+    public ICollection<Question> Questions { get; set; } = new List<Question>();
+    
     [MaxLength(20)]
-    public ICollection<Tag> Tags { get; set; } = null!;
-
-    public ICollection<Question> Questions { get; set; } = null!;
-
-    public ICollection<Review> Reviews { get; set; } = null!;
-    public ICollection<Collaborator> Collaborators { get; set; } = null!;
-
+    public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
+    
+    [JsonIgnore]
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public ICollection<Collaborator> Collaborators { get; set; } = new List<Collaborator>();
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
