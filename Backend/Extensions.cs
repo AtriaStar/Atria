@@ -9,13 +9,13 @@ using Models;
 namespace Backend; 
 
 public static class Extensions {
-    public static IQueryable<T> Paginate<T>(this IQueryable<T> queryable, Pagination pagination)
+    public static IEnumerable<T> Paginate<T>(this IEnumerable<T> queryable, Pagination pagination)
         => queryable.Skip(pagination.Page * pagination.EntriesPerPage)
                     .Take(pagination.EntriesPerPage);
 
     public static Func<WebserviceEntry, double> GetMapper(this Order order)
         => order switch {
-            Order.Relevance => x => Random.Shared.NextDouble(),
+            Order.Relevance => x => 1,
             Order.ViewCount => x => x.ViewCount,
             Order.ReviewAverage => x => x.Reviews.Average(y => (int)y.StarCount),
             Order.Recency => x => x.CreatedAt.UtcTicks,

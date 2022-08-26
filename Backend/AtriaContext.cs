@@ -13,8 +13,12 @@ public class AtriaContext : DbContext {
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<Session> Sessions => Set<Session>();
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true"); // TODO: Change
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+        optionsBuilder.UseNpgsql(
+            "Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true");
+        optionsBuilder.EnableSensitiveDataLogging();
+        // TODO: Change
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         modelBuilder.Entity<Review>()
