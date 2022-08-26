@@ -65,7 +65,7 @@
                     <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="() => ChangeBookmarkStatus()"></i>
                 </div>
                 <div class="col-auto d-flex align-content-end">
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="https://www.google.de/" />
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@Wse.Link" />
                 </div>
             </div>
             <h5 class="card-subtitle mb-2 me-2 text-muted">
@@ -170,7 +170,7 @@
             <div class="card mb-4">
                 <h6 class="card-header fw-bold">
                     Dokumentation
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation" href="https://de.wikipedia.org/wiki/Google" />
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation" href="@Wse.DocumentationLink" />
                 </h6>
                 <div class="card-body">
                     @if (!_displayForm)

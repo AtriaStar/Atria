@@ -6,16 +6,29 @@
 <div class="container-xxl mt-4">
     
     <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-        <button class="btn btn-success" type="button">
+        @if (!_displayForm)
+                    {
+        <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
             Bearbeiten
         </button>
-        @*TODO logic*@
+        @*TODO backend-logic*@
         <button class="btn btn-success" type="button">
-            Veröffentlichen
-        </button>
-        <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDraftDialog()">
-            Löschen
-        </button>
+                Veröffentlichen
+            </button>
+            <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDraftDialog()">
+                Löschen
+            </button>
+        }
+        else
+        {
+            <EditForm Model="WseDraft" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <button class="btn btn-success" type="submit">
+                    Speichern
+                </button>
+                <ValidationSummary></ValidationSummary>
+            </EditForm>
+        }
     </div>
 
     @*------------HEADER CARD------------*@
@@ -27,17 +40,60 @@
                 </div>
                 <div class="col ps-0">
                     <h3 class="card-title fw-bold">
-                        Name
+                        @if (!_displayForm)
+                        {
+                            @WseDraft.Name
+                        }
+                        else
+                        {
+                            
+                            <EditForm Model="WseDraft" OnValidSubmit="HandleValidSubmit">
+                                <DataAnnotationsValidator></DataAnnotationsValidator>
+                                <InputText @bind-Value="WseDraft.Name" id="name" type="text" class="form-control" placeholder="Name"></InputText>
+                                <ValidationSummary></ValidationSummary>
+                            </EditForm>
+                        }
                     </h3>
                 </div>
                 <div class="col-auto d-flex align-content-end">
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href=""/>
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@WseDraft.Link"/>
                 </div>
             </div>
             <h5 class="card-subtitle mb-2 text-muted">Ansprechpartner</h5>
-            <div class="card-text">Kurzbeschreibung</div>
+            <div class="card-text">
+                @if (!_displayForm)
+                {
+                    @WseDraft.ShortDescription
+                }
+                else
+                {
+
+                    <EditForm Model="WseDraft" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator></DataAnnotationsValidator>
+                        <InputText @bind-Value="WseDraft.ShortDescription" id="shortDescription" type="text" class="form-control" placeholder="Kurzbeschreibung"></InputText>
+                        <ValidationSummary></ValidationSummary>
+                    </EditForm>
+                }
+            </div>
         </div>
     </div>
+
+    
+    @if (_displayForm)
+    {
+        <div class="col-auto mt-sm-1">
+            <div class="card mb-4">
+                <h6 class="card-header fw-bold">Link</h6>
+                <div class="card-body">
+                    <EditForm Model="WseDraft" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator></DataAnnotationsValidator>
+                        <InputText @bind-Value="WseDraft.Link" id="link" type="text" class="form-control" placeholder="Link"></InputText>
+                        <ValidationSummary></ValidationSummary>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+     }
 
     <div class="row mb-4">
         @*------------REVIEW AND TAGS------------*@
@@ -61,32 +117,85 @@
             <div class="card mb-4">
                 <h6 class="card-header fw-bold">Änderungshistorie</h6>
                 <div class="card-body">
-                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
+                    @if (!_displayForm)
+                    {
+                      @WseDraft.ChangeLog
+                    }
+                    else
+                    {
+
+                        <EditForm Model="WseDraft" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                            <InputText @bind-Value="WseDraft.ChangeLog" id="changeLog" type="text" class="form-control" placeholder="Änderungshistorie"></InputText>
+                            <ValidationSummary></ValidationSummary>
+                        </EditForm>
+                    }
                 </div>
             </div>
-    
+
             <div class="card mb-4">
                 <h6 class="card-header fw-bold">
                     Dokumentation
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation"/>
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation" />
                 </h6>
                 <div class="card-body">
-                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
+                    @if (!_displayForm)
+                    {
+                        @WseDraft.Documentation
+                    }
+                    else
+                    {
+
+                        <EditForm Model="WseDraft" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                            <InputText @bind-Value="WseDraft.Documentation" id="documentation" type="text" class="form-control" placeholder="Dokumentation"></InputText>
+                            <ValidationSummary></ValidationSummary>
+                        </EditForm>
+                    }
                 </div>
             </div>
+
+             @if (_displayForm)
+            {
+                <div class="col-auto mt-sm-1">
+                    <div class="card mb-4">
+                        <h6 class="card-header fw-bold">Dokumentations-Link</h6>
+                        <div class="card-body">
+                            <EditForm Model="WseDraft" OnValidSubmit="HandleValidSubmit">
+                                <DataAnnotationsValidator></DataAnnotationsValidator>
+                                <InputText @bind-Value="WseDraft.DocumentationLink" id="documentationLink" type="text" class="form-control" placeholder="Dokumentations-Link"></InputText>
+                                <ValidationSummary></ValidationSummary>
+                            </EditForm>
+                        </div>
+                    </div>
+                </div>
+            }
 
             <div class="card">
                 <h6 class="card-header fw-bold">Volltextbeschreibung</h6>
                 <div class="card-body">
-                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
+                    @if (!_displayForm)
+                    {
+                        @WseDraft.FullDescription
+                    }
+                    else
+                    {
+
+                        <EditForm Model="WseDraft" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                            <InputText @bind-Value="WseDraft.FullDescription" id="fullDescription" type="text" class="form-control" placeholder="Volltextbeschreibung"></InputText>
+                            <ValidationSummary></ValidationSummary>
+                        </EditForm>
+                    }
                 </div>
             </div>
         </div>
     </div>
 
-    
+
     <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-        <button class="btn btn-success" type="button">
+        @if (!_displayForm) {
+        <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
             Bearbeiten
         </button>
         @*TODO logic*@
@@ -96,6 +205,17 @@
         <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDraftDialog()">
             Löschen
         </button>
+         }
+        else
+        {
+            <EditForm Model="WseDraft" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <button class="btn btn-success" type="submit">
+                    Speichern
+                </button>
+                <ValidationSummary></ValidationSummary>
+            </EditForm>
+        }
     </div>
 
 </div>
@@ -106,7 +226,9 @@
 }
 
 @code {
+
     public bool DeleteWSEDraftDialogOpen { get; set; }
+    private bool _displayForm = false;
 
     [Parameter]
     public WSEDraft WseDraft { get; set; } = null!;
@@ -137,8 +259,25 @@
             Documentation = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
         };
 
-        CloneWse();
+        CloneWseDraft();
     }
 
+     private void HandleValidSubmit() {
+        _displayForm = !_displayForm;
+        CloneWseDraft();
+            @* TODO implement backend communication *@
+    }
+
+    private void CloneWseDraft() {
+        _cloneWseDraft = new WSEDraft {
+            Name = WseDraft.Name,
+            ShortDescription = WseDraft.ShortDescription,
+            Link = WseDraft.Link,
+            FullDescription = WseDraft.FullDescription,
+            ChangeLog = WseDraft.ChangeLog,
+            DocumentationLink = WseDraft.DocumentationLink,
+            Documentation = WseDraft.Documentation
+        };
+    }
 
 }
