@@ -17,11 +17,12 @@ namespace Backend.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    ShortDescription = table.Column<string>(type: "text", nullable: false),
-                    Link = table.Column<string>(type: "text", nullable: false),
-                    FullDescription = table.Column<string>(type: "text", nullable: false),
-                    DocumentationLink = table.Column<string>(type: "text", nullable: false),
-                    Changelog = table.Column<string>(type: "text", nullable: false),
+                    ShortDescription = table.Column<string>(type: "text", nullable: true),
+                    Link = table.Column<string>(type: "text", nullable: true),
+                    FullDescription = table.Column<string>(type: "text", nullable: true),
+                    DocumentationLink = table.Column<string>(type: "text", nullable: true),
+                    Documentation = table.Column<string>(type: "text", nullable: true),
+                    ChangeLog = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>

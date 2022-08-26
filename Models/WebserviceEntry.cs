@@ -17,13 +17,14 @@ public class WebserviceEntry {
     [Required]
     [Url]
     public string Link { get; set; } = null!;
-    public string? FullDescription { get; set; } = null!;
+    public string? FullDescription { get; set; }
 
     [Url]
-    public string? DocumentationLink { get; set; } = null!;
+    [DisplayFormat(ConvertEmptyStringToNull = true)]
+    public string? DocumentationLink { get; set; }
 
-    public string? Documentation { get; set; } = null!;
-    public string? ChangeLog { get; set; } = null!;
+    public string? Documentation { get; set; }
+    public string? ChangeLog { get; set; }
 
     public int ViewCount { get; set; }
 

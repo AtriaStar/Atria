@@ -8,13 +8,16 @@ public class WSEDraft {
     public long Id { get; set; }
     [Required]
     public string Name { get; set; } = null!;
-    public string? ShortDescription { get; set; } = null!;
-    //[Url]
-    public string? Link { get; set; } = null!;
-    public string? FullDescription { get; set; } = null!;
-    //[Url]
-    public string? DocumentationLink { get; set; } = null!;
-    public string? Documentation { get; set; } = null!;
-    public string? ChangeLog { get; set; } = null!;
+    public string? ShortDescription { get; set; }
+    [Url]
+    [DisplayFormat(ConvertEmptyStringToNull = true)]
+    public string? Link { get; set; }
+    public string? FullDescription { get; set; }
+
+    [Url]
+    [DisplayFormat(ConvertEmptyStringToNull = true)]
+    public string? DocumentationLink { get; set; }
+    public string? Documentation { get; set; }
+    public string? ChangeLog { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
