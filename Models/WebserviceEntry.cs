@@ -26,7 +26,7 @@ public class WebserviceEntry {
     public string? Documentation { get; set; }
     public string? ChangeLog { get; set; }
 
-    public int ViewCount { get; set; }
+    public long ViewCount { get; set; }
 
     public long ContactPersonId { get; set; }
     [JsonIgnore]
