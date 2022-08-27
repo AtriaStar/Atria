@@ -176,7 +176,7 @@
     private void HandleValidSubmit()
     {
         _tagDto.NewTags = _tagDto.NewTagsStr.Split(',');
-        _webserviceEntry.Tags = SelectedTags;
+        _webserviceEntry.Tags = new HashSet<Tag>(SelectedTags);
     }
 
     private async void PublishWse() {
