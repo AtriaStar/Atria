@@ -1,6 +1,10 @@
 ﻿@page "/newWse"
 @using Microsoft.AspNetCore.Components
 @using Models
+@using System.Net
+@inject NavigationManager NavManager
+@inject HttpClient HttpClient
+@inject IJSRuntime Js
 
 <PageTitle>Atria - Neuer Eintrag</PageTitle>
 
@@ -16,7 +20,7 @@
     }
 
     @*TODO: draft only needs name; to publish name, short description and link needed*@
-    <EditForm Model="@webserviceEntry" OnValidSubmit="HandleValidSubmit">
+    <EditForm Model="@webserviceEntry">
         <DataAnnotationsValidator/>
         <ValidationSummary/>
 
@@ -65,7 +69,7 @@
             </div>
             <div class="col-auto pt-1 ms-auto">
                 <div class="btn-group">
-                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => deleteSelectedTags()">
+                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => DeleteSelectedTags()">
                         Alle Löschen
                     </button>
                 </div>
@@ -74,31 +78,30 @@
                 <div class="form-control form-control-sm border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
                     <div class="input-group input-group-sm">
                         <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
-                        <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach...">
+                        <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="TagQuery" @onkeyup="SearchTags">
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="row mb-1">
-            @foreach (string tag in selectedTags)
+            @foreach (Tag tag in SelectedTags)
             {
                 <div class="col-auto">
                     <h6>
                         <span class="badge bg-info">
-                            @tag
-                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => removeTag(tag)"/>
+                            @tag.Name
+                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"/>
                         </span>
                     </h6>
                 </div>
             }
         </div>
         
-        @*TODO change to InputSelect*@
         <div class="ui-field">
             <select class="form-select mb-3" size="8" multiple @onchange="SelectedTagsChanged">
-                @for (int i = 0; i < 21; i++) {
-                    <option value="Tag @i">Tag @i</option>
+                @foreach (Tag tag in SearchedTags) {
+                    <option value="@tag.Name">@tag.Name</option>
                 }
             </select>
         </div>
@@ -109,7 +112,7 @@
                 <small class="text-muted">(kommagetrennt)</small>
             </label>
             <div class="ui-field">
-                <InputTextArea class="form-control" rows="3" placeholder="tag1,tag2,..." id="newTags"/>
+                <InputTextArea class="form-control" rows="3" placeholder="tag1,tag2,..." id="newTags" @bind-Value="NewTags"/>
             </div>
         </div>
 
@@ -141,12 +144,12 @@
 
         <div class="d-grid gap-2 d-flex justify-content-end mb-4">
             <div class="btn-group">
-                <button class="btn btn-success" type="submit">
+                <button class="btn btn-success" type="submit" @onclick="SaveAsDraft">
                     Als Entwurf speichern
                 </button>
             </div>
             <div class="btn-group">
-                <button class="btn btn-success" type="submit">
+                <button class="btn btn-success" type="submit" @onclick="CreateNewWse">
                     Veröffentlichen
                 </button>
             </div>
@@ -156,29 +159,87 @@
 
 @code {
     readonly WebserviceEntry webserviceEntry = new();
-    string[] selectedTags = new string[] { };
+    private List<Tag> MockTags = new List<Tag>();
+    private List<Tag> SearchedTags = new List<Tag>();
+    private List<Tag> SelectedTags = new List<Tag>();
+    private List<Tag> NewTags = new List<Tag>();
+    private string? TagQuery { get; set; }
+    private string? NewTags { get; set; }
     public bool newWse = true;
     public bool editWse = false;
 
-    private void HandleValidSubmit() {
-        Console.WriteLine("Valid");
+    private string CreateNewMessage { get; set; } = null!;
+
+    private async void SaveAsDraft()
+    {
+
     }
 
-    private void deleteSelectedTags()
+    private async void CreateNewWse()
     {
-        selectedTags = Array.Empty<string>();
+        
     }
 
-    private void removeTag(string tag)
+    @*------------TAG SEARCH------------*@
+    private void SearchTags(KeyboardEventArgs evt) {
+        SearchedTags = new List<Tag> { };
+
+        if (evt.Key == "Enter" && TagQuery is not null) {
+            foreach (Tag tag in MockTags)
+            {
+                if (tag.Name.Contains(TagQuery, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    SearchedTags.Add(tag);
+                }
+            }
+        }
+    }
+
+    @*---------------TAGS---------------*@
+    protected override void OnInitialized()
     {
-        selectedTags = selectedTags.Where(w => w != tag).ToArray();
+        /*mock tags*/
+        MockTags.Add(new() { Name = "Suchmaschine1", CreationTime = DateTimeOffset.Now, UseCount = 1 });
+        MockTags.Add(new() { Name = "Lexikon34", CreationTime = DateTimeOffset.Now, UseCount = 34 });
+        MockTags.Add(new() { Name = "Wörterbuch6", CreationTime = DateTimeOffset.Now, UseCount = 6 });
+        MockTags.Add(new() { Name = "Tool2", CreationTime = DateTimeOffset.Now, UseCount = 2 });
+        MockTags.Add(new() { Name = "Webservice2", CreationTime = DateTimeOffset.Now, UseCount = 2 });
+        MockTags.Add(new() { Name = "Suchmaschine2", CreationTime = DateTimeOffset.Now, UseCount = 2 });
+        MockTags.Add(new() { Name = "Wörterbuch4", CreationTime = DateTimeOffset.Now, UseCount = 4 });
+        MockTags.Add(new() { Name = "Tool3", CreationTime = DateTimeOffset.Now, UseCount = 3 });
+
+        SearchedTags = MockTags;
+        SearchedTags = SearchedTags.OrderBy(tag => tag.Name).ToList();
+    }
+
+    private void DeleteSelectedTags()
+    {
+        SelectedTags = new List<Tag>();
+    }
+
+    private void RemoveTag(Tag tag)
+    {
+        SelectedTags = SelectedTags.Where(t => t.Name != tag.Name).ToList();
     }
 
     private void SelectedTagsChanged(ChangeEventArgs e)
     {
         if (e.Value is not null)
         {
-            selectedTags = (string[])e.Value;
+            Tag selectedTag = MockTags.Find(t => t.Name == (string)e.Value) ?? throw new ArgumentException("Tag cannot be null");
+            SelectedTags.Add(selectedTag);
         }
     }
+
+    /*before call check if NewTags null*/
+    private List<Tag> CreateNewTags(string str)
+    {
+        string[] newTagsStr = str.Split(',');
+        foreach (string str in newTagsStr)
+        {
+            NewTags.Add(new() { Name = str, CreationTime = DateTimeOffset.Now, UseCount = 1 })
+        }
+        return NewTags;
+    }
+
 }
