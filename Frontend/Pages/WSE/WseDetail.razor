@@ -6,16 +6,32 @@
 
 <div class="container-xxl mt-4">
 
+
     @if (isCollab)
     {
-        <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-            <button class="btn btn-success" type="button">
-                Bearbeiten
-            </button>
-            <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
-                Löschen
-            </button>
-        </div>
+        @if (!_displayForm)
+        {
+            <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+                <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
+                    Bearbeiten
+                </button>
+                <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
+                    Löschen
+                </button>
+            </div>
+        }
+        else
+        {
+            <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+                    <button class="btn btn-success" type="submit">
+                        Speichern
+                    </button>
+                </div>
+                <ValidationSummary></ValidationSummary>
+            </EditForm>
+        }
     }
 
     @*------------HEADER CARD------------*@
@@ -23,11 +39,22 @@
         <div class="card-body">
             <div class="row mb-2">
                 <div class="col-auto mt-sm-1">
-                    <i class="fa-solid fa-circle text-success"/>
+                    <i class="fa-solid fa-circle text-success" />
                 </div>
                 <div class="col ps-0">
                     <h3 class="card-title fw-bold">
-                        Name
+                        @if (!_displayForm)
+                        {
+                            @Wse.Name
+                        }
+                        else
+                        {
+                            <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                                <DataAnnotationsValidator></DataAnnotationsValidator>
+                                <InputText @bind-Value="Wse.Name" id="name" type="text" class="form-control" placeholder="Name"></InputText>
+                                <ValidationSummary></ValidationSummary>
+                            </EditForm>
+                        }
                     </h3>
                 </div>
                 <div class="col-auto d-flex align-content-end me-1">
@@ -38,85 +65,168 @@
                     <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="() => ChangeBookmarkStatus()"></i>
                 </div>
                 <div class="col-auto d-flex align-content-end">
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href=""/>
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@Wse.Link" />
                 </div>
             </div>
             <h5 class="card-subtitle mb-2 me-2 text-muted">
                 Ansprechpartner
                 <button class="btn btn-outline-secondary btn-small" @onclick="() => OpenCollabDialog()">weitere Kollaboratoren</button>
             </h5>
-            <div class="card-text">Kurzbeschreibung</div>
+            @if (!_displayForm)
+            {
+                <div class="card-text">@Wse.ShortDescription</div>
+            }
+            else
+            {
+                <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                    <InputText @bind-Value="Wse.ShortDescription" id="shortDescription" type="text" class="form-control" placeholder="Kurztextbeschreibung"></InputText>
+                    <ValidationSummary></ValidationSummary>
+                </EditForm>
+            }
+
         </div>
     </div>
 
-    <div class="row mb-4">
-        @*------------REVIEW AND TAGS------------*@
-        <div class="col-md-3 mb-4">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h6 class="card-title fw-bold">Bewertung</h6>
-                    <div class="row">
-                        <div class="col-auto">
-                            <i class="fa fa-star rating-color"/>
-                            <i class="fa fa-star rating-color"/>
-                            <i class="fa fa-star rating-color"/>
-                            <i class="fa fa-star rating-color"/>
-                            <i class="fa fa-star rating-color"/>
-                        </div>
-                        <div class="col-auto">
-                            <p>xx Bewertungen</p>
-                        </div>
-                    </div>
-                    @* TODO scrollspy or leave it out
-                    <div class="d-grid d-flex justify-content-end">
-                        <button class="btn btn-outline-secondary btn-small" type="button">zu den Bewertungen</button>
-                    </div>*@
-                </div>
-            </div>
+    @if (_displayForm)
+    {
 
-            <div class="card">
+        <div class="col-auto mt-sm-1">
+
+            <div class="card mb-4">
+                <h6 class="card-header fw-bold">Link</h6>
                 <div class="card-body">
-                    <h6 class="card-title fw-bold">Tags</h6>
-                    @*mock tags*@
-                    <div class="card-text">
-                        @for (int i = 0; i <= 20; i++) {
-                            <div class="badge bg-info me-1" value="@i">Tag @i</div>
-                        }
-                    </div>
+                    <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator></DataAnnotationsValidator>
+                        <InputText @bind-Value="Wse.Link" id="link" type="text" class="form-control" placeholder="Link"></InputText>
+                        <ValidationSummary></ValidationSummary>
+                    </EditForm>
                 </div>
             </div>
         </div>
+     }
 
-        @*------------LOG, DOC, DESC.------------*@
-        <div class="col-md-9">
+        <div class="row mb-4">
+            @*------------REVIEW AND TAGS------------*@
+            <div class="col-md-3 mb-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold">Bewertung</h6>
+                        <div class="row">
+                            <div class="col-auto">
+                                <i class="fa fa-star rating-color" />
+                                <i class="fa fa-star rating-color" />
+                                <i class="fa fa-star rating-color" />
+                                <i class="fa fa-star rating-color" />
+                                <i class="fa fa-star rating-color" />
+                            </div>
+                            <div class="col-auto">
+                                <p>xx Bewertungen</p>
+                            </div>
+                        </div>
+                        @* TODO scrollspy or leave it out
+                    <div class="d-grid d-flex justify-content-end">
+                    <button class="btn btn-outline-secondary btn-small" type="button">zu den Bewertungen</button>
+                    </div>*@
+                    </div>
+                </div>
 
-            <div class="card mb-4">
-                <h6 class="card-header fw-bold">Änderungshistorie</h6>
-                <div class="card-body">
-                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold">Tags</h6>
+                        @*mock tags*@
+                        <div class="card-text">
+                            @for (int i = 0; i <= 20; i++)
+                            {
+                                <div class="badge bg-info me-1" value="@i">Tag @i</div>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
-    
+
+            @*------------LOG, DOC, DESC.------------*@
+            <div class="col-md-9">
+
+                <div class="card mb-4">
+
+                <h6 class="card-header fw-bold">Änderungshistorie</h6>
+                <div class="card-body">
+                    @if (!_displayForm)
+                    {
+                        @Wse.ChangeLog
+                    }
+                    else
+                    {
+                        <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                            <InputText @bind-Value="Wse.ChangeLog" id="changeLog" type="text" class="form-control" placeholder="Änderungshistorie"></InputText>
+                            <ValidationSummary></ValidationSummary>
+                        </EditForm>
+                    }
+                </div>
+            </div>
+
             <div class="card mb-4">
                 <h6 class="card-header fw-bold">
                     Dokumentation
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation"/>
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation" href="@Wse.DocumentationLink" />
                 </h6>
                 <div class="card-body">
-                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
+                    @if (!_displayForm)
+                    {
+                        <div class="card-text">@Wse.Documentation</div>
+                    }
+                    else
+                    {
+                        <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                            <InputText @bind-Value="Wse.Documentation" id="documentation" type="text" class="form-control" placeholder="Dokumentation"></InputText>
+                            <ValidationSummary></ValidationSummary>
+                        </EditForm>
+                    }
                 </div>
             </div>
+
+            @if (_displayForm)
+            {
+
+                <div class="col-auto mt-sm-1">
+
+                    <div class="card mb-4">
+                        <h6 class="card-header fw-bold">Dokumentations-Link</h6>
+                        <div class="card-body">
+                            <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                                <DataAnnotationsValidator></DataAnnotationsValidator>
+                                <InputText @bind-Value="Wse.DocumentationLink" id="documentationLink" type="text" class="form-control" placeholder="Dokumentations-Link"></InputText>
+                                <ValidationSummary></ValidationSummary>
+                            </EditForm>
+                        </div>
+                    </div>
+                </div>
+            }
 
             <div class="card">
                 <h6 class="card-header fw-bold">Volltextbeschreibung</h6>
                 <div class="card-body">
-                    <div class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </div>
+                    @if (!_displayForm)
+                    {
+                        <div class="card-text">@Wse.FullDescription</div>
+                    }
+                    else
+                    {
+                        <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                            <InputText @bind-Value="Wse.FullDescription" id="fullDescription" type="text" class="form-control" placeholder="Volltextbeschreibung"></InputText>
+                            <ValidationSummary></ValidationSummary>
+                        </EditForm>
+                    }
                 </div>
             </div>
+            </div>
         </div>
-    </div>
 
-    <hr/>
+    <hr />
 
     @*------------QNA------------*@
     <h6 class="fw-bold mt-2 mb-2">Q&A</h6>
@@ -125,7 +235,7 @@
     {
         <div class="ui-field">
             @*TODO change to InputTextArea when EditForm added*@
-            <textarea class="form-control mt-4 mb-3" type="text" placeholder="Haben Sie eine Frage?"/>
+            <textarea class="form-control mt-4 mb-3" type="text" placeholder="Haben Sie eine Frage?" />
         </div>
         <div class="d-grid gap-2 mt-2 mb-4 d-flex justify-content-end">
             <button class="btn btn-outline-success btn-small" type="button">
@@ -280,7 +390,7 @@
             @if (isCreator) 
             {
                 <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
-                    <button class="btn btn-outline-success btn-small" type="button">
+                    <button class="btn btn-outline-success btn-small" type="button" @onclick="() => _displayForm = !_displayForm">
                         Bearbeiten
                     </button>
                     <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteReviewDialog()">
@@ -295,25 +405,41 @@
     <div class="d-grid d-flex mt-2 mb-2 justify-content-center">
         <button class="btn btn-outline-secondary btn-small" type="button" href="">weitere Bewertungen</button>
     </div>
-    
+
     @if (isCollab)
     {
-        <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-            <button class="btn btn-success" type="button">
-                Bearbeiten
-            </button>
-            <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
-                Löschen
-            </button>
-        </div>
+        @if (!_displayForm)
+        {
+            <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+                <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
+                    Bearbeiten
+                </button>
+                <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
+                    Löschen
+                </button>
+            </div>
+        }
+        else
+        {
+            <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+                    <button class="btn btn-success" type="submit">
+                        Speichern
+                    </button>
+                </div>
+                <ValidationSummary></ValidationSummary>
+            </EditForm>
+        }
     }
-    
 </div>
 
-@if (CollabDialogOpen) 
-{
-    <Frontend.Pages.Components.CollabModal OnClose="@OnCollabDialogClose"/>
-}
+
+
+    @if (CollabDialogOpen)
+            {
+                <Frontend.Pages.Components.CollabModal OnClose="@OnCollabDialogClose" />
+            }
 
 @if (DeleteQuestionDialogOpen) 
 {
@@ -332,7 +458,7 @@
 
 @if (DeleteWSEDialogOpen) 
 {
-    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihr Eintrag löschen möchten?" OnClose="@OnDeleteWSEDialogClose"/>
+    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?" OnClose="@OnDeleteWSEDialogClose"/>
 }
 
 @code {
@@ -346,9 +472,17 @@
     public bool isCreator = true;
     public bool isBookmark = false;
 
-    private void ChangeBookmarkStatus() {
+    private bool _displayForm = false;
+
+    [Parameter]
+    public WebserviceEntry Wse { get; set; } = null!;
+
+    private WebserviceEntry _cloneWse = null!;
+
+    private void ChangeBookmarkStatus()
+    {
         isBookmark = !isBookmark;
-        @* TODO logic *@
+            @* TODO logic *@
     }
 
     private void OpenCollabDialog()
@@ -409,5 +543,39 @@
     {
         DeleteWSEDialogOpen = false;
         StateHasChanged();
+    }
+
+    protected override void OnInitialized() {
+            @* Mock Data generation *@
+        Wse = new WebserviceEntry {
+            Name = "Google",
+            ShortDescription = "Lorem ipsum dolor sit amet",
+            Link = "https://www.google.de/",
+            FullDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
+            ChangeLog = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam non",
+            DocumentationLink = "https://de.wikipedia.org/wiki/Google",
+            Documentation = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
+        };
+
+        CloneWse();
+    }
+
+    
+    private void HandleValidSubmit() {
+        _displayForm = !_displayForm;
+        CloneWse();
+            @* TODO implement backend communication *@
+    }
+
+    private void CloneWse() {
+        _cloneWse = new WebserviceEntry {
+            Name = Wse.Name,
+            ShortDescription = Wse.ShortDescription,
+            Link = Wse.Link,
+            FullDescription = Wse.FullDescription,
+            ChangeLog = Wse.ChangeLog,
+            DocumentationLink = Wse.DocumentationLink,
+            Documentation = Wse.Documentation
+        };
     }
 }

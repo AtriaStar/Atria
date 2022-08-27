@@ -15,6 +15,18 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: '6.0.x'
+          
+      - name: Setup Entity Framework
+        run: dotnet tool install --global dotnet-ef
+          
+      - name: Setup PostgreSQL
+        uses: Harmon758/postgresql-action@v1
+        with:
+          postgresql user: user
+          postgresql password: password
+          
+      - name: Setup database
+        run: dotnet ef database update --project Backend/Backend.csproj
 
       - name: Build
         run: dotnet build -warnaserror
