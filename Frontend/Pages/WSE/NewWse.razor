@@ -144,12 +144,12 @@
 
         <div class="d-grid gap-2 d-flex justify-content-end mb-4">
             <div class="btn-group">
-                <button class="btn btn-success" type="submit" @onclick="SaveAsDraft">
+                <button class="btn btn-success" type="submit">
                     Als Entwurf speichern
                 </button>
             </div>
             <div class="btn-group">
-                <button class="btn btn-success" type="submit" @onclick="CreateNewWse">
+                <button class="btn btn-success" type="submit">
                     Veröffentlichen
                 </button>
             </div>
@@ -167,18 +167,6 @@
     private string? NewTagsStr { get; set; }
     public bool newWse = true;
     public bool editWse = false;
-
-    private string CreateNewMessage { get; set; } = null!;
-
-    private async void SaveAsDraft()
-    {
-
-    }
-
-    private async void CreateNewWse()
-    {
-        
-    }
 
     @*------------TAG SEARCH------------*@
     private void SearchTags(KeyboardEventArgs evt) {
