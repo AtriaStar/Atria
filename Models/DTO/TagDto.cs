@@ -6,7 +6,7 @@ public class TagDto
 {
 
     [RegularExpression(@"^[a-zA-Z0-9-.]*(,[a-zA-Z0-9-.]+)*$", ErrorMessage = "Tags are not separated with a comma.")]
-    public string NewTagsStr { get; set; } = null!;
+    public string? NewTagsStr { get; set; }
 
-    public ICollection<string> NewTags { get; set; } = null!;
+    public ICollection<string>? NewTags { get; set; }
 }

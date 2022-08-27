@@ -173,9 +173,8 @@
     public bool editWse = false;
     private string ConflictMessage { get; set; } = null!;
 
-    private void HandleValidSubmit()
-    {
-        _tagDto.NewTags = _tagDto.NewTagsStr.Split(',');
+    private void HandleValidSubmit() {
+        if (_tagDto.NewTagsStr != null) _tagDto.NewTags = _tagDto.NewTagsStr.Split(',');
         _webserviceEntry.Tags = new HashSet<Tag>(SelectedTags);
     }
 
