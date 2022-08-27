@@ -8,7 +8,8 @@
 
 <div class="container-xxl">
     <div class="searchbar position-relative mb-3 mt-4">
-
+        
+       
         <div class="mb-2">
             <div class="form-control form-control-lg border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px; border-radius: 0.375rem">
                 <div class="input-group input-group-lg">
@@ -32,9 +33,11 @@
         </div>
         <div class="d-flex mb-2 ms-auto">
             <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
+                 
                 Filter
+            
             </button>
-
+           
             <div class="dropdown ms-3 d-flex">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Sortieren nach
@@ -70,7 +73,9 @@
 </div>
 
 @if (FilterDialogOpen) {
-    <Frontend.Pages.Components.FilterModal OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+             
+    <Frontend.Pages.Components.FilterModal IsOnline = "IsOnline" IsBookmark = "IsBookmark" SelectedStarNum = "SelectedStarNum" SelectedTags = "SelectedTags" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+
 }
 
 @code {
@@ -89,6 +94,22 @@
 
     private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
     private IEnumerable<User> _userList = new List<User>();
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool? IsOnline { get; set; } = false!;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool? IsBookmark { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery (Name = "minRating")]
+    public int? SelectedStarNum { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery (Name = "tags")]
+    public string[]? SelectedTags { get; set; } = new string[] { };
 
     private void SearchInput(KeyboardEventArgs evt) {
         if (evt.Key == "Enter") {
@@ -126,6 +147,7 @@
         _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? new List<User>();
     }
 
+    }
     private string Navigate(string key, string? value) {
         return NavigationManager.GetUriWithQueryParameter(key, value);
     }
@@ -138,7 +160,11 @@
     }
 
     private void OpenFilterDialog() {
+
+        
         FilterDialogOpen = true;
+   
+
     }
 
 }
