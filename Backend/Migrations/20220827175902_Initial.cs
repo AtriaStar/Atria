@@ -86,7 +86,7 @@ namespace Backend.Migrations
                     DocumentationLink = table.Column<string>(type: "text", nullable: true),
                     Documentation = table.Column<string>(type: "text", nullable: true),
                     ChangeLog = table.Column<string>(type: "text", nullable: true),
-                    ViewCount = table.Column<int>(type: "integer", nullable: false),
+                    ViewCount = table.Column<long>(type: "bigint", nullable: false),
                     ContactPersonId = table.Column<long>(type: "bigint", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
