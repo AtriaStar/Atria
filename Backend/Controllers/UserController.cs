@@ -12,18 +12,18 @@ public class UserController : ControllerBase {
     public User Get([FromDatabase] User user) => user;
 
     [HttpGet("{userId:long}/wse")]
-    public IEnumerable<WebserviceEntry> GetWseByUser([FromServices] AtriaContext db, long userId)
+    public IQueryable<WebserviceEntry> GetWseByUser([FromServices] AtriaContext db, long userId)
         => db.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId));
 
     [HttpGet("{userId:long}/bookmarks")]
-    public IEnumerable<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user)
+    public ICollection<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user)
         => user.Bookmarks;
 
     [HttpGet("{userId:long}/reviews")]
-    public IEnumerable<Review> GetReviewsByUser(long userId, string query) => null!;
+    public IQueryable<Review> GetReviewsByUser(long userId, string query) => null!;
 
     [HttpGet("{userId:long}/drafts")]
-    public IEnumerable<WSEDraft> GetWseDrafts() => null!;
+    public IQueryable<WSEDraft> GetWseDrafts() => null!;
 
     [HttpGet("{userId:long}/notifications")]
     public IReadOnlyList<Notification> GetNotifications() => null!;

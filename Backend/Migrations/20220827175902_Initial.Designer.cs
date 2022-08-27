@@ -3,6 +3,7 @@ using System;
 using Backend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    partial class AtriaContextModelSnapshot : ModelSnapshot
+    [Migration("20220827175902_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -293,22 +295,23 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("ChangeLog")
+                    b.Property<string>("Changelog")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Documentation")
-                        .HasColumnType("text");
-
                     b.Property<string>("DocumentationLink")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FullDescription")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Link")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -316,6 +319,7 @@ namespace Backend.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ShortDescription")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
