@@ -36,6 +36,8 @@ public class WebserviceEntry {
     public ICollection<Question> Questions { get; set; } = null!;
 
     public ICollection<Review> Reviews { get; set; } = null!;
+
+    [MaxLength(20)]
     public ICollection<Collaborator> Collaborators { get; set; } = null!;
 
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;

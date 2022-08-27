@@ -1,6 +1,7 @@
 ﻿@page "/newWse"
 @using Microsoft.AspNetCore.Components
 @using Models
+@using Models.DTO
 @using System.Net
 @inject NavigationManager NavManager
 @inject HttpClient HttpClient
@@ -20,7 +21,7 @@
     }
 
     @*TODO: draft only needs name; to publish name, short description and link needed*@
-    <EditForm Model="@webserviceEntry">
+    <EditForm Model="@_webserviceEntry" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator/>
         <ValidationSummary/>
 
@@ -30,9 +31,9 @@
                 <small style="color: red">*Pflicht</small>
             </label>
             <div class="ui-field">
-                <InputText class="form-control" id="name" @bind-Value="webserviceEntry.Name"/>
+                <InputText class="form-control" id="name" @bind-Value="_webserviceEntry.Name"/>
             </div>
-            <ValidationMessage For="() => webserviceEntry.Name"></ValidationMessage>
+            <ValidationMessage For="() => _webserviceEntry.Name"></ValidationMessage>
         </div>
 
         <div class="mb-3">
@@ -42,9 +43,9 @@
                 <small style="color: red">*Pflicht für die Veröffentlichung</small>
             </label>
             <div class="ui-field">
-                <InputText class="form-control" id="shortDescription" @bind-Value="webserviceEntry.ShortDescription"/>
+                <InputText class="form-control" id="shortDescription" @bind-Value="_webserviceEntry.ShortDescription"/>
             </div>
-            <ValidationMessage For="() => webserviceEntry.ShortDescription"></ValidationMessage>
+            <ValidationMessage For="() => _webserviceEntry.ShortDescription"></ValidationMessage>
         </div>
 
         <div class="mb-4">
@@ -53,9 +54,9 @@
                 <small style="color: red">*Pflicht für die Veröffentlichung</small>
             </label>
             <div class="ui-field">
-                <InputText class="form-control" type="url" placeholder="http(s)://..." id="link" @bind-Value="webserviceEntry.Link"/>
+                <InputText class="form-control" type="url" placeholder="http(s)://..." id="link" @bind-Value="_webserviceEntry.Link"/>
             </div>
-            <ValidationMessage For="() => webserviceEntry.Link"></ValidationMessage>
+            <ValidationMessage For="() => _webserviceEntry.Link"></ValidationMessage>
         </div>
 
         <hr/>
@@ -112,8 +113,9 @@
                 <small class="text-muted">(kommagetrennt)</small>
             </label>
             <div class="ui-field">
-                <InputTextArea class="form-control" rows="3" placeholder="tag1,tag2,..." id="newTags" @bind-Value="NewTagsStr"/>
+                <InputTextArea class="form-control" rows="3" placeholder="tag1,tag2,..." id="newTags" @bind-Value="_tagDto.NewTagsStr"/>
             </div>
+            <ValidationMessage For="() => _tagDto.NewTagsStr"></ValidationMessage>
         </div>
 
         <hr/>
@@ -121,24 +123,24 @@
         <div class="mt-4 mb-3">
             <label class="form-label fw-bold">Dokumentation</label>
             <div class="ui-field">
-                <InputText class="form-control mb-2" type="url" placeholder="Link" id="docLink" @bind-Value="webserviceEntry.DocumentationLink"/> 
+                <InputText class="form-control mb-2" type="url" placeholder="Link" id="docLink" @bind-Value="_webserviceEntry.DocumentationLink"/> 
             </div>
             <div class="ui-field">
-                <InputTextArea class="form-control" rows="3" placeholder="Text" id="doc" @bind-Value="webserviceEntry.Documentation"/>
+                <InputTextArea class="form-control" rows="3" placeholder="Text" id="doc" @bind-Value="_webserviceEntry.Documentation"/>
             </div>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">Volltextbeschreibung</label>
             <div class="ui-field">
-                <InputTextArea class="form-control" rows="3" id="fullDescription" @bind-Value="webserviceEntry.FullDescription"/>
+                <InputTextArea class="form-control" rows="3" id="fullDescription" @bind-Value="_webserviceEntry.FullDescription"/>
             </div>
         </div>
 
         <div class="mb-4">
             <label class="form-label fw-bold">Änderungshistorie</label>
             <div class="ui-field">
-                <InputTextArea class="form-control" rows="3" id="changeLog" @bind-Value="webserviceEntry.ChangeLog"/>
+                <InputTextArea class="form-control" rows="3" id="changeLog" @bind-Value="_webserviceEntry.ChangeLog"/>
             </div>
         </div>
 
@@ -149,7 +151,7 @@
                 </button>
             </div>
             <div class="btn-group">
-                <button class="btn btn-success" type="submit">
+                <button class="btn btn-success" type="submit" @onclick="() => PublishWse()">
                     Veröffentlichen
                 </button>
             </div>
@@ -158,18 +160,41 @@
 </div>
 
 @code {
-    readonly WebserviceEntry webserviceEntry = new();
+    private readonly WebserviceEntry _webserviceEntry = new();
+    private readonly TagDto _tagDto = new();
 
     private List<Tag> MockTags = new List<Tag>();
     private List<Tag> SearchedTags = new List<Tag>();
     private List<Tag> SelectedTags = new List<Tag>();
     private string[] SelectedTagsStr = new string[] { };
-    private List<Tag> NewTags = new List<Tag>();
 
     private string? TagQuery { get; set; }
-    private string? NewTagsStr { get; set; }
     public bool newWse = true;
     public bool editWse = false;
+    private string ConflictMessage { get; set; } = null!;
+
+    private void HandleValidSubmit()
+    {
+        _tagDto.NewTags = _tagDto.NewTagsStr.Split(',');
+        _webserviceEntry.Tags = SelectedTags;
+    }
+
+    private async void PublishWse() {
+        HandleValidSubmit();
+        var response = await HttpClient.PutAsJsonAsync("wse", _webserviceEntry);
+
+        if (response.IsSuccessStatusCode) {
+            NavManager.NavigateTo("wse");
+        }
+        else if (response.StatusCode == HttpStatusCode.Conflict) {
+            /*TODO specify message*/
+            ConflictMessage = "There was an conflict";
+            StateHasChanged();
+        }
+        else {
+            NavManager.NavigateTo("/internal-server-error");
+        }
+    }
 
     @*------------TAG SEARCH------------*@
     private void SearchTags(KeyboardEventArgs evt) {
@@ -227,16 +252,6 @@
                 SelectedTags.Add(selectedTag);
             }
         }
-    }
-
-    /*before call check if NewTags null*/
-    private void CreateNewTags(string str)
-    {
-        string[] newTagsDivided = str.Split(',');
-        foreach (string tagName in newTagsDivided)
-        {
-            NewTags.Add(new() { Name = tagName, CreationTime = DateTimeOffset.Now, UseCount = 1 });
-        }    
     }
 
 }
