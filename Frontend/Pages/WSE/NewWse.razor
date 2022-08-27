@@ -159,10 +159,13 @@
 
 @code {
     readonly WebserviceEntry webserviceEntry = new();
+
     private List<Tag> MockTags = new List<Tag>();
     private List<Tag> SearchedTags = new List<Tag>();
     private List<Tag> SelectedTags = new List<Tag>();
+    private string[] SelectedTagsStr = new string[] { };
     private List<Tag> NewTags = new List<Tag>();
+
     private string? TagQuery { get; set; }
     private string? NewTagsStr { get; set; }
     public bool newWse = true;
@@ -214,20 +217,26 @@
     {
         if (e.Value is not null)
         {
-            Tag selectedTag = MockTags.Find(t => t.Name == (string)e.Value) ?? throw new ArgumentException("Tag cannot be null");
-            SelectedTags.Add(selectedTag);
+            SelectedTagsStr = (string[])e.Value;
+        }
+
+        foreach (string str in SelectedTagsStr)
+        {
+            if (!SelectedTags.Exists(t => t.Name == str)) {
+                Tag selectedTag = MockTags.Find(t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
+                SelectedTags.Add(selectedTag);
+            }
         }
     }
 
     /*before call check if NewTags null*/
-    private List<Tag> CreateNewTags(string str)
+    private void CreateNewTags(string str)
     {
         string[] newTagsDivided = str.Split(',');
         foreach (string tagName in newTagsDivided)
         {
             NewTags.Add(new() { Name = tagName, CreationTime = DateTimeOffset.Now, UseCount = 1 });
-        }
-        return NewTags;
+        }    
     }
 
 }
