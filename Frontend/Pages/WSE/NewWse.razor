@@ -112,7 +112,7 @@
                 <small class="text-muted">(kommagetrennt)</small>
             </label>
             <div class="ui-field">
-                <InputTextArea class="form-control" rows="3" placeholder="tag1,tag2,..." id="newTags" @bind-Value="NewTags"/>
+                <InputTextArea class="form-control" rows="3" placeholder="tag1,tag2,..." id="newTags" @bind-Value="NewTagsStr"/>
             </div>
         </div>
 
@@ -164,7 +164,7 @@
     private List<Tag> SelectedTags = new List<Tag>();
     private List<Tag> NewTags = new List<Tag>();
     private string? TagQuery { get; set; }
-    private string? NewTags { get; set; }
+    private string? NewTagsStr { get; set; }
     public bool newWse = true;
     public bool editWse = false;
 
@@ -234,10 +234,10 @@
     /*before call check if NewTags null*/
     private List<Tag> CreateNewTags(string str)
     {
-        string[] newTagsStr = str.Split(',');
-        foreach (string str in newTagsStr)
+        string[] newTagsDivided = str.Split(',');
+        foreach (string tagName in newTagsDivided)
         {
-            NewTags.Add(new() { Name = str, CreationTime = DateTimeOffset.Now, UseCount = 1 })
+            NewTags.Add(new() { Name = tagName, CreationTime = DateTimeOffset.Now, UseCount = 1 });
         }
         return NewTags;
     }
