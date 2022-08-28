@@ -55,7 +55,7 @@
         @switch (Type)
         {
             case null or "wse":
-                <WseSummaryList SummaryDtos="@_summaryDtos"></WseSummaryList>
+                <WseSummaryList Entries="@_wseList"></WseSummaryList>
                 break;
             case "user":
                 <div class="row row-cols-1 row-cols-md-2 g-3">
@@ -87,8 +87,8 @@
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
 
-    private IList<WseSummaryDto> _summaryDtos = new List<WseSummaryDto>();
-    private IList<User> _userList = new List<User>();
+    private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
+    private IEnumerable<User> _userList = new List<User>();
 
     private void SearchInput(KeyboardEventArgs evt) {
         if (evt.Key == "Enter") {
@@ -117,13 +117,13 @@
     }
 
     private async Task GetAndSetWseList() {
-        var response = await HttpClient.GetAsync($"search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        _summaryDtos = await response.Content.ReadFromJsonAsync<List<WseSummaryDto>>() ?? new List<WseSummaryDto>();
+        var response = await HttpClient.GetAsync("search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? new List<WebserviceEntry>();
     }
 
     private async Task GetAndSetUserList() {
         var response = await HttpClient.GetAsync("search/user" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        _userList = await response.Content.ReadFromJsonAsync<List<User>>() ?? new List<User>();
+        _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? new List<User>();
     }
 
     private string Navigate(string key, string? value) {

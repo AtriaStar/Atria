@@ -1,0 +1,19 @@
+﻿@using Models
+
+@if (CurrentUser is not null) {
+    @Authorized
+}
+else {
+    @NotAuthorized
+}
+
+@code {
+    [CascadingParameter]
+    private User? CurrentUser { get; set; }
+    
+    [Parameter]
+    public RenderFragment? Authorized { get; set; }
+    
+    [Parameter]
+    public RenderFragment? NotAuthorized { get; set; }
+}
