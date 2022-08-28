@@ -22,7 +22,7 @@
                     <div class="d-flex justify-content-sm-end justify-content-start flex-wrap">
                         <div class="ms-3">
                             <CAuth>
-                                <Authorized>
+                                <Authenticated>
                                     @{
                                         _bookmarkState = CurrentUser!.Bookmarks.Contains(entry) ? "bi-bookmark-fill" : "bi-bookmark";
                                         _bookmarkTitle = CurrentUser.Bookmarks.Contains(entry) ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
@@ -30,8 +30,8 @@
                                     <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="() => ChangeBookmarkStatus(entry)">
                                         <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
                                     </button>
-                                </Authorized>
-                                <NotAuthorized>
+                                </Authenticated>
+                                <NotAuthenticated>
                                     @{
                                         _bookmarkState = "bi-bookmark";
                                         _bookmarkTitle = "Als Lesezeichen hinzufügen";
@@ -40,7 +40,7 @@
                                     <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="NavigateToLogin">
                                         <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
                                     </button>
-                                </NotAuthorized>
+                                </NotAuthenticated>
                             </CAuth>
                         </div>
                         <div class="ms-3" style="min-width: fit-content">
