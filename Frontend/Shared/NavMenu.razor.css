@@ -18,3 +18,9 @@ ion-icon:before {
 ::deep .link-active > * {
     color: #1f82c0;
 }
+
+.miniAvatar {
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+}
