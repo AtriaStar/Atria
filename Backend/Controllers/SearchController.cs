@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Backend.Services;
+using Microsoft.AspNetCore.Mvc;
 using Models;
-using Models.DTO;
 
 namespace Backend.Controllers;
 
@@ -13,46 +12,42 @@ public class SearchController : ControllerBase {
     public SearchController(AtriaContext context) {
         _context = context;
     }
-/*  TEMPORARY REMOVE FOR TESTING PURPOSES (this implementation will be overwritten anyway)
+
+    private IEnumerable<WebserviceEntry> GetBaseWses(WSESearchParam param)
+        => _context.WebserviceEntries
+            .Where(x => (!x.Reviews.Any() || x.Reviews.Average(y => (int) y.StarCount) >= (int) param.MinReviewAvg)
+            && (param.Tags == null || x.Tags.Intersect(param.Tags).Count() == param.Tags.Count)
+            && (param.IsOnline == null || true /* TODO */)
+            && (param.HasBookmark == null || true /* TODO */))
+            .AsEnumerable()
+            .Select(x => (wse: x, score: param.Order.GetMapper().Invoke(x)
+                                         * (param.Query == null ? 1 : FuzzingService.CalculateScore1(param.Query, x))))
+            .OrderByDescending(x => x.score)
+            .TakeWhile(x => param.Query == null || x.score > 0.05)
+            .Select(x => {
+                x.wse.ChangeLog = x.score.ToString();
+                return x.wse;
+            });
+
     [HttpGet("wse")]
     public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WSESearchParam param, [FromQuery] Pagination pagination)
-        => _context.WebserviceEntries
-            .Where(x => x.Reviews.Average(y => (int)y.StarCount) >= (int)param.MinReviewAvg)
-            .OrderBy(x => x, param.Order.GetComparer())
-            .Skip(pagination.Page * pagination.EntriesPerPage)
-            .Take(pagination.EntriesPerPage);
-*/
-    [HttpGet("wse")]
-    public List<WseSummaryDto> GetWseList() {
-        var list = _context.WebserviceEntries.Take(10);
-        List<WseSummaryDto> returnList = new List<WseSummaryDto>();
-        foreach (var webservice in list) {
-            returnList.Add(new WseSummaryDto() {
-                Id = webservice.Id,
-                Link = new Uri(webservice.Link),
-                Name = webservice.Name,
-                Tags = new List<Tag>(),
-                AverageRating = 3,
-                CreationDate = webservice.CreatedAt,
-                IsBookmark = true,
-                IsOnline = false,
-                ShortDescription = webservice.ShortDescription,
-                ViewCount = webservice.ViewCount
-            });
-        }
+        => GetBaseWses(param).Paginate(pagination);
 
-        return returnList;
-    }
-    
-    [HttpGet("user")]
-    public IEnumerable<User> GetUserList(string? query, [FromQuery] Pagination pagination)
+    [HttpGet("wse/count")]
+    public long GetWseCount([FromQuery] WSESearchParam param) => GetBaseWses(param).LongCount();
+
+    private IEnumerable<User> GetBaseUsers(string query)
         => _context.Users
-            .Skip(pagination.Page * pagination.EntriesPerPage)
-            .Take(pagination.EntriesPerPage);
+            .AsEnumerable()
+            .Select(x => (user: x, score: FuzzingService.CalculateScore(query, x)))
+            .OrderByDescending(x => x.score)
+            .TakeWhile(x => x.score > 0.5)
+            .Select(x => x.user);
 
-    [HttpGet("count/wse")]
-    public Task<long> GetWseCount(string? query) => _context.WebserviceEntries.LongCountAsync();
+    [HttpGet("user")]
+    public IEnumerable<User> GetUserList(string query, [FromQuery] Pagination pagination)
+        => GetBaseUsers(query).Paginate(pagination);
 
-    [HttpGet("count/user")]
-    public Task<long> GetUserCount(string? query) => _context.WebserviceEntries.LongCountAsync();
+    [HttpGet("user/count")]
+    public long GetUserCount(string query) => GetBaseUsers(query).LongCount();
 }
