@@ -107,12 +107,12 @@ namespace Backend.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    Rights = table.Column<int>(type: "integer", nullable: false),
-                    WebserviceEntryId = table.Column<long>(type: "bigint", nullable: true)
+                    WseId = table.Column<long>(type: "bigint", nullable: false),
+                    Rights = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Collaborator", x => x.UserId);
+                    table.PrimaryKey("PK_Collaborator", x => new { x.WseId, x.UserId });
                     table.ForeignKey(
                         name: "FK_Collaborator_Users_UserId",
                         column: x => x.UserId,
@@ -120,10 +120,11 @@ namespace Backend.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Collaborator_WebserviceEntries_WebserviceEntryId",
-                        column: x => x.WebserviceEntryId,
+                        name: "FK_Collaborator_WebserviceEntries_WseId",
+                        column: x => x.WseId,
                         principalTable: "WebserviceEntries",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -244,9 +245,9 @@ namespace Backend.Migrations
                 column: "CreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Collaborator_WebserviceEntryId",
+                name: "IX_Collaborator_UserId",
                 table: "Collaborator",
-                column: "WebserviceEntryId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_CreatorId",

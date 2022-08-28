@@ -1,8 +1,8 @@
-﻿using Backend;
+﻿using Backend.AspPlugins;
 using DatabaseMocker;
 using Microsoft.EntityFrameworkCore;
 
-namespace UnitTests; 
+namespace UnitTests;
 
 public class DatabaseTests {
     public DatabaseTests() {
