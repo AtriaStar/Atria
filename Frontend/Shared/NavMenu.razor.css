@@ -4,7 +4,7 @@
 
 ion-icon {
     color: rgba(1, 1, 1, 1);
-    font-size: 26px;
+    font-size: 28px;
     display: block;
 }
 
@@ -21,6 +21,14 @@ ion-icon:before {
 
 .miniAvatar {
     border-radius: 50%;
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
+}
+
+a {
+    display: flex;
+}
+.nav-item {
+    align-items: center;
+    display: flex;
 }
