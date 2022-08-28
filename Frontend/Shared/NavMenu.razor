@@ -1,4 +1,5 @@
-﻿<nav class="navbar">
+﻿@using Models
+<nav class="navbar">
     <div class="container-xxl gx-5">
         <NavLink class="navbar-brand p-0" href="" Match="NavLinkMatch.All">
             <img width="auto" height="32" src="/images/atriaLogo.png" alt="logo"/>
@@ -9,35 +10,51 @@
                     <ion-icon name="help-circle-outline"></ion-icon>
                 </NavLink>
             </div>
-            <div class="nav-item me-md-3 me-2">
-                <NavLink href="settings" ActiveClass="link-active">
-                    <ion-icon name="settings-outline"></ion-icon>
-                </NavLink>
-            </div>
-            <div class="nav-item me-md-3 me-2">
-                <NavLink href="notifications" ActiveClass="link-active">
-                    <ion-icon name="notifications-outline"></ion-icon>
-                </NavLink>
-            </div>
-
-            <div class="nav-item me-md-3 me-2">
-                <NavLink href="newWse" ActiveClass="link-active">
-                    <ion-icon name="add-circle-outline"></ion-icon>
-                </NavLink>
-            </div>
-            <div class="nav-item">
-                <div class="dropdown">
-                    <ion-icon type="button" data-bs-toggle="dropdown" name="person-circle-outline"></ion-icon>
-                    <ul class="dropdown-menu dropdown-menu-end mt-3">
-                        <li><a class="dropdown-item" href="profile">Mein Konto</a></li>
-                        <li><a class="dropdown-item" href="profile?type=bookmarks">Meine Lesezeichen</a></li>
-                        <li><a class="dropdown-item" href="profile?type=ratings">Meine Bewertungen</a></li>
-                        <li><a class="dropdown-item" href="profile?type=drafts">Meine Entwürfe</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item fw-bold text-danger">Abmelden</a></li>
-                    </ul>
+            @if (CurrentUser != null) {
+                <div class="nav-item me-md-3 me-2">
+                    <NavLink href="settings" ActiveClass="link-active">
+                        <ion-icon name="settings-outline"></ion-icon>
+                    </NavLink>
                 </div>
-            </div>
+                <div class="nav-item me-md-3 me-2">
+                    <NavLink href="notifications" ActiveClass="link-active">
+                        <ion-icon name="notifications-outline"></ion-icon>
+                    </NavLink>
+                </div>
+
+                <div class="nav-item me-md-3 me-2">
+                    <NavLink href="newWse" ActiveClass="link-active">
+                        <ion-icon name="add-circle-outline"></ion-icon>
+                    </NavLink>
+                </div>
+                <div class="nav-item">
+                    <div class="dropdown">
+                        <img src="@(CurrentUser?.ProfilePicture?.AbsoluteUri ?? "images/default_avatar.png")" type="button" data-bs-toggle="dropdown"/>
+                        <ul class="dropdown-menu dropdown-menu-end mt-3">
+                            <li><a class="dropdown-item" href="profile">Mein Konto</a></li>
+                            <li><a class="dropdown-item" href="profile?type=bookmarks">Meine Lesezeichen</a></li>
+                            <li><a class="dropdown-item" href="profile?type=ratings">Meine Bewertungen</a></li>
+                            <li><a class="dropdown-item" href="profile?type=drafts">Meine Entwürfe</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item fw-bold text-danger" @onclick="Logout">Abmelden</a></li>
+                        </ul>
+                    </div>
+                </div>
+            } else {
+                <NavLink class="btn" ActiveClass="btn-primary" href="login">Einloggen</NavLink>
+                <NavLink class="btn" ActiveClass="btn-primary" href="register">Registrieren</NavLink>
+            }
         </div>
     </div>
 </nav>
+
+@code {
+    [CascadingParameter] private User? CurrentUser { get; set; }
+    [Inject] private HttpClient HttpClient { get; set; } = null!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+
+    private async Task Logout() {
+        await HttpClient.PostAsync("auth/logout", null);
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+    }
+}
