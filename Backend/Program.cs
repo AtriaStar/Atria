@@ -27,7 +27,7 @@ builder.Services
     .AddSingleton<SessionService>()
     .AddDbContext<AtriaContext>()
     .AddHostedService<SessionClearerService>()
-    .AddSingleton<IObjectModelValidator, NonValidatingValidator>(s => new((IObjectModelValidator)baseValidator.ImplementationFactory!(s)));
+    .AddSingleton<IObjectModelValidator, SelectiveValidator>(s => new((IObjectModelValidator)baseValidator.ImplementationFactory!(s)));
 
 var app = builder.Build();
 

@@ -5,10 +5,10 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Backend; 
 
-public class NonValidatingValidator : IObjectModelValidator {
+public class SelectiveValidator : IObjectModelValidator {
     private readonly IObjectModelValidator _baseValidator;
 
-    public NonValidatingValidator(IObjectModelValidator baseValidator) {
+    public SelectiveValidator(IObjectModelValidator baseValidator) {
         _baseValidator = baseValidator;
     }
 
