@@ -3,6 +3,7 @@ using System;
 using Backend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    partial class AtriaContextModelSnapshot : ModelSnapshot
+    [Migration("20220827230431_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,30 +57,18 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Collaborator", b =>
                 {
-<<<<<<< HEAD
-                    b.Property<long>("WseId")
-                        .HasColumnType("bigint");
-
-=======
->>>>>>> merge cleanup
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Rights")
                         .HasColumnType("integer");
 
-<<<<<<< HEAD
-                    b.HasKey("WseId", "UserId");
-
-                    b.HasIndex("UserId");
-=======
                     b.Property<long?>("WebserviceEntryId")
                         .HasColumnType("bigint");
 
                     b.HasKey("UserId");
 
                     b.HasIndex("WebserviceEntryId");
->>>>>>> merge cleanup
 
                     b.ToTable("Collaborator");
                 });
@@ -180,31 +170,14 @@ namespace Backend.Migrations
                     b.Property<DateTimeOffset>("CreationTime")
                         .HasColumnType("timestamp with time zone");
 
-<<<<<<< HEAD
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
                     b.Property<long>("UseCount")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("WSEDraftId")
-                        .HasColumnType("bigint");
-
-=======
-                    b.Property<long>("UseCount")
-                        .HasColumnType("bigint");
-
->>>>>>> merge cleanup
                     b.Property<long?>("WebserviceEntryId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Name");
 
-<<<<<<< HEAD
-                    b.HasIndex("WSEDraftId");
-
-=======
->>>>>>> merge cleanup
                     b.HasIndex("WebserviceEntryId");
 
                     b.ToTable("Tags");
@@ -387,23 +360,11 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-<<<<<<< HEAD
-                    b.HasOne("Models.WebserviceEntry", "Wse")
-                        .WithMany("Collaborators")
-                        .HasForeignKey("WseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-
-                    b.Navigation("Wse");
-=======
                     b.HasOne("Models.WebserviceEntry", null)
                         .WithMany("Collaborators")
                         .HasForeignKey("WebserviceEntryId");
 
                     b.Navigation("User");
->>>>>>> merge cleanup
                 });
 
             modelBuilder.Entity("Models.Question", b =>
@@ -457,13 +418,6 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Tag", b =>
                 {
-<<<<<<< HEAD
-                    b.HasOne("Models.WSEDraft", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("WSEDraftId");
-
-=======
->>>>>>> merge cleanup
                     b.HasOne("Models.WebserviceEntry", null)
                         .WithMany("Tags")
                         .HasForeignKey("WebserviceEntryId");
@@ -495,14 +449,6 @@ namespace Backend.Migrations
 
                     b.Navigation("Tags");
                 });
-<<<<<<< HEAD
-
-            modelBuilder.Entity("Models.WSEDraft", b =>
-                {
-                    b.Navigation("Tags");
-                });
-=======
->>>>>>> merge cleanup
 #pragma warning restore 612, 618
         }
     }
