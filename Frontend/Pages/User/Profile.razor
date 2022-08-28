@@ -146,7 +146,8 @@ else if (_userNotFound) {
 }
 
 @if (FilterDialogOpen) {
-    <Frontend.Pages.Components.FilterModal OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+
+    <Frontend.Pages.Components.FilterModal IsOnline = "IsOnline" IsBookmark = "IsBookmark" SelectedStarNum = "SelectedStarNum" SelectedTags = "SelectedTags" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
 @code {
