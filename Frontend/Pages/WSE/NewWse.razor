@@ -160,6 +160,8 @@
 </div>
 
 @code {
+	[CascadingParameter] 
+	private User CurrentUser { get; init; } = null!;
     private readonly WebserviceEntry _webserviceEntry = new();
     private readonly TagDto _tagDto = new();
 
@@ -174,6 +176,7 @@
     private string ConflictMessage { get; set; } = null!;
 
     private async void HandleValidSubmit() {
+	    _webserviceEntry.ContactPersonId = CurrentUser.Id;
         _webserviceEntry.Tags = new HashSet<Tag>(SelectedTags);
 
         if (_tagDto.NewTagsStr != null)
