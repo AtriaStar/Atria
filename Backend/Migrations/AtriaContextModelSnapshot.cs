@@ -168,6 +168,9 @@ namespace Backend.Migrations
                     b.Property<DateTimeOffset>("CreationTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<long>("UseCount")
                         .HasColumnType("bigint");
 
