@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="FuzzierSharp" Version="3.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.design" Version="6.0.7">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.design" Version="6.0.8">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
