@@ -1,6 +1,6 @@
 ﻿@using Models.DTO
 @using Models
-@foreach (ReviewDto review in ReviewDtos) {
+@foreach (Review review in Reviews) {
     <div class="card mb-3">
         @*
         <div class="row flex-shrink-0 me-0">
@@ -63,18 +63,9 @@
 @code {
 
     [Parameter]
-    public IList<ReviewDto> ReviewDtos { get; set; } = null!;
+    public IEnumerable<Review> Reviews { get; set; } = null!;
 
-    protected override void OnInitialized() {
-        ReviewDtos = new List<ReviewDto>();
-
-        ReviewDto reviewDto = new ReviewDto(1, "Katze", "süß", StarCount.Five, DateTimeOffset.Now);
-        ReviewDtos.Add(reviewDto);
-
-        ReviewDtos.Add(new ReviewDto(2, "Mensch", "cute", StarCount.Four, DateTimeOffset.Now));
-    }
-
-    @*for delete modal*@
+        @*for delete modal*@
     public bool DeleteDialogOpen { get; set; }
 
     private void OpenDeleteDialog()

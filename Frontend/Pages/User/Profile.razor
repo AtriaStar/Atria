@@ -118,16 +118,16 @@
                 <div class="w-100 mt-2 mb-4">
                     @switch (Type) {
                         case null or "wse":
-                            <WseSummaryList SummaryDtos="_summaryDtos"/>
+                            <WseSummaryList Entries="_webserviceEntries ?? new List<WebserviceEntry>()"/>
                             break;
                         case "bookmarks":
-                            <WseSummaryList SummaryDtos="_summaryDtos"/>
+                            <WseSummaryList Entries="_webserviceEntries ?? new List<WebserviceEntry>()"/>
                             break;
                         case "ratings":
-                            <Ratings/>
+                            <Ratings Reviews="_reviews ?? new List<Review>()"/>
                             break;
                         case "drafts":
-                            <WseSummaryList SummaryDtos="_summaryDtos"/>
+                            <WseSummaryList Entries="_webserviceEntries ?? new List<WebserviceEntry>()"/>
                             break;
                         default:
                             NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string)null!));
@@ -140,7 +140,6 @@
 }
 else if (_userNotFound) {
     <NotFound></NotFound>
-    
 }
 
 @if (FilterDialogOpen) {
@@ -156,10 +155,10 @@ else if (_userNotFound) {
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Type { get; set; }
-    
+
     [CascadingParameter]
     private User? CurrentUser { get; set; }
-    
+
     [Parameter]
     public long? UserId { get; set; }
 
@@ -167,44 +166,12 @@ else if (_userNotFound) {
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
 
-    private IList<WseSummaryDto> _summaryDtos = null!;
-    
+    //List for subcomponents
+    private IEnumerable<WebserviceEntry>? _webserviceEntries;
+    private IEnumerable<Review>? _reviews;
     private User? User { get; set; }
 
     private UserDto _cloneUserDto = null!;
-
-    protected override void OnInitialized() {
-        @* Mock Data generation *@
-        _summaryDtos = new List<WseSummaryDto>();
-        WseSummaryDto wseSummaryDto1 = new WseSummaryDto {
-            Id = 1,
-            Name = "hans peter und der der sich selbst sehr mag",
-            ShortDescription = "der hans",
-            Tags = new List<Tag>(),
-            CreationDate = DateTimeOffset.Now,
-            IsOnline = true,
-            AverageRating = 3.5,
-            ViewCount = 10,
-            Link = new Uri("http://www.google.com")
-        };
-        _summaryDtos.Add(wseSummaryDto1);
-
-        WseSummaryDto wseSummaryDto2 = new WseSummaryDto {
-            Id = 1,
-            Name = "hans",
-            ShortDescription = "der hans",
-            Tags = new List<Tag>(),
-            CreationDate = DateTimeOffset.Now,
-            IsOnline = true,
-            AverageRating = 3.5,
-            ViewCount = 100000,
-            Link = new Uri("http://www.google.com")
-        };
-        _summaryDtos.Add(wseSummaryDto2);
-        _summaryDtos.Add(wseSummaryDto1);
-
-        @* mock data generation end *@
-    }
 
     protected override async Task OnParametersSetAsync() {
         await base.OnParametersSetAsync();
@@ -223,9 +190,30 @@ else if (_userNotFound) {
             if (response.IsSuccessStatusCode) {
                 User = (await response.Content.ReadFromJsonAsync<User>())!;
                 CloneUser();
-            } else if (response.StatusCode == HttpStatusCode.NotFound) {
+
+                switch (Type) {
+                    case null or "wse":
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>(
+                            $"user/{UserId}/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        break;
+                    case "bookmarks":
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>(
+                            $"user/{UserId}/bookmarks" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        break;
+                    case "ratings":
+                        _reviews = await HttpClient.GetFromJsonAsync<IEnumerable<Review>>(
+                            $"user/{UserId}/reviews" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        break;
+                    case "drafts":
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>(
+                            $"user/{UserId}/drafts" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        break;
+                }
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound) {
                 _userNotFound = true;
-            } else {
+            }
+            else {
                 NavigationManager.NavigateTo("/internal-server-error");
             }
         }
