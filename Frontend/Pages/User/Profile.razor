@@ -28,13 +28,16 @@
                                     <div class="top-border pt-2 mt-2 mb-2">@User.Email</div>
                                 </div>
                             </div>
-
-                            @*TODO logged in logic*@
-                            @if (_isLoggedIn) {
-                                <div class="top-border pt-3 d-flex">
-                                    <button type="button" class="btn-success btn flex-fill" @onclick="() => _displayForm = !_displayForm">Profil bearbeiten</button>
-                                </div>
-                            }
+                            
+                            <CAuth>
+                                <Authenticated>
+                                    @if (UserId == User.Id) {
+                                        <div class="top-border pt-3 d-flex">
+                                            <button type="button" class="btn-success btn flex-fill" @onclick="() => _displayForm = !_displayForm">Profil bearbeiten</button>
+                                        </div>
+                                    }
+                                </Authenticated>
+                            </CAuth>
                         </div>
                     }
                     else {
@@ -148,8 +151,7 @@ else if (_userNotFound) {
 
 @code {
 
-    private bool _isLoggedIn = true;
-    private bool _displayForm = false;
+    private bool _displayForm;
     private bool _userNotFound;
 
     [Parameter]

@@ -1,10 +1,10 @@
 ﻿@using Models
 
 @if (CurrentUser is not null) {
-    @Authorized
+    @Authenticated
 }
 else {
-    @NotAuthorized
+    @NotAuthenticated
 }
 
 @code {
@@ -12,8 +12,8 @@ else {
     private User? CurrentUser { get; set; }
     
     [Parameter]
-    public RenderFragment? Authorized { get; set; }
+    public RenderFragment? Authenticated { get; set; }
     
     [Parameter]
-    public RenderFragment? NotAuthorized { get; set; }
+    public RenderFragment? NotAuthenticated { get; set; }
 }
