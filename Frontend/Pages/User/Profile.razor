@@ -93,7 +93,7 @@
                     <div class="nav nav-pills mb-2">
                         <NavLink href="@Navigate("type", null)" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
                         <NavLink href="@Navigate("type", "bookmarks")" class="nav-link me-2">Lesezeichen</NavLink>
-                        <NavLink href="@Navigate("type", "ratings")" class="nav-link me-2">Bewertungen</NavLink>
+                        <NavLink href="@Navigate("type", "reviews")" class="nav-link me-2">Bewertungen</NavLink>
                         <NavLink href="@Navigate("type", "drafts")" class="nav-link">Entwürfe</NavLink>
                     </div>
 
@@ -123,8 +123,8 @@
                         case "bookmarks":
                             <WseSummaryList Entries="_webserviceEntries ?? new List<WebserviceEntry>()"/>
                             break;
-                        case "ratings":
-                            <Ratings Reviews="_reviews ?? new List<Review>()"/>
+                        case "reviews":
+                            <ReviewList Reviews="_reviews ?? new List<Review>()"/>
                             break;
                         case "drafts":
                             <WseSummaryList Entries="_webserviceEntries ?? new List<WebserviceEntry>()"/>
@@ -200,7 +200,7 @@ else if (_userNotFound) {
                         _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>(
                             $"user/{UserId}/bookmarks" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
                         break;
-                    case "ratings":
+                    case "reviews":
                         _reviews = await HttpClient.GetFromJsonAsync<IEnumerable<Review>>(
                             $"user/{UserId}/reviews" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
                         break;
