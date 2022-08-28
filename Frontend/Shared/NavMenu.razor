@@ -31,29 +31,16 @@
                     <div class="dropdown">
                         @if (CurrentUser?.ProfilePicture?.AbsoluteUri is not null) {
                             <img class="miniAvatar" src="@(CurrentUser?.ProfilePicture?.AbsoluteUri)" type="button" data-bs-toggle="dropdown" alt="avatar"/>
-                        }
-                        else {
+                        } else {
                             <ion-icon type="button" data-bs-toggle="dropdown" name="person-circle-outline"></ion-icon>
                         }
                         <ul class="dropdown-menu dropdown-menu-end mt-3">
-                            <li>
-                                <a class="dropdown-item" href="profile">Mein Konto</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="profile?type=bookmarks">Meine Lesezeichen</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="profile?type=ratings">Meine Bewertungen</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="profile?type=drafts">Meine Entwürfe</a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <button class="dropdown-item fw-bold text-danger" @onclick="Logout">Abmelden</button>
-                            </li>
+                            <li><a class="dropdown-item" href="profile">Mein Konto</a></li>
+                            <li><a class="dropdown-item" href="profile?type=bookmarks">Meine Lesezeichen</a></li>
+                            <li><a class="dropdown-item" href="profile?type=ratings">Meine Bewertungen</a></li>
+                            <li><a class="dropdown-item" href="profile?type=drafts">Meine Entwürfe</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><button class="dropdown-item fw-bold text-danger" @onclick="Logout">Abmelden</button></li>
                         </ul>
                     </div>
                 </div>
@@ -71,7 +58,6 @@
 </nav>
 
 @code {
-
     [CascadingParameter]
     private User? CurrentUser { get; set; }
 
@@ -85,5 +71,4 @@
         await HttpClient.PostAsync("auth/logout", null);
         NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
     }
-
 }
