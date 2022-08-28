@@ -27,5 +27,8 @@ public class AtriaContext : DbContext {
             .HasKey(x => new { x.WseId, x.Id });
         modelBuilder.Entity<Answer>()
             .HasKey(x => new { x.WseId, x.QuestionId, x.Id });
+
+        modelBuilder.Entity<Collaborator>()
+            .HasKey(x => new { x.WseId, x.UserId });
     }
 }
