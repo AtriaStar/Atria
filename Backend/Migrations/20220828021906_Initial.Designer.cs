@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220828021323_Initial")]
+    [Migration("20220828021906_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -173,10 +173,15 @@ namespace Backend.Migrations
                     b.Property<long>("UseCount")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("WSEDraftId")
+                        .HasColumnType("bigint");
+
                     b.Property<long?>("WebserviceEntryId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Name");
+
+                    b.HasIndex("WSEDraftId");
 
                     b.HasIndex("WebserviceEntryId");
 
@@ -422,6 +427,10 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Tag", b =>
                 {
+                    b.HasOne("Models.WSEDraft", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("WSEDraftId");
+
                     b.HasOne("Models.WebserviceEntry", null)
                         .WithMany("Tags")
                         .HasForeignKey("WebserviceEntryId");
@@ -451,6 +460,11 @@ namespace Backend.Migrations
 
                     b.Navigation("Reviews");
 
+                    b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("Models.WSEDraft", b =>
+                {
                     b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
