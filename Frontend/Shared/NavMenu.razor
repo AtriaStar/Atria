@@ -13,7 +13,7 @@
                     <ion-icon name="help-circle-outline"></ion-icon>
                 </NavLink>
             </div>
-            @if (CurrentUser != null) {
+            @if (LoginState.LoggedIn) {
                 <div class="nav-item me-md-3 me-2">
                     <NavLink href="settings" ActiveClass="link-active">
                         <ion-icon name="settings-outline"></ion-icon>
@@ -31,8 +31,8 @@
                 </div>
                 <div class="nav-item">
                     <div class="dropdown">
-                        @if (CurrentUser?.ProfilePicture?.AbsoluteUri is not null) {
-                            <img class="miniAvatar" src="@(CurrentUser?.ProfilePicture?.AbsoluteUri)" type="button" data-bs-toggle="dropdown" alt="avatar"/>
+                        @if (LoginState.User!.ProfilePicture?.AbsoluteUri != null) {
+                            <img class="miniAvatar" src="@(LoginState.User.ProfilePicture.AbsoluteUri)" type="button" data-bs-toggle="dropdown" alt="avatar"/>
                         } else {
                             <ion-icon type="button" data-bs-toggle="dropdown" name="person-circle-outline"></ion-icon>
                         }
@@ -61,7 +61,7 @@
 @code {
 
     [CascadingParameter]
-    private User? CurrentUser { get; set; }
+    private LoginState LoginState { get; set; } = null!;
 
     [Inject]
     private HttpClient HttpClient { get; set; } = null!;

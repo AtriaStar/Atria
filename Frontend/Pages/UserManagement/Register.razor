@@ -88,30 +88,20 @@
     <div class="text-center p-2">
         Sie sind bereits registriert? <NavLink href="login">Hier anmelden</NavLink>
     </div>
-    @* TEST, DELETE LATER
-    <button @onclick="Test">Test</button>
-    <p>FUNNY @CurrentUser?.FirstNames</p>
-*@
 </div>
 
 
 @code {
 
     [CascadingParameter]
-    private User? CurrentUser { get; set; }
+    private LoginState LoginState { get; set; } = null!;
 
     private string RegisterMessage { get; set; } = null!;
 
     private readonly Registration _registration = new();
-        @* TEST, DELETE LATER
-	private async Task Test() {
-		var response = await HttpClient.GetAsync("auth/sessions");
-		Console.WriteLine("POGGERS!");
-	}
-*@
 
     protected override void OnParametersSet() {
-        if (CurrentUser is not null) {
+        if (LoginState.LoggedIn) {
             NavManager.NavigateTo("");
         }
     }
