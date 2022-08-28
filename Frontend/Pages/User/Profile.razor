@@ -137,7 +137,8 @@
 
 
 @if (FilterDialogOpen) {
-    <Frontend.Pages.Components.FilterModal OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+
+    <Frontend.Pages.Components.FilterModal IsOnline = "IsOnline" IsBookmark = "IsBookmark" SelectedStarNum = "SelectedStarNum" SelectedTags = "SelectedTags" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
 @code {
@@ -150,6 +151,22 @@
     public string? Type { get; set; }
 
     public string? Query { get; set; }
+
+      [Parameter]
+    [SupplyParameterFromQuery]
+    public bool? IsOnline { get; set; } = false!;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool? IsBookmark { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery (Name = "minRating")]
+    public int? SelectedStarNum { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery (Name = "tags")]
+    public string[]? SelectedTags { get; set; } = new string[] { };
 
     private IList<WseSummaryDto> _summaryDtos = null!;
 
