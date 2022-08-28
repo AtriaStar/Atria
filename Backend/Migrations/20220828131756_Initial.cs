@@ -89,6 +89,7 @@ namespace Backend.Migrations
                     ChangeLog = table.Column<string>(type: "text", nullable: true),
                     ViewCount = table.Column<long>(type: "bigint", nullable: false),
                     ContactPersonId = table.Column<long>(type: "bigint", nullable: false),
+                    ReviewAverage = table.Column<double>(type: "double precision", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>

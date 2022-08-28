@@ -270,6 +270,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<double>("ReviewAverage")
+                        .HasColumnType("double precision");
+
                     b.Property<string>("ShortDescription")
                         .IsRequired()
                         .HasMaxLength(50)
