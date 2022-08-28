@@ -146,7 +146,7 @@
 
         <div class="d-grid gap-2 d-flex justify-content-end mb-4">
             <div class="btn-group">
-                <button class="btn btn-success" type="submit">
+                <button class="btn btn-success" type="submit" > @*@onclick="() => SaveAsDraft()"*@
                     Als Entwurf speichern
                 </button>
             </div>
@@ -173,9 +173,40 @@
     public bool editWse = false;
     private string ConflictMessage { get; set; } = null!;
 
-    private void HandleValidSubmit() {
-        if (_tagDto.NewTagsStr != null) _tagDto.NewTags = _tagDto.NewTagsStr.Split(',');
+    private async void HandleValidSubmit() {
         _webserviceEntry.Tags = new HashSet<Tag>(SelectedTags);
+
+        if (_tagDto.NewTagsStr != null)
+        {
+            _tagDto.NewTags = _tagDto.NewTagsStr.Split(',');
+
+            /*check if tag with given name alredy exists*/
+            foreach (string str in _tagDto.NewTags)
+            {
+                var response = await HttpClient.PutAsJsonAsync("tag", str);
+
+                if (response.StatusCode == HttpStatusCode.Conflict) {
+                    /*TODO specify message*/
+                    ConflictMessage = "There was an conflict";
+                    StateHasChanged();
+                } else {
+                    NavManager.NavigateTo("/internal-server-error");
+                }
+            }
+
+            Tag[]? AllTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag");
+
+            if (AllTags != null)
+            {
+                foreach (Tag tag in AllTags)
+                {
+                    if (_tagDto.NewTags.Contains(tag.Name))
+                    {
+                        _webserviceEntry.Tags.Add(tag);
+                    }
+                }
+            }
+        } 
     }
 
     private async void PublishWse() {
@@ -194,6 +225,36 @@
             NavManager.NavigateTo("/internal-server-error");
         }
     }
+
+    /*private async void SaveAsDraft() {
+        HandleValidSubmit();
+
+        WSEDraft _wseDraft = new()
+        {
+            Name = _webserviceEntry.Name,
+            ShortDescription = _webserviceEntry.ShortDescription,
+            Link = _webserviceEntry.Link,
+            FullDescription = _webserviceEntry.FullDescription,
+            DocumentationLink = _webserviceEntry.DocumentationLink,
+            Documentation = _webserviceEntry.Documentation,
+            ChangeLog = _webserviceEntry.ChangeLog,
+            Tags = _webserviceEntry.Tags
+        };
+
+        var response = await HttpClient.PutAsJsonAsync("user/draft", _wseDraft);
+
+        if (response.IsSuccessStatusCode) {
+            NavManager.NavigateTo("wseDraft");
+        }
+        else if (response.StatusCode == HttpStatusCode.Conflict) {
+            TODO specify message
+            ConflictMessage = "There was an conflict";
+            StateHasChanged();
+        }
+        else {
+            NavManager.NavigateTo("/internal-server-error");
+        }
+    }*/
 
     @*------------TAG SEARCH------------*@
     private void SearchTags(KeyboardEventArgs evt) {

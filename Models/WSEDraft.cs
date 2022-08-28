@@ -19,5 +19,8 @@ public class WSEDraft {
     public string? DocumentationLink { get; set; }
     public string? Documentation { get; set; }
     public string? ChangeLog { get; set; }
+
+    [MaxLength(20)]
+    public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
