@@ -16,8 +16,7 @@
                                 <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
                                     @if (User.ProfilePicture is not null) {
                                         <img class="avatar avatar-w" alt="" src="@User.ProfilePicture">
-                                    }
-                                    else {
+                                    } else {
                                         <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
                                     }
                                 </div>
@@ -28,7 +27,7 @@
                                     <div class="top-border pt-2 mt-2 mb-2">@User.Email</div>
                                 </div>
                             </div>
-                            
+
                             <CAuth>
                                 <Authenticated>
                                     @if (UserId == User.Id) {
@@ -39,8 +38,7 @@
                                 </Authenticated>
                             </CAuth>
                         </div>
-                    }
-                    else {
+                    } else {
                         <EditForm Model="User" OnValidSubmit="HandleValidSubmit">
                             <DataAnnotationsValidator></DataAnnotationsValidator>
                             <div class="d-flex flex-column">
@@ -49,8 +47,7 @@
                                         <label for="image_upload" style="cursor: pointer" title="Bild ändern">
                                             @if (User.ProfilePicture is not null) {
                                                 <img class="avatar avatar-w" alt="" src="@User.ProfilePicture">
-                                            }
-                                            else {
+                                            } else {
                                                 <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
                                             }
                                         </label>
@@ -140,14 +137,12 @@
             </div>
         </div>
     </div>
-}
-else if (_userNotFound) {
+} else if (_userNotFound) {
     <NotFound></NotFound>
 }
 
 @if (FilterDialogOpen) {
-
-    <Frontend.Pages.Components.FilterModal IsOnline = "IsOnline" IsBookmark = "IsBookmark" SelectedStarNum = "SelectedStarNum" SelectedTagsStr = "SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+    <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" IsBookmark="IsBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
 @code {
@@ -181,14 +176,12 @@ else if (_userNotFound) {
         if (UserId is null) {
             if (CurrentUser is null) {
                 NavigationManager.NavigateTo("/login");
-            }
-            else {
+            } else {
                 User = CurrentUser;
                 UserId = User.Id;
                 CloneUser();
             }
-        }
-        else {
+        } else {
             var response = await HttpClient.GetAsync($"user/{UserId}");
             if (response.IsSuccessStatusCode) {
                 User = (await response.Content.ReadFromJsonAsync<User>())!;
@@ -196,27 +189,21 @@ else if (_userNotFound) {
 
                 switch (Type) {
                     case null or "wse":
-                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>(
-                            $"user/{UserId}/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
                         break;
                     case "bookmarks":
-                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>(
-                            $"user/{UserId}/bookmarks" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/bookmarks" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
                         break;
                     case "reviews":
-                        _reviews = await HttpClient.GetFromJsonAsync<IEnumerable<Review>>(
-                            $"user/{UserId}/reviews" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        _reviews = await HttpClient.GetFromJsonAsync<IEnumerable<Review>>($"user/{UserId}/reviews" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
                         break;
                     case "drafts":
-                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>(
-                            $"user/{UserId}/drafts" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/drafts" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
                         break;
                 }
-            }
-            else if (response.StatusCode == HttpStatusCode.NotFound) {
+            } else if (response.StatusCode == HttpStatusCode.NotFound) {
                 _userNotFound = true;
-            }
-            else {
+            } else {
                 NavigationManager.NavigateTo("/internal-server-error");
             }
         }
@@ -242,13 +229,7 @@ else if (_userNotFound) {
     }
 
     private void CloneUser() {
-        _cloneUserDto = new UserDto {
-            FirstNames = User!.FirstNames,
-            LastName = User.LastName,
-            Email = User.Email,
-            Title = User.Title,
-            Biography = User.Biography
-        };
+        _cloneUserDto = new UserDto { FirstNames = User!.FirstNames, LastName = User.LastName, Email = User.Email, Title = User.Title, Biography = User.Biography };
     }
 
     private string Navigate(string key, string? value) {
