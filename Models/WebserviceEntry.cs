@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 namespace Models; 
 
 public class WebserviceEntry {
+    private string? _documentationLink;
+
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
     [Required]
@@ -17,26 +19,31 @@ public class WebserviceEntry {
     [Required]
     [Url]
     public string Link { get; set; } = null!;
-    public string? FullDescription { get; set; } = null!;
+    public string? FullDescription { get; set; }
 
     [Url]
-    public string? DocumentationLink { get; set; } = null!;
+    public string? DocumentationLink {
+        get => _documentationLink;
+        set => _documentationLink = string.IsNullOrEmpty(value) ? null : value;
+    }
 
-    public string? Documentation { get; set; } = null!;
-    public string? ChangeLog { get; set; } = null!;
+    public string? Documentation { get; set; }
+    public string? ChangeLog { get; set; }
 
-    public int ViewCount { get; set; }
+    public long ViewCount { get; set; }
 
     public long ContactPersonId { get; set; }
-    public User ContactPerson { get; set; } = null!;
-
+    [JsonIgnore]
+    public virtual User ContactPerson { get; set; } = null!;
+    
+    [JsonIgnore]
+    public ICollection<Question> Questions { get; set; } = new List<Question>();
+    
     [MaxLength(20)]
-    public ICollection<Tag> Tags { get; set; } = null!;
-
-    public ICollection<Question> Questions { get; set; } = null!;
-
-    public ICollection<Review> Reviews { get; set; } = null!;
-    public ICollection<Collaborator> Collaborators { get; set; } = null!;
-
+    public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
+    
+    [JsonIgnore]
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public ICollection<Collaborator> Collaborators { get; set; } = new List<Collaborator>();
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

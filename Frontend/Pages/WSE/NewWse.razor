@@ -65,7 +65,7 @@
             </div>
             <div class="col-auto pt-1 ms-auto">
                 <div class="btn-group">
-                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => deleteSelectedTags()">
+                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="DeleteSelectedTags">
                         Alle Löschen
                     </button>
                 </div>
@@ -87,7 +87,7 @@
                     <h6>
                         <span class="badge bg-info">
                             @tag
-                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => removeTag(tag)"/>
+                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"/>
                         </span>
                     </h6>
                 </div>
@@ -101,16 +101,6 @@
                     <option value="Tag @i">Tag @i</option>
                 }
             </select>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label fw-bold">
-                neue Tags erstellen
-                <small class="text-muted">(kommagetrennt)</small>
-            </label>
-            <div class="ui-field">
-                <InputTextArea class="form-control" rows="3" placeholder="tag1,tag2,..." id="newTags"/>
-            </div>
         </div>
 
         <hr/>
@@ -164,12 +154,12 @@
         Console.WriteLine("Valid");
     }
 
-    private void deleteSelectedTags()
+    private void DeleteSelectedTags()
     {
         selectedTags = Array.Empty<string>();
     }
 
-    private void removeTag(string tag)
+    private void RemoveTag(string tag)
     {
         selectedTags = selectedTags.Where(w => w != tag).ToArray();
     }

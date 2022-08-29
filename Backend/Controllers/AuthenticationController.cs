@@ -1,4 +1,5 @@
-﻿using Backend.Authentication;
+﻿using Backend.AspPlugins;
+using Backend.Authentication;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -69,7 +70,7 @@ public class AuthenticationController : ControllerBase {
 
     [RequiresAuthentication] 
     [HttpGet("sessions")]
-    public IEnumerable<Session> GetSessions([FromAuthentication] User user)
+    public IQueryable<Session> GetSessions([FromAuthentication] User user)
         => _context.Sessions
             .Include(x => x.User)
             .Where(x => x.User == user);
