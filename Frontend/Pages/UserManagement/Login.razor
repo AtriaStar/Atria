@@ -80,6 +80,7 @@
 
         if (response.IsSuccessStatusCode) {
             await Js.InvokeVoidAsync("history.back");
+            NavManager.NavigateTo(NavManager.Uri, forceLoad: true); // Refresh header
         }
         else if (response.StatusCode == HttpStatusCode.Unauthorized) {
             LoginMessage = "Invalid username or password";

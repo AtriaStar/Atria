@@ -15,7 +15,7 @@
                 <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
                     Bearbeiten
                 </button>
-                <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
+                <button class="btn btn-danger" type="button" @onclick="OpenDeleteWSEDialog">
                     Löschen
                 </button>
             </div>
@@ -62,7 +62,7 @@
                         var bookmarkState = isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
                         var bookmarkTitle = isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
                     }
-                    <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="() => ChangeBookmarkStatus()"></i>
+                    <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
                 </div>
                 <div class="col-auto d-flex align-content-end">
                     <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@Wse.Link" />
@@ -70,7 +70,7 @@
             </div>
             <h5 class="card-subtitle mb-2 me-2 text-muted">
                 Ansprechpartner
-                <button class="btn btn-outline-secondary btn-small" @onclick="() => OpenCollabDialog()">weitere Kollaboratoren</button>
+                <button class="btn btn-outline-secondary btn-small" @onclick="OpenCollabDialog">weitere Kollaboratoren</button>
             </h5>
             @if (!_displayForm)
             {
@@ -269,7 +269,7 @@
                         </button>
                         @if (isCreator)
                         {
-                            <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteQuestionDialog()">
+                            <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteQuestionDialog">
                                 Löschen
                             </button>
                         }
@@ -302,7 +302,7 @@
                             @if (isCreator)
                            {
                                <div class="d-grid mt-2 d-flex justify-content-end">
-                                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteAnswerDialog()">
+                                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteAnswerDialog">
                                         Löschen
                                     </button>
                                </div>
@@ -324,7 +324,7 @@
                             @if (isCreator)
                            {
                                <div class="d-grid mt-2 d-flex justify-content-end">
-                                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteAnswerDialog()">
+                                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteAnswerDialog">
                                         Löschen
                                     </button>
                                </div>
@@ -393,7 +393,7 @@
                     <button class="btn btn-outline-success btn-small" type="button" @onclick="() => _displayForm = !_displayForm">
                         Bearbeiten
                     </button>
-                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteReviewDialog()">
+                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteReviewDialog">
                         Löschen
                     </button>
                 </div>
@@ -414,7 +414,7 @@
                 <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
                     Bearbeiten
                 </button>
-                <button class="btn btn-danger" type="button" @onclick="() => OpenDeleteWSEDialog()">
+                <button class="btn btn-danger" type="button" @onclick="OpenDeleteWSEDialog">
                     Löschen
                 </button>
             </div>

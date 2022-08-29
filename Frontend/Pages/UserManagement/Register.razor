@@ -120,7 +120,7 @@
         var response = await HttpClient.PostAsJsonAsync("auth/register", _registration);
 
         if (response.IsSuccessStatusCode) {
-            NavManager.NavigateTo("");
+            NavManager.NavigateTo("", forceLoad: true);
         }
         else if (response.StatusCode == HttpStatusCode.Conflict) {
             RegisterMessage = "Email is already taken";

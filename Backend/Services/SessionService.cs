@@ -1,8 +1,9 @@
 ﻿using Models;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.WebUtilities;
+using Backend.AspPlugins;
 
-namespace Backend.Services; 
+namespace Backend.Services;
 
 public class SessionService {
     public string AuthorizationCookieName => "Authorization";
