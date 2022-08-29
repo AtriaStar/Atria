@@ -22,7 +22,7 @@
                     <div class="d-flex justify-content-sm-end justify-content-start flex-wrap">
                         <div class="ms-3">
                             @if (LoginState.LoggedIn) {
-                                _bookmarkState = LoginState.User!.Bookmarks.Contains(entry) ? "bi-bookmark-fill" : "bi-bookmark";
+                                _bookmarkState = LoginState.User.Bookmarks.Contains(entry) ? "bi-bookmark-fill" : "bi-bookmark";
                                 _bookmarkTitle = LoginState.User.Bookmarks.Contains(entry) ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
 
                                 <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="() => ChangeBookmarkStatus(entry)">
