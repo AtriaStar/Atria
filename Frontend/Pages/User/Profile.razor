@@ -27,16 +27,13 @@
                                     <div class="top-border pt-2 mt-2 mb-2">@User.Email</div>
                                 </div>
                             </div>
+                            
+                            @if (UserId == User.Id) {
+                                <div class="top-border pt-3 d-flex">
+                                    <button type="button" class="btn-success btn flex-fill" @onclick="() => _displayForm = !_displayForm">Profil bearbeiten</button>
+                                </div>
+                            }
 
-                            <CAuth>
-                                <Authenticated>
-                                    @if (UserId == User.Id) {
-                                        <div class="top-border pt-3 d-flex">
-                                            <button type="button" class="btn-success btn flex-fill" @onclick="() => _displayForm = !_displayForm">Profil bearbeiten</button>
-                                        </div>
-                                    }
-                                </Authenticated>
-                            </CAuth>
                         </div>
                     } else {
                         <EditForm Model="User" OnValidSubmit="HandleValidSubmit">
@@ -155,7 +152,7 @@
     public string? Type { get; set; }
 
     [CascadingParameter]
-    private User? CurrentUser { get; set; }
+    private LoginState LoginState { get; set; } = null!;
 
     [Parameter]
     public long? UserId { get; set; }
@@ -174,11 +171,11 @@
     protected override async Task OnParametersSetAsync() {
         await base.OnParametersSetAsync();
         if (UserId is null) {
-            if (CurrentUser is null) {
+            if (LoginState.LoggedIn) {
                 NavigationManager.NavigateTo("/login");
             } else {
-                User = CurrentUser;
-                UserId = User.Id;
+                User = LoginState.User;
+                UserId = User!.Id;
                 CloneUser();
             }
         } else {
