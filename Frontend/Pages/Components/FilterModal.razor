@@ -1,4 +1,6 @@
 ﻿@using Models
+@using Models.DTO
+
 @inject NavigationManager NavigationManager
 
 <div class="modal" id="tagModal" tabindex="-1" aria-labelledby="tagModalLabel" aria-hidden="true" style="display:block; background-color: rgba(10,10,10,.8);">
@@ -12,7 +14,7 @@
             <div class="modal-body">
 
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="flexCheckOnline" @bind="IsOnline"/>
+                    <input class="form-check-input" type="checkbox" id="flexCheckOnline" @bind="IsOnline" />
                     <label class="form-check-label" for="flexCheckOnline">
                         <i class="fa-solid fa-circle text-success"></i>
                         Online
@@ -20,14 +22,14 @@
                 </div>
 
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="flexCheckBookmarks" @bind="IsBookmark"/>
+                    <input class="form-check-input" type="checkbox" id="flexCheckBookmarks" @bind="IsBookmark" />
                     <label class="form-check-label" for="flexCheckBookmarks">
                         <i class="fa-solid fa-bookmark pe-1" style="color: red"></i>
                         Lesezeichen
                     </label>
                 </div>
 
-                <hr/>
+                <hr />
 
                 <div>Bewertung</div>
                 <div class="row mt-2">
@@ -55,39 +57,50 @@
                     </div>
                 </div>
 
-                <hr/>
+                <hr />
 
-                <div class="col-auto d-flex justify-content-end mb-2">
-                    <div class="ui-field">
-                        <div class="form-control form-control-sm border p-0">
-                            <div class="input-group input-group-sm">
-                                <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
-                                <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="TagQuery" @onkeyup="SearchTags">
-                            </div>
+
+                <div class="ui-field">
+                    <div class="form-control form-control-sm border p-0">
+                        <div class="input-group input-group-sm">
+                            <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
+                            <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="TagQuery" @onkeyup="SearchTags">
                         </div>
                     </div>
                 </div>
 
+
+
+
                 <div class="row mt-3 mb-1">
-                    @foreach (string tag in SelectedTags)
+
+                    @foreach (Tag tag in SelectedTags)
                     {
                         <div class="col-auto">
                             <h6>
                                 <span class="badge bg-info">
-                                    @tag
-                                    <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"></button>
+
+                                    @tag.Name
+                                    <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)" />
                                 </span>
                             </h6>
                         </div>
+
                     }
                 </div>
 
-                <label class="text-muted">(zum Auswählen Strg gedrückt halten)</label>
+
+
+
+
+
+
                 @*TODO InputSelect when EditForm added*@
                 <div class="ui-field">
                     <select class="form-select mt-1" size="8" multiple @onchange="SelectedTagsChanged">
-                        @foreach (string tag in SearchedTags) {
-                            <option value="@tag">@tag</option>
+                        @foreach (Tag tag in SearchedTags)
+                        {
+                            <option value="@tag.Name">@tag.Name</option>
                         }
                     </select>
                 </div>
@@ -95,6 +108,7 @@
                     <button type="button" class="btn btn-outline-danger btn-small" @onclick="() => DeleteSelectedTags()">Alle Tags Löschen</button>
                 </div>
             </div>
+
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" @onclick="() => ModalApply()">Anwenden</button>
@@ -105,25 +119,44 @@
 
 @code {
 
-    [Parameter]
-    public EventCallback<bool> OnClose { get; set; }
+        [Parameter]
+        public EventCallback<bool> OnClose { get; set; }
 
-    [Parameter]
-    public bool? IsOnline { get; set; }
+        [Parameter]
+        public bool? IsOnline { get; set; }
 
-   [Parameter]
-    public bool? IsBookmark { get; set; }
-    [Parameter]
-    public int? SelectedStarNum { get; set; }
+        [Parameter]
+        public bool? IsBookmark { get; set; }
+        [Parameter]
+        public int? SelectedStarNum { get; set; }
 
-   [Parameter]
-    public string[]? SelectedTags { get; set; } = new string[] { };
 
-    private List<string> MockTags = new List<string> { };
+        [Parameter]
 
-    private List<string> SearchedTags = new List<string> { };
+        public string[]? SelectedTagsStr { get; set; } = new string[] { };
+
+
+      public string[]? SelectedTagsStrB { get; set; } = new string[] { };
+
+
+    private readonly TagDto _tagDto = new();
+
+    private List<Tag> MockTags = new List<Tag>();
 
     private string? TagQuery { get; set; }
+
+
+    private List<Tag> SelectedTags = new List<Tag>();
+
+
+
+
+
+
+
+    private List<Tag> SearchedTags = new List<Tag> { };
+
+
 
     @*------------MODAL------------*@
     public Task ModalClose()
@@ -133,78 +166,102 @@
 
     public Task ModalApply()
     {
-        
+
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(
             new Dictionary<string, object?>
-            {
-                ["IsOnline"] = IsOnline,
-                ["IsBookmark"] = IsBookmark,
-                ["minRating"] = SelectedStarNum,
-                ["tags"] = SelectedTags
-            }));
-            
+                {
+                    ["IsOnline"] = IsOnline,
+                    ["IsBookmark"] = IsBookmark,
+                    ["minRating"] = SelectedStarNum,
+
+                    ["tags"] = SelectedTagsStr,
+
+                }));
+
 
         return OnClose.InvokeAsync(true);
     }
 
     @*------------TAG SEARCH------------*@
-    private void SearchTags(KeyboardEventArgs evt) {
-        SearchedTags = new List<string> { };
+    private void SearchTags(KeyboardEventArgs evt)
+    {
+        SearchedTags = new List<Tag> { };
 
-        if (evt.Key == "Enter" && TagQuery is not null ) {
-            foreach (string str in MockTags)
+        if (evt.Key == "Enter" && TagQuery is not null)
+        {
+            foreach (Tag tag in MockTags)
             {
-                if (str.Contains(TagQuery, StringComparison.CurrentCultureIgnoreCase))
+                if (tag.Name.Contains(TagQuery, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    SearchedTags.Add(str);
+                    SearchedTags.Add(tag);
                 }
             }
         }
     }
 
+
     @*------------TAGS------------*@
     protected override void OnInitialized()
     {
-        @* Mock data gen *@
-        MockTags.Add("Suchmaschine1");
-        MockTags.Add("Lexikon");
-        MockTags.Add("Wörterbuch6");
-        MockTags.Add("Tool2");
-        MockTags.Add("Webservice");
-        MockTags.Add("Suchmaschine2");
-        MockTags.Add("Wörterbuch4");
-        MockTags.Add("Tool3");
+
+        /*mock tags*/
+        MockTags.Add(new() { Name = "Suchmaschine1", CreationTime = DateTimeOffset.Now, UseCount = 1 });
+        MockTags.Add(new() { Name = "Lexikon34", CreationTime = DateTimeOffset.Now, UseCount = 34 });
+        MockTags.Add(new() { Name = "Wörterbuch6", CreationTime = DateTimeOffset.Now, UseCount = 6 });
+        MockTags.Add(new() { Name = "Tool2", CreationTime = DateTimeOffset.Now, UseCount = 2 });
+        MockTags.Add(new() { Name = "Webservice2", CreationTime = DateTimeOffset.Now, UseCount = 2 });
+        MockTags.Add(new() { Name = "Suchmaschine2", CreationTime = DateTimeOffset.Now, UseCount = 2 });
+        MockTags.Add(new() { Name = "Wörterbuch4", CreationTime = DateTimeOffset.Now, UseCount = 4 });
+        MockTags.Add(new() { Name = "Tool3", CreationTime = DateTimeOffset.Now, UseCount = 3 });
 
         SearchedTags = MockTags;
+        SearchedTags = SearchedTags.OrderBy(tag => tag.Name).ToList();
 
-        SearchedTags = SearchedTags.OrderBy(str => str).ToList();
     }
 
     private void DeleteSelectedTags()
     {
-        SelectedTags = Array.Empty<string>();
+        SelectedTags = new List<Tag>();
+        SelectedTagsStr = new string[] { };
     }
 
-    private void RemoveTag(string tag)
+    private void RemoveTag(Tag tag)
     {
-        SelectedTags = SelectedTags.Where(w => w != tag).ToArray();
+        SelectedTags = SelectedTags.Where(t => t.Name != tag.Name).ToList();
     }
+
 
     private void SelectedTagsChanged(ChangeEventArgs e)
     {
         if (e.Value is not null)
         {
-            SelectedTags = (string[])e.Value;
-        }
-    }
 
-    /**private List<Tag> stringToTag(string[] tags)
-    {
-        List<Tag> convertedTags = new List<Tag>();
-        foreach (string tagString in tags) 
-        {
-            convertedTags.Add(new() {Name = tagString, CreationTime = DateTimeOffset.Now, UseCount = 1});
+            SelectedTagsStrB = (string[])e.Value;
         }
-        return convertedTags;
-    }**/
-}
+
+        foreach (string str in SelectedTagsStrB)
+        {
+
+            if (!SelectedTags.Exists(t => t.Name == str))
+            {
+                Tag selectedTag = MockTags.Find(t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
+                SelectedTags.Add(selectedTag);
+                SelectedTagsStr = SelectedTagsStr.Concat(new String[] { selectedTag.Name }).ToArray();
+
+
+            }
+
+        }
+
+
+        /**private List<Tag> stringToTag(string[] tags)
+        {
+            List<Tag> convertedTags = new List<Tag>();
+            foreach (string tagString in tags)
+            {
+                convertedTags.Add(new() {Name = tagString, CreationTime = DateTimeOffset.Now, UseCount = 1});
+            }
+            return convertedTags;
+        }**/
+    }
+    }
