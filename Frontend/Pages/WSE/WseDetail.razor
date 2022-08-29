@@ -1,6 +1,5 @@
 ﻿@page "/wse/{WseId:long}"
 @using Models
-@inject HttpClient HttpClient
 
 <PageTitle>Atria - WseName</PageTitle>
 
@@ -462,6 +461,10 @@
 }
 
 @code {
+
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+    
     public bool CollabDialogOpen { get; set; }
     public bool DeleteQuestionDialogOpen { get; set; }
     public bool DeleteAnswerDialogOpen { get; set; }
