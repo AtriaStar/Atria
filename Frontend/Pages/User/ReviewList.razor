@@ -48,15 +48,14 @@
                 </div>
             </div>
             <div class="d-grid gap-2 d-flex justify-content-end">
-                <button class="btn btn-small btn-outline-danger" type="button"  @onclick="OpenDeleteDialog">Löschen</button>
+                <button class="btn btn-small btn-outline-danger" type="button" @onclick="OpenDeleteDialog">Löschen</button>
                 <button class="btn btn-small btn-outline-success" type="button">Bearbeiten</button>
             </div>
         </div>
     </div>
 }
 
-@if (DeleteDialogOpen) 
-{
+@if (DeleteDialogOpen) {
     <Frontend.Pages.Components.DeleteModal Title="Bewertung löschen" Text="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?" OnClose="@OnDeleteDialogClose"/>
 }
 
@@ -68,14 +67,12 @@
         @*for delete modal*@
     public bool DeleteDialogOpen { get; set; }
 
-    private void OpenDeleteDialog()
-    {
+    private void OpenDeleteDialog() {
         DeleteDialogOpen = true;
         StateHasChanged();
     }
 
-    private void OnDeleteDialogClose(bool accepted)
-    {
+    private void OnDeleteDialogClose(bool accepted) {
         DeleteDialogOpen = false;
         StateHasChanged();
     }
