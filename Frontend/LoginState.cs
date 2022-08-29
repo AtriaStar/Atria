@@ -2,7 +2,7 @@
 using System.Net.Http.Json;
 using Models;
 
-namespace Frontend; 
+namespace Frontend;
 
 public class LoginState {
     public bool Fetched { get; private set; }
