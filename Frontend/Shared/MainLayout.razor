@@ -8,22 +8,24 @@
 </HeadContent>
 
 <div class="page">
-    <CascadingValue Value="@CurrentUser">
-        <NavMenu/>
-        @* TODO bottom bar height here as padding *@
-        <main style="padding-bottom: 50px">
-            @Body
-        </main>
-        <BottomBar/>
-    </CascadingValue>
+    <CascadingValue Value="@LoginState">
+      <NavMenu/>
+      @* TODO bottom bar height here as padding *@
+      <main style="padding-bottom: 50px">
+        @Body
+      </main>
+      <BottomBar/>
+  </CascadingValue>
 </div>
 
 @code {
 	[Inject]
-	private Task<User?> CurrentUserAsync { get; set; } = null!;
-	private User? CurrentUser { get; set; }
+	private HttpClient HttpClient { get; set; } = null!;
 
-	protected override async Task OnInitializedAsync() {
-		CurrentUser = await CurrentUserAsync;
+	private LoginState LoginState { get; set; } = null!;
+
+	protected override void OnInitialized() {
+		LoginState = new(HttpClient);
 	}
 }
+
