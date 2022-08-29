@@ -128,11 +128,11 @@
 
         @*------------MODAL------------*@
 
-    public Task ModalClose() {
+    private Task ModalClose() {
         return OnClose.InvokeAsync(false);
     }
 
-    public Task ModalApply() {
+    private Task ModalApply() {
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> { ["IsOnline"] = IsOnline, ["IsBookmark"] = IsBookmark, ["minRating"] = SelectedStarNum, ["tags"] = SelectedTagsStr, }));
         return OnClose.InvokeAsync(true);
     }
@@ -167,7 +167,7 @@
         _searchedTags = _mockTags;
         _searchedTags = _searchedTags.OrderBy(tag => tag.Name).ToList();
 
-        foreach (string str in SelectedTagsStr!) //visibility of previous apllied tags
+        foreach (string str in SelectedTagsStr!) //visibility of previous applied tags
         {
             foreach (Tag tag in _mockTags) {
                 if (str.Equals(tag.Name)) {
