@@ -10,9 +10,7 @@
                 <h5 class="modal-title" id="tagModalLabel">Filter</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="() => ModalClose()"></button>
             </div>
-
             <div class="modal-body">
-
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="flexCheckOnline" @bind="IsOnline" />
                     <label class="form-check-label" for="flexCheckOnline">
@@ -20,7 +18,6 @@
                         Online
                     </label>
                 </div>
-
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="flexCheckBookmarks" @bind="IsBookmark" />
                     <label class="form-check-label" for="flexCheckBookmarks">
@@ -59,7 +56,6 @@
 
                 <hr />
 
-
                 <div class="ui-field">
                     <div class="form-control form-control-sm border p-0">
                         <div class="input-group input-group-sm">
@@ -68,10 +64,6 @@
                         </div>
                     </div>
                 </div>
-
-
-
-
                 <div class="row mt-3 mb-1">
 
                     @foreach (Tag tag in SelectedTags)
@@ -88,13 +80,6 @@
 
                     }
                 </div>
-
-
-
-
-
-
-
                 @*TODO InputSelect when EditForm added*@
                 <div class="ui-field">
                     <select class="form-select mt-1" size="8" multiple @onchange="SelectedTagsChanged">
@@ -108,8 +93,6 @@
                     <button type="button" class="btn btn-outline-danger btn-small" @onclick="() => DeleteSelectedTags()">Alle Tags Löschen</button>
                 </div>
             </div>
-
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" @onclick="() => ModalApply()">Anwenden</button>
             </div>
@@ -119,25 +102,22 @@
 
 @code {
 
-        [Parameter]
-        public EventCallback<bool> OnClose { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
 
-        [Parameter]
-        public bool? IsOnline { get; set; }
+    [Parameter]
+    public bool? IsOnline { get; set; }
 
-        [Parameter]
-        public bool? IsBookmark { get; set; }
-        [Parameter]
-        public int? SelectedStarNum { get; set; }
+    [Parameter]
+    public bool? IsBookmark { get; set; }
 
+    [Parameter]
+    public int? SelectedStarNum { get; set; }
 
-        [Parameter]
+    [Parameter]
+    public string[]? SelectedTagsStr { get; set; } = new string[] { };
 
-        public string[]? SelectedTagsStr { get; set; } = new string[] { };
-
-
-      public string[]? SelectedTagsStrB { get; set; } = new string[] { };
-
+    public string[]? SelectedTagsStrB { get; set; } = new string[] { };
 
     private readonly TagDto _tagDto = new();
 
@@ -145,18 +125,9 @@
 
     private string? TagQuery { get; set; }
 
-
     private List<Tag> SelectedTags = new List<Tag>();
 
-
-
-
-
-
-
     private List<Tag> SearchedTags = new List<Tag> { };
-
-
 
     @*------------MODAL------------*@
     public Task ModalClose()
@@ -173,12 +144,8 @@
                     ["IsOnline"] = IsOnline,
                     ["IsBookmark"] = IsBookmark,
                     ["minRating"] = SelectedStarNum,
-
                     ["tags"] = SelectedTagsStr,
-
                 }));
-
-
         return OnClose.InvokeAsync(true);
     }
 
@@ -217,6 +184,18 @@
         SearchedTags = MockTags;
         SearchedTags = SearchedTags.OrderBy(tag => tag.Name).ToList();
 
+
+        foreach (string str in SelectedTagsStr) //visibility of previous apllied tags
+        {
+            foreach (Tag tag in MockTags)
+            {
+                if (str.Equals(tag.Name))
+                {
+                    SelectedTags.Add(tag);
+                }
+            }
+
+        }
     }
 
     private void DeleteSelectedTags()
@@ -230,7 +209,6 @@
         SelectedTags = SelectedTags.Where(t => t.Name != tag.Name).ToList();
     }
 
-
     private void SelectedTagsChanged(ChangeEventArgs e)
     {
         if (e.Value is not null)
@@ -238,7 +216,6 @@
 
             SelectedTagsStrB = (string[])e.Value;
         }
-
         foreach (string str in SelectedTagsStrB)
         {
 
@@ -252,16 +229,5 @@
             }
 
         }
-
-
-        /**private List<Tag> stringToTag(string[] tags)
-        {
-            List<Tag> convertedTags = new List<Tag>();
-            foreach (string tagString in tags)
-            {
-                convertedTags.Add(new() {Name = tagString, CreationTime = DateTimeOffset.Now, UseCount = 1});
-            }
-            return convertedTags;
-        }**/
     }
     }
