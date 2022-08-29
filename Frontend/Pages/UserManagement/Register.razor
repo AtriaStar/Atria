@@ -110,9 +110,9 @@
 
         if (response.IsSuccessStatusCode) {
             NavManager.NavigateTo("", forceLoad: true);
+
         } else if (response.StatusCode == HttpStatusCode.Conflict) {
-            RegisterMessage = "Email is already taken";
-            StateHasChanged();
+            RegisterMessage = await response.Content.ReadAsStringAsync();
         } else {
             NavManager.NavigateTo("/internal-server-error");
         }
