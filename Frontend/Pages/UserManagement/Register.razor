@@ -1,10 +1,8 @@
 ﻿@page "/register"
 @using Microsoft.AspNetCore.Components
-@using Models
 @using Models.DTO
 @using System.Net
 @inject NavigationManager NavManager
-@inject HttpClient HttpClient
 
 @* TODO page title*@
 
@@ -84,14 +82,15 @@
         </div>
     </div>
 
-
     <div class="text-center p-2">
         Sie sind bereits registriert? <NavLink href="login">Hier anmelden</NavLink>
     </div>
 </div>
 
-
 @code {
+
+    [Inject]
+    HttpClient HttpClient { get; set; } = default!;
 
     [CascadingParameter]
     private LoginState LoginState { get; set; } = null!;
@@ -111,13 +110,12 @@
 
         if (response.IsSuccessStatusCode) {
             NavManager.NavigateTo("", forceLoad: true);
-        }
-        else if (response.StatusCode == HttpStatusCode.Conflict) {
+        } else if (response.StatusCode == HttpStatusCode.Conflict) {
             RegisterMessage = "Email is already taken";
             StateHasChanged();
-        }
-        else {
+        } else {
             NavManager.NavigateTo("/internal-server-error");
         }
     }
+
 }
