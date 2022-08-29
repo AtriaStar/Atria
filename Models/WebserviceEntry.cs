@@ -44,8 +44,6 @@ public class WebserviceEntry {
     
     [JsonIgnore]
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
-    
-    public double ReviewAverage { get; set; }
     public ICollection<Collaborator> Collaborators { get; set; } = new List<Collaborator>();
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

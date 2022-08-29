@@ -40,10 +40,10 @@
                         <div class="ms-3" style="min-width: fit-content">
                             @{
                                 int i = 0;
-                                for (; i < (int)entry.ReviewAverage; i++) {
+                                for (; i < _reviewAverage; i++) {
                                     <i class="fa fa-star rating-color"></i>
                                 }
-                                if (entry.ReviewAverage - i >= 0.5) {
+                                if (_reviewAverage - i >= 0.5) {
                                     <i class="fa-regular fa-star-half-stroke rating-color"></i>
                                     i++;
                                 }
@@ -96,6 +96,9 @@
 
 
 @code {
+
+    @* TODO implement *@
+    private double _reviewAverage = 3;
 
     [CascadingParameter]
     private LoginState LoginState { get; set; } = null!;
