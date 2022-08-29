@@ -1,9 +1,12 @@
 ﻿@using Models
 <nav class="navbar">
-    <div class="container-xxl gx-5">
-        <NavLink class="navbar-brand p-0" href="" Match="NavLinkMatch.All">
-            <img width="auto" height="28" src="/images/atriaLogo.png" alt="logo"/>
-        </NavLink>
+    <div class="container-xxl gx-5 justify-content-center justify-content-sm-between">
+        <div class="nav-item mb-2 mb-sm-0 mx-3 mx-sm-0">
+            <NavLink class="navbar-brand p-0" href="" Match="NavLinkMatch.All">
+                <img width="auto" height="28" src="/images/atriaLogo.png" alt="logo"/>
+            </NavLink>
+        </div>
+
         <div class="nav nav-pills">
             <div class="nav-item me-md-3 me-2">
                 <NavLink href="faq" ActiveClass="link-active">
@@ -44,8 +47,7 @@
                         </ul>
                     </div>
                 </div>
-            }
-            else {
+            } else {
                 <div class="nav-item me-md-3 me-2">
                     <NavLink class="nav-link btn-outline-primary py-1" href="login">Einloggen</NavLink>
                 </div>
@@ -58,6 +60,7 @@
 </nav>
 
 @code {
+
     [CascadingParameter]
     private User? CurrentUser { get; set; }
 
@@ -71,4 +74,5 @@
         await HttpClient.PostAsync("auth/logout", null);
         NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
     }
+
 }
