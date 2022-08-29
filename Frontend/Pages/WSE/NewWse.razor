@@ -102,8 +102,10 @@
         <div class="ui-field">
             <select class="form-select mb-3" size="8" multiple @onchange="SelectedTagsChanged">
                 @foreach (Tag tag in SearchedTags) {
-                    <option value="@tag.Name">@tag.Name</option>
+                <option value="@tag.Name">@tag.Name</option>
                 }
+                
+                
             </select>
         </div>
 
@@ -146,7 +148,7 @@
 
         <div class="d-grid gap-2 d-flex justify-content-end mb-4">
             <div class="btn-group">
-                <button class="btn btn-success" type="submit" > @*@onclick="() => SaveAsDraft()"*@
+                <button class="btn btn-success" type="submit" @onclick="() => SaveAsDraft()"> 
                     Als Entwurf speichern
                 </button>
             </div>
@@ -165,10 +167,11 @@
     private readonly WebserviceEntry _webserviceEntry = new();
     private readonly TagDto _tagDto = new();
 
-    private List<Tag> MockTags = new List<Tag>();
+    private List<string> MockTags = new List<string>();
     private List<Tag> SearchedTags = new List<Tag>();
     private List<Tag> SelectedTags = new List<Tag>();
     private string[] SelectedTagsStr = new string[] { };
+    private Tag[]? AllTags;
 
     private string? TagQuery { get; set; }
     public bool newWse = true;
@@ -197,18 +200,15 @@
                 }
             }
 
-            Tag[]? AllTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag");
-
-            if (AllTags != null)
+            AllTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag") ?? new Tag[] {};
+            foreach (Tag tag in AllTags)
             {
-                foreach (Tag tag in AllTags)
+                if (_tagDto.NewTags.Contains(tag.Name))
                 {
-                    if (_tagDto.NewTags.Contains(tag.Name))
-                    {
-                        _webserviceEntry.Tags.Add(tag);
-                    }
+                    _webserviceEntry.Tags.Add(tag);
                 }
             }
+            
         } 
     }
 
@@ -217,6 +217,8 @@
         var response = await HttpClient.PutAsJsonAsync("wse", _webserviceEntry);
 
         if (response.IsSuccessStatusCode) {
+            /*long WseId = response.Content.ReadFromJsonAsync<WebserviceEntry>().Result.Id;
+            NavManager.NavigateTo("wse/" + WseId);*/
             NavManager.NavigateTo("wse");
         }
         else if (response.StatusCode == HttpStatusCode.Conflict) {
@@ -229,7 +231,7 @@
         }
     }
 
-    /*private async void SaveAsDraft() {
+    private async void SaveAsDraft() {
         HandleValidSubmit();
 
         WSEDraft _wseDraft = new()
@@ -250,21 +252,21 @@
             NavManager.NavigateTo("wseDraft");
         }
         else if (response.StatusCode == HttpStatusCode.Conflict) {
-            TODO specify message
+            /*TODO specify message*/
             ConflictMessage = "There was an conflict";
             StateHasChanged();
         }
         else {
             NavManager.NavigateTo("/internal-server-error");
         }
-    }*/
+    }
 
     @*------------TAG SEARCH------------*@
     private void SearchTags(KeyboardEventArgs evt) {
-        SearchedTags = new List<Tag> { };
+        SearchedTags = new List<Tag>();
 
-        if (evt.Key == "Enter" && TagQuery is not null) {
-            foreach (Tag tag in MockTags)
+        if (evt.Key == "Enter" && TagQuery is not null && AllTags is not null) {
+            foreach (Tag tag in AllTags)
             {
                 if (tag.Name.Contains(TagQuery, StringComparison.CurrentCultureIgnoreCase))
                 {
@@ -275,20 +277,28 @@
     }
 
     @*---------------TAGS---------------*@
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
         /*mock tags*/
-        MockTags.Add(new() { Name = "Suchmaschine1", CreationTime = DateTimeOffset.Now.UtcDateTime, UseCount = 1 });
-        MockTags.Add(new() { Name = "Lexikon34", CreationTime = DateTimeOffset.Now.UtcDateTime, UseCount = 34 });
-        MockTags.Add(new() { Name = "Wörterbuch6", CreationTime = DateTimeOffset.Now.UtcDateTime, UseCount = 6 });
-        MockTags.Add(new() { Name = "Tool2", CreationTime = DateTimeOffset.Now.UtcDateTime, UseCount = 2 });
-        MockTags.Add(new() { Name = "Webservice2", CreationTime = DateTimeOffset.Now.UtcDateTime, UseCount = 2 });
-        MockTags.Add(new() { Name = "Suchmaschine2", CreationTime = DateTimeOffset.Now.UtcDateTime, UseCount = 2 });
-        MockTags.Add(new() { Name = "Wörterbuch4", CreationTime = DateTimeOffset.Now.UtcDateTime, UseCount = 4 });
-        MockTags.Add(new() { Name = "Tool3", CreationTime = DateTimeOffset.Now.UtcDateTime, UseCount = 3 });
+        MockTags = new List<string> { "Lexikon34", "Suchmaschine1", "Suchmaschine2", "Tool2", "Tool3", "Webservice2", "Wörterbuch4", "Wörterbuch6" };
 
-        SearchedTags = MockTags;
-        SearchedTags = SearchedTags.OrderBy(tag => tag.Name).ToList();
+        foreach (string str in MockTags)
+        {
+            var response = await HttpClient.PutAsJsonAsync("tag", str);
+
+            if (response.IsSuccessStatusCode) {
+                continue;
+            }
+            else if (response.StatusCode == HttpStatusCode.Conflict) {
+                /*TODO specify message*/
+                ConflictMessage = "There was an conflict";
+                StateHasChanged();
+            } else {
+                NavManager.NavigateTo("/internal-server-error");
+            }
+        }
+        AllTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag") ?? new Tag[] {};
+        SearchedTags = AllTags.ToList();
     }
 
     private void DeleteSelectedTags()
@@ -310,8 +320,8 @@
 
         foreach (string str in SelectedTagsStr)
         {
-            if (!SelectedTags.Exists(t => t.Name == str)) {
-                Tag selectedTag = MockTags.Find(t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
+            if (!SelectedTags.Exists(t => t.Name == str) && AllTags is not null) {
+                Tag selectedTag = Array.Find(AllTags, t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
                 SelectedTags.Add(selectedTag);
             }
         }

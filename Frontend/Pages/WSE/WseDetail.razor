@@ -1,8 +1,12 @@
-﻿@page "/wse"
+﻿@page "/wse/{WseId:long}"
 @using Models
 @using Models.DTO
+@using System.Net
+@inject NavigationManager NavManager
+@inject HttpClient HttpClient
+@inject IJSRuntime Js
 
-<PageTitle>Atria - WseName</PageTitle>
+<PageTitle>Atria - _wse.Name</PageTitle>
 
 <div class="container-xxl mt-4">
 
@@ -22,7 +26,7 @@
         }
         else
         {
-            <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+            <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                 <DataAnnotationsValidator></DataAnnotationsValidator>
                 <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
                     <button class="btn btn-success" type="submit">
@@ -45,13 +49,13 @@
                     <h3 class="card-title fw-bold">
                         @if (!_displayForm)
                         {
-                            @Wse.Name
+                            @_wse.Name
                         }
                         else
                         {
-                            <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                            <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                                 <DataAnnotationsValidator></DataAnnotationsValidator>
-                                <InputText @bind-Value="Wse.Name" id="name" type="text" class="form-control" placeholder="Name"></InputText>
+                                <InputText @bind-Value="_wse.Name" id="name" type="text" class="form-control" placeholder="Name"></InputText>
                                 <ValidationSummary></ValidationSummary>
                             </EditForm>
                         }
@@ -65,7 +69,7 @@
                     <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="() => ChangeBookmarkStatus()"></i>
                 </div>
                 <div class="col-auto d-flex align-content-end">
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@Wse.Link" />
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@_wse.Link" />
                 </div>
             </div>
             <h5 class="card-subtitle mb-2 me-2 text-muted">
@@ -74,13 +78,13 @@
             </h5>
             @if (!_displayForm)
             {
-                <div class="card-text">@Wse.ShortDescription</div>
+                <div class="card-text">@_wse.ShortDescription</div>
             }
             else
             {
-                <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator></DataAnnotationsValidator>
-                    <InputText @bind-Value="Wse.ShortDescription" id="shortDescription" type="text" class="form-control" placeholder="Kurztextbeschreibung"></InputText>
+                    <InputText @bind-Value="_wse.ShortDescription" id="shortDescription" type="text" class="form-control" placeholder="Kurztextbeschreibung"></InputText>
                     <ValidationSummary></ValidationSummary>
                 </EditForm>
             }
@@ -96,15 +100,15 @@
             <div class="card mb-4">
                 <h6 class="card-header fw-bold">Link</h6>
                 <div class="card-body">
-                    <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                    <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                         <DataAnnotationsValidator></DataAnnotationsValidator>
-                        <InputText @bind-Value="Wse.Link" id="link" type="text" class="form-control" placeholder="Link"></InputText>
+                        <InputText @bind-Value="_wse.Link" id="link" type="text" class="form-control" placeholder="Link"></InputText>
                         <ValidationSummary></ValidationSummary>
                     </EditForm>
                 </div>
             </div>
         </div>
-     }
+    }
 
         <div class="row mb-4">
             @*------------REVIEW AND TAGS------------*@
@@ -154,13 +158,13 @@
                 <div class="card-body">
                     @if (!_displayForm)
                     {
-                        @Wse.ChangeLog
+                        @_wse.ChangeLog
                     }
                     else
                     {
-                        <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                        <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                             <DataAnnotationsValidator></DataAnnotationsValidator>
-                            <InputText @bind-Value="Wse.ChangeLog" id="changeLog" type="text" class="form-control" placeholder="Änderungshistorie"></InputText>
+                            <InputText @bind-Value="_wse.ChangeLog" id="changeLog" type="text" class="form-control" placeholder="Änderungshistorie"></InputText>
                             <ValidationSummary></ValidationSummary>
                         </EditForm>
                     }
@@ -170,18 +174,18 @@
             <div class="card mb-4">
                 <h6 class="card-header fw-bold">
                     Dokumentation
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation" href="@Wse.DocumentationLink" />
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation" href="@_wse.DocumentationLink" />
                 </h6>
                 <div class="card-body">
                     @if (!_displayForm)
                     {
-                        <div class="card-text">@Wse.Documentation</div>
+                        <div class="card-text">@_wse.Documentation</div>
                     }
                     else
                     {
-                        <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                        <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                             <DataAnnotationsValidator></DataAnnotationsValidator>
-                            <InputText @bind-Value="Wse.Documentation" id="documentation" type="text" class="form-control" placeholder="Dokumentation"></InputText>
+                            <InputText @bind-Value="_wse.Documentation" id="documentation" type="text" class="form-control" placeholder="Dokumentation"></InputText>
                             <ValidationSummary></ValidationSummary>
                         </EditForm>
                     }
@@ -196,9 +200,9 @@
                     <div class="card mb-4">
                         <h6 class="card-header fw-bold">Dokumentations-Link</h6>
                         <div class="card-body">
-                            <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                            <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                                 <DataAnnotationsValidator></DataAnnotationsValidator>
-                                <InputText @bind-Value="Wse.DocumentationLink" id="documentationLink" type="text" class="form-control" placeholder="Dokumentations-Link"></InputText>
+                                <InputText @bind-Value="_wse.DocumentationLink" id="documentationLink" type="text" class="form-control" placeholder="Dokumentations-Link"></InputText>
                                 <ValidationSummary></ValidationSummary>
                             </EditForm>
                         </div>
@@ -211,13 +215,13 @@
                 <div class="card-body">
                     @if (!_displayForm)
                     {
-                        <div class="card-text">@Wse.FullDescription</div>
+                        <div class="card-text">@_wse.FullDescription</div>
                     }
                     else
                     {
-                        <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+                        <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                             <DataAnnotationsValidator></DataAnnotationsValidator>
-                            <InputText @bind-Value="Wse.FullDescription" id="fullDescription" type="text" class="form-control" placeholder="Volltextbeschreibung"></InputText>
+                            <InputText @bind-Value="_wse.FullDescription" id="fullDescription" type="text" class="form-control" placeholder="Volltextbeschreibung"></InputText>
                             <ValidationSummary></ValidationSummary>
                         </EditForm>
                     }
@@ -421,7 +425,7 @@
         }
         else
         {
-            <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
+            <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                 <DataAnnotationsValidator></DataAnnotationsValidator>
                 <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
                     <button class="btn btn-success" type="submit">
@@ -462,28 +466,12 @@
 }
 
 @code {
+    /*-------------MODALS-------------*/
     public bool CollabDialogOpen { get; set; }
     public bool DeleteQuestionDialogOpen { get; set; }
     public bool DeleteAnswerDialogOpen { get; set; }
     public bool DeleteReviewDialogOpen { get; set; }
     public bool DeleteWSEDialogOpen { get; set; }
-    public bool isLoggedIn = true;
-    public bool isCollab = true;
-    public bool isCreator = true;
-    public bool isBookmark = false;
-
-    private bool _displayForm = false;
-
-    [Parameter]
-    public WebserviceEntry Wse { get; set; } = null!;
-
-    private WebserviceEntry _cloneWse = null!;
-
-    private void ChangeBookmarkStatus()
-    {
-        isBookmark = !isBookmark;
-            @* TODO logic *@
-    }
 
     private void OpenCollabDialog()
     {
@@ -545,37 +533,38 @@
         StateHasChanged();
     }
 
-    protected override void OnInitialized() {
-            @* Mock Data generation *@
-        Wse = new WebserviceEntry {
-            Name = "Google",
-            ShortDescription = "Lorem ipsum dolor sit amet",
-            Link = "https://www.google.de/",
-            FullDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
-            ChangeLog = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam non",
-            DocumentationLink = "https://de.wikipedia.org/wiki/Google",
-            Documentation = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
-        };
+    /*-------------TODO-------------*/
+    public bool isLoggedIn = true;
+    public bool isCollab = true;
+    public bool isCreator = true;
+    public bool isBookmark = false;
+    private bool _displayForm = false;
 
-        CloneWse();
+    private void ChangeBookmarkStatus()
+    {
+        isBookmark = !isBookmark;
+        @* TODO logic *@
     }
 
-    
-    private void HandleValidSubmit() {
-        _displayForm = !_displayForm;
-        CloneWse();
-            @* TODO implement backend communication *@
+    /*-------------GET WSE CONTENTS-------------*/
+    [Parameter]
+    public long WseId { get; set; }
+
+    [Parameter]
+    public WebserviceEntry _wse { get; set; } = null!;
+
+    private void HandleValidSubmit()
+    {
+
     }
 
-    private void CloneWse() {
-        _cloneWse = new WebserviceEntry {
-            Name = Wse.Name,
-            ShortDescription = Wse.ShortDescription,
-            Link = Wse.Link,
-            FullDescription = Wse.FullDescription,
-            ChangeLog = Wse.ChangeLog,
-            DocumentationLink = Wse.DocumentationLink,
-            Documentation = Wse.Documentation
-        };
+    protected override async void OnInitialized()
+    {
+        WebserviceEntry? WseToGet = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId);
+        if (WseToGet is not null)
+        {
+            _wse = WseToGet;
+        }
     }
+
 }

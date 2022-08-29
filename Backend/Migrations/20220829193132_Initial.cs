@@ -190,6 +190,7 @@ namespace Backend.Migrations
                 columns: table => new
                 {
                     Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     CreationTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     UseCount = table.Column<long>(type: "bigint", nullable: false),
                     WSEDraftId = table.Column<long>(type: "bigint", nullable: true),
