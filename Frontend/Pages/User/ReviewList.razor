@@ -1,6 +1,6 @@
 ﻿@using Models.DTO
 @using Models
-@foreach (ReviewDto review in ReviewDtos) {
+@foreach (Review review in Reviews) {
     <div class="card mb-3">
         @*
         <div class="row flex-shrink-0 me-0">
@@ -48,43 +48,31 @@
                 </div>
             </div>
             <div class="d-grid gap-2 d-flex justify-content-end">
-                <button class="btn btn-small btn-outline-danger" type="button"  @onclick="OpenDeleteDialog">Löschen</button>
+                <button class="btn btn-small btn-outline-danger" type="button" @onclick="OpenDeleteDialog">Löschen</button>
                 <button class="btn btn-small btn-outline-success" type="button">Bearbeiten</button>
             </div>
         </div>
     </div>
 }
 
-@if (DeleteDialogOpen) 
-{
+@if (DeleteDialogOpen) {
     <Frontend.Pages.Components.DeleteModal Title="Bewertung löschen" Text="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?" OnClose="@OnDeleteDialogClose"/>
 }
 
 @code {
 
     [Parameter]
-    public IList<ReviewDto> ReviewDtos { get; set; } = null!;
+    public IEnumerable<Review> Reviews { get; set; } = null!;
 
-    protected override void OnInitialized() {
-        ReviewDtos = new List<ReviewDto>();
-
-        ReviewDto reviewDto = new ReviewDto(1, "Katze", "süß", StarCount.Five, DateTimeOffset.Now);
-        ReviewDtos.Add(reviewDto);
-
-        ReviewDtos.Add(new ReviewDto(2, "Mensch", "cute", StarCount.Four, DateTimeOffset.Now));
-    }
-
-    @*for delete modal*@
+        @*for delete modal*@
     public bool DeleteDialogOpen { get; set; }
 
-    private void OpenDeleteDialog()
-    {
+    private void OpenDeleteDialog() {
         DeleteDialogOpen = true;
         StateHasChanged();
     }
 
-    private void OnDeleteDialogClose(bool accepted)
-    {
+    private void OnDeleteDialogClose(bool accepted) {
         DeleteDialogOpen = false;
         StateHasChanged();
     }

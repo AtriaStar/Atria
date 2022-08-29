@@ -1,11 +1,13 @@
-﻿using System.Net.Http.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Json;
 using Models;
 
-namespace Frontend; 
+namespace Frontend;
 
 public class LoginState {
     public bool Fetched { get; private set; }
 
+    [MemberNotNullWhen(true, nameof(User))]
     public bool LoggedIn => User != null;
 
     public User? User { get; private set; }
