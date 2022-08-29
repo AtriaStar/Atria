@@ -207,6 +207,7 @@
     private void RemoveTag(Tag tag)
     {
         SelectedTags = SelectedTags.Where(t => t.Name != tag.Name).ToList();
+        SelectedTagsStr = SelectedTagsStr.Where(s => s != tag.Name).ToArray();
     }
 
     private void SelectedTagsChanged(ChangeEventArgs e)
