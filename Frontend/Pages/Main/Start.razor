@@ -97,7 +97,7 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public bool? IsOnline { get; set; } = false!;
+    public bool? IsOnline { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -108,9 +108,8 @@
     public int? SelectedStarNum { get; set; }
 
     [Parameter]
-   [SupplyParameterFromQuery(Name = "tags")]
-    public string[]? SelectedTagsStr { get; set; } = new string[] { };
-   // public List<String> SelectedTagsStr { get; set; } = new List<String>();
+    [SupplyParameterFromQuery(Name = "tags")]
+    public string[]? SelectedTagsStr { get; set; }
 
     private void SearchInput(KeyboardEventArgs evt) {
         if (evt.Key == "Enter") {
