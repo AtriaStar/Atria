@@ -1,7 +1,8 @@
-﻿using Backend.Services;
+﻿using Backend.AspPlugins;
+using Backend.Services;
 using Timer = System.Timers.Timer;
 
-namespace Backend.Authentication; 
+namespace Backend.Authentication;
 
 public class SessionClearerService : IHostedService {
     private readonly IServiceScopeFactory _scopeFactory;

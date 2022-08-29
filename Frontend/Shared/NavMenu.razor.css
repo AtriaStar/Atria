@@ -1,5 +1,6 @@
 .navbar {
     background-color: rgba(232, 232, 232, 1);
+    min-height: 50px;
 }
 
 ion-icon {
