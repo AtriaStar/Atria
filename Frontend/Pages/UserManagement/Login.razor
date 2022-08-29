@@ -82,7 +82,7 @@
             NavManager.NavigateTo(NavManager.Uri, forceLoad: true); // Refresh header
         }
         else if (response.StatusCode == HttpStatusCode.Unauthorized) {
-            LoginMessage = "Invalid username or password";
+            LoginMessage = await response.Content.ReadAsStringAsync();
             StateHasChanged();
         }
         else {

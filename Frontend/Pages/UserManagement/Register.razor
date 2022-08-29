@@ -113,7 +113,7 @@
             NavManager.NavigateTo("", forceLoad: true);
         }
         else if (response.StatusCode == HttpStatusCode.Conflict) {
-            RegisterMessage = "Email is already taken";
+            RegisterMessage = await response.Content.ReadAsStringAsync();
             StateHasChanged();
         }
         else {
