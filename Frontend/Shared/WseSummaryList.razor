@@ -21,27 +21,21 @@
                 <div class="col-auto ps-0 ms-auto d-flex d-block">
                     <div class="d-flex justify-content-sm-end justify-content-start flex-wrap">
                         <div class="ms-3">
-                            <CAuth>
-                                <Authenticated>
-                                    @{
-                                        _bookmarkState = CurrentUser!.Bookmarks.Contains(entry) ? "bi-bookmark-fill" : "bi-bookmark";
-                                        _bookmarkTitle = CurrentUser.Bookmarks.Contains(entry) ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
-                                    }
-                                    <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="() => ChangeBookmarkStatus(entry)">
-                                        <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
-                                    </button>
-                                </Authenticated>
-                                <NotAuthenticated>
-                                    @{
-                                        _bookmarkState = "bi-bookmark";
-                                        _bookmarkTitle = "Als Lesezeichen hinzufügen";
-                                        
-                                    }
-                                    <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="NavigateToLogin">
-                                        <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
-                                    </button>
-                                </NotAuthenticated>
-                            </CAuth>
+                            @if (LoginState.LoggedIn) {
+                                _bookmarkState = LoginState.User!.Bookmarks.Contains(entry) ? "bi-bookmark-fill" : "bi-bookmark";
+                                _bookmarkTitle = LoginState.User.Bookmarks.Contains(entry) ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+
+                                <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="() => ChangeBookmarkStatus(entry)">
+                                    <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
+                                </button>
+                            } else {
+                                _bookmarkState = "bi-bookmark";
+                                _bookmarkTitle = "Als Lesezeichen hinzufügen";
+
+                                <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="NavigateToLogin">
+                                    <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
+                                </button>
+                            }
                         </div>
                         <div class="ms-3" style="min-width: fit-content">
                             @{
@@ -70,8 +64,7 @@
                     <div class="col-auto ms-auto">
                         @entry.ViewCount Aufruf
                     </div>
-                }
-                else {
+                } else {
                     <div class="col-auto ms-auto">
                         @entry.ViewCount Aufrufe
                     </div>
@@ -104,11 +97,11 @@
 
 @code {
 
+    [CascadingParameter]
+    private LoginState LoginState { get; set; } = null!;
+
     private string? _bookmarkState;
     private string? _bookmarkTitle;
-
-    [CascadingParameter]
-    private User? CurrentUser { get; set; }
 
     [Parameter]
     public IEnumerable<WebserviceEntry> Entries { get; set; } = null!;
@@ -123,11 +116,12 @@
     }
 
     private void ChangeBookmarkStatus(WebserviceEntry entry) {
-        CurrentUser!.Bookmarks.Add(entry);
+        LoginState.User!.Bookmarks.Add(entry);
         @* TODO http call *@
     }
-    
+
     private void NavigateToLogin() {
         NavigationManager.NavigateTo("login");
     }
+
 }
