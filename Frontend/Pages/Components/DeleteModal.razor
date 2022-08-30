@@ -4,18 +4,36 @@
             <div class="modal-header">
                 <h5 class="modal-title">@Title</h5>
             </div>
-            <div class="modal-body">
-                <p>@Text</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" @onclick="@ModalCancel">Abbrechen</button>
-                <button type="button" class="btn btn-danger" @onclick="@ModalDelete">Löschen</button>
-            </div>
+            @if (_hasBeenDeleted) {
+                <div class="modal-body">
+                    <p>Ihr Account wurde erfolgreich gelöscht!</p>
+                    <p>Sie werden in @_time Sekunden zur Startseite weitergeleitet...</p>
+                </div>
+            } else if (_hasFailed) {
+                <div class="modal-body">
+                    <p>Etwas ist schiefgelaufen. Bitte versuchen Sie es später erneut.</p>
+                    <p>Sie werden in @_time Sekunden zur Startseite weitergeleitet...</p>
+                </div>
+            } else {
+                <div class="modal-body">
+                    <p>@Text</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" @onclick="@ModalCancel">Abbrechen</button>
+                    <button type="button" class="btn btn-danger" @onclick="@ModalDelete">Löschen</button>
+                </div>
+            }
         </div>
     </div>
 </div>
 
 @code {
+
+    private bool _hasBeenDeleted;
+    private bool _hasFailed;
+
+    private int _time = 4;
+
     [Parameter]
     public string Title { get; set; } = null!;
 
@@ -25,13 +43,32 @@
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
-    public Task ModalCancel()
-    {
-        return OnClose.InvokeAsync(false);
-    }
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
 
-    public Task ModalDelete()
-    {
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject]
+    private LoginState LoginState { get; set; } = default!;
+
+    private Task ModalCancel() {
         return OnClose.InvokeAsync(true);
     }
+
+    private async Task ModalDelete() {
+        var response = await HttpClient.DeleteAsync("user");
+        if (response.IsSuccessStatusCode) {
+            _hasBeenDeleted = true;
+        } else {
+            _hasFailed = true;
+        }
+        while (_time > 0) {
+            _time--;
+            StateHasChanged();
+            await Task.Delay(1000);
+        }
+        NavigationManager.NavigateTo("", forceLoad: true);
+    }
+
 }
