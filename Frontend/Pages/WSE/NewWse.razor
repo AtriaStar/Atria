@@ -104,8 +104,6 @@
                 @foreach (Tag tag in SearchedTags) {
                 <option value="@tag.Name">@tag.Name</option>
                 }
-                
-                
             </select>
         </div>
 
@@ -162,16 +160,15 @@
 </div>
 
 @code {
-	[CascadingParameter] 
-	private User CurrentUser { get; init; } = null!;
+    [CascadingParameter] 
+    private User CurrentUser { get; init; } = null!;
     private readonly WebserviceEntry _webserviceEntry = new();
     private readonly TagDto _tagDto = new();
 
-    private List<string> MockTags = new List<string>();
     private List<Tag> SearchedTags = new List<Tag>();
     private List<Tag> SelectedTags = new List<Tag>();
     private string[] SelectedTagsStr = new string[] { };
-    private Tag[]? AllTags;
+    private Tag[]? AllTags { get; set; }
 
     private string? TagQuery { get; set; }
     public bool newWse = true;
@@ -179,37 +176,39 @@
     private string ConflictMessage { get; set; } = null!;
 
     private async void HandleValidSubmit() {
-	    _webserviceEntry.ContactPersonId = CurrentUser.Id;
+        _webserviceEntry.ContactPersonId = CurrentUser.Id;
         _webserviceEntry.Tags = new HashSet<Tag>(SelectedTags);
 
         if (_tagDto.NewTagsStr != null)
         {
             _tagDto.NewTags = _tagDto.NewTagsStr.Split(',');
-
-            /*check if tag with given name alredy exists*/
+            List<Tag> NewlyCreatedTags = new List<Tag>();
+            
             foreach (string str in _tagDto.NewTags)
             {
-                var response = await HttpClient.PutAsJsonAsync("tag", str);
-
-                if (response.StatusCode == HttpStatusCode.Conflict) {
-                    /*TODO specify message*/
-                    ConflictMessage = "There was an conflict";
-                    StateHasChanged();
-                } else {
-                    NavManager.NavigateTo("/internal-server-error");
-                }
-            }
-
-            AllTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag") ?? new Tag[] {};
-            foreach (Tag tag in AllTags)
-            {
-                if (_tagDto.NewTags.Contains(tag.Name))
+                @if (AllTags != null && !Array.Exists(AllTags, t => t.Name == str))
                 {
-                    _webserviceEntry.Tags.Add(tag);
+                    var response = await HttpClient.PutAsJsonAsync("tag", str);
+
+                    if (response.IsSuccessStatusCode) {
+                        Tag newTag = response.Content.ReadFromJsonAsync<Tag>().Result ?? new Tag();
+                        NewlyCreatedTags.Add(newTag);
+                    }
+                    else if (response.StatusCode == HttpStatusCode.Conflict) {
+                        /*TODO specify message*/
+                        ConflictMessage = "There was an conflict";
+                        StateHasChanged();
+                    } else {
+                        NavManager.NavigateTo("/internal-server-error");
+                    }
                 }
+            } 
+
+            foreach (Tag tag in NewlyCreatedTags)
+            {
+                _webserviceEntry.Tags.Add(tag);
             }
-            
-        } 
+        }
     }
 
     private async void PublishWse() {
@@ -217,9 +216,8 @@
         var response = await HttpClient.PutAsJsonAsync("wse", _webserviceEntry);
 
         if (response.IsSuccessStatusCode) {
-            /*long WseId = response.Content.ReadFromJsonAsync<WebserviceEntry>().Result.Id;
-            NavManager.NavigateTo("wse/" + WseId);*/
-            NavManager.NavigateTo("wse");
+            long WseId = response.Content.ReadFromJsonAsync<WebserviceEntry>().Id;
+            NavManager.NavigateTo("wse/" + WseId);
         }
         else if (response.StatusCode == HttpStatusCode.Conflict) {
             /*TODO specify message*/
@@ -277,26 +275,25 @@
     }
 
     @*---------------TAGS---------------*@
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        /*mock tags*/
-        MockTags = new List<string> { "Lexikon34", "Suchmaschine1", "Suchmaschine2", "Tool2", "Tool3", "Webservice2", "Wörterbuch4", "Wörterbuch6" };
-
-        foreach (string str in MockTags)
-        {
+        /*mock tags
+        private List<string> MockTags = new List<string> { "Lexikon34", "Suchmaschine1", "Suchmaschine2", "Tool2", "Tool3", "Webservice2", "Wörterbuch4", "Wörterbuch6" };
+            foreach (string str in MockTags)
+            {
             var response = await HttpClient.PutAsJsonAsync("tag", str);
 
             if (response.IsSuccessStatusCode) {
-                continue;
+            continue;
             }
             else if (response.StatusCode == HttpStatusCode.Conflict) {
-                /*TODO specify message*/
+                /*TODO specify message
                 ConflictMessage = "There was an conflict";
                 StateHasChanged();
-            } else {
+                } else {
                 NavManager.NavigateTo("/internal-server-error");
-            }
         }
+        }*/
         AllTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag") ?? new Tag[] {};
         SearchedTags = AllTags.ToList();
     }
