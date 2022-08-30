@@ -82,6 +82,8 @@ namespace IntegrationTests.Helpers
         public async Task Invoke(HttpContext httpContext)
         {
             httpContext.Connection.RemoteIpAddress = fakeIpAddress;
+            //Todo: not like this
+            httpContext.Request.Headers["User-Agent"] = "";
 
             await this.next(httpContext);
         }

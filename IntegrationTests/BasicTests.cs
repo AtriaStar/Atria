@@ -29,7 +29,7 @@ namespace IntegrationTests
                 LastName = "Floppington",
                 Password = "12345",
                 ConfirmPassword = "12345",
-                Email = "floppa@email.com"
+                Email = "floppa12@email.com"
             };
             
 
