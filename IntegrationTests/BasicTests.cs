@@ -1,5 +1,7 @@
 ﻿using IntegrationTests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Models.DTO;
+using System.Net.Http.Json;
 
 namespace IntegrationTests
 {
@@ -15,6 +17,30 @@ namespace IntegrationTests
             {
                 AllowAutoRedirect = false
             });
-        }  
+        }
+
+        [Fact]
+        public async Task GetWse_ReturnsNotFound_WhenRequestInvalid()
+        {
+            //Arrange
+            Registration _registration = new()
+            {
+                FirstNames = "Floppa",
+                LastName = "Floppington",
+                Password = "12345",
+                ConfirmPassword = "12345",
+                Email = "floppa@email.com"
+            };
+            
+
+            //Act
+            var response = await _client.PostAsJsonAsync("https://localhost:7038/api/auth/register", _registration);
+
+            //Assert
+            Console.Out.WriteLine(response.StatusCode);
+            Console.Out.WriteLine(response.Content.ToString());
+            Assert.True(response.IsSuccessStatusCode);
+        }
     }
+            
 }

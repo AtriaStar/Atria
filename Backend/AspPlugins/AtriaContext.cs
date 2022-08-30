@@ -14,6 +14,11 @@ public class AtriaContext : DbContext
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<Session> Sessions => Set<Session>();
 
+    public AtriaContext(DbContextOptions<AtriaContext> options)
+           : base(options)
+    {
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(

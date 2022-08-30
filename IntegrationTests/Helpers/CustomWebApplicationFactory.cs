@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using Backend.AspPlugins;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,15 +19,17 @@ namespace IntegrationTests.Helpers
         {
             builder.ConfigureServices(services =>
             {
+                services.AddSingleton<IStartupFilter, CustomStartupFilter>();
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType ==
                         typeof(DbContextOptions<AtriaContext>));
 
                 services.Remove(descriptor);
-
+                
                 services.AddDbContext<AtriaContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryDbForTesting");
+                    options.UseNpgsql(
+                    "Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true");
                 });
 
                 var sp = services.BuildServiceProvider();
@@ -49,6 +54,36 @@ namespace IntegrationTests.Helpers
                     }
                 }
             });
+        }
+    }
+
+    public class CustomStartupFilter : IStartupFilter
+    {
+        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        {
+            return app =>
+            {
+                app.UseMiddleware<FakeRemoteIpAddressMiddleware>();
+                next(app);
+            };
+        }
+    }
+
+    public class FakeRemoteIpAddressMiddleware
+    {
+        private readonly RequestDelegate next;
+        private readonly IPAddress fakeIpAddress = IPAddress.Parse("127.168.1.32");
+
+        public FakeRemoteIpAddressMiddleware(RequestDelegate next)
+        {
+            this.next = next;
+        }
+
+        public async Task Invoke(HttpContext httpContext)
+        {
+            httpContext.Connection.RemoteIpAddress = fakeIpAddress;
+
+            await this.next(httpContext);
         }
     }
 }
