@@ -168,6 +168,9 @@ namespace Backend.Migrations
                     b.Property<DateTimeOffset>("CreationTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<long>("UseCount")
                         .HasColumnType("bigint");
 
@@ -269,9 +272,6 @@ namespace Backend.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<double>("ReviewAverage")
-                        .HasColumnType("double precision");
 
                     b.Property<string>("ShortDescription")
                         .IsRequired()

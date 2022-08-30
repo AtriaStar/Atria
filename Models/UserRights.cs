@@ -3,9 +3,11 @@
 [Flags]
 public enum UserRights {
     CreateWse = 1 << 0,
-    DeleteWse = 1 << 1,
+    ModerateTags = 1 << 1,
+
+    DeleteWseOverride = 1 << 16,
 
     None = 0,
     Default = CreateWse,
-    Admin = Default | DeleteWse,
+    Admin = Default | ModerateTags | DeleteWseOverride,
 }
