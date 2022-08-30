@@ -12,7 +12,7 @@
             <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
                 Bearbeiten
             </button>
-            <button class="btn btn-danger" type="button" @onclick="OpenDeleteWSEDialog">
+            <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDialog">
                 Löschen
             </button>
         </div>
@@ -388,7 +388,7 @@
             <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
                 Bearbeiten
             </button>
-            <button class="btn btn-danger" type="button" @onclick="OpenDeleteWSEDialog">
+            <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDialog">
                 Löschen
             </button>
         </div>
@@ -422,8 +422,8 @@
     <Frontend.Pages.Components.DeleteModal Title="Bewertung löschen" Text="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?" OnClose="@OnDeleteReviewDialogClose"/>
 }
 
-@if (DeleteWSEDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?" OnClose="@OnDeleteWSEDialogClose"/>
+@if (DeleteWseDialogOpen) {
+    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?" OnClose="@OnDeleteWseDialogClose"/>
 }
 
 @code {
@@ -435,7 +435,7 @@
     public bool DeleteQuestionDialogOpen { get; set; }
     public bool DeleteAnswerDialogOpen { get; set; }
     public bool DeleteReviewDialogOpen { get; set; }
-    public bool DeleteWSEDialogOpen { get; set; }
+    public bool DeleteWseDialogOpen { get; set; }
     public bool isLoggedIn = true;
     public bool isCollab = true;
     public bool isCreator = true;
@@ -493,13 +493,13 @@
         StateHasChanged();
     }
 
-    private void OpenDeleteWSEDialog() {
-        DeleteWSEDialogOpen = true;
+    private void OpenDeleteWseDialog() {
+        DeleteWseDialogOpen = true;
         StateHasChanged();
     }
 
-    private void OnDeleteWSEDialogClose(bool accepted) {
-        DeleteWSEDialogOpen = false;
+    private void OnDeleteWseDialogClose(bool accepted) {
+        DeleteWseDialogOpen = false;
         StateHasChanged();
     }
 

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models;
 
-public class WSEDraft {
+public class WseDraft {
     private string? _documentationLink;
     private string? _link;
 

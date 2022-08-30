@@ -288,7 +288,7 @@ namespace Backend.Migrations
                     b.ToTable("WebserviceEntries");
                 });
 
-            modelBuilder.Entity("Models.WSEDraft", b =>
+            modelBuilder.Entity("Models.WseDraft", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
