@@ -7,7 +7,7 @@ namespace Backend.Controllers;
 [Route("notification")]
 public class NotificationController : ControllerBase {
 
-    [HttpPost("")]
+    [HttpPost]
     public void SetAllowedNotification(Notification notification, bool state) { }
 
     [HttpPost("email")]
