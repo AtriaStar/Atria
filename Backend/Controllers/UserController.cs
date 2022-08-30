@@ -35,7 +35,7 @@ public class UserController : ControllerBase {
     [HttpPost("{userId:long}/bookmarks")]
     public void SetBookmark(int wseId, bool state) { }
 
-    [HttpPut("")]
+    [HttpPut]
     public int Create(User user) => 0;
 
     [HttpDelete("{userId:long}")]

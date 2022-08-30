@@ -76,7 +76,7 @@ public class AuthenticationController : ControllerBase {
             .Where(x => x.User == user);
 
     [RequiresAuthentication]
-    [HttpGet("")]
+    [HttpGet]
     public User GetAuthUser([FromAuthentication] User user) => user;
 
 }
