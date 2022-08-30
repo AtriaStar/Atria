@@ -193,17 +193,11 @@ namespace Backend.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     CreationTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     UseCount = table.Column<long>(type: "bigint", nullable: false),
-                    WSEDraftId = table.Column<long>(type: "bigint", nullable: true),
                     WebserviceEntryId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Name);
-                    table.ForeignKey(
-                        name: "FK_Tags_Drafts_WSEDraftId",
-                        column: x => x.WSEDraftId,
-                        principalTable: "Drafts",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Tags_WebserviceEntries_WebserviceEntryId",
                         column: x => x.WebserviceEntryId,
@@ -277,11 +271,6 @@ namespace Backend.Migrations
                 column: "WebserviceEntryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_WSEDraftId",
-                table: "Tags",
-                column: "WSEDraftId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
@@ -302,6 +291,9 @@ namespace Backend.Migrations
                 name: "Collaborator");
 
             migrationBuilder.DropTable(
+                name: "Drafts");
+
+            migrationBuilder.DropTable(
                 name: "Reviews");
 
             migrationBuilder.DropTable(
@@ -312,9 +304,6 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Questions");
-
-            migrationBuilder.DropTable(
-                name: "Drafts");
 
             migrationBuilder.DropTable(
                 name: "WebserviceEntries");
