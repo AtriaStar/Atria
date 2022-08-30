@@ -6,5 +6,6 @@ public record WseSearchParameters(
     bool? HasBookmark,
     ISet<Tag>? Tags,
     StarCount MinReviewAvg,
-    Order Order
+    Order Order,
+    bool Ascending
 );
