@@ -51,5 +51,5 @@ public class SearchController : ControllerBase {
         => string.IsNullOrEmpty(query) ? BadRequest() : Ok(GetBaseUsers(query).Paginate(pagination));
 
     [HttpGet("user/count")]
-    public long GetUserCount(string query) => GetBaseUsers(query).LongCount();
+    public IActionResult GetUserCount(string query) => string.IsNullOrEmpty(query) ? BadRequest() : Ok(GetBaseUsers(query).LongCount());
 }
