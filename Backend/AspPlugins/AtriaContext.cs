@@ -19,6 +19,10 @@ public class AtriaContext : DbContext
     {
     }
 
+    public AtriaContext()      
+    {
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(
