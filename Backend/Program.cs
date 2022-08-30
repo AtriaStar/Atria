@@ -1,13 +1,12 @@
 ﻿using Backend;
 using Backend.AspPlugins;
 using Backend.Authentication;
-
 using Backend.ParameterHelpers;
-
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.Extensions.DependencyInjection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,3 +47,7 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 app.Run();
+
+public partial class Program { }
+
+
