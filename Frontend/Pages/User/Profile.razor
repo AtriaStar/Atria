@@ -174,11 +174,11 @@
         await base.OnParametersSetAsync();
         if (UserId is null) {
             if (LoginState.LoggedIn) {
-                NavigationManager.NavigateTo("/login");
-            } else {
                 User = LoginState.User;
                 UserId = User!.Id;
                 CloneUser();
+            } else {
+                NavigationManager.NavigateTo("/login");
             }
         } else {
             var response = await HttpClient.GetAsync($"user/{UserId}");
