@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Models
+@using System.Net
 @inject NavigationManager NavigationManager
 
 <PageTitle>Atria</PageTitle>
@@ -133,12 +134,18 @@
 
     private async Task GetAndSetWseList() {
         var response = await HttpClient.GetAsync("search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? new List<WebserviceEntry>();
+        _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? Array.Empty<WebserviceEntry>();
     }
 
     private async Task GetAndSetUserList() {
         var response = await HttpClient.GetAsync("search/user" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? new List<User>();
+        if (response.IsSuccessStatusCode) {
+            _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? Array.Empty<User>();
+        } else if (response.StatusCode == HttpStatusCode.BadRequest) {
+            _userList = Array.Empty<User>();
+        } else {
+            NavigationManager.NavigateTo("/internal-server-error");
+        }
     }
 
     private string Navigate(string key, string? value) {
