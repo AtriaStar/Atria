@@ -46,8 +46,8 @@ public class SearchController : ControllerBase {
             .Select(x => x.user);
 
     [HttpGet("user")]
-    public IEnumerable<User> GetUserList(string query, [FromQuery] Pagination pagination)
-        => GetBaseUsers(query).Paginate(pagination);
+    public IActionResult GetUserList(string query, [FromQuery] Pagination pagination)
+        => string.IsNullOrEmpty(query) ? BadRequest() : Ok(GetBaseUsers(query).Paginate(pagination));
 
     [HttpGet("user/count")]
     public long GetUserCount(string query) => GetBaseUsers(query).LongCount();
