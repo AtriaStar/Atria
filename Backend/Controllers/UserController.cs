@@ -1,4 +1,5 @@
-﻿using Backend.ParameterHelpers;
+﻿using Backend.AspPlugins;
+using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 
@@ -23,7 +24,7 @@ public class UserController : ControllerBase {
     public IQueryable<Review> GetReviewsByUser(long userId, string query) => null!;
 
     [HttpGet("{userId:long}/drafts")]
-    public IQueryable<WSEDraft> GetWseDrafts() => null!;
+    public IQueryable<WseDraft> GetWseDrafts() => null!;
 
     [HttpGet("{userId:long}/notifications")]
     public IReadOnlyList<Notification> GetNotifications() => null!;

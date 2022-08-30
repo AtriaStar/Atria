@@ -1,4 +1,5 @@
-﻿using Backend.Services;
+﻿using Backend.AspPlugins;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 
@@ -13,28 +14,28 @@ public class SearchController : ControllerBase {
         _context = context;
     }
 
-    private IEnumerable<WebserviceEntry> GetBaseWses(WSESearchParam param)
+    private IEnumerable<WebserviceEntry> GetBaseWses(WseSearchParameters parameters)
         => _context.WebserviceEntries
-            .Where(x => (!x.Reviews.Any() || x.Reviews.Average(y => (int) y.StarCount) >= (int) param.MinReviewAvg)
-            && (param.Tags == null || x.Tags.Intersect(param.Tags).Count() == param.Tags.Count)
-            && (param.IsOnline == null || true /* TODO */)
-            && (param.HasBookmark == null || true /* TODO */))
+            .Where(x => (!x.Reviews.Any() || x.Reviews.Average(y => (int) y.StarCount) >= (int) parameters.MinReviewAvg)
+            && (parameters.Tags == null || x.Tags.Intersect(parameters.Tags).Count() == parameters.Tags.Count)
+            && (parameters.IsOnline == null || true /* TODO */)
+            && (parameters.HasBookmark == null || true /* TODO */))
             .AsEnumerable()
-            .Select(x => (wse: x, score: param.Order.GetMapper().Invoke(x)
-                                         * (param.Query == null ? 1 : FuzzingService.CalculateScore1(param.Query, x))))
+            .Select(x => (wse: x, score: parameters.Order.GetMapper().Invoke(x)
+                                         * (parameters.Query == null ? 1 : FuzzingService.CalculateScore1(parameters.Query, x))))
             .OrderByDescending(x => x.score)
-            .TakeWhile(x => param.Query == null || x.score > 0.05)
+            .TakeWhile(x => parameters.Query == null || x.score > 0.05)
             .Select(x => {
                 x.wse.ChangeLog = x.score.ToString();
                 return x.wse;
             });
 
     [HttpGet("wse")]
-    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WSESearchParam param, [FromQuery] Pagination pagination)
-        => GetBaseWses(param).Paginate(pagination);
+    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WseSearchParameters parameters, [FromQuery] Pagination pagination)
+        => GetBaseWses(parameters).Paginate(pagination);
 
     [HttpGet("wse/count")]
-    public long GetWseCount([FromQuery] WSESearchParam param) => GetBaseWses(param).LongCount();
+    public long GetWseCount([FromQuery] WseSearchParameters parameters) => GetBaseWses(parameters).LongCount();
 
     private IEnumerable<User> GetBaseUsers(string query)
         => _context.Users
@@ -45,9 +46,9 @@ public class SearchController : ControllerBase {
             .Select(x => x.user);
 
     [HttpGet("user")]
-    public IEnumerable<User> GetUserList(string query, [FromQuery] Pagination pagination)
-        => GetBaseUsers(query).Paginate(pagination);
+    public IActionResult GetUserList(string query, [FromQuery] Pagination pagination)
+        => string.IsNullOrEmpty(query) ? BadRequest() : Ok(GetBaseUsers(query).Paginate(pagination));
 
     [HttpGet("user/count")]
-    public long GetUserCount(string query) => GetBaseUsers(query).LongCount();
+    public IActionResult GetUserCount(string query) => string.IsNullOrEmpty(query) ? BadRequest() : Ok(GetBaseUsers(query).LongCount());
 }

@@ -1,3 +1,4 @@
+using Backend.AspPlugins;
 using Backend.Authentication;
 using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
@@ -8,10 +9,10 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("wse")]
-public class WSEController : ControllerBase {
+public class WseController : ControllerBase {
     private readonly AtriaContext _context;
 
-    public WSEController(AtriaContext context) {
+    public WseController(AtriaContext context) {
         _context = context;
     }
 

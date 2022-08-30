@@ -1,17 +1,19 @@
 ﻿@using Models.DTO
 @using Models
-@foreach (WseSummaryDto wseSummaryDto in SummaryDtos) {
+@inject NavigationManager NavigationManager
+
+@foreach (WebserviceEntry entry in Entries) {
     <div class="card mb-3">
         <div class="card-body">
             <div class="row">
                 <div class="col-auto">
-                    <i class="fa-solid fa-circle @StyleOnlineStatus(wseSummaryDto)"></i>
+                    <i class="fa-solid fa-circle @StyleOnlineStatus(entry)"></i>
                 </div>
 
                 <div class="col-auto ps-0 d-flex d-block">
                     <h5>
-                        <NavLink href="@GetWseLink(wseSummaryDto)">
-                            @wseSummaryDto.Name
+                        <NavLink href="@GetWseLink(entry)">
+                            @entry.Name
                         </NavLink>
                     </h5>
                 </div>
@@ -19,21 +21,29 @@
                 <div class="col-auto ps-0 ms-auto d-flex d-block">
                     <div class="d-flex justify-content-sm-end justify-content-start flex-wrap">
                         <div class="ms-3">
-                            @{
-                                var bookmarkState = wseSummaryDto.IsBookmark ? "bi-bookmark-fill" : "bi-bookmark";
-                                var bookmarkTitle = wseSummaryDto.IsBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                            @if (LoginState.LoggedIn) {
+                                _bookmarkState = LoginState.User.Bookmarks.Contains(entry) ? "bi-bookmark-fill" : "bi-bookmark";
+                                _bookmarkTitle = LoginState.User.Bookmarks.Contains(entry) ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+
+                                <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="() => ChangeBookmarkStatus(entry)">
+                                    <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
+                                </button>
+                            } else {
+                                _bookmarkState = "bi-bookmark";
+                                _bookmarkTitle = "Als Lesezeichen hinzufügen";
+
+                                <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="NavigateToLogin">
+                                    <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
+                                </button>
                             }
-                            <button class="btn-outline-light btn p-0" title="@bookmarkTitle" @onclick="() => ChangeBookmarkStatus(wseSummaryDto)">
-                                <i class="bi @bookmarkState fs-5" style="color: #dc3545"></i>
-                            </button>
                         </div>
                         <div class="ms-3" style="min-width: fit-content">
                             @{
                                 int i = 0;
-                                for (; i < (int)wseSummaryDto.AverageRating; i++) {
+                                for (; i < _reviewAverage; i++) {
                                     <i class="fa fa-star rating-color"></i>
                                 }
-                                if (wseSummaryDto.AverageRating - i >= 0.5) {
+                                if (_reviewAverage - i >= 0.5) {
                                     <i class="fa-regular fa-star-half-stroke rating-color"></i>
                                     i++;
                                 }
@@ -48,23 +58,22 @@
 
             <div class="row mb-1">
                 <div class="col">
-                    @wseSummaryDto.ShortDescription
+                    @entry.ShortDescription
                 </div>
-                @if (@wseSummaryDto.ViewCount == 1) {
+                @if (entry.ViewCount == 1) {
                     <div class="col-auto ms-auto">
-                        @wseSummaryDto.ViewCount Aufruf
+                        @entry.ViewCount Aufruf
+                    </div>
+                } else {
+                    <div class="col-auto ms-auto">
+                        @entry.ViewCount Aufrufe
                     </div>
                 }
-                else {
-                    <div class="col-auto ms-auto">
-                        @wseSummaryDto.ViewCount Aufrufe
-                    </div>
-                }
-                
+
             </div>
 
             <div class="row mb-2">
-                @foreach (Tag tag in wseSummaryDto.Tags) {
+                @foreach (Tag tag in entry.Tags) {
                     <div class="col-auto pe-0">
                         <span class="badge bg-info me-2">@tag.Name</span>
                     </div>
@@ -73,10 +82,10 @@
 
             <div class="row justify-content-between">
                 <div class="col">
-                    @wseSummaryDto.CreationDate
+                    @entry.CreatedAt
                 </div>
                 <div class="col-auto">
-                    <NavLink href="@wseSummaryDto.Link">
+                    <NavLink href="@entry.Link">
                         <i class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-4" title="Zur Webservice"></i>
                     </NavLink>
                 </div>
@@ -88,20 +97,35 @@
 
 @code {
 
+        @* TODO implement *@
+    private double _reviewAverage = 3;
+
+    [CascadingParameter]
+    private LoginState LoginState { get; set; } = null!;
+
+    private string? _bookmarkState;
+    private string? _bookmarkTitle;
+
     [Parameter]
-    public IList<WseSummaryDto> SummaryDtos { get; set; } = null!;
+    public IEnumerable<WebserviceEntry> Entries { get; set; } = null!;
 
-    private string StyleOnlineStatus(WseSummaryDto wseSummaryDto) {
-        return wseSummaryDto.IsOnline ? "text-success" : "text-danger";
+    private string StyleOnlineStatus(WebserviceEntry entry) {
+    //return entry.IsOnline ? "text-success" : "text-danger";
+        @* TODO implement *@
+        return "text-danger";
     }
 
-    private string GetWseLink(WseSummaryDto wseSummaryDto) {
-        return "/wse/" + wseSummaryDto.Id;
+    private string GetWseLink(WebserviceEntry entry) {
+        return "/wse/" + entry.Id;
     }
 
-    private void ChangeBookmarkStatus(WseSummaryDto wseSummaryDto) {
-        wseSummaryDto.IsBookmark = !wseSummaryDto.IsBookmark;
+    private void ChangeBookmarkStatus(WebserviceEntry entry) {
+        LoginState.User!.Bookmarks.Add(entry);
         @* TODO http call *@
+    }
+
+    private void NavigateToLogin() {
+        NavigationManager.NavigateTo("login");
     }
 
 }

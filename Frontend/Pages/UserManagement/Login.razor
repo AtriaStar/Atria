@@ -62,15 +62,14 @@
 </div>
 
 @code {
-    
     [CascadingParameter]
-    private User? CurrentUser { get; set; }
+    private LoginState LoginState { get; set; } = null!;
     
     private readonly Models.DTO.Login _login = new();
     private string LoginMessage { get; set; } = null!;
 
     protected override void OnParametersSet() {
-        if (CurrentUser is not null) {
+        if (LoginState.LoggedIn) {
             NavManager.NavigateTo("");
         }
     }
@@ -80,9 +79,10 @@
 
         if (response.IsSuccessStatusCode) {
             await Js.InvokeVoidAsync("history.back");
+            NavManager.NavigateTo(NavManager.Uri, forceLoad: true); // Refresh header
         }
         else if (response.StatusCode == HttpStatusCode.Unauthorized) {
-            LoginMessage = "Invalid username or password";
+            LoginMessage = await response.Content.ReadAsStringAsync();
             StateHasChanged();
         }
         else {
