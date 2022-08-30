@@ -15,7 +15,7 @@
         <button class="btn btn-success" type="button">
                 Veröffentlichen
             </button>
-            <button class="btn btn-danger" type="button" @onclick="OpenDeleteWSEDraftDialog">
+            <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDraftDialog">
                 Löschen
             </button>
         }
@@ -202,7 +202,7 @@
         <button class="btn btn-success" type="button">
             Veröffentlichen
         </button>
-        <button class="btn btn-danger" type="button" @onclick="OpenDeleteWSEDraftDialog">
+        <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDraftDialog">
             Löschen
         </button>
          }
@@ -220,36 +220,36 @@
 
 </div>
 
-@if (DeleteWSEDraftDialogOpen) 
+@if (DeleteWseDraftDialogOpen) 
 {
-    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?" OnClose="@OnDeleteWSEDraftDialogClose"/>
+    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?" OnClose="@OnDeleteWseDraftDialogClose"/>
 }
 
 @code {
 
-    public bool DeleteWSEDraftDialogOpen { get; set; }
+    public bool DeleteWseDraftDialogOpen { get; set; }
     private bool _displayForm = false;
 
     [Parameter]
-    public WSEDraft WseDraft { get; set; } = null!;
+    public WseDraft WseDraft { get; set; } = null!;
 
-    private WSEDraft _cloneWseDraft = null!;
+    private WseDraft _cloneWseDraft = null!;
 
-    private void OpenDeleteWSEDraftDialog()
+    private void OpenDeleteWseDraftDialog()
     {
-        DeleteWSEDraftDialogOpen = true;
+        DeleteWseDraftDialogOpen = true;
         StateHasChanged();
     }
 
-    private void OnDeleteWSEDraftDialogClose(bool accepted)
+    private void OnDeleteWseDraftDialogClose(bool accepted)
     {
-        DeleteWSEDraftDialogOpen = false;
+        DeleteWseDraftDialogOpen = false;
         StateHasChanged();
     }
 
      protected override void OnInitialized() {
             @* Mock Data generation *@
-        WseDraft = new WSEDraft {
+        WseDraft = new WseDraft {
             Name = "Google",
             ShortDescription = "Lorem ipsum dolor sit amet",
             Link = "https://www.google.de/",
@@ -269,7 +269,7 @@
     }
 
     private void CloneWseDraft() {
-        _cloneWseDraft = new WSEDraft {
+        _cloneWseDraft = new WseDraft {
             Name = WseDraft.Name,
             ShortDescription = WseDraft.ShortDescription,
             Link = WseDraft.Link,

@@ -450,8 +450,8 @@
     <Frontend.Pages.Components.DeleteModal Title="Bewertung löschen" Text="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?" OnClose="@OnDeleteReviewDialogClose"/>
 }
 
-@if (DeleteWSEDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?" OnClose="@OnDeleteWSEDialogClose"/>
+@if (DeleteWseDialogOpen) {
+    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?" OnClose="@OnDeleteWseDialogClose"/>
 }
 
 @code {
@@ -503,13 +503,13 @@
         StateHasChanged();
     }
 
-    private void OpenDeleteWSEDialog() {
-        DeleteWSEDialogOpen = true;
+    private void OpenDeleteWseDialog() {
+        DeleteWseDialogOpen = true;
         StateHasChanged();
     }
 
-    private void OnDeleteWSEDialogClose(bool accepted) {
-        DeleteWSEDialogOpen = false;
+    private void OnDeleteWseDialogClose(bool accepted) {
+        DeleteWseDialogOpen = false;
         StateHasChanged();
     }
 

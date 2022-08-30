@@ -14,7 +14,7 @@ public class WSEController : ControllerBase
 
     private readonly AtriaContext _context;
 
-    public WSEController(AtriaContext context) {
+    public WseController(AtriaContext context) {
         _context = context;
     }
 
