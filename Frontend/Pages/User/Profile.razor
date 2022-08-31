@@ -204,16 +204,16 @@
 
                 switch (Type) {
                     case null or "wse":
-                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/wse");
                         break;
                     case "bookmarks":
-                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/bookmarks" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/bookmarks");
                         break;
                     case "reviews":
-                        _reviews = await HttpClient.GetFromJsonAsync<IEnumerable<Review>>($"user/{UserId}/reviews" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        _reviews = await HttpClient.GetFromJsonAsync<IEnumerable<Review>>($"user/{UserId}/reviews");
                         break;
                     case "drafts":
-                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/drafts" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/drafts");
                         break;
                 }
             } else if (response.StatusCode == HttpStatusCode.NotFound) {
