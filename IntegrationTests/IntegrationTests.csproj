@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Backend\Backend.csproj" />
+    <ProjectReference Include="..\DatabaseMocker\DatabaseMocker.csproj" />
   </ItemGroup>
 
 </Project>

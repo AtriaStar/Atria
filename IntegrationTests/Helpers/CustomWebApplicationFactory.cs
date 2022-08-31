@@ -85,6 +85,7 @@ namespace IntegrationTests.Helpers
             //Todo: not like this
             httpContext.Request.Headers["User-Agent"] = "";
 
+
             await this.next(httpContext);
         }
     }

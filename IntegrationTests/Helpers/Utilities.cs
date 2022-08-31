@@ -1,4 +1,6 @@
 ﻿using Backend.AspPlugins;
+using DatabaseMocker;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using System;
 using System.Collections.Generic;
@@ -13,12 +15,24 @@ namespace IntegrationTests.Helpers
 
         public static void InitializeDbForTests(AtriaContext db)
         {
-            //Todo: initialize database
+            ClearDb(db);
+            db.Users.AddRangeAsync(Enumerable.Range(0, 100)
+            .Select(_ => UserMocker.GenerateUser())
+            .DistinctBy(x => x.Email));
+            db.SaveChanges();
+            WseMocker.AddWse(db, db.Users.RandomElement().Id);
+            db.SaveChanges();
         }
 
-        public static void ReinitializeDbForTests(AtriaContext db)
+        public static void ClearDb(AtriaContext db)
         {
-
+            db.WebserviceEntries.RemoveRange(db.WebserviceEntries);
+            db.Users.RemoveRange(db.Users);
+            db.Drafts.RemoveRange(db.Drafts);
+            db.Answers.RemoveRange(db.Answers);
+            db.Questions.RemoveRange(db.Questions);
+            db.Reviews.RemoveRange(db.Reviews);
+            db.SaveChanges();
         }
     }
 }
