@@ -24,7 +24,10 @@ namespace IntegrationTests.Helpers
                     d => d.ServiceType ==
                         typeof(DbContextOptions<AtriaContext>));
 
-                services.Remove(descriptor);
+                if (descriptor != null)
+                {
+                    services.Remove(descriptor);
+                }
                 
                 services.AddDbContext<AtriaContext>(options =>
                 {
