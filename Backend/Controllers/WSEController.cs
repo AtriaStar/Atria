@@ -10,7 +10,6 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("wse")]
 public class WseController : ControllerBase {
-
     private readonly AtriaContext _context;
 
     public WseController(AtriaContext context) {
