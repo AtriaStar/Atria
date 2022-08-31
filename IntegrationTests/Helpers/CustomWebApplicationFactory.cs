@@ -72,7 +72,7 @@ namespace IntegrationTests.Helpers
     public class FakeRemoteIpAddressMiddleware
     {
         private readonly RequestDelegate next;
-        private readonly IPAddress fakeIpAddress = IPAddress.Parse("127.168.1.32");
+        private readonly IPAddress fakeIpAddress = IPAddress.Parse("127.0.0.1");
 
         public FakeRemoteIpAddressMiddleware(RequestDelegate next)
         {
