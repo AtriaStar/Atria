@@ -15,6 +15,7 @@ public class AtriaContext : DbContext {
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql("Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true")
+            .UseSnakeCaseNamingConvention()
             .EnableSensitiveDataLogging();
         // TODO: Change sensitive stuff to config option
 
