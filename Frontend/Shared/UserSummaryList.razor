@@ -32,7 +32,7 @@
     public IEnumerable<User> Users { get; set; } = null!;
 
     private string GetHref(User user) {
-        return "profile/" + user.Id;
+        return "user/" + user.Id;
     }
 
 }
