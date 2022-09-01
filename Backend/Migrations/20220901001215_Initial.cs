@@ -31,19 +31,6 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tags",
-                columns: table => new
-                {
-                    name = table.Column<string>(type: "text", nullable: false),
-                    description = table.Column<string>(type: "text", nullable: true),
-                    creation_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_tags", x => x.name);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "users",
                 columns: table => new
                 {
@@ -64,6 +51,25 @@ namespace Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_users", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tags",
+                columns: table => new
+                {
+                    name = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    creation_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    wse_draft_id = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_tags", x => x.name);
+                    table.ForeignKey(
+                        name: "fk_tags_drafts_wse_draft_id",
+                        column: x => x.wse_draft_id,
+                        principalTable: "drafts",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -288,6 +294,11 @@ namespace Backend.Migrations
                 column: "webservice_entries_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_tags_wse_draft_id",
+                table: "tags",
+                column: "wse_draft_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_users_email",
                 table: "users",
                 column: "email",
@@ -308,9 +319,6 @@ namespace Backend.Migrations
                 name: "collaborator");
 
             migrationBuilder.DropTable(
-                name: "drafts");
-
-            migrationBuilder.DropTable(
                 name: "reviews");
 
             migrationBuilder.DropTable(
@@ -327,6 +335,9 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "webservice_entries");
+
+            migrationBuilder.DropTable(
+                name: "drafts");
 
             migrationBuilder.DropTable(
                 name: "users");

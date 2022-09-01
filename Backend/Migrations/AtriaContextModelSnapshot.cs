@@ -63,13 +63,10 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Collaborator", b =>
                 {
-<<<<<<< HEAD
                     b.Property<long>("WseId")
                         .HasColumnType("bigint")
                         .HasColumnName("wse_id");
 
-=======
->>>>>>> merge cleanup
                     b.Property<long>("UserId")
                         .HasColumnType("bigint")
                         .HasColumnName("user_id");
@@ -78,20 +75,13 @@ namespace Backend.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("rights");
 
-<<<<<<< HEAD
-                    b.HasKey("WseId", "UserId");
+                    b.HasKey("WseId", "UserId")
+                        .HasName("pk_collaborator");
 
-                    b.HasIndex("UserId");
-=======
-                    b.Property<long?>("WebserviceEntryId")
-                        .HasColumnType("bigint");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_collaborator_user_id");
 
-                    b.HasKey("UserId");
-
-                    b.HasIndex("WebserviceEntryId");
->>>>>>> merge cleanup
-
-                    b.ToTable("Collaborator");
+                    b.ToTable("collaborator", (string)null);
                 });
 
             modelBuilder.Entity("Models.Question", b =>
@@ -216,35 +206,21 @@ namespace Backend.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("creation_time");
 
-<<<<<<< HEAD
                     b.Property<string>("Description")
                         .HasColumnType("text")
                         .HasColumnName("description");
 
+                    b.Property<long?>("WseDraftId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("wse_draft_id");
+
                     b.HasKey("Name")
                         .HasName("pk_tags");
 
-                    b.Property<long?>("WSEDraftId")
-                        .HasColumnType("bigint");
+                    b.HasIndex("WseDraftId")
+                        .HasDatabaseName("ix_tags_wse_draft_id");
 
-=======
-                    b.Property<long>("UseCount")
-                        .HasColumnType("bigint");
-
->>>>>>> merge cleanup
-                    b.Property<long?>("WebserviceEntryId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Name");
-
-<<<<<<< HEAD
-                    b.HasIndex("WSEDraftId");
-
-=======
->>>>>>> merge cleanup
-                    b.HasIndex("WebserviceEntryId");
-
-                    b.ToTable("Tags");
+                    b.ToTable("tags", (string)null);
                 });
 
             modelBuilder.Entity("Models.User", b =>
@@ -484,7 +460,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_collaborator_users_user_id");
 
-<<<<<<< HEAD
                     b.HasOne("Models.WebserviceEntry", "Wse")
                         .WithMany("Collaborators")
                         .HasForeignKey("WseId")
@@ -495,13 +470,6 @@ namespace Backend.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Wse");
-=======
-                    b.HasOne("Models.WebserviceEntry", null)
-                        .WithMany("Collaborators")
-                        .HasForeignKey("WebserviceEntryId");
-
-                    b.Navigation("User");
->>>>>>> merge cleanup
                 });
 
             modelBuilder.Entity("Models.Question", b =>
@@ -560,16 +528,10 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.Tag", b =>
                 {
-<<<<<<< HEAD
-                    b.HasOne("Models.WSEDraft", null)
+                    b.HasOne("Models.WseDraft", null)
                         .WithMany("Tags")
-                        .HasForeignKey("WSEDraftId");
-
-=======
->>>>>>> merge cleanup
-                    b.HasOne("Models.WebserviceEntry", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("WebserviceEntryId");
+                        .HasForeignKey("WseDraftId")
+                        .HasConstraintName("fk_tags_drafts_wse_draft_id");
                 });
 
             modelBuilder.Entity("Models.WebserviceEntry", b =>
@@ -613,17 +575,12 @@ namespace Backend.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("Tags");
                 });
-<<<<<<< HEAD
 
-            modelBuilder.Entity("Models.WSEDraft", b =>
+            modelBuilder.Entity("Models.WseDraft", b =>
                 {
                     b.Navigation("Tags");
                 });
-=======
->>>>>>> merge cleanup
 #pragma warning restore 612, 618
         }
     }

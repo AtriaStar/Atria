@@ -19,9 +19,11 @@ public class TagController : ControllerBase {
 
     [HttpPut]
     [RequiresAuthentication]
-    public async Task Create([FromBody] string tagName) {
-        await _context.Tags.AddAsync(new() { Name = tagName });
+    public async Task<IActionResult> Create([FromBody] string tagName) {
+        Tag tag = new() { Name = tagName };
+        await _context.Tags.AddAsync(tag);
         await _context.SaveChangesAsync();
+        return Ok(tag);
     }
 
     [RequiresAuthentication]

@@ -157,6 +157,22 @@
     private LoginState LoginState { get; set; } = null!;
 
     [Parameter]
+    [SupplyParameterFromQuery]
+    public bool? IsOnline { get; set; } = false;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool? IsBookmark { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "minRating")]
+    public int? SelectedStarNum { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "tags")]
+    public string[]? SelectedTagsStr { get; set; } = new string[] { };
+
+    [Parameter]
     public long? UserId { get; set; }
 
     [Parameter]

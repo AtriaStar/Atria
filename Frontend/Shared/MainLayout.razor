@@ -8,14 +8,14 @@
 </HeadContent>
 
 <div class="page">
-    <CascadingValue Value="@CurrentUser">
-        <NavMenu/>
-        @* TODO bottom bar height here as padding *@
-        <main style="padding-bottom: 50px">
-            @Body
-        </main>
-        <BottomBar/>
-    </CascadingValue>
+    <CascadingValue Value="@LoginState">
+      <NavMenu/>
+      @* TODO bottom bar height here as padding *@
+      <main style="padding-bottom: 50px">
+        @Body
+      </main>
+      <BottomBar/>
+  </CascadingValue>
 </div>
 
 @code {

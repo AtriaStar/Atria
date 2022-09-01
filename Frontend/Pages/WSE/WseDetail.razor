@@ -19,7 +19,7 @@
                 <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
                     Bearbeiten
                 </button>
-                <button class="btn btn-danger" type="button" @onclick="OpenDeleteWSEDialog">
+                <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDialog">
                     Löschen
                 </button>
             </div>
@@ -414,7 +414,7 @@
                 <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
                     Bearbeiten
                 </button>
-                <button class="btn btn-danger" type="button" @onclick="OpenDeleteWSEDialog">
+                <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDialog">
                     Löschen
                 </button>
             </div>
@@ -460,7 +460,7 @@
     public bool DeleteQuestionDialogOpen { get; set; }
     public bool DeleteAnswerDialogOpen { get; set; }
     public bool DeleteReviewDialogOpen { get; set; }
-    public bool DeleteWSEDialogOpen { get; set; }
+    public bool DeleteWseDialogOpen { get; set; }
 
     private void OpenCollabDialog()
     {
