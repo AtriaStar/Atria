@@ -81,7 +81,7 @@ public class AuthenticationController : ControllerBase {
     public User GetAuthUser([FromAuthentication] User user) => user;
 
     [HttpPost("reset/start")]
-    public async Task InitPasswordReset(string email) {
+    public async Task InitPasswordReset([FromBody] string email) {
         email = email.ToLowerInvariant();
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
         if (user == null) { return; }
