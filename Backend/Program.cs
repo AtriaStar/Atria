@@ -48,6 +48,7 @@ app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
 
+//allows us to reference this class globally
 public partial class Program { }
 
 
