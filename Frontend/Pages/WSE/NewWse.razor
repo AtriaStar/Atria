@@ -11,11 +11,9 @@
 
 <div class="container-lg mt-3">
 
-    @if (newWse)
-    {
+    @if (IsNewWse) {
         <h2>Neuer Eintrag</h2>
-    } else if (editWse) 
-    {
+    } else if (IsEditWse) {
         @*TODO inputs with data*@
         <h2>Eintrag bearbeiten</h2>
     }
@@ -161,22 +159,22 @@
 
 @code {
     [CascadingParameter] 
-    private User CurrentUser { get; init; } = null!;
+    private LoginState LoginState { get; init; } = null!;
     private readonly WebserviceEntry _webserviceEntry = new();
     private readonly TagDto _tagDto = new();
 
-    private List<Tag> SearchedTags = new List<Tag>();
-    private List<Tag> SelectedTags = new List<Tag>();
-    private string[] SelectedTagsStr = new string[] { };
+    private List<Tag> SearchedTags = new();
+    private List<Tag> SelectedTags = new();
+    private string[] SelectedTagsStr = { };
     private Tag[]? AllTags { get; set; }
 
     private string? TagQuery { get; set; }
-    public bool newWse = true;
-    public bool editWse = false;
+    public bool IsNewWse = true;
+    public bool IsEditWse = false;
     private string ConflictMessage { get; set; } = null!;
 
     private async void HandleValidSubmit() {
-        _webserviceEntry.ContactPersonId = CurrentUser.Id;
+        _webserviceEntry.ContactPersonId = LoginState.User!.Id;
         _webserviceEntry.Tags = new HashSet<Tag>(SelectedTags);
 
         if (_tagDto.NewTagsStr != null)
@@ -216,7 +214,7 @@
         var response = await HttpClient.PutAsJsonAsync("wse", _webserviceEntry);
 
         if (response.IsSuccessStatusCode) {
-            long WseId = response.Content.ReadFromJsonAsync<WebserviceEntry>().Id;
+            long WseId = (await response.Content.ReadFromJsonAsync<WebserviceEntry>()).Id;
             NavManager.NavigateTo("wse/" + WseId);
         }
         else if (response.StatusCode == HttpStatusCode.Conflict) {
