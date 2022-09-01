@@ -97,15 +97,15 @@ public class AuthenticationController : ControllerBase {
     }
     
     [HttpPost("reset/finish")]
-    public async Task<IActionResult> PasswordReset(string textToken, string newPassword) {
-        var token = Base64UrlTextEncoder.Decode(textToken);
+    public async Task<IActionResult> PasswordReset(ResetPasswordDto dto) {
+        var token = Base64UrlTextEncoder.Decode(dto.Token);
         var resetToken = await _context.ResetTokens.FirstOrDefaultAsync(x => x.Token.SequenceEqual(token));
         if (resetToken == null) { return BadRequest("Invalid token"); }
         // TODO: Timespan
         if (DateTimeOffset.UtcNow - resetToken.CreatedAt > TimeSpan.FromMinutes(15)) { return BadRequest("Token expired"); }
         var user = resetToken.User;
         user.PasswordSalt = HashingService.GenerateSalt();
-        user.PasswordHash = HashingService.Hash(newPassword, user.PasswordSalt);
+        user.PasswordHash = HashingService.Hash(dto.Password, user.PasswordSalt);
         _context.ResetTokens.Remove(resetToken);
         _context.Sessions.RemoveRange(_context.Sessions.Where(x => x.User == user));
         await _context.SaveChangesAsync();
