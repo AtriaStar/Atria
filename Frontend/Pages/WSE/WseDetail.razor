@@ -1,4 +1,4 @@
-﻿@page "/wse/{WseId:long}"
+﻿@page "/wse/{WseId:long?}"
 @using Models
 @using Models.DTO
 @using System.Net
@@ -61,20 +61,23 @@
                         }
                     </h3>
                 </div>
-                <div class="col-auto d-flex align-content-end me-1">
-                    @{
-                        var bookmarkState = isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
-                        var bookmarkTitle = isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
-                    }
-                    <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
-                </div>
-                <div class="col-auto d-flex align-content-end">
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@_wse.Link" />
-                </div>
+                @if (!_displayForm)
+                {
+                    <div class="col-auto d-flex align-content-end me-1">
+                        @{
+                            var bookmarkState = isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
+                            var bookmarkTitle = isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                        }
+                        <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
+                    </div>
+                    <div class="col-auto d-flex align-content-end">
+                        <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@_wse.Link" />
+                    </div>
+                }
             </div>
             <h5 class="card-subtitle mb-2 me-2 text-muted">
                 Ansprechpartner
-                <button class="btn btn-outline-secondary btn-small" @onclick="OpenCollabDialog">weitere Kollaboratoren</button>
+                <button class="btn btn-outline-secondary btn-small ms-2" @onclick="OpenCollabDialog">weitere Kollaboratoren</button>
             </h5>
             @if (!_displayForm)
             {
@@ -89,11 +92,11 @@
                 </EditForm>
             }
 
+        </div>
     </div>
-</div>
 
-@if (_displayForm) {
-    <div class="col-auto mt-sm-1">
+    @if (_displayForm) {
+        <div class="col-auto mt-sm-1">
 
             <div class="card mb-4">
                 <h6 class="card-header fw-bold">Link</h6>
@@ -108,49 +111,51 @@
         </div>
     }
 
-<div class="row mb-4">
-    @*------------REVIEW AND TAGS------------*@
-    <div class="col-md-3 mb-4">
-        <div class="card mb-4">
-            <div class="card-body">
-                <h6 class="card-title fw-bold">Bewertung</h6>
-                <div class="row">
-                    <div class="col-auto">
-                        <i class="fa fa-star rating-color"/>
-                        <i class="fa fa-star rating-color"/>
-                        <i class="fa fa-star rating-color"/>
-                        <i class="fa fa-star rating-color"/>
-                        <i class="fa fa-star rating-color"/>
-                    </div>
-                    <div class="col-auto">
-                        <p>xx Bewertungen</p>
+    <div class="row mb-4">
+        @*------------REVIEW AND TAGS------------*@
+        <div class="col-md-3 mb-4">
+            @if (!_displayForm)
+            {
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold">Bewertung</h6>
+                        <div class="row">
+                            <div class="col-auto">
+                                <i class="fa fa-star rating-color"/>
+                                <i class="fa fa-star rating-color"/>
+                                <i class="fa fa-star rating-color"/>
+                                <i class="fa fa-star rating-color"/>
+                                <i class="fa fa-star rating-color"/>
+                            </div>
+                            <div class="col-auto">
+                                <p>xx Bewertungen</p>
+                            </div>
+                        </div>
+                        @* TODO scrollspy or leave it out
+                            <div class="d-grid d-flex justify-content-end">
+                            <button class="btn btn-outline-secondary btn-small" type="button">zu den Bewertungen</button>
+                            </div>*@
                     </div>
                 </div>
-                @* TODO scrollspy or leave it out
-                    <div class="d-grid d-flex justify-content-end">
-                    <button class="btn btn-outline-secondary btn-small" type="button">zu den Bewertungen</button>
-                    </div>*@
+            }
+
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title fw-bold">Tags</h6>
+                    @*mock tags*@
+                    <div class="card-text">
+                        @foreach (Tag tag in _wse.Tags) {
+                            <div class="badge bg-info me-1" value="@tag.Name">@tag.Name</div>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-body">
-                <h6 class="card-title fw-bold">Tags</h6>
-                @*mock tags*@
-                <div class="card-text">
-                    @for (int i = 0; i <= 20; i++) {
-                        <div class="badge bg-info me-1" value="@i">Tag @i</div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
+        @*------------LOG, DOC, DESC.------------*@
+        <div class="col-md-9">
 
-    @*------------LOG, DOC, DESC.------------*@
-    <div class="col-md-9">
-
-        <div class="card mb-4">
-
+            <div class="card mb-4">
                 <h6 class="card-header fw-bold">Änderungshistorie</h6>
                 <div class="card-body">
                     @if (!_displayForm)
@@ -161,7 +166,7 @@
                     {
                         <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                             <DataAnnotationsValidator></DataAnnotationsValidator>
-                            <InputText @bind-Value="_wse.ChangeLog" id="changeLog" type="text" class="form-control" placeholder="Änderungshistorie"></InputText>
+                            <InputTextArea @bind-Value="_wse.ChangeLog" id="changeLog" type="text" class="form-control" placeholder="Änderungshistorie"></InputTextArea>
                             <ValidationSummary></ValidationSummary>
                         </EditForm>
                     }
@@ -182,16 +187,15 @@
                     {
                         <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                             <DataAnnotationsValidator></DataAnnotationsValidator>
-                            <InputText @bind-Value="_wse.Documentation" id="documentation" type="text" class="form-control" placeholder="Dokumentation"></InputText>
+                            <InputTextArea @bind-Value="_wse.Documentation" id="documentation" type="text" class="form-control" placeholder="Dokumentation"></InputTextArea>
                             <ValidationSummary></ValidationSummary>
                         </EditForm>
                     }
                 </div>
             </div>
 
-        @if (_displayForm) {
-            <div class="col-auto mt-sm-1">
-
+            @if (_displayForm) {
+                <div class="col-auto mt-sm-1">
                     <div class="card mb-4">
                         <h6 class="card-header fw-bold">Dokumentations-Link</h6>
                         <div class="card-body">
@@ -216,195 +220,198 @@
                     {
                         <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
                             <DataAnnotationsValidator></DataAnnotationsValidator>
-                            <InputText @bind-Value="_wse.FullDescription" id="fullDescription" type="text" class="form-control" placeholder="Volltextbeschreibung"></InputText>
+                            <InputTextArea @bind-Value="_wse.FullDescription" id="fullDescription" type="text" class="form-control" placeholder="Volltextbeschreibung"></InputTextArea>
                             <ValidationSummary></ValidationSummary>
                         </EditForm>
                     }
                 </div>
             </div>
-            </div>
-        </div>
-
-<hr/>
-
-@*------------QNA------------*@
-<h6 class="fw-bold mt-2 mb-2">Q&A</h6>
-
-@if (isLoggedIn) {
-    <div class="ui-field">
-        @*TODO change to InputTextArea when EditForm added*@
-        <textarea class="form-control mt-4 mb-3" type="text" placeholder="Haben Sie eine Frage?" />
-    </div>
-    <div class="d-grid gap-2 mt-2 mb-4 d-flex justify-content-end">
-        <button class="btn btn-outline-success btn-small" type="button">
-            Speichern
-        </button>
-    </div>
-}
-
-@*foreach question*@
-<div class="accordion mb-4" id="questionAccordion">
-    <div class="accordion-item">
-        <div class="accordion-header px-4 py-3 bg-light border-bottom" id="question">
-            <div class="row">
-                <div class="col-auto">
-                    <h6 class="fw-bold mt-1">Frage:</h6>
-                </div>
-                <div class="col ms-3">
-                    <h6 class="fw-bold mt-1 mb-1">
-                        Creator
-                        <small class="text-muted">Date</small>
-                    </h6>
-                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-                </div>
-                @*if answers exist*@
-            </div>
-            <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
-                @if (isLoggedIn) {
-                    <button class="btn btn-outline-success btn-small" type="button">
-                        Antworten
-                    </button>
-                    @if (isCreator) {
-                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteQuestionDialog">
-                            Löschen
-                        </button>
-                    }
-                }
-                @*if answers exist*@
-                <button class="btn btn-small btn-outline-secondary collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#answerOne" aria-expanded="false" aria-controls="answerOne">
-                    Antworten anzeigen
-                </button>
-            </div>
-        </div>
-
-        @*if answers exist*@
-        <div id="answerOne" class="accordion-collapse collapse" aria-labelledby="question" data-bs-parent="#questionAccordion">
-            <div class="accordion-body">
-                <ul class="list-group list-group-flush py-0">
-                    @*foreach answer*@
-                    <li class="list-group-item px-0">
-                        <div class="row">
-                            <div class="col-auto">
-                                <h6 class="fw-bold mt-1">Antwort:</h6>
-                            </div>
-                            <div class="col">
-                                <h6 class="fw-bold mt-1 mb-1">
-                                    Creator
-                                    <small class="text-muted">Date</small>
-                                </h6>
-                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-                            </div>
-                        </div>
-                        @if (isCreator) {
-                            <div class="d-grid mt-2 d-flex justify-content-end">
-                                <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteAnswerDialog">
-                                    Löschen
-                                </button>
-                            </div>
-                        }
-                    </li>
-                    <li class="list-group-item px-0">
-                        <div class="row">
-                            <div class="col-auto">
-                                <h6 class="fw-bold mt-1">Antwort:</h6>
-                            </div>
-                            <div class="col">
-                                <h6 class="fw-bold mt-1 mb-1">
-                                    Creator
-                                    <small class="text-muted">Date</small>
-                                </h6>
-                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-                            </div>
-                        </div>
-                        @if (isCreator) {
-                            <div class="d-grid mt-2 d-flex justify-content-end">
-                                <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteAnswerDialog">
-                                    Löschen
-                                </button>
-                            </div>
-                        }
-                    </li>
-                </ul>
-            </div>
         </div>
     </div>
-</div>
 
-@*if more questions exist*@
-<div class="d-grid d-flex mt-2 mb-4 justify-content-center">
-    <button class="btn btn-outline-secondary btn-small" type="button" href="">weitere Fragen</button>
-</div>
+    @if (!_displayForm)
+    {
+        <hr/>
 
-<hr/>
+        @*------------QNA------------*@
+        <h6 class="fw-bold mt-2 mb-2">Q&A</h6>
 
-@*------------REVIEWS------------*@
-<div class="row mb-2">
-    <div class="col-auto">
-        <h6 class="fw-bold">Bewertungen</h6>
-    </div>
-    @if (isLoggedIn) {
-        <div class="col-auto">
-            <button class="btn btn-outline-success btn-small" type="button" href="">neue Bewertung</button>
-        </div>
-    }
-    <div class="col-auto ms-auto">
-        <div class="dropdown">
-            <a class="btn btn-outline-secondary btn-small dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                Sortieren nach
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <a class="dropdown-item" href="#">Neuste</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="#">Älteste</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="#">Absteigend</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="#">Aufsteigend</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-@*foreach review*@
-<div class="card mt-3 mb-4">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-auto">
-                <i class="fa fa-star rating-color"></i>
-                <i class="fa fa-star rating-color"></i>
-                <i class="fa fa-star rating-color"></i>
-                <i class="fa fa-star rating-color"></i>
-                <i class="fa fa-star rating-uncolored"></i>
-                <div class="card-subtitle mt-1 text-muted">Date</div>
+        @if (isLoggedIn) {
+            <div class="ui-field">
+                @*TODO change to InputTextArea when EditForm added*@
+                <textarea class="form-control mt-4 mb-3" type="text" placeholder="Haben Sie eine Frage?" />
             </div>
-            <div class="col mt-1">
-                <h6 class="card-title fw-bold">Title</h6>
-                <div class="card-subtitle mb-2 text-muted">Creator</div>
-                <p class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
-            </div>
-        </div>
-        @if (isCreator) {
-            <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
-                <button class="btn btn-outline-success btn-small" type="button" @onclick="() => _displayForm = !_displayForm">
-                    Bearbeiten
-                </button>
-                <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteReviewDialog">
-                    Löschen
+            <div class="d-grid gap-2 mt-2 mb-4 d-flex justify-content-end">
+                <button class="btn btn-outline-success btn-small" type="button">
+                    Speichern
                 </button>
             </div>
         }
-    </div>
-</div>
 
-@*if more reviews exist*@
-<div class="d-grid d-flex mt-2 mb-2 justify-content-center">
-    <button class="btn btn-outline-secondary btn-small" type="button" href="">weitere Bewertungen</button>
-</div>
+        @*foreach question*@
+        <div class="accordion mb-4" id="questionAccordion">
+            <div class="accordion-item">
+                <div class="accordion-header px-4 py-3 bg-light border-bottom" id="question">
+                    <div class="row">
+                        <div class="col-auto">
+                            <h6 class="fw-bold mt-1">Frage:</h6>
+                        </div>
+                        <div class="col ms-3">
+                            <h6 class="fw-bold mt-1 mb-1">
+                                Creator
+                                <small class="text-muted">Date</small>
+                            </h6>
+                            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+                        </div>
+                        @*if answers exist*@
+                    </div>
+                    <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
+                        @if (isLoggedIn) {
+                            <button class="btn btn-outline-success btn-small" type="button">
+                                Antworten
+                            </button>
+                            @if (isCreator) {
+                                <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteQuestionDialog">
+                                    Löschen
+                                </button>
+                            }
+                        }
+                        @*if answers exist*@
+                        <button class="btn btn-small btn-outline-secondary collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#answerOne" aria-expanded="false" aria-controls="answerOne">
+                            Antworten anzeigen
+                        </button>
+                    </div>
+                </div>
+
+                @*if answers exist*@
+                <div id="answerOne" class="accordion-collapse collapse" aria-labelledby="question" data-bs-parent="#questionAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-group list-group-flush py-0">
+                            @*foreach answer*@
+                            <li class="list-group-item px-0">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <h6 class="fw-bold mt-1">Antwort:</h6>
+                                    </div>
+                                    <div class="col">
+                                        <h6 class="fw-bold mt-1 mb-1">
+                                            Creator
+                                            <small class="text-muted">Date</small>
+                                        </h6>
+                                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+                                    </div>
+                                </div>
+                                @if (isCreator) {
+                                    <div class="d-grid mt-2 d-flex justify-content-end">
+                                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteAnswerDialog">
+                                            Löschen
+                                        </button>
+                                    </div>
+                                }
+                            </li>
+                            <li class="list-group-item px-0">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <h6 class="fw-bold mt-1">Antwort:</h6>
+                                    </div>
+                                    <div class="col">
+                                        <h6 class="fw-bold mt-1 mb-1">
+                                            Creator
+                                            <small class="text-muted">Date</small>
+                                        </h6>
+                                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+                                    </div>
+                                </div>
+                                @if (isCreator) {
+                                    <div class="d-grid mt-2 d-flex justify-content-end">
+                                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteAnswerDialog">
+                                            Löschen
+                                        </button>
+                                    </div>
+                                }
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*if more questions exist*@
+        <div class="d-grid d-flex mt-2 mb-4 justify-content-center">
+            <button class="btn btn-outline-secondary btn-small" type="button" href="">weitere Fragen</button>
+        </div>
+
+        <hr/>
+
+        @*------------REVIEWS------------*@
+        <div class="row mb-2">
+            <div class="col-auto">
+                <h6 class="fw-bold">Bewertungen</h6>
+            </div>
+            @if (isLoggedIn) {
+                <div class="col-auto">
+                    <button class="btn btn-outline-success btn-small" type="button" href="">neue Bewertung</button>
+                </div>
+            }
+            <div class="col-auto ms-auto">
+                <div class="dropdown">
+                    <a class="btn btn-outline-secondary btn-small dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sortieren nach
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="#">Neuste</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Älteste</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Absteigend</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Aufsteigend</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        @*foreach review*@
+        <div class="card mt-3 mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-auto">
+                        <i class="fa fa-star rating-color"></i>
+                        <i class="fa fa-star rating-color"></i>
+                        <i class="fa fa-star rating-color"></i>
+                        <i class="fa fa-star rating-color"></i>
+                        <i class="fa fa-star rating-uncolored"></i>
+                        <div class="card-subtitle mt-1 text-muted">Date</div>
+                    </div>
+                    <div class="col mt-1">
+                        <h6 class="card-title fw-bold">Title</h6>
+                        <div class="card-subtitle mb-2 text-muted">Creator</div>
+                        <p class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
+                    </div>
+                </div>
+                @if (isCreator) {
+                    <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
+                        <button class="btn btn-outline-success btn-small" type="button" @onclick="() => _displayForm = !_displayForm">
+                            Bearbeiten
+                        </button>
+                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteReviewDialog">
+                            Löschen
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    
+        @*if more reviews exist*@
+        <div class="d-grid d-flex mt-2 mb-2 justify-content-center">
+            <button class="btn btn-outline-secondary btn-small" type="button" href="">weitere Bewertungen</button>
+        </div>
+    }
 
     @if (isCollab)
     {
@@ -538,9 +545,9 @@
 
     }
 
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        WebserviceEntry? WseToGet = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId);
+        WebserviceEntry? WseToGet = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId) ?? new WebserviceEntry() {};
         if (WseToGet is not null)
         {
             _wse = WseToGet;
