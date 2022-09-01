@@ -5,24 +5,25 @@ using Models;
 namespace Frontend;
 
 public class LoginState {
-    public bool Fetched { get; private set; }
+
+    private readonly HttpClient _httpClient;
 
     [MemberNotNullWhen(true, nameof(User))]
     public bool LoggedIn => User != null;
 
     public User? User { get; private set; }
+    
+    public Task Initialization { get; private set; }
 
     public LoginState(HttpClient client) {
-#pragma warning disable CS4014
-        Check(client);
-#pragma warning restore CS4014
+        _httpClient = client;
+        Initialization = CheckAsync();
     }
 
-    private async Task Check(HttpClient client) {
-        var cnt = await client.GetAsync("auth");
+    private async Task CheckAsync() {
+        var cnt = await _httpClient.GetAsync("auth");
         if (cnt.IsSuccessStatusCode) {
-            User = await cnt.Content.ReadFromJsonAsync<User>();
+           User = await cnt.Content.ReadFromJsonAsync<User>();
         }
-        Fetched = true;
     }
 }
