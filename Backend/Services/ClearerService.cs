@@ -19,7 +19,7 @@ public class ClearerService : IHostedService {
         await using var scope = _scopeFactory.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<AtriaContext>();
         db.Sessions.RemoveRange(db.Sessions
-            .Where(x => !_sessionService.IsValid(x)));
+            .Where(x => DateTimeOffset.UtcNow - x.CreatedAt > _sessionService.ExpireDuration));
         db.ResetTokens.RemoveRange(db.ResetTokens
             .Where(x => DateTimeOffset.UtcNow - x.CreatedAt > TimeSpan.FromMinutes(15))); // TODO: Add to config
         await db.SaveChangesAsync();
