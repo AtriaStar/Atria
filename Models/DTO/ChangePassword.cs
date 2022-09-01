@@ -2,7 +2,7 @@
 
 namespace Models.DTO;
 
-public class ResetPassword
+public class ChangePassword
 {
 
     [Required]
