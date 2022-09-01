@@ -3,8 +3,7 @@ using Models;
 
 namespace Backend.AspPlugins;
 
-public class AtriaContext : DbContext
-{
+public class AtriaContext : DbContext {
     public DbSet<User> Users => Set<User>();
     public DbSet<WseDraft> Drafts => Set<WseDraft>();
     public DbSet<WebserviceEntry> WebserviceEntries => Set<WebserviceEntry>();
@@ -15,15 +14,14 @@ public class AtriaContext : DbContext
     public DbSet<Session> Sessions => Set<Session>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql(
-            "Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true");
-        optionsBuilder.EnableSensitiveDataLogging();
-        // TODO: Change
-    }
+        => optionsBuilder.UseNpgsql("Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true")
+            .UseSnakeCaseNamingConvention()
+            .EnableSensitiveDataLogging();
+        // TODO: Change sensitive stuff to config option
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
+    protected override void OnModelCreating(ModelBuilder modelBuilder) {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(WebserviceEntry).Assembly);
+
         modelBuilder.Entity<Review>()
             .HasKey(x => new { x.WseId, x.Id });
         modelBuilder.Entity<Question>()

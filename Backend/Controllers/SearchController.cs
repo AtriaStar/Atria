@@ -21,10 +21,10 @@ public class SearchController : ControllerBase {
             && (parameters.IsOnline == null || true /* TODO */)
             && (parameters.HasBookmark == null || true /* TODO */))
             .AsEnumerable()
-            .Select(x => (wse: x, score: parameters.Order.GetMapper().Invoke(x)
-                                         * (parameters.Query == null ? 1 : FuzzingService.CalculateScore1(parameters.Query, x))))
-            .OrderByDescending(x => x.score)
-            .TakeWhile(x => parameters.Query == null || x.score > 0.05)
+            .Select(x => (wse: x, score: parameters.Query == null ? 1 : FuzzingService.CalculateScore1(parameters.Query, x)))
+            .Where(x => x.score > 0.05)
+            .Select(x => x with { score = x.score * parameters.Order.GetMapper().Invoke(x.wse) })
+            .OrderBy(x => parameters.Ascending ? x.score : -x.score)
             .Select(x => {
                 x.wse.ChangeLog = x.score.ToString();
                 return x.wse;

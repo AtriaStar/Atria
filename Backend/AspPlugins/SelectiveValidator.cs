@@ -5,17 +5,14 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Backend.AspPlugins;
 
-public class SelectiveValidator : IObjectModelValidator
-{
+public class SelectiveValidator : IObjectModelValidator {
     private readonly IObjectModelValidator _baseValidator;
 
-    public SelectiveValidator(IObjectModelValidator baseValidator)
-    {
+    public SelectiveValidator(IObjectModelValidator baseValidator) {
         _baseValidator = baseValidator;
     }
 
-    public void Validate(ActionContext actionContext, ValidationStateDictionary? validationState, string prefix, object? model)
-    {
+    public void Validate(ActionContext actionContext, ValidationStateDictionary? validationState, string prefix, object? model) {
         var preExisting = actionContext.ModelState.Keys.ToArray();
         _baseValidator.Validate(actionContext, validationState, prefix, model);
         if (model == null) { return; }
@@ -25,10 +22,8 @@ public class SelectiveValidator : IObjectModelValidator
             .Select(x => x.Name)
             .ToHashSet());
 
-        foreach (var key in actionContext.ModelState.Keys.Except(preExisting))
-        {
-            if (ignoredAttributes.Value.Contains(key))
-            {
+        foreach (var key in actionContext.ModelState.Keys.Except(preExisting)) {
+            if (ignoredAttributes.Value.Contains(key)) {
                 actionContext.ModelState.Remove(key);
             }
         }
