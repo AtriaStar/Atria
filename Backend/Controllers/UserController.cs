@@ -1,5 +1,7 @@
-﻿using Backend.ParameterHelpers;
+﻿using Backend.Authentication;
+using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 
@@ -31,10 +33,10 @@ public class UserController : ControllerBase {
 
     [HttpPost("")]
     public async Task<IActionResult> Edit([FromServices] AtriaContext db, User user) {
-        User existingUser = db.Users.FirstOrDefault(x => x.Id == user.Id);
+        var existingUser = await db.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
         
         if (existingUser == null) {
-            return BadRequest();
+            return NotFound();
         }
 
         existingUser.Email = user.Email;
