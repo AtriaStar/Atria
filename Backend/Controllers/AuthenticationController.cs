@@ -104,11 +104,23 @@ public class AuthenticationController : ControllerBase {
         // TODO: Timespan
         if (DateTimeOffset.UtcNow - resetToken.CreatedAt > TimeSpan.FromMinutes(15)) { return BadRequest("Token expired"); }
         var user = resetToken.User;
-        user.PasswordSalt = HashingService.GenerateSalt();
-        user.PasswordHash = HashingService.Hash(dto.Password, user.PasswordSalt);
+        ChangePassword(user, dto.Password);
         _context.ResetTokens.Remove(resetToken);
         _context.Sessions.RemoveRange(_context.Sessions.Where(x => x.User == user));
         await _context.SaveChangesAsync();
         return Ok();
+    }
+
+    [RequiresAuthentication]
+    [HttpPost("change-password-uwu")]
+    public async Task PasswordChange([FromAuthentication] User user, string newPassword) {
+        ChangePassword(user, newPassword);
+        _context.Update(user);
+        await _context.SaveChangesAsync();
+    }
+
+    private static void ChangePassword(User user, string newPassword) {
+        user.PasswordSalt = HashingService.GenerateSalt();
+        user.PasswordHash = HashingService.Hash(newPassword, user.PasswordSalt);
     }
 }
