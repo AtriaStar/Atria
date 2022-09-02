@@ -1,6 +1,5 @@
 ﻿using Backend;
 using Backend.AspPlugins;
-using Backend.Authentication;
 
 using Backend.ParameterHelpers;
 
@@ -27,7 +26,7 @@ builder.Services
     .AddSwaggerGen()
     .AddSingleton<SessionService>()
     .AddDbContext<AtriaContext>()
-    .AddHostedService<SessionClearerService>()
+    .AddHostedService<ClearerService>()
     .AddSingleton<IObjectModelValidator, SelectiveValidator>(s => new((IObjectModelValidator)baseValidator.ImplementationFactory!(s)));
 
 var app = builder.Build();
