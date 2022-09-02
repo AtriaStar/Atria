@@ -23,7 +23,8 @@ public class User {
     public byte[] PasswordSalt { get; set; } = null!;
     public UserRights Rights { get; set; } = UserRights.Default;
 
-    public ICollection<WebserviceEntry> Bookmarks { get; set; } = new List<WebserviceEntry>();
+    [JsonIgnore]
+    public ISet<WebserviceEntry> Bookmarks { get; set; } = new HashSet<WebserviceEntry>();
 
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
