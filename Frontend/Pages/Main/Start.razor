@@ -69,6 +69,33 @@
                 break;
         }
     </div>
+    @if (numberOfPages >= 2)
+    {
+        <div>
+            <nav aria-label="Search results pages">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" @onclick="SetPaginationPrevious" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    @* backendcall, um zeug 0-20;21-40;... anzuzeigen
+                Attribut und design zum anzegen und ändern der Anzahl an wses pro seite (optionel, da keine hauptfunktionalität)
+                backend call zur erstellung der pageination ding
+                *@
+                    @for (int i = 1; i <= numberOfPages; i++)
+                    {
+                        <li class="page-item"><a class="page-link" @onclick="() => SetPagination(i)">@i</a></li>
+                    }
+                <li class="page-item">
+                    <a class="page-link" @onclick="SetPaginationNext" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    }
 </div>
 
 @if (FilterDialogOpen)
@@ -80,8 +107,14 @@
 
     private string? _bookmarkStateFilter = "bi-bookmark";
 
+    private int numberOfPages; //todo calculation? of api call
+
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? Pagination { get; set; } //TODO api call?
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -198,7 +231,33 @@
             IsBookmark = null;
             _bookmarkStateFilter = "bi-bookmark";
         }
-       NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
+    }
+
+    private void SetPaginationPrevious()
+    {
+        if (Pagination != 1)
+        {
+            Pagination -= 1;
+            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Pagination", Pagination));
+        }
+    }
+
+    private void SetPaginationNext()
+    {
+        if (Pagination != numberOfPages)
+        {
+            Pagination += 1;
+            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Pagination", Pagination));
+
+        }
+    }
+
+    private void SetPagination(int page)
+    {
+        Pagination = page;
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Pagination", Pagination));
+
     }
 
 }
