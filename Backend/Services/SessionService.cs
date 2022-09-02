@@ -8,10 +8,17 @@ namespace Backend.Services;
 public class SessionService {
     public string AuthorizationCookieName => "Authorization";
 
-    public TimeSpan ExpireDuration { get; } = TimeSpan.FromDays(7);
+    public TimeSpan ExpireDuration { get; }
+
+    private readonly string _cookiePath;
+
+    public SessionService(BackendOptions opt) {
+        ExpireDuration = opt.AuthenticationTokenExpireDuration;
+        _cookiePath = $"/{opt.ApiPrefix}/";
+    }
 
     public bool IsValid(Session session)
-        => DateTimeOffset.UtcNow - session.CreatedAt <= ExpireDuration;
+        => !session.CreatedAt.OlderThan(ExpireDuration);
 
     public async Task GenerateSession(User user, AtriaContext context, HttpContext httpContext) {
         var token = Base64UrlTextEncoder.Encode(RandomNumberGenerator.GetBytes(64));
@@ -20,7 +27,7 @@ public class SessionService {
             Token = token,
             User = user,
             Ip = httpContext.Connection.RemoteIpAddress!.ToString(),
-            UserAgent = httpContext.Request.Headers["User-Agent"],
+            UserAgent = httpContext.Request.Headers["User-Agent"].ToString(),
         });
         await context.SaveChangesAsync();
 
@@ -30,7 +37,7 @@ public class SessionService {
             Secure = true,
             MaxAge = ExpireDuration,
             SameSite = SameSiteMode.Strict,
-            Path = "/api/",
+            Path = _cookiePath,
         });
     }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Backend.AspPlugins;
@@ -20,4 +21,9 @@ public class RouteConvention : IApplicationModelConvention {
             }
         }
     }
+}
+
+public static class RouteConventionExtensions {
+    public static void UseCentralRoutePrefix(this MvcOptions opt, IRouteTemplateProvider routeAttribute)
+        => opt.Conventions.Insert(0, new RouteConvention(routeAttribute));
 }

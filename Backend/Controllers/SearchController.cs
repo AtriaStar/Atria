@@ -9,20 +9,24 @@ namespace Backend.Controllers;
 [Route("search")]
 public class SearchController : ControllerBase {
     private readonly AtriaContext _context;
+    private readonly BackendOptions _options;
+    private readonly FuzzingService _fuzzer;
 
-    public SearchController(AtriaContext context) {
+    public SearchController(AtriaContext context, BackendOptions opt, FuzzingService fuzzer) {
         _context = context;
+        _options = opt;
+        _fuzzer = fuzzer;
     }
 
-    private IEnumerable<WebserviceEntry> GetBaseWses(WseSearchParameters parameters)
+    private IEnumerable<WebserviceEntry> GetBaseWse(WseSearchParameters parameters)
         => _context.WebserviceEntries
             .Where(x => (!x.Reviews.Any() || x.Reviews.Average(y => (int) y.StarCount) >= (int) parameters.MinReviewAvg)
             && (parameters.Tags == null || x.Tags.Intersect(parameters.Tags).Count() == parameters.Tags.Count)
             && (parameters.IsOnline == null || true /* TODO */)
             && (parameters.HasBookmark == null || true /* TODO */))
             .AsEnumerable()
-            .Select(x => (wse: x, score: parameters.Query == null ? 1 : FuzzingService.CalculateScore1(parameters.Query, x)))
-            .Where(x => x.score > 0.05)
+            .Select(x => (wse: x, score: parameters.Query == null ? 1 : _fuzzer.CalculateScore1(parameters.Query, x)))
+            .Where(x => x.score >= _options.MinimumWseScore)
             .Select(x => x with { score = x.score * parameters.Order.GetMapper().Invoke(x.wse) })
             .OrderBy(x => parameters.Ascending ? x.score : -x.score)
             .Select(x => {
@@ -32,17 +36,17 @@ public class SearchController : ControllerBase {
 
     [HttpGet("wse")]
     public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WseSearchParameters parameters, [FromQuery] Pagination pagination)
-        => GetBaseWses(parameters).Paginate(pagination);
+        => GetBaseWse(parameters).Paginate(pagination);
 
     [HttpGet("wse/count")]
-    public long GetWseCount([FromQuery] WseSearchParameters parameters) => GetBaseWses(parameters).LongCount();
+    public long GetWseCount([FromQuery] WseSearchParameters parameters) => GetBaseWse(parameters).LongCount();
 
     private IEnumerable<User> GetBaseUsers(string query)
         => _context.Users
             .AsEnumerable()
-            .Select(x => (user: x, score: FuzzingService.CalculateScore(query, x)))
+            .Select(x => (user: x, score: _fuzzer.CalculateScore(query, x)))
             .OrderByDescending(x => x.score)
-            .TakeWhile(x => x.score > 0.5)
+            .TakeWhile(x => x.score >= _options.MinimumUserScore)
             .Select(x => x.user);
 
     [HttpGet("user")]
