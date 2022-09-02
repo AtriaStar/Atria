@@ -1,4 +1,5 @@
 ﻿using Backend.AspPlugins;
+using Backend.Authentication;
 using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,52 +10,72 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("user")]
 public class UserController : ControllerBase {
+    private readonly AtriaContext _context;
+
+    public UserController(AtriaContext context) {
+        _context = context;
+    }
 
     [HttpGet("{userId:long}")]
     public User Get([FromDatabase] User user) => user;
 
     [HttpGet("{userId:long}/wse")]
-    public IQueryable<WebserviceEntry> GetWseByUser([FromServices] AtriaContext db, long userId)
-        => db.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId));
+    public IQueryable<WebserviceEntry> GetWseByUser(long userId)
+        => _context.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId));
 
     [HttpGet("{userId:long}/bookmarks")]
     public ISet<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user)
         => user.Bookmarks;
 
     [HttpGet("{userId:long}/reviews")]
-    public IQueryable<Review> GetReviewsByUser(long userId, string query) => null!;
+    public IQueryable<Review> GetReviewsByUser(long userId)
+        => _context.Reviews.Where(x => x.CreatorId == userId);
 
     [HttpGet("{userId:long}/drafts")]
-    public IQueryable<WseDraft> GetWseDrafts() => null!;
+    public ICollection<WseDraft> GetWseDrafts([FromDatabase] User user)
+        => user.WseDrafts;
 
     [HttpGet("{userId:long}/notifications")]
     public IReadOnlyList<Notification> GetNotifications() => null!;
 
+    [RequiresAuthentication]
     [HttpPost]
-    public async Task<IActionResult> Edit([FromServices] AtriaContext db, User user) {
-        var existingUser = await db.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
-        
-        if (existingUser == null) { return NotFound(); }
+    public async Task<IActionResult> Edit(User user, [FromAuthentication] User authUser) {
+        if (user.Id != authUser.Id) { return Forbid("You can only edit your own profile"); }
 
-        //existingUser.Email = user.Email;
-        existingUser.Biography = user.Biography;
-        existingUser.FirstNames = user.FirstNames;
-        existingUser.ProfilePicture = user.ProfilePicture;
-        existingUser.Title = user.Title;
-        
-        await db.SaveChangesAsync();
-        return Ok(existingUser);
+        if (user.SignUpIp != authUser.SignUpIp) { return BadRequest("Signup ip cannot be modified"); }
+        if (user.PasswordHash != authUser.PasswordHash) { return BadRequest("Password hash cannot be modified"); }
+        if (user.PasswordSalt != authUser.PasswordSalt) { return BadRequest("Password salt cannot be modified"); }
+        if (user.Rights != authUser.Rights) { return BadRequest("Rights cannot be modified"); }
+        if (user.CreatedAt != authUser.CreatedAt) { return BadRequest("Creation timestamp cannot be modified"); }
+
+        // TODO: Extra endpoint for email
+        user.WseDrafts = authUser.WseDrafts;
+        user.Bookmarks = authUser.Bookmarks;
+
+        _context.Update(user);
+        await _context.SaveChangesAsync();
+        return Ok();
     }
 
-    [HttpPost("{userId:long}/bookmarks")]
-    public async Task SetBookmark([FromServices] AtriaContext db, [FromDatabase] User user, [FromDatabase] WebserviceEntry wse) {
+    [HttpPost("{userId:long}/bookmarks/add/{wseId:long}")]
+    public async Task AddBookmark([FromDatabase] User user, [FromDatabase] WebserviceEntry wse) {
         user.Bookmarks.Add(wse);
-        await db.SaveChangesAsync();
+        _context.Update(user);
+        await _context.SaveChangesAsync();
     }
 
+    [HttpPost("{userId:long}/bookmarks/remove/{wseId:long}")]
+    public async Task RemoveBookmark([FromDatabase] User user, [FromDatabase] WebserviceEntry wse) {
+        user.Bookmarks.Remove(wse);
+        _context.Update(user);
+        await _context.SaveChangesAsync();
+    }
+
+    [RequiresAuthentication]
     [HttpDelete("{userId:long}")]
-    public async Task Delete([FromServices] AtriaContext db, [FromDatabase] User user) {
-        db.Users.Remove(user);
-        await db.SaveChangesAsync();
+    public async Task Delete([FromAuthentication] User user) {
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
     }
 }
