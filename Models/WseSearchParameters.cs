@@ -1,10 +1,11 @@
 ﻿namespace Models;
 
-public record WSESearchParam(
-    string Query,
-    bool IsOnline,
-    bool HasBookmark,
-    ICollection<Tag> Tags,
+public record WseSearchParameters(
+    string? Query,
+    bool? IsOnline,
+    bool? HasBookmark,
+    HashSet<Tag>? Tags,
     StarCount MinReviewAvg,
-    Order Order
+    Order Order,
+    bool Ascending
 );

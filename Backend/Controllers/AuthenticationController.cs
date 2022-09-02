@@ -1,6 +1,9 @@
-﻿using Backend.Authentication;
+﻿using System.Security.Cryptography;
+using Backend.AspPlugins;
+using Backend.Authentication;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.DTO;
@@ -55,7 +58,6 @@ public class AuthenticationController : ControllerBase {
     public async Task<IActionResult> Logout([FromAuthentication] Session session, [FromServices] SessionService ss) {
         await ss.DeleteSession(session, _context, Response);
         return Ok();
-
     }
 
     [RequiresAuthentication]
@@ -69,13 +71,56 @@ public class AuthenticationController : ControllerBase {
 
     [RequiresAuthentication] 
     [HttpGet("sessions")]
-    public IEnumerable<Session> GetSessions([FromAuthentication] User user)
+    public IQueryable<Session> GetSessions([FromAuthentication] User user)
         => _context.Sessions
             .Include(x => x.User)
             .Where(x => x.User == user);
 
     [RequiresAuthentication]
-    [HttpGet("")]
+    [HttpGet]
     public User GetAuthUser([FromAuthentication] User user) => user;
 
+    [HttpPost("reset/start")]
+    public async Task InitPasswordReset([FromBody] string email) {
+        email = email.ToLowerInvariant();
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+        if (user == null) { return; }
+
+        var token = await _context.ResetTokens.AddAsync(new() {
+            User = user,
+            Token = RandomNumberGenerator.GetBytes(64),
+        });
+        await _context.SaveChangesAsync();
+
+        var textToken = Base64UrlTextEncoder.Encode(token.Entity.Token);
+        // TODO: Send via email
+    }
+    
+    [HttpPost("reset/finish")]
+    public async Task<IActionResult> PasswordReset(ResetPasswordDto dto) {
+        var token = Base64UrlTextEncoder.Decode(dto.Token);
+        var resetToken = await _context.ResetTokens.FirstOrDefaultAsync(x => x.Token.SequenceEqual(token));
+        if (resetToken == null) { return BadRequest("Invalid token"); }
+        // TODO: Timespan
+        if (DateTimeOffset.UtcNow - resetToken.CreatedAt > TimeSpan.FromMinutes(15)) { return BadRequest("Token expired"); }
+        var user = resetToken.User;
+        ChangePassword(user, dto.Password);
+        _context.ResetTokens.Remove(resetToken);
+        _context.Sessions.RemoveRange(_context.Sessions.Where(x => x.User == user));
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [RequiresAuthentication]
+    [HttpPost("change-password-uwu")]
+    public async Task PasswordChange([FromAuthentication] User user, string newPassword) {
+        ChangePassword(user, newPassword);
+        _context.Update(user);
+        await _context.SaveChangesAsync();
+    }
+
+    private static void ChangePassword(User user, string newPassword) {
+        user.PasswordSalt = HashingService.GenerateSalt();
+        user.PasswordHash = HashingService.Hash(newPassword, user.PasswordSalt);
+    }
 }

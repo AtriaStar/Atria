@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Routing;
 
-namespace Backend;
+namespace Backend.AspPlugins;
 
 public class RouteConvention : IApplicationModelConvention {
     private readonly AttributeRouteModel _centralPrefix;

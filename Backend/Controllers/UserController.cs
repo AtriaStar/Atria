@@ -1,4 +1,4 @@
-﻿using Backend.Authentication;
+﻿using Backend.AspPlugins;
 using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,18 +15,18 @@ public class UserController : ControllerBase {
     public async Task<IActionResult> Get([FromDatabase] User user) => Ok(user);
 
     [HttpGet("{userId:long}/wse")]
-    public async Task<IActionResult> GetWseByUser([FromServices] AtriaContext db, long userId)
-        => Ok(db.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId)));
+    public IQueryable<WebserviceEntry> GetWseByUser([FromServices] AtriaContext db, long userId)
+        => db.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId));
 
     [HttpGet("{userId:long}/bookmarks")]
-    public IEnumerable<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user)
+    public ICollection<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user)
         => user.Bookmarks;
 
     [HttpGet("{userId:long}/reviews")]
-    public IEnumerable<Review> GetReviewsByUser(long userId, string query) => null!;
+    public IQueryable<Review> GetReviewsByUser(long userId, string query) => null!;
 
     [HttpGet("{userId:long}/drafts")]
-    public IEnumerable<WSEDraft> GetWseDrafts() => null!;
+    public IQueryable<WseDraft> GetWseDrafts() => null!;
 
     [HttpGet("{userId:long}/notifications")]
     public IReadOnlyList<Notification> GetNotifications() => null!;
@@ -55,15 +55,6 @@ public class UserController : ControllerBase {
         await db.SaveChangesAsync();
         return Ok();
     }
-
-    [HttpPut("")]
-    public async Task<IActionResult> Create([FromServices] AtriaContext db, User user) {
-        await db.Users.AddAsync(user);
-        await db.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(Get), new {userId = user.Id }, user);
-    }
-
 
     [HttpDelete("{userId:long}")]
     public async Task<IActionResult> Delete([FromServices] AtriaContext db, [FromDatabase] User user) {

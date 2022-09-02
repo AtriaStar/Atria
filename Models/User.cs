@@ -12,7 +12,8 @@ public class User {
     public string? Title { get; set; }
     public string FirstNames { get; set; } = null!;
     public string LastName { get; set; } = null!;
-    public string Email { get; set; } = null!;
+    private string _email;
+    public string Email { get => _email; set => _email = value.ToLowerInvariant(); }
     public Uri? ProfilePicture { get; set; }
     public string? Biography { get; set; }
     public string SignUpIp { get; set; } = null!;

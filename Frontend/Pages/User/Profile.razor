@@ -1,208 +1,231 @@
-﻿@page "/profile"
+﻿@page "/profile/{UserId:long?}"
 @using Models
 @using Models.DTO
+@using System.Net
 @inject NavigationManager NavigationManager
 
-<div class="container-xxl">
-    <div class="row mt-4">
-        <div class="col-12 col-xl-3">
-            <div class="p-3 mb-3" style="box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px; border-radius: 0.375rem">
-                @if (!_displayForm) {
-                    <div class="d-flex flex-column">
-                        <div class="d-flex flex-column flex-sm-row flex-xl-column">
-                            <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
-                                @if (User.ProfilePictureUrl is not null) {
-                                    <img class="avatar avatar-w" alt="" src="@User.ProfilePictureUrl">
-                                }
-                                else {
-                                    <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
-                                }
-                            </div>
-                            <div class="d-flex flex-column justify-content-center">
-                                <div>@User.Title</div>
-                                <h5>@User.FirstNames @User.LastName</h5>
-                                <div>@User.Biography</div>
-                                <div class="top-border pt-2 mt-2 mb-2">@User.Email</div>
-                            </div>
-                        </div>
-
-                        @*TODO logged in logic*@
-                        @if (_isLoggedIn) {
-                            <div class="top-border pt-3 d-flex">
-                                <button type="button" class="btn-success btn flex-fill" @onclick="() => _displayForm = !_displayForm">Profil bearbeiten</button>
-                            </div>
-                        }
-                    </div>
-                }
-                else {
-                    <EditForm Model="User" OnValidSubmit="HandleValidSubmit">
-                        <DataAnnotationsValidator></DataAnnotationsValidator>
+@if (User is not null) {
+    <div class="container-xxl">
+        <div class="row mt-4">
+            <div class="col-12 col-xl-3">
+                <div class="p-3 mb-3" style="box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px; border-radius: 0.375rem">
+                    @if (!_displayForm) {
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-column flex-sm-row flex-xl-column">
                                 <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
-                                    <label for="image_upload" style="cursor: pointer" title="Bild ändern">
-                                        @if (User.ProfilePictureUrl is not null) {
-                                            <img class="avatar avatar-w" alt="" src="@User.ProfilePictureUrl">
-                                        }
-                                        else {
-                                            <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
-                                        }
-                                    </label>
-                                    <InputFile OnChange="@LoadFiles" id="image_upload" style="display: none"></InputFile>
+                                    @if (User.ProfilePicture is not null) {
+                                        <img class="avatar avatar-w" alt="" src="@User.ProfilePicture">
+                                    } else {
+                                        <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
+                                    }
                                 </div>
-                                <div class="flex-fill">
-                                    <div class="form-floating mb-3">
-                                        <InputText @bind-Value="User.Title" id="title" type="text" class="form-control" placeholder="Titel"></InputText>
-                                        <label for="title" class="form-label">Titel</label>
+                                <div class="d-flex flex-column justify-content-center">
+                                    <div>@User.Title</div>
+                                    <h5>@User.FirstNames @User.LastName</h5>
+                                    <div>@User.Biography</div>
+                                    <div class="top-border pt-2 mt-2 mb-2">@User.Email</div>
+                                </div>
+                            </div>
+
+                            @if (UserId == User.Id) {
+                                <div class="top-border pt-3 d-flex">
+                                    <button type="button" class="btn-success btn flex-fill" @onclick="() => _displayForm = !_displayForm">Profil bearbeiten</button>
+                                </div>
+                            }
+
+                        </div>
+                    } else {
+                        <EditForm Model="User" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                            <div class="d-flex flex-column">
+                                <div class="d-flex flex-column flex-sm-row flex-xl-column">
+                                    <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
+                                        <label for="image_upload" style="cursor: pointer" title="Bild ändern">
+                                            @if (User.ProfilePicture is not null) {
+                                                <img class="avatar avatar-w" alt="" src="@User.ProfilePicture">
+                                            } else {
+                                                <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
+                                            }
+                                        </label>
+                                        <InputFile OnChange="@LoadFiles" id="image_upload" style="display: none"></InputFile>
                                     </div>
-                                    <div class="form-floating mb-3">
-                                        <InputText @bind-Value="User.FirstNames" id="first_name" type="text" class="form-control" placeholder="Vorname"></InputText>
-                                        <label for="first_name" class="form-label">Vorname</label>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <InputText @bind-Value="User.LastName" id="last_name" type="text" class="form-control" placeholder="Nachname"></InputText>
-                                        <label for="last_name" class="form-label">Nachname</label>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <InputTextArea @bind-Value="User.Biography" id="bio" class="form-control"></InputTextArea>
-                                        <label for="bio" class="form-label">Bio</label>
-                                    </div>
-                                    <div class="top-border pt-2">
-                                        <div class="form-floating">
-                                            <InputText readonly type="email" id="email" class="form-control-plaintext" @bind-Value="User.Email" placeholder="Email"></InputText>
-                                            <label for="email" class="form-label">Email-Adresse</label>
+                                    <div class="flex-fill">
+                                        <div class="form-floating mb-3">
+                                            <InputText @bind-Value="User.Title" id="title" type="text" class="form-control" placeholder="Titel"></InputText>
+                                            <label for="title" class="form-label">Titel</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <InputText @bind-Value="User.FirstNames" id="first_name" type="text" class="form-control" placeholder="Vorname"></InputText>
+                                            <label for="first_name" class="form-label">Vorname</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <InputText @bind-Value="User.LastName" id="last_name" type="text" class="form-control" placeholder="Nachname"></InputText>
+                                            <label for="last_name" class="form-label">Nachname</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <InputTextArea @bind-Value="User.Biography" id="bio" class="form-control"></InputTextArea>
+                                            <label for="bio" class="form-label">Bio</label>
+                                        </div>
+                                        <div class="top-border pt-2">
+                                            <div class="form-floating">
+                                                <InputText readonly type="email" id="email" class="form-control-plaintext" @bind-Value="User.Email" placeholder="Email"></InputText>
+                                                <label for="email" class="form-label">Email-Adresse</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="d-flex justify-content-between px-3 px-xl-0 pt-3 top-border">
+                                    <button type="submit" class="btn btn-success">Speichern</button>
+                                    <button type="button" class="btn btn-danger" @onclick="ResetDto">Zurücksetzen</button>
+                                </div>
                             </div>
-                            <div class="d-flex justify-content-between px-3 px-xl-0 pt-3 top-border">
-                                <button type="submit" class="btn btn-success">Speichern</button>
-                                <button type="button" class="btn btn-danger" @onclick="ResetDto">Zurücksetzen</button>
-                            </div>
-                        </div>
-                        <ValidationSummary></ValidationSummary>
-                    </EditForm>
-                }
-            </div>
-        </div>
-        <div class="col">
-            <div class="d-flex flex-wrap justify-content-between">
-                <div class="nav nav-pills mb-2">
-                    <NavLink href="@Navigate("type", null)" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
-                    <NavLink href="@Navigate("type", "bookmarks")" class="nav-link me-2">Lesezeichen</NavLink>
-                    <NavLink href="@Navigate("type", "ratings")" class="nav-link me-2">Bewertungen</NavLink>
-                    <NavLink href="@Navigate("type", "drafts")" class="nav-link">Entwürfe</NavLink>
+                            <ValidationSummary></ValidationSummary>
+                        </EditForm>
+                    }
                 </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-wrap justify-content-between">
+                    <div class="nav nav-pills mb-2">
+                        <NavLink href="@Navigate("type", null)" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
+                        <NavLink href="@Navigate("type", "bookmarks")" class="nav-link me-2">Lesezeichen</NavLink>
+                        <NavLink href="@Navigate("type", "reviews")" class="nav-link me-2">Bewertungen</NavLink>
+                        <NavLink href="@Navigate("type", "drafts")" class="nav-link">Entwürfe</NavLink>
+                    </div>
 
-                <div class="d-flex mb-2 ms-auto">
-                    <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
-                        Filter
-                    </button>
+                    <div class="d-flex mb-2 ms-auto">
+                        <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
+                            Filter
+                        </button>
 
-                    <div class="ms-3 d-flex">
-                        <div class="form-control form-control-sm border" style="box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px; border-radius: 0.375rem">
-                            <div class="input-group input-group-sm">
-                                <button class="btn btn-sm btn-link text-dark" @onclick="Search">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                                <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind-value="Query" @onkeyup="SearchInput">
+                        <div class="ms-3 d-flex">
+                            <div class="form-control form-control-sm border" style="box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px; border-radius: 0.375rem">
+                                <div class="input-group input-group-sm">
+                                    <button class="btn btn-sm btn-link text-dark" @onclick="Search">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                    <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind-value="Query" @onkeyup="SearchInput">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="w-100 mt-2 mb-4">
-                @switch (Type) {
-                    case null or "wse":
-                        <WseSummaryList SummaryDtos="_summaryDtos"/>
-                        break;
-                    case "bookmarks":
-                        <WseSummaryList SummaryDtos="_summaryDtos"/>
-                        break;
-                    case "ratings":
-                        <Ratings/>
-                        break;
-                    case "drafts":
-                        <WseSummaryList SummaryDtos="_summaryDtos"/>
-                        break;
-                    default:
-                        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string)null!));
-                        break;
-                }
+                <div class="w-100 mt-2 mb-4">
+                    @switch (Type) {
+                        case null or "wse":
+                            <WseSummaryList Entries="_webserviceEntries ?? new List<WebserviceEntry>()"/>
+                            break;
+                        case "bookmarks":
+                            <WseSummaryList Entries="_webserviceEntries ?? new List<WebserviceEntry>()"/>
+                            break;
+                        case "reviews":
+                            <ReviewList Reviews="_reviews ?? new List<Review>()"/>
+                            break;
+                        case "drafts":
+                            <WseSummaryList Entries="_webserviceEntries ?? new List<WebserviceEntry>()"/>
+                            break;
+                        default:
+                            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string)null!));
+                            break;
+                    }
+                </div>
             </div>
         </div>
     </div>
-</div>
-
+} else if (_userNotFound) {
+    <NotFound></NotFound>
+}
 
 @if (FilterDialogOpen) {
-    <Frontend.Pages.Components.FilterModal OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+    <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" IsBookmark="IsBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
 @code {
 
-    private bool _isLoggedIn = true;
-    private bool _displayForm = false;
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+
+    private bool _displayForm;
+    private bool _userNotFound;
 
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Type { get; set; }
 
-    public string? Query { get; set; }
-
-    private IList<WseSummaryDto> _summaryDtos = null!;
+    [CascadingParameter]
+    private LoginState LoginState { get; set; } = null!;
 
     [Parameter]
-    public UserDto User { get; set; } = null!;
+    [SupplyParameterFromQuery]
+    public bool? IsOnline { get; set; } = false;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool? IsBookmark { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "minRating")]
+    public int? SelectedStarNum { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "tags")]
+    public string[]? SelectedTagsStr { get; set; } = new string[] { };
+
+    [Parameter]
+    public long? UserId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Query { get; set; }
+
+    //List for subcomponents
+    private IEnumerable<WebserviceEntry>? _webserviceEntries;
+    private IEnumerable<Review>? _reviews;
+    private User? User { get; set; }
 
     private UserDto _cloneUserDto = null!;
 
-    protected override void OnInitialized() {
-        @* Mock Data generation *@
-        User = new UserDto {
-            FirstNames = "Hans",
-            Biography = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
-            Email = "hans@hansi.hansen",
-            Title = "Herr Prof Dr",
-            LastName = "Hansemann"
-        };
+    protected override async Task OnParametersSetAsync() {
+        await base.OnParametersSetAsync();
+        if (UserId is null) {
+            if (LoginState.LoggedIn) {
+                User = LoginState.User;
+                UserId = User!.Id;
+                CloneUser();
+            } else {
+                NavigationManager.NavigateTo("/login");
+            }
+        } else {
+            var response = await HttpClient.GetAsync($"user/{UserId}");
+            if (response.IsSuccessStatusCode) {
+                User = (await response.Content.ReadFromJsonAsync<User>())!;
+                CloneUser();
 
-        CloneUser();
-
-        _summaryDtos = new List<WseSummaryDto>();
-        WseSummaryDto wseSummaryDto1 = new WseSummaryDto {
-            Id = 1,
-            Name = "hans peter und der der sich selbst sehr mag",
-            ShortDescription = "der hans",
-            Tags = new List<Tag>(),
-            CreationDate = DateTimeOffset.Now,
-            IsOnline = true,
-            AverageRating = 3.5,
-            ViewCount = 10,
-            Link = new Uri("http://www.google.com")
-        };
-        _summaryDtos.Add(wseSummaryDto1);
-
-        WseSummaryDto wseSummaryDto2 = new WseSummaryDto {
-            Id = 1,
-            Name = "hans",
-            ShortDescription = "der hans",
-            Tags = new List<Tag>(),
-            CreationDate = DateTimeOffset.Now,
-            IsOnline = true,
-            AverageRating = 3.5,
-            ViewCount = 100000,
-            Link = new Uri("http://www.google.com")
-        };
-        _summaryDtos.Add(wseSummaryDto2);
-        _summaryDtos.Add(wseSummaryDto1);
-
-        @* mock data generation end *@
+                switch (Type) {
+                    case null or "wse":
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/wse");
+                        break;
+                    case "bookmarks":
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/bookmarks");
+                        break;
+                    case "reviews":
+                        _reviews = await HttpClient.GetFromJsonAsync<IEnumerable<Review>>($"user/{UserId}/reviews");
+                        break;
+                    case "drafts":
+                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/drafts");
+                        break;
+                }
+            } else if (response.StatusCode == HttpStatusCode.NotFound) {
+                _userNotFound = true;
+            } else {
+                NavigationManager.NavigateTo("/internal-server-error");
+            }
+        }
     }
 
     private void ResetDto() {
-        User.FirstNames = _cloneUserDto.FirstNames;
+        User!.FirstNames = _cloneUserDto.FirstNames;
         User.LastName = _cloneUserDto.LastName;
         User.Email = _cloneUserDto.Email;
         User.Biography = _cloneUserDto.Biography;
@@ -217,12 +240,12 @@
     private void HandleValidSubmit() {
         _displayForm = !_displayForm;
         CloneUser();
-        @* TODO implement backend communication *@
+        var response = HttpClient.PostAsJsonAsync($"user/{UserId}", User);
     }
 
     private void CloneUser() {
         _cloneUserDto = new UserDto {
-            FirstNames = User.FirstNames,
+            FirstNames = User!.FirstNames,
             LastName = User.LastName,
             Email = User.Email,
             Title = User.Title,

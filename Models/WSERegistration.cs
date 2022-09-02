@@ -2,9 +2,9 @@
 
 namespace Models;
 
-public class WSERegistration
+public class WseRegistration
 {
-    public WSERegistration()
+    public WseRegistration()
         {
             Tags = Array.Empty<string>();
         }

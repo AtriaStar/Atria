@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.AspPlugins;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Backend.ParameterHelpers;
@@ -25,6 +26,7 @@ public class FromDatabaseAttribute : ModelBinderAttribute {
                 await db.Entry(obj).Reference(property.Name).LoadAsync();
             }
 
+            bindingContext.ValidationState.Add(obj, new() { SuppressValidation = true });
             bindingContext.Result = ModelBindingResult.Success(obj);
         }
     }
