@@ -39,9 +39,7 @@ namespace IntegrationTests
             {
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
 
-                // Seeding ...
-
-                var user = context.Users.First();
+                var user = await context.Users.FirstAsync();
                 //Arrange
                 Registration _registration = new()
                 {
@@ -67,7 +65,7 @@ namespace IntegrationTests
             {
                 //Arrange
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
-                var user = context.Users.First();
+                var user = await context.Users.FirstAsync();
                 
                 Registration _registration = new()
                 {
@@ -94,7 +92,7 @@ namespace IntegrationTests
             {
                 //Arrange
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
-                var user = context.Users.First();
+                var user = await context.Users.FirstAsync();
 
                 Login login1 = new()
                 {

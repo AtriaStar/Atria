@@ -12,9 +12,15 @@ public class RequiresAuthenticationAttribute : Attribute, IAsyncActionFilter, IO
     public int Order => 0;
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next) {
+        Console.Out.WriteLine("___________________________________________________");
         var services = context.HttpContext.RequestServices;
         var db = services.GetRequiredService<AtriaContext>();
         var ss = services.GetRequiredService<SessionService>();
+
+        //debug
+        Console.Out.WriteLine(context.HttpContext.Request.Cookies.Count);
+        
+
         Session? session;
         if (!context.HttpContext.Request.Cookies.TryGetValue(ss.AuthorizationCookieName, out var token)
             || (session = await db.Sessions

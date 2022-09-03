@@ -27,7 +27,7 @@ namespace IntegrationTests.Helpers
             masterHashedPassword = HashingService.Hash(masterPassword, masterSalt);
         }
 
-        public async Task<User> GetAuthenticatedUser()
+        public async Task<(User, Session)> GetAuthenticatedUser()
         {
             User user = new User()
             {
@@ -35,7 +35,8 @@ namespace IntegrationTests.Helpers
                 LastName = "Mustermann",
                 PasswordHash = masterHashedPassword,
                 PasswordSalt = masterSalt,
-                Email = "authenticatedUser@email.com"
+                Email = "authenticatedUser@email.com",
+                SignUpIp = "127.0.0.1",
             };
 
 
@@ -45,13 +46,13 @@ namespace IntegrationTests.Helpers
                 Ip = "127.0.0.1",
                 Token = masterToken,
                 UserAgent = "",
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTimeOffset.UtcNow,
             };
 
             await _context.Users.AddAsync(user);
             await _context.Sessions.AddAsync(session);
             await _context.SaveChangesAsync();
-            return user;
+            return (user, session);
         }
     }
 }
