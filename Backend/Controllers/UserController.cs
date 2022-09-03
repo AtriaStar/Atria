@@ -44,10 +44,11 @@ public class UserController : ControllerBase {
         if (user.Id != authUser.Id) { return Forbid("You can only edit your own profile"); }
 
         if (user.SignUpIp != authUser.SignUpIp) { return BadRequest("Signup ip cannot be modified"); }
-        if (user.PasswordHash != authUser.PasswordHash) { return BadRequest("Password hash cannot be modified"); }
-        if (user.PasswordSalt != authUser.PasswordSalt) { return BadRequest("Password salt cannot be modified"); }
         if (user.Rights != authUser.Rights) { return BadRequest("Rights cannot be modified"); }
         if (user.CreatedAt != authUser.CreatedAt) { return BadRequest("Creation timestamp cannot be modified"); }
+
+        user.PasswordHash = authUser.PasswordHash;
+        user.PasswordSalt = authUser.PasswordSalt;
 
         // TODO: Extra endpoint for email
         user.WseDrafts = authUser.WseDrafts;
