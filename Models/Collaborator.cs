@@ -14,5 +14,5 @@ public class Collaborator {
     [JsonIgnore]
     public WebserviceEntry Wse { get; set; } = null!;
 
-    public WseRights Rights { get; set; }
+    public WseRights Rights { get; set; } = WseRights.Default;
 }
