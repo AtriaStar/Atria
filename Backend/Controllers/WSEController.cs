@@ -19,6 +19,19 @@ public class WseController : ControllerBase {
     [HttpGet("{wseId:long}")]
     public WebserviceEntry Get([FromDatabase] WebserviceEntry wse) => wse;
 
+    [HttpGet("{wseId:long}/question")]
+    public IEnumerable<Question> GetQuestions([FromDatabase] WebserviceEntry wse, [FromQuery] Pagination pagination)
+        => wse.Questions.Paginate(pagination);
+
+    [HttpGet("{wseId:long}/question/{questionId:long}")]
+    public IQueryable<Answer> GetAnswers(long wseId, long questionId, [FromQuery] Pagination pagination)
+        => _context.Answers.Where(x => x.WseId == wseId && x.QuestionId == questionId)
+            .Paginate(pagination);
+
+    [HttpGet("{wseId:long}/review")]
+    public IEnumerable<Review> GetReviews([FromDatabase] WebserviceEntry wse, [FromQuery] Pagination pagination)
+        => wse.Reviews.Paginate(pagination);
+
     [RequiresAuthentication]
     [HttpPost]
     public async Task<IActionResult> EditWse(WebserviceEntry wse, [FromAuthentication] User user) {

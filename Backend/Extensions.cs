@@ -9,6 +9,10 @@ using Models;
 namespace Backend; 
 
 public static class Extensions {
+    public static IQueryable<T> Paginate<T>(this IQueryable<T> queryable, Pagination pagination)
+        => queryable.Skip(pagination.Page * pagination.EntriesPerPage)
+                    .Take(pagination.EntriesPerPage);
+
     public static IEnumerable<T> Paginate<T>(this IEnumerable<T> queryable, Pagination pagination)
         => queryable.Skip(pagination.Page * pagination.EntriesPerPage)
                     .Take(pagination.EntriesPerPage);
