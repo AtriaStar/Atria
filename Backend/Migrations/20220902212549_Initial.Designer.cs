@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220901042213_reset_tokens")]
-    partial class reset_tokens
+    [Migration("20220902212549_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -389,6 +389,10 @@ namespace Backend.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long>("CreatorId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("creator_id");
+
                     b.Property<string>("Documentation")
                         .HasColumnType("text")
                         .HasColumnName("documentation");
@@ -415,9 +419,12 @@ namespace Backend.Migrations
                         .HasColumnName("short_description");
 
                     b.HasKey("Id")
-                        .HasName("pk_drafts");
+                        .HasName("pk_wse_draft");
 
-                    b.ToTable("drafts", (string)null);
+                    b.HasIndex("CreatorId")
+                        .HasDatabaseName("ix_wse_draft_creator_id");
+
+                    b.ToTable("wse_draft", (string)null);
                 });
 
             modelBuilder.Entity("TagWebserviceEntry", b =>
@@ -568,6 +575,18 @@ namespace Backend.Migrations
                     b.Navigation("ContactPerson");
                 });
 
+            modelBuilder.Entity("Models.WseDraft", b =>
+                {
+                    b.HasOne("Models.User", "Creator")
+                        .WithMany("WseDrafts")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_wse_draft_users_creator_id");
+
+                    b.Navigation("Creator");
+                });
+
             modelBuilder.Entity("TagWebserviceEntry", b =>
                 {
                     b.HasOne("Models.Tag", null)
@@ -588,6 +607,8 @@ namespace Backend.Migrations
             modelBuilder.Entity("Models.User", b =>
                 {
                     b.Navigation("Bookmarks");
+
+                    b.Navigation("WseDrafts");
                 });
 
             modelBuilder.Entity("Models.WebserviceEntry", b =>

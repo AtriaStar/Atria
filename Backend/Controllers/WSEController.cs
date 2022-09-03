@@ -40,7 +40,7 @@ public class WseController : ControllerBase {
         }
 
         if (wse.CreatedAt != existingWse.CreatedAt) {
-            return BadRequest("The creation timestamp cannot be modified");
+            return BadRequest("Creation timestamp cannot be modified");
         }
 
         wse.Questions = existingWse.Questions;
