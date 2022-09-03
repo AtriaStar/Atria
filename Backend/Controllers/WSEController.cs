@@ -17,7 +17,8 @@ public class WseController : ControllerBase {
     }
 
     [HttpGet("{wseId:long}")]
-    public WebserviceEntry Get([FromDatabase] WebserviceEntry wse) => wse;
+    public WebserviceEntry Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse)
+        => wse;
 
     [HttpGet("{wseId:long}/question")]
     public IEnumerable<Question> GetQuestions([FromDatabase] WebserviceEntry wse, [FromQuery] Pagination pagination)
