@@ -275,23 +275,6 @@
     @*---------------TAGS---------------*@
     protected override async Task OnInitializedAsync()
     {
-        /*mock tags
-        private List<string> MockTags = new List<string> { "Lexikon34", "Suchmaschine1", "Suchmaschine2", "Tool2", "Tool3", "Webservice2", "Wörterbuch4", "Wörterbuch6" };
-            foreach (string str in MockTags)
-            {
-            var response = await HttpClient.PutAsJsonAsync("tag", str);
-
-            if (response.IsSuccessStatusCode) {
-            continue;
-            }
-            else if (response.StatusCode == HttpStatusCode.Conflict) {
-                /*TODO specify message
-                ConflictMessage = "There was an conflict";
-                StateHasChanged();
-                } else {
-                NavManager.NavigateTo("/internal-server-error");
-        }
-        }*/
         AllTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag") ?? new Tag[] {};
         SearchedTags = AllTags.ToList();
     }
