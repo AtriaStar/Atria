@@ -173,40 +173,12 @@
     public bool IsEditWse = false;
     private string ConflictMessage { get; set; } = null!;
 
-    private async void HandleValidSubmit() {
+    private void HandleValidSubmit() {
         _webserviceEntry.ContactPersonId = LoginState.User!.Id;
         _webserviceEntry.Tags = new HashSet<Tag>(SelectedTags);
 
-        if (_tagDto.NewTagsStr != null)
-        {
-            _tagDto.NewTags = _tagDto.NewTagsStr.Split(',');
-            List<Tag> NewlyCreatedTags = new List<Tag>();
-            
-            foreach (string str in _tagDto.NewTags)
-            {
-                @if (AllTags != null && !Array.Exists(AllTags, t => t.Name == str))
-                {
-                    var response = await HttpClient.PutAsJsonAsync("tag", str);
-
-                    if (response.IsSuccessStatusCode) {
-                        Tag newTag = response.Content.ReadFromJsonAsync<Tag>().Result ?? new Tag();
-                        NewlyCreatedTags.Add(newTag);
-                    }
-                    else if (response.StatusCode == HttpStatusCode.Conflict) {
-                        /*TODO specify message*/
-                        ConflictMessage = "There was an conflict";
-                        StateHasChanged();
-                    } else {
-                        NavManager.NavigateTo("/internal-server-error");
-                    }
-                }
-            } 
-
-            foreach (Tag tag in NewlyCreatedTags)
-            {
-                _webserviceEntry.Tags.Add(tag);
-            }
-        }
+	    _webserviceEntry.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',').Select(x => new Tag {Name = x})
+	                                    ?? Enumerable.Empty<Tag>());
     }
 
     private async void PublishWse() {

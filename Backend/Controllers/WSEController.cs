@@ -84,6 +84,7 @@ public class WseController : ControllerBase
         wse.Id = 0;
         wse.CreatedAt = DateTimeOffset.UtcNow;
         wse.Collaborators = new List<Collaborator> { new() { User = user, Rights = WseRights.Owner } };
+        wse.Tags = wse.Tags.Select(x => _context.Tags.Find(x.Name) ?? x).ToHashSet();
         await _context.WebserviceEntries.AddAsync(wse);
         await _context.SaveChangesAsync();
 
