@@ -5,25 +5,25 @@ using Models;
 namespace Frontend;
 
 public class LoginState {
-
-    private readonly HttpClient _httpClient;
+    public bool Loaded { get; private set; }
 
     [MemberNotNullWhen(true, nameof(User))]
-    public bool LoggedIn => User != null;
+    public bool LoggedIn => Loaded ? User != null : throw new InvalidOperationException("LoginState not loaded yet");
 
     public User? User { get; private set; }
-    
-    public Task Initialization { get; private set; }
 
-    public LoginState(HttpClient client) {
-        _httpClient = client;
-        Initialization = CheckAsync();
+    public LoginState(HttpClient client, Action trigger) {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        CheckAsync(client, trigger);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
     }
 
-    private async Task CheckAsync() {
-        var cnt = await _httpClient.GetAsync("auth");
+    private async Task CheckAsync(HttpClient client, Action trigger) {
+        var cnt = await client.GetAsync("auth");
         if (cnt.IsSuccessStatusCode) {
            User = await cnt.Content.ReadFromJsonAsync<User>();
         }
+        Loaded = true;
+        trigger();
     }
 }
