@@ -21,10 +21,25 @@
     <div class="d-flex flex-wrap">
         <div class="nav nav-pills mb-2">
             <div class="nav-item">
-                <NavLink href="@Navigate("type", null)" class="nav-link" Match="NavLinkMatch.All">Webservice</NavLink>
+
+                <NavLink href="@Navigate("type", null)" class="nav-link" Match="NavLinkMatch.All">
+                    Webservice
+                    @if (Type is null or "wse")
+                    {
+                        @numberOfWse
+                    }
+                </NavLink>
+
             </div>
             <div class="nav-item ms-3">
-                <NavLink href="@Navigate("type", "user")" class="nav-link">Nutzer</NavLink>
+
+                <NavLink href="@Navigate("type", "user")" class="nav-link">
+                    Nutzer
+                    @if (Type is "user")
+                    {
+                        @numberOfUser
+                    }
+                </NavLink>
             </div>
         </div>
         <div class="d-flex mb-2 ms-auto">
@@ -75,7 +90,7 @@
             <nav aria-label="Search results pages">
                 <ul class="pagination">
                     <li class="page-item">
-                        <a class="page-link" @onclick="SetPaginationPrevious" aria-label="Previous">
+                        <a class="page-link" @onclick="SetPagePrevious" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
@@ -85,16 +100,16 @@
                 *@
                     @for (int i = 1; i <= numberOfPages; i++)
                     {
-                        <li class="page-item"><a class="page-link" @onclick="() => SetPagination(i)">@i</a></li>
+                        <li class="page-item"><a class="page-link" @onclick="() => SetPage(i)">@i</a></li>
                     }
-                <li class="page-item">
-                    <a class="page-link" @onclick="SetPaginationNext" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+                    <li class="page-item">
+                        <a class="page-link" @onclick="SetPageNext" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     }
 </div>
 
@@ -105,16 +120,28 @@
 
 @code {
 
+    //todo: how to only show 20 wse
+
     private string? _bookmarkStateFilter = "bi-bookmark";
 
-    private int numberOfPages; //todo calculation? of api call
+    private int numberOfPages;
+
+    private int numberOfWse;
+
+    private int numberOfUser;  
+
+    /*
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? entriesPerPage  { get; set; }
+    */
 
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public int? Pagination { get; set; } //TODO api call?
+    public int? Page { get; set; } //TODO api call?
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -234,30 +261,71 @@
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
     }
 
-    private void SetPaginationPrevious()
+    private void SetPagePrevious()
     {
-        if (Pagination != 1)
+        if (Page != 1)
         {
-            Pagination -= 1;
-            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Pagination", Pagination));
+            Page -= 1;
+            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
         }
     }
 
-    private void SetPaginationNext()
+    private void SetPageNext()
     {
-        if (Pagination != numberOfPages)
+        if (Page != numberOfPages)
         {
-            Pagination += 1;
-            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Pagination", Pagination));
+            Page += 1;
+            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
 
         }
     }
 
-    private void SetPagination(int page)
+    private void SetPage(int page)
     {
-        Pagination = page;
-        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Pagination", Pagination));
+        Page = page;
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
 
     }
 
+    private void SetNumberOfPages()
+    {
+        if (Type is "user")
+        {
+            numberOfPages = (numberOfUser / 20) + 1;
+        }
+        else
+        {
+            numberOfWse = (numberOfUser / 20) + 1;
+        }
+    }
+
+    private async Task GetNumberOfWse()
+    {
+        var response = await HttpClient.GetAsync("wse/count");
+        numberOfWse = await response.Content.ReadFromJsonAsync<int>();
+
+    }
+
+
+    private async Task GetNumberOfUser()
+    {
+        var response = await HttpClient.GetAsync("user/count");
+        numberOfUser = await response.Content.ReadFromJsonAsync<int>();
+
+    }
+
+    /*
+     private async Task GetAndSetWseList()
+    {
+        var response = await HttpClient.GetAsync("search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? Array.Empty<WebserviceEntry>();
+    }
+    */
+
+    /*
+    protected override void OnInitialized() { 
+        GetNumberOfWse();
+        GetNumberOfUser();
+    }
+    */
 }

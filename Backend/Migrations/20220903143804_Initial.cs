@@ -67,6 +67,25 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "reset_tokens",
+                columns: table => new
+                {
+                    token = table.Column<byte[]>(type: "bytea", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    user_id = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_reset_tokens", x => x.token);
+                    table.ForeignKey(
+                        name: "fk_reset_tokens_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "sessions",
                 columns: table => new
                 {
@@ -273,6 +292,11 @@ namespace Backend.Migrations
                 column: "creator_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_reset_tokens_user_id",
+                table: "reset_tokens",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_reviews_creator_id",
                 table: "reviews",
                 column: "creator_id");
@@ -309,6 +333,9 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "drafts");
+
+            migrationBuilder.DropTable(
+                name: "reset_tokens");
 
             migrationBuilder.DropTable(
                 name: "reviews");

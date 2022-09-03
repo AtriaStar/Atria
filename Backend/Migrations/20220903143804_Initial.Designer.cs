@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220831000055_Initial")]
+    [Migration("20220903143804_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -119,6 +119,29 @@ namespace Backend.Migrations
                         .HasDatabaseName("ix_questions_creator_id");
 
                     b.ToTable("questions", (string)null);
+                });
+
+            modelBuilder.Entity("Models.ResetToken", b =>
+                {
+                    b.Property<byte[]>("Token")
+                        .HasColumnType("bytea")
+                        .HasColumnName("token");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Token")
+                        .HasName("pk_reset_tokens");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_reset_tokens_user_id");
+
+                    b.ToTable("reset_tokens", (string)null);
                 });
 
             modelBuilder.Entity("Models.Review", b =>
@@ -486,6 +509,18 @@ namespace Backend.Migrations
                     b.Navigation("Creator");
 
                     b.Navigation("Wse");
+                });
+
+            modelBuilder.Entity("Models.ResetToken", b =>
+                {
+                    b.HasOne("Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_reset_tokens_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Models.Review", b =>
