@@ -8,7 +8,7 @@ public class LoginState {
     public bool Loaded { get; private set; }
 
     [MemberNotNullWhen(true, nameof(User))]
-    public bool LoggedIn => Loaded ? User != null : throw new InvalidOperationException("LoginState not loaded yet");
+    public bool LoggedIn => User != null;
 
     public User? User { get; private set; }
 
