@@ -73,7 +73,7 @@ public class UserController : ControllerBase {
     }
 
     [RequiresAuthentication]
-    [HttpDelete("{userId:long}")]
+    [HttpDelete]
     public async Task Delete([FromAuthentication] User user) {
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
