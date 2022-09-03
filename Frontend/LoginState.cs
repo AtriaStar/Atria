@@ -5,25 +5,18 @@ using Models;
 namespace Frontend;
 
 public class LoginState {
-
-    private readonly HttpClient _httpClient;
+    public bool Loaded { get; private set; }
 
     [MemberNotNullWhen(true, nameof(User))]
     public bool LoggedIn => User != null;
 
     public User? User { get; private set; }
-    
-    public Task Initialization { get; private set; }
 
-    public LoginState(HttpClient client) {
-        _httpClient = client;
-        Initialization = CheckAsync();
-    }
-
-    private async Task CheckAsync() {
-        var cnt = await _httpClient.GetAsync("auth");
+    public async Task LoadAsync(HttpClient client) {
+        var cnt = await client.GetAsync("auth");
         if (cnt.IsSuccessStatusCode) {
            User = await cnt.Content.ReadFromJsonAsync<User>();
         }
+        Loaded = true;
     }
 }

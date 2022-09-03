@@ -19,9 +19,9 @@
     private HttpClient HttpClient { get; set; } = null!;
 
     private LoginState LoginState { get; set; } = null!;
-    
-    protected override async Task OnInitializedAsync() {
-        LoginState = new(HttpClient);
-        await LoginState.Initialization;
-    }
+
+	protected override async Task OnInitializedAsync() {
+        LoginState = new();
+		await LoginState.LoadAsync(HttpClient);
+	}
 }
