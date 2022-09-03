@@ -12,18 +12,11 @@ public class LoginState {
 
     public User? User { get; private set; }
 
-    public LoginState(HttpClient client, Action trigger) {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        CheckAsync(client, trigger);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-    }
-
-    private async Task CheckAsync(HttpClient client, Action trigger) {
+    public async Task LoadAsync(HttpClient client) {
         var cnt = await client.GetAsync("auth");
         if (cnt.IsSuccessStatusCode) {
            User = await cnt.Content.ReadFromJsonAsync<User>();
         }
         Loaded = true;
-        trigger();
     }
 }
