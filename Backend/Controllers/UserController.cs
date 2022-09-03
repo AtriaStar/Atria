@@ -31,6 +31,7 @@ public class UserController : ControllerBase {
     public IQueryable<Review> GetReviewsByUser(long userId)
         => _context.Reviews.Where(x => x.CreatorId == userId);
 
+    [RequiresAuthentication]
     [HttpGet("{userId:long}/drafts")]
     public ICollection<WseDraft> GetWseDrafts([FromDatabase] User user)
         => user.WseDrafts;
