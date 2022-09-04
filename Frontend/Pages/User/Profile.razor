@@ -213,7 +213,7 @@
 
     protected override async Task OnParametersSetAsync() {
         if (!_userNotFound) {
-            var response = await HttpClient.GetAsync($"user/{UserId}/{Type}");
+            var response = await HttpClient.GetAsync($"user/{UserId}/{Type ?? "wse"}");
             if (response.IsSuccessStatusCode) {
                 switch (Type) {
                     case null or "wse":
