@@ -35,11 +35,7 @@ namespace IntegrationTests.Helpers
                     "Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true");
                 });
 
-                services.AddMvc(options =>
-                {
-                    
-        })
-         .AddJsonOptions(x => x.JsonSerializerOptions.);
+
                 var sp = services.BuildServiceProvider();
 
                 using (var scope = sp.CreateScope())
