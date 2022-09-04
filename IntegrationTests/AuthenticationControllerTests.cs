@@ -1,28 +1,21 @@
 ﻿using Backend.AspPlugins;
-using DatabaseMocker;
 using IntegrationTests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Models;
 using Models.DTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IntegrationTests
 {
-    
+
     public class AuthenticationControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
         private readonly CustomWebApplicationFactory<Program> _factory;
-        
 
-     
+
+
         public AuthenticationControllerTests(CustomWebApplicationFactory<Program> factory)
         {
             _factory = factory;
@@ -66,7 +59,7 @@ namespace IntegrationTests
                 //Arrange
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
                 var user = await context.Users.FirstAsync();
-                
+
                 Registration _registration = new()
                 {
                     FirstNames = "Floppa",
@@ -78,9 +71,9 @@ namespace IntegrationTests
 
                 //Act
                 var response = await _client.PostAsJsonAsync("https://localhost:7038/api/auth/register", _registration);
-                
+
                 //Assert
-                
+
                 //Todo: check if authentication cookie is set in response and database
             }
         }

@@ -1,12 +1,5 @@
 ﻿using Backend.AspPlugins;
 using DatabaseMocker;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IntegrationTests.Helpers
 {

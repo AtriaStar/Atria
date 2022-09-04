@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using Backend.AspPlugins;
+﻿using Backend.AspPlugins;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +6,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using Microsoft.AspNetCore.Mvc.Formatters.Json;
+using Newtonsoft.Json;
 
 namespace IntegrationTests.Helpers
 {
@@ -28,13 +28,18 @@ namespace IntegrationTests.Helpers
                 {
                     services.Remove(descriptor);
                 }
-                
+
                 services.AddDbContext<AtriaContext>(options =>
                 {
                     options.UseNpgsql(
                     "Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true");
                 });
 
+                services.AddMvc(options =>
+                {
+                    
+        })
+         .AddJsonOptions(x => x.JsonSerializerOptions.);
                 var sp = services.BuildServiceProvider();
 
                 using (var scope = sp.CreateScope())
@@ -87,7 +92,7 @@ namespace IntegrationTests.Helpers
             httpContext.Connection.RemoteIpAddress = fakeIpAddress;
             //Todo: not like this
             httpContext.Request.Headers["User-Agent"] = "";
-           
+
 
             await this.next(httpContext);
         }
