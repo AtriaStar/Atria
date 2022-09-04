@@ -48,7 +48,7 @@
                 </div>
             } else {
                 <div class="nav-item me-md-3 me-2">
-                    <NavLink class="nav-link btn-outline-primary py-1" href="login">Einloggen</NavLink>
+                    <NavLink class="nav-link btn-outline-primary py-1" href="@_loginUrl">Einloggen</NavLink>
                 </div>
                 <div class="nav-item">
                     <NavLink class="nav-link btn-outline-primary py-1" href="register">Registrieren</NavLink>
@@ -68,6 +68,12 @@
 
     [Inject]
     private NavigationManager NavigationManager { get; set; } = null!;
+
+    private string _loginUrl = null!;
+
+    protected override void OnInitialized() {
+        _loginUrl = "login?returnurl=" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+    }
 
     private async Task Logout() {
         await HttpClient.PostAsync("auth/logout", null);
