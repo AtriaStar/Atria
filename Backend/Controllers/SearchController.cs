@@ -17,9 +17,9 @@ public class SearchController : ControllerBase {
     private IEnumerable<WebserviceEntry> GetBaseWses(WseSearchParameters parameters)
         => _context.WebserviceEntries
             .Where(x => (!x.Reviews.Any() || x.Reviews.Average(y => (int) y.StarCount) >= (int) parameters.MinReviewAvg)
-            && (parameters.Tags == null || x.Tags.Intersect(parameters.Tags).Count() == parameters.Tags.Count)
-            && (parameters.IsOnline == null || true /* TODO */)
-            && (parameters.HasBookmark == null || true /* TODO */))
+                && (parameters.Tags == null || x.Tags.Count(y => parameters.Tags.Contains(y)) == parameters.Tags.Count)
+                && (parameters.IsOnline == null || true /* TODO */)
+                && (parameters.HasBookmark == null || true /* TODO */))
             .AsEnumerable()
             .Select(x => (wse: x, score: parameters.Query == null ? 1 : FuzzingService.CalculateScore1(parameters.Query, x)))
             .Where(x => x.score > 0.05)
