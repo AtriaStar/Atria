@@ -28,8 +28,7 @@
             </div>
         </div>
         <div class="d-flex mb-2 ms-auto">
-            @if (Type is null or "wse")
-            {
+            @if (Type is null or "wse") {
                 <button class="btn-outline-light btn p-0 me-2" @onclick="ChangeBookmarkStatusFilter">
                     <i class="bi @_bookmarkStateFilter fs-5" style="color: #dc3545"></i>
                 </button>
@@ -54,8 +53,7 @@
         </div>
     </div>
     <div class="w-100 mt-2 mb-4">
-        @switch (Type)
-        {
+        @switch (Type) {
             case null or "wse":
                 <WseSummaryList Entries="@_wseList"></WseSummaryList>
                 break;
@@ -71,17 +69,11 @@
     </div>
 </div>
 
-@if (FilterDialogOpen)
-{
+@if (_filterDialogOpen) {
     <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" IsBookmark="IsBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
 @code {
-
-    private string? _bookmarkStateFilter = "bi-bookmark";
-
-    [Inject]
-    private HttpClient HttpClient { get; set; } = default!;
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -94,9 +86,6 @@
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
-
-    private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
-    private IEnumerable<User> _userList = new List<User>();
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -114,24 +103,18 @@
     [SupplyParameterFromQuery(Name = "tags")]
     public string[]? SelectedTagsStr { get; set; }
 
-    private void SearchInput(KeyboardEventArgs evt)
-    {
-        if (evt.Key == "Enter")
-        {
-            Search();
-        }
-    }
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
 
-    private void Search()
-    {
-        NavigationManager.NavigateTo(Navigate("query", Query));
-    }
+    private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
+    private IEnumerable<User> _userList = new List<User>();
 
-    protected override async Task OnParametersSetAsync()
-    {
+    private string _bookmarkStateFilter = "bi-bookmark";
+    private bool _filterDialogOpen;
+
+    protected override async Task OnParametersSetAsync() {
         await base.OnParametersSetAsync();
-        switch (Type)
-        {
+        switch (Type) {
             case "wse":
             case null:
                 await GetAndSetWseList();
@@ -145,60 +128,55 @@
         }
     }
 
-    private async Task GetAndSetWseList()
-    {
+    private async Task GetAndSetWseList() {
         var response = await HttpClient.GetAsync("search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? Array.Empty<WebserviceEntry>();
     }
 
-    private async Task GetAndSetUserList()
-    {
+    private async Task GetAndSetUserList() {
         var response = await HttpClient.GetAsync("search/user" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        if (response.IsSuccessStatusCode)
-        {
+        if (response.IsSuccessStatusCode) {
             _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? Array.Empty<User>();
-        }
-        else if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
+        } else if (response.StatusCode == HttpStatusCode.BadRequest) {
             _userList = Array.Empty<User>();
-        }
-        else
-        {
+        } else {
             NavigationManager.NavigateTo("/internal-server-error");
         }
     }
 
-    private string Navigate(string key, string? value)
-    {
+    private void SearchInput(KeyboardEventArgs evt) {
+        if (evt.Key == "Enter") {
+            Search();
+        }
+    }
+
+    private void Search() {
+        NavigationManager.NavigateTo(Navigate("query", Query));
+    }
+
+    private string Navigate(string key, string? value) {
         return NavigationManager.GetUriWithQueryParameter(key, value);
     }
 
-    @*for tag modal*@
-    private bool FilterDialogOpen { get; set; }
+        @*for tag modal*@
 
-    private void OnFilterDialogClose(bool accepted)
-    {
-        FilterDialogOpen = false;
+    private void OnFilterDialogClose(bool accepted) {
+        _filterDialogOpen = false;
     }
 
-    private void OpenFilterDialog()
-    {
-        FilterDialogOpen = true;
+    private void OpenFilterDialog() {
+        _filterDialogOpen = true;
     }
 
-    private void ChangeBookmarkStatusFilter()
-    {
-        if (IsBookmark.Equals(null))
-        {
+    private void ChangeBookmarkStatusFilter() {
+        if (IsBookmark.Equals(null)) {
             IsBookmark = true;
             _bookmarkStateFilter = "bi-bookmark-fill";
-        }
-        else
-        {
+        } else {
             IsBookmark = null;
             _bookmarkStateFilter = "bi-bookmark";
         }
-       NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
     }
 
 }
