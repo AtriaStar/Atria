@@ -7,8 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Formatters.Json;
-using Newtonsoft.Json;
 
 namespace IntegrationTests.Helpers
 {
