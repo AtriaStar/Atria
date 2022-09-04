@@ -86,7 +86,7 @@
     {
         <div>
             <nav aria-label="Search results pages">
-                <ul class="pagination">
+                <ul class="pagination justify-content-center">
                     <li class="page-item">
                         <a class="page-link" @onclick="SetPagePrevious" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
@@ -94,7 +94,7 @@
                     </li>
                     @for (int i = 1; i <= numberOfPages; i++)
                     {
-                        <li class="page-item"><a class="page-link" @onclick="() => SetPage(i)">@i</a></li>
+                        <li class="page-item"><a class="page-link" @onclick="() => SetPage(i)" id="@i">@i</a></li>
                     }
                     <li class="page-item">
                         <a class="page-link" @onclick="SetPageNext" aria-label="Next">
@@ -119,6 +119,10 @@
     private int numberOfPages;
 
     private int numberOfEntries;
+
+    private string? pageStatusPrevious;
+
+    private string? pageStatusNext;
 
     /* is needed to allow different number of entries per page
     [Parameter]
@@ -261,26 +265,60 @@
 
     private void SetPagePrevious()
     {
-        if (Page != 1)
-        {
-            Page -= 1;
-            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
+        // if (Page != 1)
+        // {
+        Page -= 1;
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
+        disablePageButton();
+        // pageStatusPrevious = null;
+            /*
+            }
+            else
+            {
+            pageStatusPrevious = "disabled";
         }
+    */
     }
 
     private void SetPageNext()
     {
-        if (Page != numberOfPages)
-        {
-            Page += 1;
-            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
-        }
+        //if (Page != numberOfPages)
+        //{
+        Page += 1;
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
+        disablePageButton();
+        // }
+        //else
+        //{
+        // pageStatusNext = "disabled";
+        //}
     }
 
     private void SetPage(int page)
     {
         Page = page;
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
+        disablePageButton();
+    }
+
+    private void disablePageButton()
+    {
+        if (Page == 1)
+        {
+            pageStatusPrevious = "disabled";
+        } 
+        else if (Page != 1)
+        {
+            pageStatusPrevious = null;
+        }
+        else if (Page == numberOfPages)
+        {
+            pageStatusNext = "disabled";
+        }
+        else if (Page != numberOfPages)
+        {
+            pageStatusNext = null;
+        }
     }
 
 
