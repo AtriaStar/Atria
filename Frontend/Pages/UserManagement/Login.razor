@@ -1,10 +1,8 @@
 ﻿@page "/login"
 @using Microsoft.AspNetCore.Components
-@using Models
 @using System.Net
 @inject NavigationManager NavManager
 @inject HttpClient HttpClient
-@inject IJSRuntime Js
 
 <PageTitle>Einloggen - Atria</PageTitle>
 
@@ -65,6 +63,10 @@
     [CascadingParameter]
     private LoginState LoginState { get; set; } = null!;
     
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+    
     private readonly Models.DTO.Login _login = new();
     private string LoginMessage { get; set; } = null!;
 
@@ -78,8 +80,7 @@
         var response = await HttpClient.PostAsJsonAsync("auth/login", _login);
 
         if (response.IsSuccessStatusCode) {
-            await Js.InvokeVoidAsync("history.back");
-            NavManager.NavigateTo(NavManager.Uri, forceLoad: true); // Refresh header
+            NavManager.NavigateTo(ReturnUrl ?? "", true);
         }
         else if (response.StatusCode == HttpStatusCode.Unauthorized) {
             LoginMessage = await response.Content.ReadAsStringAsync();

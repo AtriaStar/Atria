@@ -3,6 +3,7 @@ using System;
 using Backend.AspPlugins;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,14 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    partial class AtriaContextModelSnapshot : ModelSnapshot
+<<<<<<<< HEAD:Backend/Migrations/20220903145837_Initial.Designer.cs
+    [Migration("20220903145837_Initial")]
+========
+    [Migration("20220902212549_Initial")]
+>>>>>>>> main:Backend/Migrations/20220902212549_Initial.Designer.cs
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

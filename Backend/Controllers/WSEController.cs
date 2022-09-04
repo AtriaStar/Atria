@@ -17,7 +17,21 @@ public class WseController : ControllerBase {
     }
 
     [HttpGet("{wseId:long}")]
-    public WebserviceEntry Get([FromDatabase] WebserviceEntry wse) => wse;
+    public WebserviceEntry Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse)
+        => wse;
+
+    [HttpGet("{wseId:long}/question")]
+    public IEnumerable<Question> GetQuestions([FromDatabase] WebserviceEntry wse, [FromQuery] Pagination pagination)
+        => wse.Questions.Paginate(pagination);
+
+    [HttpGet("{wseId:long}/question/{questionId:long}")]
+    public IQueryable<Answer> GetAnswers(long wseId, long questionId, [FromQuery] Pagination pagination)
+        => _context.Answers.Where(x => x.WseId == wseId && x.QuestionId == questionId)
+            .Paginate(pagination);
+
+    [HttpGet("{wseId:long}/review")]
+    public IEnumerable<Review> GetReviews([FromDatabase] WebserviceEntry wse, [FromQuery] Pagination pagination)
+        => wse.Reviews.Paginate(pagination);
 
     [RequiresAuthentication]
     [HttpPost]
@@ -40,7 +54,7 @@ public class WseController : ControllerBase {
         }
 
         if (wse.CreatedAt != existingWse.CreatedAt) {
-            return BadRequest("The creation timestamp cannot be modified");
+            return BadRequest("Creation timestamp cannot be modified");
         }
 
         wse.Questions = existingWse.Questions;

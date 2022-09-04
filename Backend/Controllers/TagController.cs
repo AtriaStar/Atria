@@ -15,7 +15,8 @@ public class TagController : ControllerBase {
     }
 
     [HttpGet]
-    public IQueryable<Tag> GetAll() => _context.Tags;
+    public IQueryable<Tag> GetAll([FromQuery] Pagination pagination)
+        => _context.Tags.Paginate(pagination);
 
     [HttpPut]
     [RequiresAuthentication]
