@@ -146,24 +146,15 @@
     <NotFound></NotFound>
 }
 
-@if (FilterDialogOpen) {
+@if (_filterDialogOpen) {
     <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" IsBookmark="IsBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
 @code {
 
-    [Inject]
-    private HttpClient HttpClient { get; set; } = default!;
-
-    private bool _displayForm;
-    private bool _userNotFound;
-
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Type { get; set; }
-
-    [CascadingParameter]
-    private LoginState LoginState { get; set; } = null!;
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -179,7 +170,7 @@
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "tags")]
-    public string[]? SelectedTagsStr { get; set; } = new string[] { };
+    public string[]? SelectedTagsStr { get; set; }
 
     [Parameter]
     public long? UserId { get; set; }
@@ -188,12 +179,23 @@
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
 
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+    
+    [CascadingParameter]
+    private LoginState LoginState { get; set; } = null!;
+
+    private bool _displayForm;
+    private bool _userNotFound;
+    
     //List for subcomponents
     private IEnumerable<WebserviceEntry>? _webserviceEntries;
     private IEnumerable<Review>? _reviews;
     private User? User { get; set; }
 
     private UserDto _cloneUserDto = null!;
+
+    private bool _filterDialogOpen;
 
     protected override async Task OnParametersSetAsync() {
         await base.OnParametersSetAsync();
@@ -246,10 +248,10 @@
         @* TODO implement *@
     }
 
-    private void HandleValidSubmit() {
+    private async void HandleValidSubmit() {
         _displayForm = !_displayForm;
         CloneUser();
-        var response = HttpClient.PostAsJsonAsync($"user/{UserId}", User);
+        await HttpClient.PostAsJsonAsync($"user/{UserId}", User);
     }
 
     private void CloneUser() {
@@ -275,15 +277,14 @@
     private void Search() {
         NavigationManager.NavigateTo(Navigate("query", Query));
     }
-
-    private bool FilterDialogOpen { get; set; }
+    
 
     private void OnFilterDialogClose(bool accepted) {
-        FilterDialogOpen = false;
+        _filterDialogOpen = false;
     }
 
     private void OpenFilterDialog() {
-        FilterDialogOpen = true;
+        _filterDialogOpen = true;
     }
 
 }
