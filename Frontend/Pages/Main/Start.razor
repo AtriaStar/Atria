@@ -21,15 +21,13 @@
     <div class="d-flex flex-wrap">
         <div class="nav nav-pills mb-2">
             <div class="nav-item">
-
                 <NavLink href="@Navigate("type", null)" class="nav-link" Match="NavLinkMatch.All">
                     Webservice
                     @if (Type is null or "wse")
                     {
-                        @numberOfWse
+                        @numberOfEntries
                     }
                 </NavLink>
-
             </div>
             <div class="nav-item ms-3">
 
@@ -37,7 +35,7 @@
                     Nutzer
                     @if (Type is "user")
                     {
-                        @numberOfUser
+                        @numberOfEntries
                     }
                 </NavLink>
             </div>
@@ -94,10 +92,6 @@
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
-                    @* backendcall, um zeug 0-20;21-40;... anzuzeigen
-                Attribut und design zum anzegen und ändern der Anzahl an wses pro seite (optionel, da keine hauptfunktionalität)
-                backend call zur erstellung der pageination ding
-                *@
                     @for (int i = 1; i <= numberOfPages; i++)
                     {
                         <li class="page-item"><a class="page-link" @onclick="() => SetPage(i)">@i</a></li>
@@ -120,17 +114,13 @@
 
 @code {
 
-    //todo: how to only show 20 wse
-
     private string? _bookmarkStateFilter = "bi-bookmark";
 
     private int numberOfPages;
 
-    private int numberOfWse;
+    private int numberOfEntries;
 
-    private int numberOfUser;  
-
-    /*
+    /* is needed to allow different number of entries per page
     [Parameter]
     [SupplyParameterFromQuery]
     public int? entriesPerPage  { get; set; }
@@ -209,6 +199,10 @@
     {
         var response = await HttpClient.GetAsync("search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? Array.Empty<WebserviceEntry>();
+
+        var responseCount = await HttpClient.GetAsync("search/wse/count");
+        numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
+        SetNumberOfPages(numberOfEntries);
     }
 
     private async Task GetAndSetUserList()
@@ -217,6 +211,10 @@
         if (response.IsSuccessStatusCode)
         {
             _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? Array.Empty<User>();
+
+            var responseCount = await HttpClient.GetAsync("search/user/count");
+            numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
+            SetNumberOfPages(numberOfEntries);
         }
         else if (response.StatusCode == HttpStatusCode.BadRequest)
         {
@@ -276,7 +274,6 @@
         {
             Page += 1;
             NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
-
         }
     }
 
@@ -284,48 +281,12 @@
     {
         Page = page;
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
-
     }
 
-    private void SetNumberOfPages()
+
+    private void SetNumberOfPages(int numberOfResults)
     {
-        if (Type is "user")
-        {
-            numberOfPages = (numberOfUser / 20) + 1;
-        }
-        else
-        {
-            numberOfWse = (numberOfUser / 20) + 1;
-        }
+        numberOfPages = (numberOfResults / 20) + 1;
     }
 
-    private async Task GetNumberOfWse()
-    {
-        var response = await HttpClient.GetAsync("wse/count");
-        numberOfWse = await response.Content.ReadFromJsonAsync<int>();
-
-    }
-
-
-    private async Task GetNumberOfUser()
-    {
-        var response = await HttpClient.GetAsync("user/count");
-        numberOfUser = await response.Content.ReadFromJsonAsync<int>();
-
-    }
-
-    /*
-     private async Task GetAndSetWseList()
-    {
-        var response = await HttpClient.GetAsync("search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? Array.Empty<WebserviceEntry>();
-    }
-    */
-
-    /*
-    protected override void OnInitialized() { 
-        GetNumberOfWse();
-        GetNumberOfUser();
-    }
-    */
 }
