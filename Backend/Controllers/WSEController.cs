@@ -38,6 +38,7 @@ public class WseController : ControllerBase {
     public async Task<IActionResult> EditWse(WebserviceEntry wse, [FromAuthentication] User user) {
         var existingWse = await _context.WebserviceEntries.FindAsync(wse.Id);
         if (existingWse == null) { return NotFound(); }
+        await _context.Entry(existingWse).Collection(x => x.Collaborators).LoadAsync();
         var rights = existingWse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights;
         if (rights == null) { return Forbid("User is not a collaborator"); }
 
