@@ -40,15 +40,18 @@
                             <DataAnnotationsValidator></DataAnnotationsValidator>
                             <div class="d-flex flex-column">
                                 <div class="d-flex flex-column flex-sm-row flex-xl-column">
-                                    <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
-                                        <label for="image_upload" style="cursor: pointer" title="Bild ändern">
+                                    <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex flex-column">
+                                        <div class="mb-3">
                                             @if (User.ProfilePicture is not null) {
                                                 <img class="avatar avatar-w" alt="" src="@User.ProfilePicture">
                                             } else {
                                                 <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
                                             }
-                                        </label>
-                                        <InputFile OnChange="@LoadFiles" id="image_upload" style="display: none"></InputFile>
+                                        </div>
+                                        <div>
+                                            <InputText @bind-Value="User.ProfilePicture" id="image_upload" type="text" class="form-control"></InputText>
+                                            <label for="image_upload" class="form-label"></label>
+                                        </div>
                                     </div>
                                     <div class="flex-fill">
                                         <div class="form-floating mb-3">
@@ -181,13 +184,13 @@
 
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
-    
+
     [CascadingParameter]
     private LoginState LoginState { get; set; } = null!;
 
     private bool _displayForm;
     private bool _userNotFound;
-    
+
     //List for subcomponents
     private IEnumerable<WebserviceEntry>? _webserviceEntries;
     private IEnumerable<Review>? _reviews;
@@ -244,10 +247,6 @@
         _displayForm = !_displayForm;
     }
 
-    private void LoadFiles(InputFileChangeEventArgs e) {
-        @* TODO implement *@
-    }
-
     private async void HandleValidSubmit() {
         _displayForm = !_displayForm;
         CloneUser();
@@ -277,7 +276,6 @@
     private void Search() {
         NavigationManager.NavigateTo(Navigate("query", Query));
     }
-    
 
     private void OnFilterDialogClose(bool accepted) {
         _filterDialogOpen = false;

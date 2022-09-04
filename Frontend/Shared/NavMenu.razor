@@ -32,8 +32,8 @@
                     </div>
                     <div class="nav-item">
                         <div class="dropdown">
-                            @if (LoginState.User!.ProfilePicture?.AbsoluteUri != null) {
-                                <img class="miniAvatar" src="@(LoginState.User.ProfilePicture.AbsoluteUri)" type="button" data-bs-toggle="dropdown" alt="avatar"/>
+                            @if (LoginState.User!.ProfilePicture != null) {
+                                <img class="miniAvatar" src="@(LoginState.User.ProfilePicture)" type="button" data-bs-toggle="dropdown" alt="avatar"/>
                             } else {
                                 <ion-icon type="button" data-bs-toggle="dropdown" name="person-circle-outline"></ion-icon>
                             }
