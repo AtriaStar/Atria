@@ -33,8 +33,8 @@ public class UserController : ControllerBase {
 
     [RequiresAuthentication]
     [HttpGet("{userId:long}/drafts")]
-    public ICollection<WseDraft> GetWseDrafts([FromDatabase] User user)
-        => user.WseDrafts;
+    public IActionResult GetWseDrafts([FromDatabase] User user, [FromAuthentication] User authUser)
+        => user.Id == authUser.Id ? Ok(user.WseDrafts) : Forbid();
 
     [HttpGet("{userId:long}/notifications")]
     public IReadOnlyList<Notification> GetNotifications() => null!;
