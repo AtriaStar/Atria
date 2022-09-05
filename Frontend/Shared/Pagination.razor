@@ -1,0 +1,90 @@
+﻿ <nav aria-label="Search results pages">
+                <ul class="pagination justify-content-center">
+                    
+                    @foreach (var pageItem in pageItems)
+                    {
+                        <li class="page-item @(pageItem.Enabled ? null : "disabled") @(pageItem.Active ? "active" : null)"><a class="page-link" style="cursor: pointer;" @onclick="() => SelectedPageInternal(pageItem)" >@pageItem.Page</a></li>
+                   <span class="page-link">@pageItem.Text</span>
+                    }
+                    
+                </ul>
+            </nav>
+
+
+@code {
+    [Parameter]
+    public int CurrentPage { get; set; } = 1;
+
+    [Parameter]
+    public int NumberOfPages { get; set; }
+
+    [Parameter]
+    public int Radius { get; set; }
+
+    [Parameter]
+    public EventCallback<int> SelectedPage { get; set; }
+
+    List<PageItem> pageItems;
+
+    protected override void OnParametersSet()
+    {
+        LoadPages();
+    }
+
+    private void LoadPages()
+    {
+        pageItems = new List<PageItem>();
+
+        var isPreviousPageEnabled = (CurrentPage != 1);
+        var previousPage = CurrentPage - 1;
+        pageItems.Add(new PageItem(previousPage, isPreviousPageEnabled, "Previous"));
+
+        for (int i = 1; i <= NumberOfPages; i++)
+        {
+            if (i >= CurrentPage - Radius && i <= CurrentPage + Radius)
+            {
+                pageItems.Add(new PageItem(i) { Active = (CurrentPage == i) });
+            }
+        }
+
+        var isNextPageEnabled = (CurrentPage != NumberOfPages);
+        var nextPage = CurrentPage + 1;
+        pageItems.Add(new PageItem(nextPage, isNextPageEnabled, "Next"));
+
+
+    }
+
+    private async Task SelectedPageInternal(PageItem pageItem)
+    {
+        if(pageItem.Page == CurrentPage)
+        {
+            return;
+        }
+        if (!pageItem.Enabled)
+        {
+            return;
+        }
+        CurrentPage = pageItem.Page;
+        await SelectedPage.InvokeAsync(pageItem.Page);
+    }
+
+    public class PageItem
+    {
+        public PageItem(int page) : this(page, true) { }
+
+        public PageItem(int page, bool enabled):this(page, enabled, page.ToString()) {}
+
+        public PageItem(int page, bool enabled, string text)
+        {
+            Page = page;
+            Enabled = enabled;
+            Text = text;
+        }
+
+        public string Text { get; set; }
+        public int Page { get; set; }
+        public bool Enabled { get; set; } = true;
+        public bool Active { get; set; } = false;
+
+    }
+}

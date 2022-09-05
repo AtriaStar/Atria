@@ -84,26 +84,8 @@
     </div>
     @if (numberOfPages >= 2)
     {
-        <div>
-            <nav aria-label="Search results pages">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item">
-                        <a class="page-link" @onclick="SetPagePrevious" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    @for (int i = 1; i <= numberOfPages; i++)
-                    {
-                        <li class="page-item"><a class="page-link" @onclick="() => SetPage(i)" id="@i">@i</a></li>
-                    }
-                    <li class="page-item">
-                        <a class="page-link" @onclick="SetPageNext" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        <Pagination NumberOfPages = "numberOfPages" CurrentPage="CurrentPage" Radius="3" SelectedPage="SelectedPage"></Pagination>
+     
     }
 </div>
 
@@ -120,9 +102,7 @@
 
     private int numberOfEntries;
 
-    private string? pageStatusPrevious;
-
-    private string? pageStatusNext;
+    
 
     /* is needed to allow different number of entries per page
     [Parameter]
@@ -135,7 +115,7 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public int? Page { get; set; } //TODO api call?
+    public int CurrentPage { get; set; } = 1; //currentPage
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -204,9 +184,11 @@
         var response = await HttpClient.GetAsync("search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? Array.Empty<WebserviceEntry>();
 
+        
         var responseCount = await HttpClient.GetAsync("search/wse/count");
         numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
         SetNumberOfPages(numberOfEntries);
+        
     }
 
     private async Task GetAndSetUserList()
@@ -215,10 +197,11 @@
         if (response.IsSuccessStatusCode)
         {
             _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? Array.Empty<User>();
-
+            
             var responseCount = await HttpClient.GetAsync("search/user/count");
             numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
             SetNumberOfPages(numberOfEntries);
+            
         }
         else if (response.StatusCode == HttpStatusCode.BadRequest)
         {
@@ -263,68 +246,26 @@
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
     }
 
-    private void SetPagePrevious()
-    {
-        // if (Page != 1)
-        // {
-        Page -= 1;
-        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
-        disablePageButton();
-        // pageStatusPrevious = null;
-            /*
-            }
-            else
-            {
-            pageStatusPrevious = "disabled";
-        }
-    */
-    }
 
-    private void SetPageNext()
+   //SelectedPage may be not needed
+    private async Task SelectedPage(int page)
     {
-        //if (Page != numberOfPages)
-        //{
-        Page += 1;
-        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
-        disablePageButton();
-        // }
-        //else
-        //{
-        // pageStatusNext = "disabled";
-        //}
+        CurrentPage = page;
     }
-
-    private void SetPage(int page)
-    {
-        Page = page;
-        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", Page));
-        disablePageButton();
-    }
-
-    private void disablePageButton()
-    {
-        if (Page == 1)
-        {
-            pageStatusPrevious = "disabled";
-        } 
-        else if (Page != 1)
-        {
-            pageStatusPrevious = null;
-        }
-        else if (Page == numberOfPages)
-        {
-            pageStatusNext = "disabled";
-        }
-        else if (Page != numberOfPages)
-        {
-            pageStatusNext = null;
-        }
-    }
-
 
     private void SetNumberOfPages(int numberOfResults)
     {
         numberOfPages = (numberOfResults / 20) + 1;
     }
+
+    /*
+    private async Task SetCurrentPage(int page)
+    {
+        CurrentPage = page;
+   //Stuff
+        }
+    }
+    */
+
 
 }
