@@ -23,6 +23,9 @@
     [Parameter]
     public int NumberOfPages { get; set; }
 
+    [Parameter]
+    public int Radius { get; set; }
+
     private List<PageItem> _pageItems = new();
 
     protected override void OnParametersSet()
@@ -32,15 +35,18 @@
 
     private void LoadPages()
     {
+        _pageItems = new List<PageItem>();
+
         var isPreviousPageEnabled = (CurrentPage > 1);
         var previousPage = CurrentPage - 1;
         _pageItems.Add(new PageItem(previousPage, isPreviousPageEnabled, "Zurück"));
 
         for (int i = 1; i <= NumberOfPages; i++)
         {
-
-            _pageItems.Add(new PageItem(i) { Active = (CurrentPage == i) });
-
+           if (i >= CurrentPage - Radius && i <= CurrentPage + Radius)
+            {
+                _pageItems.Add(new PageItem(i) { Active = (CurrentPage == i) });
+            }
         }
 
         var isNextPageEnabled = (CurrentPage < NumberOfPages);
