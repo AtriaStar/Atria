@@ -43,9 +43,12 @@ namespace IntegrationTests.Helpers
                 CreatedAt = DateTimeOffset.UtcNow,
             };
 
-            await _context.Users.AddAsync(user);
-            await _context.Sessions.AddAsync(session);
-            await _context.SaveChangesAsync();
+            if (!_context.Users.Contains(user)) {
+                await _context.Users.AddAsync(user);
+                await _context.Sessions.AddAsync(session);
+                await _context.SaveChangesAsync();
+            }
+            
             return (user, session);
         }
     }
