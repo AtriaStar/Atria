@@ -23,7 +23,14 @@ public class FromDatabaseAttribute : ModelBinderAttribute {
                 return;
             }
             foreach (var property in bindingContext.ModelMetadata.ValidatorMetadata.OfType<IncludeAttribute>()) {
-                await db.Entry(obj).Reference(property.Name).LoadAsync();
+                if (obj.GetType().GetProperty(property.Name)!.PropertyType.GetInterface("IEnumerable") == null)
+                {
+                    await db.Entry(obj).Reference(property.Name).LoadAsync();
+                }
+                else
+                {
+                    await db.Entry(obj).Collection(property.Name).LoadAsync();
+                }
             }
 
             bindingContext.ValidationState.Add(obj, new() { SuppressValidation = true });

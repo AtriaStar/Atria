@@ -25,13 +25,13 @@
         }
         else
         {
-            <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
+            <EditForm Model="_wse">
                 <DataAnnotationsValidator></DataAnnotationsValidator>
                 <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
                     <button class="btn btn-danger" type="button" @onclick="CancelEdit">
                         Abbrechen
                     </button>
-                    <button class="btn btn-success" type="submit">
+                    <button class="btn btn-success" type="submit" @onclick="HandleValidSubmit">
                         Speichern
                     </button>
                 </div>
@@ -123,7 +123,7 @@
                         <h6 class="card-title fw-bold">Bewertung</h6>
                         <div class="row">
                             <div class="col-auto">
-                                @for (int i = 1; i <= Convert.ToInt32(Math.Floor(_avgReview)); i++)
+                                @*@for (int i = 1; i <= Convert.ToInt32(Math.Floor(_avgReview)); i++)
                                 {
                                     <i class="fa fa-star rating-color"/>
                                 }
@@ -137,8 +137,12 @@
                                 @for (int i = Convert.ToInt32(Math.Floor(_avgReview)) + 1; i <= 5; i++)
                                 {
                                     <i class="fa fa-star rating-uncolored"/>
-                                }
-                                
+                                }*@
+                                <i class="fa fa-star rating-color"/>
+                                <i class="fa fa-star rating-color"/>
+                                <i class="fa-regular fa-star-half-stroke rating-color"/>
+                                <i class="fa fa-star rating-uncolored"/>
+                                <i class="fa fa-star rating-uncolored"/>
                             </div>
                             <div class="col-auto">
                                 <p>@_wse.Questions.Count() Bewertungen</p>
@@ -257,8 +261,7 @@
             </div>
         }
 
-        @foreach (Question question in _wse.Questions) @*show first 3-5 question*@
-        {
+        @*TODO foreach question*@
             <div class="accordion mb-4" id="questionAccordion">
                 <div class="accordion-item">
                     <div class="accordion-header px-4 py-3 bg-light border-bottom" id="question">
@@ -279,24 +282,25 @@
                                 <button class="btn btn-outline-success btn-small" type="button">
                                     Antworten
                                 </button>
-                                @if (@*_isCreator*@true) {
+                                @*TODO isCreator*@
+                                @if (true) {
                                     <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteQuestionDialog">
                                         Löschen
                                     </button>
                                 }
                             }
-                            @*if answers exist*@
+                            @*TODO if answers exist*@
                             <button class="btn btn-small btn-outline-secondary collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#answerOne" aria-expanded="false" aria-controls="answerOne">
                                 Antworten anzeigen
                             </button>
                         </div>
                     </div>
 
-                    @*if answers exist*@
+                    @*TODO if answers exist*@
                     <div id="answerOne" class="accordion-collapse collapse" aria-labelledby="question" data-bs-parent="#questionAccordion">
                         <div class="accordion-body">
                             <ul class="list-group list-group-flush py-0">
-                                @*foreach answer*@
+                                @*TODO foreach answer*@
                                 <li class="list-group-item px-0">
                                     <div class="row">
                                         <div class="col-auto">
@@ -310,7 +314,8 @@
                                             Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
                                         </div>
                                     </div>
-                                    @if (@*_isCreator*@true) {
+                                    @*TODO isCreator*@
+                                    @if (true) {
                                         <div class="d-grid mt-2 d-flex justify-content-end">
                                             <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteAnswerDialog">
                                                 Löschen
@@ -321,13 +326,23 @@
                             </ul>
                         </div>
                     </div>
+
+                    @*TODO if more answers exists*@
+                    @if (true) {
+                        <div class="d-grid d-flex mt-4 mb-4 justify-content-center">
+                            @*when clicked show 3-5 more answers*@
+                            <button class="btn btn-outline-secondary btn-small" type="button">weitere Antworten</button>
+                        </div>
+                    }
                 </div>
             </div>
-        }
+        
 
-        @if (_wse.Questions.Count() > 3) {
+        @*TODO if more questions exists*@
+        @if (true) {
             <div class="d-grid d-flex mt-2 mb-4 justify-content-center">
-                <button class="btn btn-outline-secondary btn-small" type="button">weitere Fragen</button> @*when clicked show 3-5 more questions*@
+                @*when clicked show 3-5 more questions*@
+                <button class="btn btn-outline-secondary btn-small" type="button">weitere Fragen</button>
             </div>
         }
         
@@ -348,6 +363,7 @@
                     <a class="btn btn-outline-secondary btn-small dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                         Sortieren nach
                     </a>
+                    @*TODO sort logic*@
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
                             <a class="dropdown-item" href="#">Neuste</a>
@@ -366,7 +382,7 @@
             </div>
         </div>
 
-        @foreach (Review review in _wse.Reviews) @*show first 3-5 reviews*@
+        @foreach (Review review in _wse.Reviews)
         {
             <div class="card mt-3 mb-4">
                 <div class="card-body">
@@ -388,7 +404,8 @@
                             <p class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
                         </div>
                     </div>
-                    @if (@*_isCreator*@true)
+                    @*TODO isCreator*@
+                    @if (true)
                     {
                         <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
                             <button class="btn btn-outline-success btn-small" type="button" @onclick="() => _displayForm = !_displayForm">
@@ -403,10 +420,12 @@
             </div>
         }
 
-        @if (_wse.Reviews.Count() > 3)
+        @*TODO if more reviews exist*@
+        @if (true)
         {
             <div class="d-grid d-flex mt-2 mb-2 justify-content-center">
-                <button class="btn btn-outline-secondary btn-small" type="button">weitere Bewertungen</button> @*when clicked show 3-5 more questions*@
+                @*when clicked show 3-5 more questions*@
+                <button class="btn btn-outline-secondary btn-small" type="button">weitere Bewertungen</button> 
             </div>
         }
     }
@@ -426,13 +445,13 @@
         }
         else
         {
-            <EditForm Model="_wse" OnValidSubmit="HandleValidSubmit">
+            <EditForm Model="_wse">
                 <DataAnnotationsValidator></DataAnnotationsValidator>
                 <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
                     <button class="btn btn-danger" type="button" @onclick="CancelEdit">
                         Abbrechen
                     </button>
-                    <button class="btn btn-success" type="submit">
+                    <button class="btn btn-success" type="submit" @onclick="HandleValidSubmit">
                         Speichern
                     </button>
                 </div>
@@ -446,20 +465,43 @@
     <Frontend.Pages.Components.CollabModal OnClose="@OnCollabDialogClose"/>
 }
 
+@*QuestionId=""*@
 @if (DeleteQuestionDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal Title="Frage löschen" Text="Sind Sie sicher, dass Sie Ihre Frage löschen möchten?" OnClose="@OnDeleteQuestionDialogClose"/>
+    <Frontend.Pages.Components.DeleteModal 
+    Title="Frage löschen" 
+    Text="Sind Sie sicher, dass Sie Ihre Frage löschen möchten?" 
+    ToDelete="question" 
+    WseId="WseId"
+    OnClose="@OnDeleteQuestionDialogClose"/>
 }
 
+@*QuestionId="" AnswerId=""*@
 @if (DeleteAnswerDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal Title="Antwort löschen" Text="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?" OnClose="@OnDeleteAnswerDialogClose"/>
+    <Frontend.Pages.Components.DeleteModal 
+    Title="Antwort löschen" 
+    Text="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?" 
+    ToDelete="answer" 
+    WseId="WseId"
+    OnClose="@OnDeleteAnswerDialogClose"/>
 }
 
+@*ReviewId=""*@
 @if (DeleteReviewDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal Title="Bewertung löschen" Text="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?" OnClose="@OnDeleteReviewDialogClose"/>
+    <Frontend.Pages.Components.DeleteModal 
+    Title="Bewertung löschen" 
+    Text="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?" 
+    ToDelete="review" 
+    WseId="WseId"
+    OnClose="@OnDeleteReviewDialogClose"/>
 }
 
 @if (DeleteWseDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?" OnClose="@OnDeleteWseDialogClose"/>
+    <Frontend.Pages.Components.DeleteModal 
+    Title="Eintrag löschen" 
+    Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?" 
+    ToDelete="wse" 
+    WseId="WseId"
+    OnClose="@OnDeleteWseDialogClose"/>
 }
 
 @code {
@@ -537,6 +579,9 @@
     private WebserviceEntry[]? CurrentUserBookmarks { get; set; }
 
     private string? NewQuestion { get; set; }
+    private ICollection<Question> _wseQuestions = new Question[] { };
+    private ICollection<Answer> _wseAnswers = new Answer[] { };
+    private ICollection<Review> _wseReviews = new Review[] { };
 
     private bool _isLoggedIn { get; set; }
     private bool _isCollab { get; set; }
@@ -546,7 +591,8 @@
 
     private string ConflictMessage { get; set; } = null!;
 
-    private async void HandleValidSubmit()
+    /*not working man*/
+    private async void HandleValidSubmit() 
     {
         var response = await HttpClient.PostAsJsonAsync("wse", _wse);
 
@@ -562,7 +608,8 @@
         }
     }
 
-    private void CancelEdit()
+    /*not working man*/
+    private void CancelEdit() 
     {
         NavManager.NavigateTo("wse/" + WseId);
     }
@@ -570,26 +617,36 @@
     protected override async Task OnInitializedAsync()
     {
         _wse = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId) ?? new WebserviceEntry() {};
+        await GetWseQuestions();
+        await GetWseReviews();
         GetAvgReview();
         _isLoggedIn = LoginState.LoggedIn;
         _userId = LoginState.User!.Id;
         CurrentUser = await HttpClient.GetFromJsonAsync<User>("user/" + _userId) ?? new User() {};
-        await GetCurrentUserWse();
-        await GetCurrentUserBookmarks();
+        await CheckCurrentUserCollab();
+        await CheckCurrentUserBookmark();
     }
 
-    private void GetAvgReview()
+    /*TODO add pagination*/
+    private async Task GetWseQuestions()
     {
-        double sum = 0;
-        foreach (Review review in _wse.Reviews) 
-        {
-            sum += (int)review.StarCount;
-        }
-        sum = sum / _wse.Reviews.Count();
-        _avgReview = Math.Round(sum * 2, MidpointRounding.AwayFromZero) / 2;
+        _wseQuestions = await HttpClient.GetFromJsonAsync<Question[]>("wse/" + WseId + "/question") ?? new Question[] {};
     }
 
-    private async Task GetCurrentUserWse()
+    /*TODO add pagination*/
+    private async Task GetWseAnswers(long questionId)
+    {
+        var wseAnswers = await HttpClient.GetFromJsonAsync<Answer[]>("wse/" + WseId + "/" + questionId) ?? new Answer[] {};
+        /*return wseAnswers;*/
+    }
+
+    /*TODO add pagination*/
+    private async Task GetWseReviews()
+    {
+        _wseReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review") ?? new Review[] {};
+    }
+
+    private async Task CheckCurrentUserCollab()
     {
         CurrentUserWse = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + _userId + "/wse");
         if (CurrentUserWse != null)
@@ -605,7 +662,7 @@
         }
     }
 
-    private async Task GetCurrentUserBookmarks()
+    private async Task CheckCurrentUserBookmark()
     {
         CurrentUserBookmarks = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + _userId + "/bookmarks");
         if (CurrentUserBookmarks != null)
@@ -621,10 +678,40 @@
         }
     }
 
-    private void ChangeBookmarkStatus()
+    private async void ChangeBookmarkStatus()
     {
-        _isBookmark = !_isBookmark;
-        @* TODO logic *@
+        var response = new HttpResponseMessage{};
+
+        if (!_isBookmark)
+        {
+            response = await HttpClient.PostAsJsonAsync("user/" + _userId + "/bookmarks/add/" + WseId, "");
+        } else
+        {
+            response = await HttpClient.PostAsJsonAsync("user/" + _userId + "/bookmarks/remove/" + WseId, "");
+        }
+
+        if (response.IsSuccessStatusCode) {
+            _isBookmark = !_isBookmark;
+        }
+        else if (response.StatusCode == HttpStatusCode.Conflict) {
+            /*TODO specify message*/
+            ConflictMessage = "There was an conflict";
+            StateHasChanged();
+        } else {
+            NavManager.NavigateTo("/internal-server-error");
+        }
+    }
+
+    /*delete when reviews are implemented*/
+    private void GetAvgReview()
+    {
+        double sum = 0;
+        foreach (Review review in _wse.Reviews) 
+        {
+            sum += (int)review.StarCount;
+        }
+        sum = sum / _wse.Reviews.Count();
+        _avgReview = Math.Round(sum * 2, MidpointRounding.AwayFromZero) / 2;
     }
 
     private async void SubmitNewQuestion()

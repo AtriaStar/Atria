@@ -27,5 +27,8 @@ public class User
     [JsonIgnore]
     public ISet<WebserviceEntry> Bookmarks { get; set; } = new HashSet<WebserviceEntry>();
 
+    [JsonIgnore]
+    public ICollection<WseDraft> WseDrafts { get; set; } = new List<WseDraft>();
+
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

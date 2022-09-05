@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220902203427_Initial")]
+    [Migration("20220904233332_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -398,8 +398,15 @@ namespace Backend.Migrations
                         .HasColumnType("text")
                         .HasColumnName("short_description");
 
+                    b.Property<long?>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id")
                         .HasName("pk_drafts");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_drafts_user_id");
 
                     b.ToTable("drafts", (string)null);
                 });
@@ -548,6 +555,14 @@ namespace Backend.Migrations
                     b.Navigation("ContactPerson");
                 });
 
+            modelBuilder.Entity("Models.WseDraft", b =>
+                {
+                    b.HasOne("Models.User", null)
+                        .WithMany("WseDrafts")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("fk_drafts_users_user_id");
+                });
+
             modelBuilder.Entity("TagWebserviceEntry", b =>
                 {
                     b.HasOne("Models.Tag", null)
@@ -568,6 +583,8 @@ namespace Backend.Migrations
             modelBuilder.Entity("Models.User", b =>
                 {
                     b.Navigation("Bookmarks");
+
+                    b.Navigation("WseDrafts");
                 });
 
             modelBuilder.Entity("Models.WebserviceEntry", b =>

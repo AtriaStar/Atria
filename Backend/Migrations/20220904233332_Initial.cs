@@ -11,26 +11,6 @@ namespace Backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "drafts",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    short_description = table.Column<string>(type: "text", nullable: true),
-                    link = table.Column<string>(type: "text", nullable: true),
-                    full_description = table.Column<string>(type: "text", nullable: true),
-                    documentation_link = table.Column<string>(type: "text", nullable: true),
-                    documentation = table.Column<string>(type: "text", nullable: true),
-                    change_log = table.Column<string>(type: "text", nullable: true),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_drafts", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "users",
                 columns: table => new
                 {
@@ -54,21 +34,28 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tags",
+                name: "drafts",
                 columns: table => new
                 {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "text", nullable: false),
-                    description = table.Column<string>(type: "text", nullable: true),
-                    creation_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    wse_draft_id = table.Column<long>(type: "bigint", nullable: true)
+                    short_description = table.Column<string>(type: "text", nullable: true),
+                    link = table.Column<string>(type: "text", nullable: true),
+                    full_description = table.Column<string>(type: "text", nullable: true),
+                    documentation_link = table.Column<string>(type: "text", nullable: true),
+                    documentation = table.Column<string>(type: "text", nullable: true),
+                    change_log = table.Column<string>(type: "text", nullable: true),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    user_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_tags", x => x.name);
+                    table.PrimaryKey("pk_drafts", x => x.id);
                     table.ForeignKey(
-                        name: "fk_tags_drafts_wse_draft_id",
-                        column: x => x.wse_draft_id,
-                        principalTable: "drafts",
+                        name: "fk_drafts_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
                         principalColumn: "id");
                 });
 
@@ -119,6 +106,25 @@ namespace Backend.Migrations
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tags",
+                columns: table => new
+                {
+                    name = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    creation_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    wse_draft_id = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_tags", x => x.name);
+                    table.ForeignKey(
+                        name: "fk_tags_drafts_wse_draft_id",
+                        column: x => x.wse_draft_id,
+                        principalTable: "drafts",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -271,6 +277,11 @@ namespace Backend.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_collaborator_user_id",
                 table: "collaborator",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_drafts_user_id",
+                table: "drafts",
                 column: "user_id");
 
             migrationBuilder.CreateIndex(

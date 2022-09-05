@@ -11,7 +11,6 @@ namespace Backend.Controllers;
 [Route("wse")]
 public class WseController : ControllerBase
 {
-
     private readonly AtriaContext _context;
 
     public WseController(AtriaContext context) {
@@ -19,30 +18,50 @@ public class WseController : ControllerBase
     }
 
     [HttpGet("{wseId:long}")]
-    public WebserviceEntry Get([FromDatabase] WebserviceEntry wse) => wse;
+    public WebserviceEntry Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse)
+        => wse;
+
+    [HttpGet("{wseId:long}/question")]
+    public IEnumerable<Question> GetQuestions([FromDatabase] WebserviceEntry wse, [FromQuery] Pagination pagination)
+        => wse.Questions.Paginate(pagination);
+
+    [HttpGet("{wseId:long}/question/{questionId:long}")]
+    public IEnumerable<Answer> GetAnswers(long wseId, long questionId, [FromQuery] Pagination pagination)
+        => _context.Answers.Where(x => x.WseId == wseId && x.QuestionId == questionId)
+            .Paginate(pagination);
+
+    [HttpGet("{wseId:long}/review")]
+    public IEnumerable<Review> GetReviews([FromDatabase] WebserviceEntry wse, [FromQuery] Pagination pagination)
+        => wse.Reviews.Paginate(pagination);
 
     [RequiresAuthentication]
     [HttpPost]
-    public async Task<IActionResult> EditWse(WebserviceEntry wse, [FromAuthentication] User user) {
+    public async Task<IActionResult> EditWse(WebserviceEntry wse, [FromAuthentication] User user)
+    {
         var existingWse = await _context.WebserviceEntries.FindAsync(wse.Id);
         if (existingWse == null) { return NotFound(); }
+        await _context.Entry(existingWse).Collection(x => x.Collaborators).LoadAsync();
         var rights = existingWse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights;
         if (rights == null) { return Forbid("User is not a collaborator"); }
 
-        if ((rights & WseRights.EditCollaborators) == 0) {
+        if ((rights & WseRights.EditCollaborators) == 0)
+        {
             return Forbid("Collaborator does not have the right to edit the WSE");
         }
 
-        if (!wse.Collaborators.SequenceEqual(existingWse.Collaborators) && (rights & WseRights.EditCollaborators) == 0) {
+        if (!wse.Collaborators.SequenceEqual(existingWse.Collaborators) && (rights & WseRights.EditCollaborators) == 0)
+        {
             return Forbid("Collaborator does not have the right to edit collaborators");
         }
 
-        if (wse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights != rights) {
+        if (wse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights != rights)
+        {
             return BadRequest("You cannot modify your own rights");
         }
 
-        if (wse.CreatedAt != existingWse.CreatedAt) {
-            return BadRequest("The creation timestamp cannot be modified");
+        if (wse.CreatedAt != existingWse.CreatedAt)
+        {
+            return BadRequest("Creation timestamp cannot be modified");
         }
 
         wse.Questions = existingWse.Questions;
