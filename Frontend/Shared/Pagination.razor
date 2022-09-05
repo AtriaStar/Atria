@@ -4,7 +4,7 @@
  <nav aria-label="Search results pages">
                 <ul class="pagination justify-content-center">
                     
-                    @foreach (var pageItem in pageItems)
+                    @foreach (var pageItem in _pageItems)
                     {
                         <li class="page-item @(pageItem.Enabled ? null : "disabled") @(pageItem.Active ? "active" : null)"
                             style="cursor: pointer;" @onclick="() => SelectedPage(pageItem)">
@@ -23,7 +23,7 @@
     [Parameter]
     public int NumberOfPages { get; set; }
 
-    List<PageItem> pageItems;
+    private List<PageItem> _pageItems = new();
 
     protected override void OnParametersSet()
     {
@@ -32,24 +32,20 @@
 
     private void LoadPages()
     {
-        pageItems = new List<PageItem>();
-
         var isPreviousPageEnabled = (CurrentPage > 1);
         var previousPage = CurrentPage - 1;
-        pageItems.Add(new PageItem(previousPage, isPreviousPageEnabled, "Zurück"));
+        _pageItems.Add(new PageItem(previousPage, isPreviousPageEnabled, "Zurück"));
 
         for (int i = 1; i <= NumberOfPages; i++)
         {
 
-            pageItems.Add(new PageItem(i) { Active = (CurrentPage == i) });
+            _pageItems.Add(new PageItem(i) { Active = (CurrentPage == i) });
 
         }
 
         var isNextPageEnabled = (CurrentPage < NumberOfPages);
         var nextPage = CurrentPage + 1;
-        pageItems.Add(new PageItem(nextPage, isNextPageEnabled, "Weiter"));
-
-
+        _pageItems.Add(new PageItem(nextPage, isNextPageEnabled, "Weiter"));
     }
 
     private void SelectedPage(PageItem pageItem)
