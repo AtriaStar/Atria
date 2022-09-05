@@ -21,7 +21,7 @@ namespace IntegrationTests.Helpers
             masterHashedPassword = HashingService.Hash(masterPassword, masterSalt);
         }
 
-        public async Task<(User, Session)> GetAuthenticatedUser()
+        public async Task<(User, Session)> GetAuthenticatedAdminUser()
         {
             User user = new User()
             {
@@ -31,6 +31,7 @@ namespace IntegrationTests.Helpers
                 PasswordSalt = masterSalt,
                 Email = "authenticatedUser@email.com",
                 SignUpIp = "127.0.0.1",
+                Rights = UserRights.Default,
             };
 
 

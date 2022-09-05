@@ -61,7 +61,7 @@ namespace IntegrationTests
                 var wse = context.WebserviceEntries.First();
                 var wseId = wse.Id;
                 AuthenticationAuthorizationUserFactory userFactory = new AuthenticationAuthorizationUserFactory(context);
-                var facoryResult = await userFactory.GetAuthenticatedUser();
+                var facoryResult = await userFactory.GetAuthenticatedAdminUser();
                 var authenticatedUser = facoryResult.Item1;
                 var session = facoryResult.Item2;
 
@@ -107,7 +107,7 @@ namespace IntegrationTests
                 var wse = context.WebserviceEntries.First();
                 var wseId = wse.Id;
                 AuthenticationAuthorizationUserFactory userFactory = new AuthenticationAuthorizationUserFactory(context);
-                var facoryResult = await userFactory.GetAuthenticatedUser();
+                var facoryResult = await userFactory.GetAuthenticatedAdminUser();
                 var authenticatedUser = facoryResult.Item1;
                 var session = facoryResult.Item2;
                 
@@ -173,7 +173,7 @@ namespace IntegrationTests
                 var wse = context.WebserviceEntries.First();
                 var wseId = wse.Id;
                 AuthenticationAuthorizationUserFactory userFactory = new AuthenticationAuthorizationUserFactory(context);
-                var facoryResult = await userFactory.GetAuthenticatedUser();
+                var facoryResult = await userFactory.GetAuthenticatedAdminUser();
                 var authenticatedUser = facoryResult.Item1;
                 var session = facoryResult.Item2;
 
@@ -216,7 +216,7 @@ namespace IntegrationTests
                 //Arrange
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
                 AuthenticationAuthorizationUserFactory userFactory = new AuthenticationAuthorizationUserFactory(context);
-                var facoryResult = await userFactory.GetAuthenticatedUser();
+                var facoryResult = await userFactory.GetAuthenticatedAdminUser();
                 var authenticatedUser = facoryResult.Item1;
                 var session = facoryResult.Item2;
 
