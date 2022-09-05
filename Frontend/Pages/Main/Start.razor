@@ -143,6 +143,8 @@
                 Navigate("type", null);
                 break;
         }
+
+        SetBookmarkState();
     }
 
     private async Task GetAndSetWseList()
@@ -188,7 +190,7 @@
 
     private void ChangeBookmarkStatusFilter()
     {
-        if (IsBookmark.Equals(null))
+        if (IsBookmark.Equals(null) || IsBookmark == false)
         {
             IsBookmark = true;
             _bookmarkStateFilter = "bi-bookmark-fill";
@@ -198,7 +200,18 @@
             IsBookmark = null;
             _bookmarkStateFilter = "bi-bookmark";
         }
-       NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
     }
 
+    private void SetBookmarkState()
+    {
+        if (IsBookmark.Equals(null) || IsBookmark == false)
+        {
+            _bookmarkStateFilter = "bi-bookmark";
+        }
+        else
+        {
+            _bookmarkStateFilter = "bi-bookmark-fill";
+        }
+    }
 }
