@@ -189,7 +189,7 @@
         _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? Array.Empty<WebserviceEntry>();
 
         
-        var responseCount = await HttpClient.GetAsync("search/wse/count");
+        var responseCount = await HttpClient.GetAsync("search/wse/count" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
         SetNumberOfPages(numberOfEntries);
         
