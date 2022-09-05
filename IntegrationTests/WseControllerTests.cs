@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Models;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Json;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 
 namespace IntegrationTests
@@ -159,6 +161,105 @@ namespace IntegrationTests
 
                     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                     Assert.Equal(wseInDb.Name, editedWse.Name);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task EditWse_ReturnsUnauthorized_WhenUserAuthenticatedButUnauthorized()
+        {
+            using (var scope = _factory.Services.CreateScope())
+            {
+                //Arrange
+                var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
+                var wse = context.WebserviceEntries.First();
+                var wseId = wse.Id;
+                AuthenticationAuthorizationUserFactory userFactory = new AuthenticationAuthorizationUserFactory(context);
+                var facoryResult = await userFactory.GetAuthenticatedUser();
+                var authenticatedUser = facoryResult.Item1;
+                var session = facoryResult.Item2;
+
+                WebserviceEntry newWse = new WebserviceEntry
+                {
+                    Name = "EditWseUnauthorized",
+                    ShortDescription = "Search things",
+                    FullDescription = "search many things",
+                    Link = "https://www.Edit.com/",
+                    ViewCount = 1,
+                    ContactPersonId = authenticatedUser.Id,
+                };
+
+                await context.WebserviceEntries.AddAsync(newWse);
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(newWse);
+
+                //Act
+                using (var handler = new HttpClientHandler { UseCookies = false })
+                {
+
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"https://localhost:7038/api/wse");
+                    request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                    request.Headers.Add("Cookie", "Authorization=12345");
+
+                    var response = await _client.SendAsync(request);
+                  
+                    //Assert
+                    
+                    Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+                   
+                }
+            }
+        }
+
+        [Fact]
+        public async Task GetAfterCreate_GetsCorrectWse_WhenUserAuthenticated()
+        {
+            using (var scope = _factory.Services.CreateScope())
+            {
+                //Arrange
+                var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
+                AuthenticationAuthorizationUserFactory userFactory = new AuthenticationAuthorizationUserFactory(context);
+                var facoryResult = await userFactory.GetAuthenticatedUser();
+                var authenticatedUser = facoryResult.Item1;
+                var session = facoryResult.Item2;
+
+                WebserviceEntry newWse = new WebserviceEntry
+                {
+                    Name = "CreatedWse",
+                    ShortDescription = "test",
+                    FullDescription = "test",
+                    Link = "https://www.test.com/",
+                    ViewCount = 1,
+                    ContactPersonId = authenticatedUser.Id,
+                };
+
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(newWse);
+
+                //Act
+                using (var handler = new HttpClientHandler { UseCookies = false })
+                {
+
+                    HttpRequestMessage requestCreate = new HttpRequestMessage(HttpMethod.Put, $"https://localhost:7038/api/wse");
+                    requestCreate.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                    requestCreate.Headers.Add("Cookie", "Authorization=12345");
+
+                    var responseCreate = await _client.SendAsync(requestCreate);
+                    var wseInDb = await context.WebserviceEntries.FirstOrDefaultAsync(x => x.Name.Equals(newWse.Name));
+
+                    HttpRequestMessage requestGet = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7038/api/wse/{wseInDb.Id}");
+                    
+                    
+                    var responseGet = await _client.SendAsync(requestGet);
+                    var responseGetWse = await responseGet.Content.ReadFromJsonAsync<WebserviceEntry>();
+                    //Assert
+
+                    if (responseGetWse == null)
+                    {
+                        Assert.True(false, "wse not in database");
+                        return;
+                    }
+                    Assert.Equal(HttpStatusCode.Created, responseCreate.StatusCode);
+                    Assert.Equal(responseGetWse.Id, wseInDb.Id);
+                    Assert.NotEmpty(responseGetWse.Collaborators);
                 }
             }
         }
