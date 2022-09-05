@@ -197,22 +197,23 @@
 
     private async Task GetAndSetUserList()
     {
+        if (Query is null or "") {
+            _userList = Array.Empty<User>();
+            numberOfEntries = 0;
+            SetNumberOfPages(numberOfEntries);
+            return;
+        }
+        
         var response = await HttpClient.GetAsync("search/user" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         if (response.IsSuccessStatusCode)
         {
             _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? Array.Empty<User>();
             
-            var responseCount = await HttpClient.GetAsync("search/user/count");
+            var responseCount = await HttpClient.GetAsync("search/user/count?query="+Query);
             numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
             SetNumberOfPages(numberOfEntries);
-            
-        }
-        else if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            _userList = Array.Empty<User>();
-        }
-        else
-        {
+
+        } else {
             NavigationManager.NavigateTo("/internal-server-error");
         }
     }
