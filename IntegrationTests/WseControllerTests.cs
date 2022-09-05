@@ -5,9 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Models;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Json;
-using System.Runtime.Intrinsics.X86;
 using System.Text;
 
 namespace IntegrationTests
@@ -245,9 +243,14 @@ namespace IntegrationTests
                     var responseCreate = await _client.SendAsync(requestCreate);
                     var wseInDb = await context.WebserviceEntries.FirstOrDefaultAsync(x => x.Name.Equals(newWse.Name));
 
+                    if (wseInDb == null)
+                    {
+                        Assert.True(false, "wse not created in database");
+                        return;
+                    }
+
                     HttpRequestMessage requestGet = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7038/api/wse/{wseInDb.Id}");
-                    
-                    
+                     
                     var responseGet = await _client.SendAsync(requestGet);
                     var responseGetWse = await responseGet.Content.ReadFromJsonAsync<WebserviceEntry>();
                     //Assert
