@@ -84,7 +84,7 @@
     </div>
     @if (numberOfPages >= 2)
     {
-        <Pagination NumberOfPages = "numberOfPages" CurrentPage="Page" SelectedPage="SelectedPage"></Pagination>
+        <Pagination NumberOfPages = "numberOfPages" CurrentPage="Page"></Pagination>
      
     }
 </div>
@@ -102,7 +102,7 @@
 
     private int numberOfEntries;
 
-    
+
 
     /* is needed to allow different number of entries per page
     [Parameter]
@@ -163,6 +163,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        if(Page == 0)
+        {
+            Page = 1;
+        }
         await base.OnParametersSetAsync();
         switch (Type)
         {
@@ -246,26 +250,8 @@
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
     }
 
-
-   //SelectedPage may be not needed
-    private async Task SelectedPage(int page)
-    {
-        Page = page;
-    }
-
     private void SetNumberOfPages(int numberOfResults)
     {
         numberOfPages = (numberOfResults / 20) + 1;
     }
-
-    /*
-    private async Task SetCurrentPage(int page)
-    {
-        CurrentPage = page;
-   //Stuff
-        }
-    }
-    */
-
-
 }

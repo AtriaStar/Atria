@@ -1,28 +1,27 @@
-﻿ <nav aria-label="Search results pages">
+﻿@inject NavigationManager NavigationManager
+
+
+ <nav aria-label="Search results pages">
                 <ul class="pagination justify-content-center">
                     
                     @foreach (var pageItem in pageItems)
                     {
                         <li class="page-item @(pageItem.Enabled ? null : "disabled") @(pageItem.Active ? "active" : null)"
-                            style="cursor: pointer;" @onclick="() => SelectedPageInternal(pageItem)">
+                            style="cursor: pointer;" @onclick="() => SelectedPage(pageItem)">
                                
                    <span class="page-link">@pageItem.Text</span>
                    </li>
                     }
-                    
                 </ul>
             </nav>
 
 
 @code {
     [Parameter]
-    public int CurrentPage { get; set; } = 1;
+    public int CurrentPage { get; set; }
 
     [Parameter]
     public int NumberOfPages { get; set; }
-
-    [Parameter]
-    public EventCallback<int> SelectedPage { get; set; }
 
     List<PageItem> pageItems;
 
@@ -37,23 +36,23 @@
 
         var isPreviousPageEnabled = (CurrentPage > 1);
         var previousPage = CurrentPage - 1;
-        pageItems.Add(new PageItem(previousPage, isPreviousPageEnabled, "Previous"));
+        pageItems.Add(new PageItem(previousPage, isPreviousPageEnabled, "Zurück"));
 
         for (int i = 1; i <= NumberOfPages; i++)
         {
-            
-                pageItems.Add(new PageItem(i) { Active = (CurrentPage == i) });
-            
+
+            pageItems.Add(new PageItem(i) { Active = (CurrentPage == i) });
+
         }
 
         var isNextPageEnabled = (CurrentPage < NumberOfPages);
         var nextPage = CurrentPage + 1;
-        pageItems.Add(new PageItem(nextPage, isNextPageEnabled, "Next"));
+        pageItems.Add(new PageItem(nextPage, isNextPageEnabled, "Weiter"));
 
 
     }
 
-    private async Task SelectedPageInternal(PageItem pageItem)
+    private void SelectedPage(PageItem pageItem)
     {
         if(pageItem.Page == CurrentPage)
         {
@@ -64,7 +63,8 @@
             return;
         }
         CurrentPage = pageItem.Page;
-        await SelectedPage.InvokeAsync(pageItem.Page);
+  
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", CurrentPage));
     }
 
     public class PageItem
@@ -84,6 +84,5 @@
         public int Page { get; set; }
         public bool Enabled { get; set; } = true;
         public bool Active { get; set; } = false;
-
     }
 }
