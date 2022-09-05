@@ -25,6 +25,7 @@ namespace IntegrationTests.Helpers
             db.Answers.RemoveRange(db.Answers);
             db.Questions.RemoveRange(db.Questions);
             db.Reviews.RemoveRange(db.Reviews);
+            db.Tags.RemoveRange(db.Tags);
             db.SaveChanges();
         }
     }
