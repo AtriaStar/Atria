@@ -3,8 +3,11 @@
                     
                     @foreach (var pageItem in pageItems)
                     {
-                        <li class="page-item @(pageItem.Enabled ? null : "disabled") @(pageItem.Active ? "active" : null)"><a class="page-link" style="cursor: pointer;" @onclick="() => SelectedPageInternal(pageItem)" >@pageItem.Page</a></li>
+                        <li class="page-item @(pageItem.Enabled ? null : "disabled") @(pageItem.Active ? "active" : null)"
+                            style="cursor: pointer;" @onclick="() => SelectedPageInternal(pageItem)">
+                               
                    <span class="page-link">@pageItem.Text</span>
+                   </li>
                     }
                     
                 </ul>
@@ -17,9 +20,6 @@
 
     [Parameter]
     public int NumberOfPages { get; set; }
-
-    [Parameter]
-    public int Radius { get; set; }
 
     [Parameter]
     public EventCallback<int> SelectedPage { get; set; }
@@ -35,19 +35,18 @@
     {
         pageItems = new List<PageItem>();
 
-        var isPreviousPageEnabled = (CurrentPage != 1);
+        var isPreviousPageEnabled = (CurrentPage > 1);
         var previousPage = CurrentPage - 1;
         pageItems.Add(new PageItem(previousPage, isPreviousPageEnabled, "Previous"));
 
         for (int i = 1; i <= NumberOfPages; i++)
         {
-            if (i >= CurrentPage - Radius && i <= CurrentPage + Radius)
-            {
+            
                 pageItems.Add(new PageItem(i) { Active = (CurrentPage == i) });
-            }
+            
         }
 
-        var isNextPageEnabled = (CurrentPage != NumberOfPages);
+        var isNextPageEnabled = (CurrentPage < NumberOfPages);
         var nextPage = CurrentPage + 1;
         pageItems.Add(new PageItem(nextPage, isNextPageEnabled, "Next"));
 

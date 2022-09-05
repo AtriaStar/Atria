@@ -84,7 +84,7 @@
     </div>
     @if (numberOfPages >= 2)
     {
-        <Pagination NumberOfPages = "numberOfPages" CurrentPage="CurrentPage" Radius="3" SelectedPage="SelectedPage"></Pagination>
+        <Pagination NumberOfPages = "numberOfPages" CurrentPage="Page" SelectedPage="SelectedPage"></Pagination>
      
     }
 </div>
@@ -115,7 +115,7 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public int CurrentPage { get; set; } = 1; //currentPage
+    public int Page { get; set; } = 1;
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -250,7 +250,7 @@
    //SelectedPage may be not needed
     private async Task SelectedPage(int page)
     {
-        CurrentPage = page;
+        Page = page;
     }
 
     private void SetNumberOfPages(int numberOfResults)
