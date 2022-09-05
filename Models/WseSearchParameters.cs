@@ -1,11 +1,11 @@
 ﻿namespace Models;
 
 public record WseSearchParameters(
-    string? Query,
-    bool? IsOnline,
-    bool? HasBookmark,
-    HashSet<Tag>? Tags,
-    StarCount MinReviewAvg,
-    Order Order,
-    bool Ascending
+    string? Query = null,
+    bool? IsOnline = null,
+    bool? HasBookmark = null,
+    HashSet<Tag>? Tags = null,
+    StarCount MinReviewAvg = StarCount.One,
+    Order Order = Order.Relevance,
+    bool Ascending = false
 );
