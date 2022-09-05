@@ -44,7 +44,7 @@ public class WseController : ControllerBase
         var rights = existingWse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights;
         if (rights == null) { return Forbid("User is not a collaborator"); }
 
-        if ((rights & WseRights.EditCollaborators) == 0)
+        if ((rights & WseRights.EditData) == 0)
         {
             return Forbid("Collaborator does not have the right to edit the WSE");
         }

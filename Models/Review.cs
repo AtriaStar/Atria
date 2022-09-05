@@ -13,7 +13,7 @@ public class Review
     [JsonIgnore]
     public WebserviceEntry Wse { get; set; } = null!;
     public string Title { get; set; } = null!;
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
     public StarCount StarCount { get; set; }
     public DateTimeOffset CreationTime { get; set; }
     public long CreatorId { get; set; }

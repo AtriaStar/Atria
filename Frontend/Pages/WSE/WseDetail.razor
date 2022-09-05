@@ -6,16 +6,16 @@
 @inject HttpClient HttpClient
 @inject IJSRuntime Js
 
-<PageTitle>Atria - _wse.Name</PageTitle>
+<PageTitle>Atria - @_wse.Name</PageTitle>
 
 <div class="container-xxl mt-4">
 
     @if (_isCollab)
     {
-        @if (!_displayForm)
+        @if (!_displayEditForm)
         {
             <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-                <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
+                <button class="btn btn-success" type="button" @onclick="() => _displayEditForm = !_displayEditForm">
                     Bearbeiten
                 </button>
                 <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDialog">
@@ -26,7 +26,8 @@
         else
         {
             <EditForm Model="_wse">
-                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
                 <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
                     <button class="btn btn-danger" type="button" @onclick="CancelEdit">
                         Abbrechen
@@ -35,7 +36,6 @@
                         Speichern
                     </button>
                 </div>
-                <ValidationSummary></ValidationSummary>
             </EditForm>
         }
     }
@@ -49,7 +49,7 @@
                 </div>
                 <div class="col ps-0">
                     <h3 class="card-title fw-bold">
-                        @if (!_displayForm)
+                        @if (!_displayEditForm)
                         {
                             @_wse.Name
                         }
@@ -63,7 +63,7 @@
                         }
                     </h3>
                 </div>
-                @if (!_displayForm)
+                @if (!_displayEditForm)
                 {
                     <div class="col-auto d-flex align-content-end me-1">
                         @{
@@ -81,7 +81,7 @@
                 Ansprechpartner
                 <button class="btn btn-outline-secondary btn-small ms-2" @onclick="OpenCollabDialog">weitere Kollaboratoren</button>
             </h5>
-            @if (!_displayForm)
+            @if (!_displayEditForm)
             {
                 <div class="card-text">@_wse.ShortDescription</div>
             }
@@ -97,7 +97,7 @@
         </div>
     </div>
 
-    @if (_displayForm) {
+    @if (_displayEditForm) {
         <div class="col-auto mt-sm-1">
 
             <div class="card mb-4">
@@ -116,7 +116,7 @@
     <div class="row mb-4">
         @*------------REVIEW AND TAGS------------*@
         <div class="col-md-3 mb-4">
-            @if (!_displayForm)
+            @if (!_displayEditForm)
             {
                 <div class="card mb-4">
                     <div class="card-body">
@@ -174,7 +174,7 @@
             <div class="card mb-4">
                 <h6 class="card-header fw-bold">Änderungshistorie</h6>
                 <div class="card-body">
-                    @if (!_displayForm)
+                    @if (!_displayEditForm)
                     {
                         @_wse.ChangeLog
                     }
@@ -195,7 +195,7 @@
                     <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation" href="@_wse.DocumentationLink" />
                 </h6>
                 <div class="card-body">
-                    @if (!_displayForm)
+                    @if (!_displayEditForm)
                     {
                         <div class="card-text">@_wse.Documentation</div>
                     }
@@ -210,7 +210,7 @@
                 </div>
             </div>
 
-            @if (_displayForm) {
+            @if (_displayEditForm) {
                 <div class="col-auto mt-sm-1">
                     <div class="card mb-4">
                         <h6 class="card-header fw-bold">Dokumentations-Link</h6>
@@ -228,7 +228,7 @@
             <div class="card">
                 <h6 class="card-header fw-bold">Volltextbeschreibung</h6>
                 <div class="card-body">
-                    @if (!_displayForm)
+                    @if (!_displayEditForm)
                     {
                         <div class="card-text">@_wse.FullDescription</div>
                     } else {
@@ -243,7 +243,7 @@
         </div>
     </div>
 
-    @if (!_displayForm)
+    @if (!_displayEditForm)
     {
         <hr/>
 
@@ -358,31 +358,34 @@
                     <button class="btn btn-outline-success btn-small" type="button">neue Bewertung</button>
                 </div>
             }
-            <div class="col-auto ms-auto">
-                <div class="dropdown">
-                    <a class="btn btn-outline-secondary btn-small dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                        Sortieren nach
-                    </a>
-                    @*TODO sort logic*@
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="#">Neuste</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">Älteste</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">Absteigend</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">Aufsteigend</a>
-                        </li>
-                    </ul>
+            @if (_wseReviews.Length > 0)
+            {
+                <div class="col-auto ms-auto">
+                    <div class="dropdown">
+                        <a class="btn btn-outline-secondary btn-small dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                            Sortieren nach
+                        </a>
+                        @*TODO sort logic*@
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">Neuste</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Älteste</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Absteigend</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Aufsteigend</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
 
-        @foreach (Review review in _wse.Reviews)
+        @foreach (Review review in _wseReviews)
         {
             <div class="card mt-3 mb-4">
                 <div class="card-body">
@@ -399,16 +402,15 @@
                             <div class="card-subtitle mt-1 text-muted">Date</div>
                         </div>
                         <div class="col mt-1">
-                            <h6 class="card-title fw-bold">Title</h6>
-                            <div class="card-subtitle mb-2 text-muted">Creator</div>
-                            <p class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
+                            <h6 class="card-title fw-bold">@review.Title</h6>
+                            <div class="card-subtitle mb-2 text-muted">@review.Creator.FirstNames @review.Creator.LastName</div>
+                            <p class="card-text">@review.Description</p>
                         </div>
                     </div>
-                    @*TODO isCreator*@
-                    @if (true)
+                    @if (_isLoggedIn && review.CreatorId == _userId)
                     {
                         <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
-                            <button class="btn btn-outline-success btn-small" type="button" @onclick="() => _displayForm = !_displayForm">
+                            <button class="btn btn-outline-success btn-small" type="button" href="editReview">
                                 Bearbeiten
                             </button>
                             <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteReviewDialog">
@@ -419,23 +421,20 @@
                 </div>
             </div>
         }
-
-        @*TODO if more reviews exist*@
-        @if (true)
+        @if (_wseNextReviews.Length != 0)
         {
             <div class="d-grid d-flex mt-2 mb-2 justify-content-center">
-                @*when clicked show 3-5 more questions*@
-                <button class="btn btn-outline-secondary btn-small" type="button">weitere Bewertungen</button> 
+                <button class="btn btn-outline-secondary btn-small" type="button" @onclick="GetNextWseReviews">weitere Bewertungen</button> 
             </div>
         }
     }
 
     @if (_isCollab)
     {
-        @if (!_displayForm)
+        @if (!_displayEditForm)
         {
             <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-                <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
+                <button class="btn btn-success" type="button" @onclick="() => _displayEditForm = !_displayEditForm">
                     Bearbeiten
                 </button>
                 <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDialog">
@@ -446,7 +445,8 @@
         else
         {
             <EditForm Model="_wse">
-                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
                 <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
                     <button class="btn btn-danger" type="button" @onclick="CancelEdit">
                         Abbrechen
@@ -455,7 +455,6 @@
                         Speichern
                     </button>
                 </div>
-                <ValidationSummary></ValidationSummary>
             </EditForm>
         }
     }
@@ -579,14 +578,17 @@
     private WebserviceEntry[]? CurrentUserBookmarks { get; set; }
 
     private string? NewQuestion { get; set; }
-    private ICollection<Question> _wseQuestions = new Question[] { };
-    private ICollection<Answer> _wseAnswers = new Answer[] { };
-    private ICollection<Review> _wseReviews = new Review[] { };
+    private string? NewAnswer { get; set; }
+
+    private int ReviewPage = 1;
+    private int ReviewEntryNum = 3;
+    private Review[] _wseReviews = new Review[] { };
+    private Review[] _wseNextReviews = new Review[] { };
 
     private bool _isLoggedIn { get; set; }
     private bool _isCollab { get; set; }
     private bool _isBookmark { get; set; }
-    private bool _displayForm = false;
+    private bool _displayEditForm = false;
     private double _avgReview { get; set; }
 
     private string ConflictMessage { get; set; } = null!;
@@ -617,33 +619,29 @@
     protected override async Task OnInitializedAsync()
     {
         _wse = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId) ?? new WebserviceEntry() {};
-        await GetWseQuestions();
-        await GetWseReviews();
-        GetAvgReview();
+        _wseReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + ReviewPage + "&entriesPerPage=" + ReviewEntryNum) ?? new Review[] {};
+        ReviewPage++;
+        _wseNextReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + ReviewPage + "&entriesPerPage=" + ReviewEntryNum) ?? new Review[] {};
+        ReviewPage++;
         _isLoggedIn = LoginState.LoggedIn;
-        _userId = LoginState.User!.Id;
-        CurrentUser = await HttpClient.GetFromJsonAsync<User>("user/" + _userId) ?? new User() {};
+        if (_isLoggedIn)
+        {
+            _userId = LoginState.User!.Id;
+            CurrentUser = await HttpClient.GetFromJsonAsync<User>("user/" + _userId);
+        }
         await CheckCurrentUserCollab();
         await CheckCurrentUserBookmark();
     }
 
-    /*TODO add pagination*/
-    private async Task GetWseQuestions()
+    private async Task GetNextWseReviews()
     {
-        _wseQuestions = await HttpClient.GetFromJsonAsync<Question[]>("wse/" + WseId + "/question") ?? new Question[] {};
-    }
+        var loadedReviews = new Review[_wseReviews.Length + _wseNextReviews.Length];
+        _wseReviews.CopyTo(loadedReviews, 0);
+        _wseNextReviews.CopyTo(loadedReviews, _wseReviews.Length);
+        _wseReviews = loadedReviews;
 
-    /*TODO add pagination*/
-    private async Task GetWseAnswers(long questionId)
-    {
-        var wseAnswers = await HttpClient.GetFromJsonAsync<Answer[]>("wse/" + WseId + "/" + questionId) ?? new Answer[] {};
-        /*return wseAnswers;*/
-    }
-
-    /*TODO add pagination*/
-    private async Task GetWseReviews()
-    {
-        _wseReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review") ?? new Review[] {};
+        _wseNextReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + ReviewPage + "&entriesPerPage=" + ReviewEntryNum) ?? new Review[] {};
+        ReviewPage++;
     }
 
     private async Task CheckCurrentUserCollab()
@@ -664,15 +662,18 @@
 
     private async Task CheckCurrentUserBookmark()
     {
-        CurrentUserBookmarks = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + _userId + "/bookmarks");
-        if (CurrentUserBookmarks != null)
+        if (_isLoggedIn)
         {
-            foreach (WebserviceEntry userBm in CurrentUserBookmarks)
+            CurrentUserBookmarks = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + _userId + "/bookmarks");
+            if (CurrentUserBookmarks != null)
             {
-                if (userBm.Id == WseId)
+                foreach (WebserviceEntry userBm in CurrentUserBookmarks)
                 {
-                    _isBookmark = true;
-                    break;
+                    if (userBm.Id == WseId)
+                    {
+                        _isBookmark = true;
+                        break;
+                    }
                 }
             }
         }
@@ -680,29 +681,32 @@
 
     private async void ChangeBookmarkStatus()
     {
-        var response = new HttpResponseMessage{};
-
-        if (!_isBookmark)
+        if (_isLoggedIn)
         {
-            response = await HttpClient.PostAsJsonAsync("user/" + _userId + "/bookmarks/add/" + WseId, "");
-        } else
-        {
-            response = await HttpClient.PostAsJsonAsync("user/" + _userId + "/bookmarks/remove/" + WseId, "");
-        }
+            var response = new HttpResponseMessage{};
 
-        if (response.IsSuccessStatusCode) {
-            _isBookmark = !_isBookmark;
-        }
-        else if (response.StatusCode == HttpStatusCode.Conflict) {
-            /*TODO specify message*/
-            ConflictMessage = "There was an conflict";
-            StateHasChanged();
-        } else {
-            NavManager.NavigateTo("/internal-server-error");
+            if (!_isBookmark)
+            {
+                response = await HttpClient.PostAsJsonAsync("user/" + _userId + "/bookmarks/add/" + WseId, "");
+            } else
+            {
+                response = await HttpClient.PostAsJsonAsync("user/" + _userId + "/bookmarks/remove/" + WseId, "");
+            }
+
+            if (response.IsSuccessStatusCode) {
+                _isBookmark = !_isBookmark;
+            }
+            else if (response.StatusCode == HttpStatusCode.Conflict) {
+                /*TODO specify message*/
+                ConflictMessage = "There was an conflict";
+                StateHasChanged();
+            } else {
+                NavManager.NavigateTo("/internal-server-error");
+            }
         }
     }
 
-    /*delete when reviews are implemented*/
+    /*delete when reviews are implemented
     private void GetAvgReview()
     {
         double sum = 0;
@@ -712,11 +716,11 @@
         }
         sum = sum / _wse.Reviews.Count();
         _avgReview = Math.Round(sum * 2, MidpointRounding.AwayFromZero) / 2;
-    }
+    }*/
 
     private async void SubmitNewQuestion()
     {
-        if (NewQuestion != null)
+        if (NewQuestion != null && _isLoggedIn)
         {
             var response = await HttpClient.PutAsJsonAsync("wse/question", new Question() {Text = NewQuestion, CreationTime = DateTimeOffset.UtcNow, CreatorId = _userId});
 

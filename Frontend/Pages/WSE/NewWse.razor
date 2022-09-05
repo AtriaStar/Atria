@@ -11,13 +11,8 @@
 
 <div class="container-lg mt-3">
 
-    @if (IsNewWse) {
-        <h2>Neuer Eintrag</h2>
-    } else if (IsEditWse) {
-        @*TODO inputs with data*@
-        <h2>Eintrag bearbeiten</h2>
-    }
-
+    <h2>Neuer Eintrag</h2>
+    
     @*TODO: draft only needs name; to publish name, short description and link needed*@
     <EditForm Model="@_webserviceEntry" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator/>
@@ -169,8 +164,6 @@
     private Tag[]? AllTags { get; set; }
 
     private string? TagQuery { get; set; }
-    public bool IsNewWse = true;
-    public bool IsEditWse = false;
     private string ConflictMessage { get; set; } = null!;
 
     private void HandleValidSubmit() {
