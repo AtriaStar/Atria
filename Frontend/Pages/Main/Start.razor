@@ -44,7 +44,7 @@
             @if (Type is null or "wse")
             {
                 <button class="btn-outline-light btn p-0 me-2" @onclick="ChangeBookmarkStatusFilter">
-                    <i class="bi @_bookmarkStateFilter fs-5" style="color: #dc3545"></i>
+                    <i class="bi @_bookmarkStateFilter fs-5" style="color: #dc3545" title="Lesezeichen"></i>
                 </button>
                 <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
                     Filter
@@ -181,6 +181,8 @@
                 Navigate("type", null);
                 break;
         }
+
+        SetBookmarkState();
     }
 
     private async Task GetAndSetWseList()
@@ -245,7 +247,7 @@
 
     private void ChangeBookmarkStatusFilter()
     {
-        if (IsBookmark.Equals(null))
+        if (IsBookmark.Equals(null) || IsBookmark == false)
         {
             IsBookmark = true;
             _bookmarkStateFilter = "bi-bookmark-fill";
@@ -258,8 +260,21 @@
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
     }
 
+
     private void SetNumberOfPages(int numberOfResults)
     {
         numberOfPages = (numberOfResults / 20) + 1;
+    }
+
+    private void SetBookmarkState()
+    {
+        if (IsBookmark.Equals(null) || IsBookmark == false)
+        {
+            _bookmarkStateFilter = "bi-bookmark";
+        }
+        else
+        {
+            _bookmarkStateFilter = "bi-bookmark-fill";
+        }
     }
 }
