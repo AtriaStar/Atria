@@ -84,7 +84,7 @@
     }
 
     private string GetUrlToProfile(string? type) {
-        var returnString = "profile/" + LoginState.User.Id;
+        var returnString = "profile/" + LoginState.User!.Id;
         if (type is not null) {
             returnString += "?type=" + type;
         }
