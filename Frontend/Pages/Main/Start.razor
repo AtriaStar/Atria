@@ -170,10 +170,8 @@
         _filterDialogOpen = true;
     }
 
-    private void ChangeBookmarkStatusFilter()
-    {
-        if (IsBookmark.Equals(null) || IsBookmark == false)
-        {
+    private void ChangeBookmarkStatusFilter() {
+        if (IsBookmark.Equals(null) || IsBookmark == false) {
             IsBookmark = true;
             _bookmarkStateFilter = "bi-bookmark-fill";
         } else {
@@ -183,15 +181,12 @@
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
     }
 
-    private void SetBookmarkState()
-    {
-        if (IsBookmark.Equals(null) || IsBookmark == false)
-        {
+    private void SetBookmarkState() {
+        if (IsBookmark.Equals(null) || IsBookmark == false) {
             _bookmarkStateFilter = "bi-bookmark";
-        }
-        else
-        {
+        } else {
             _bookmarkStateFilter = "bi-bookmark-fill";
         }
     }
+
 }
