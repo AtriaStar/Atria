@@ -210,7 +210,8 @@
         var response = await HttpClient.PutAsJsonAsync("user/draft", _wseDraft);
 
         if (response.IsSuccessStatusCode) {
-            NavManager.NavigateTo("wseDraft");
+            long WseDraftId = (await response.Content.ReadFromJsonAsync<WseDraft>()).Id;
+            NavManager.NavigateTo("wseDraft/" + WseDraftId);
         }
         else if (response.StatusCode == HttpStatusCode.Conflict) {
             /*TODO specify message*/

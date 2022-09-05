@@ -54,19 +54,24 @@
         switch (ToDelete)
         {
             case "wse":
-                await HttpClient.DeleteAsync("wse" + WseId);
+                await HttpClient.DeleteAsync("wse/" + WseId);
                 NavManager.NavigateTo("");
                 break;
             case "question":
-                await HttpClient.DeleteAsync("wse" + WseId + "/question/" + QuestionId);
+                await HttpClient.DeleteAsync("wse/" + WseId + "/question/" + QuestionId);
                 NavManager.NavigateTo("/wse" + WseId);
                 break;
             case "answer":
-                await HttpClient.DeleteAsync("wse" + WseId + "/question/" + QuestionId + "/answer/" + AnswerId);
+                await HttpClient.DeleteAsync("wse/" + WseId + "/question/" + QuestionId + "/answer/" + AnswerId);
                 NavManager.NavigateTo("/wse" + WseId);
                 break;
             case "review":
-                await HttpClient.DeleteAsync("wse" + WseId + "/review/" + ReviewId);
+                await HttpClient.DeleteAsync("wse/" + WseId + "/review/" + ReviewId);
+                NavManager.NavigateTo("/wse" + WseId);
+                break;
+            case "collab":
+                /*TODO add delete collab endpoint*/
+                await HttpClient.DeleteAsync("");
                 NavManager.NavigateTo("/wse" + WseId);
                 break;
         }
