@@ -39,7 +39,7 @@
                             <DataAnnotationsValidator></DataAnnotationsValidator>
                             <div class="d-flex flex-column">
                                 <div class="d-flex flex-column flex-sm-row flex-xl-column">
-                                    <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex flex-column">
+                                    <div class="me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex flex-column">
                                         <div class="mb-3">
                                             @if (_user.ProfilePicture is not null) {
                                                 <img class="avatar avatar-w" alt="" src="@_user.ProfilePicture">
@@ -47,9 +47,9 @@
                                                 <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
                                             }
                                         </div>
-                                        <div>
-                                            <InputText @bind-Value="_user.ProfilePicture" id="image_upload" type="text" class="form-control"></InputText>
-                                            <label for="image_upload" class="form-label"></label>
+                                        <div class="form-floating mb-3">
+                                            <InputText @bind-Value="_user.ProfilePicture" id="picture" type="text" class="form-control" placeholder="Link zu Profilbild"></InputText>
+                                            <label for="picture" class="form-label">Link zu Profilbild</label>
                                         </div>
                                     </div>
                                     <div class="flex-fill">
@@ -145,12 +145,9 @@
         </div>
     </div>
 
- @if (_numberOfPages >= 2)
-    {
-        <Pagination NumberOfPages = "_numberOfPages" CurrentPage="Page" Radius="3"></Pagination>
-     
+    @if (_numberOfPages >= 2) {
+        <Pagination NumberOfPages="_numberOfPages" CurrentPage="Page" Radius="3"></Pagination>
     }
-
 } else if (_userNotFound) {
     <NotFound></NotFound>
 }
@@ -185,6 +182,7 @@
     [Parameter]
     [SupplyParameterFromQuery(Name = "tags")]
     public string[]? SelectedTagsStr { get; set; }
+
     // Filter and Query end
 
     [Parameter]
@@ -237,12 +235,12 @@
                 switch (Type) {
                     case null or "wse":
                         _webserviceEntries = (await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>())!;
-                         _numberOfEntries = _webserviceEntries.Count();
+                        _numberOfEntries = _webserviceEntries.Count();
                         SetNumberOfPages(_numberOfEntries);
                         break;
                     case "bookmarks":
                         _webserviceEntries = (await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>())!;
-                         _numberOfEntries = _webserviceEntries.Count();
+                        _numberOfEntries = _webserviceEntries.Count();
                         SetNumberOfPages(_numberOfEntries);
                         break;
                     case "drafts":
@@ -252,7 +250,7 @@
                         break;
                     case "reviews":
                         _reviews = (await response.Content.ReadFromJsonAsync<IEnumerable<Review>>())!;
-                         _numberOfEntries = _reviews.Count();
+                        _numberOfEntries = _reviews.Count();
                         SetNumberOfPages(_numberOfEntries);
                         break;
                 }
@@ -309,8 +307,7 @@
         _filterDialogOpen = true;
     }
 
-     private void SetNumberOfPages(int numberOfResults)
-    {
+    private void SetNumberOfPages(int numberOfResults) {
         _numberOfPages = (numberOfResults / 20) + 1;
     }
 
