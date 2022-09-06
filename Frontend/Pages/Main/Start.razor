@@ -43,9 +43,13 @@
         <div class="d-flex mb-2 ms-auto">
             @if (Type is null or "wse")
             {
-                <button class="btn-outline-light btn p-0 me-2" @onclick="ChangeBookmarkStatusFilter">
-                    <i class="bi @_bookmarkStateFilter fs-5" style="color: #dc3545" title="Lesezeichen"></i>
-                </button>
+                <AuthView>
+                    <Authorized>
+                        <button class="btn-outline-light btn p-0 me-2" @onclick="ChangeBookmarkStatusFilter">
+                            <i class="bi @_bookmarkStateFilter fs-5" style="color: #dc3545" title="Lesezeichen"></i>
+                        </button>
+                    </Authorized>
+                </AuthView>
                 <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
                     Filter
                 </button>
