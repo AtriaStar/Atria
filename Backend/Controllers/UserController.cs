@@ -25,7 +25,7 @@ public class UserController : ControllerBase {
             .Paginate(pagination);
 
     [HttpGet("{userId:long}/bookmarks")]
-    public IEnumerable<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user, [FromQuery] Pagination pagination)
+    public IEnumerable<WebserviceEntry> GetBookmarksByUser([FromDatabase, Include(nameof(Models.User.Bookmarks))] User user, [FromQuery] Pagination pagination)
         => user.Bookmarks.Paginate(pagination);
 
     [HttpGet("{userId:long}/reviews")]

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220905155916_Initial")]
+    [Migration("20220906220025_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -446,6 +446,25 @@ namespace Backend.Migrations
                     b.ToTable("tag_webservice_entry", (string)null);
                 });
 
+            modelBuilder.Entity("UserWebserviceEntry", b =>
+                {
+                    b.Property<long>("BookmarkeesId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("bookmarkees_id");
+
+                    b.Property<long>("BookmarksId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("bookmarks_id");
+
+                    b.HasKey("BookmarkeesId", "BookmarksId")
+                        .HasName("pk_bookmarks");
+
+                    b.HasIndex("BookmarksId")
+                        .HasDatabaseName("ix_bookmarks_bookmarks_id");
+
+                    b.ToTable("bookmarks", (string)null);
+                });
+
             modelBuilder.Entity("Models.Answer", b =>
                 {
                     b.HasOne("Models.User", "Creator")
@@ -566,7 +585,7 @@ namespace Backend.Migrations
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
                     b.HasOne("Models.User", "ContactPerson")
-                        .WithMany("Bookmarks")
+                        .WithMany()
                         .HasForeignKey("ContactPersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -604,10 +623,25 @@ namespace Backend.Migrations
                         .HasConstraintName("fk_tag_webservice_entry_webservice_entries_webservice_entries_");
                 });
 
+            modelBuilder.Entity("UserWebserviceEntry", b =>
+                {
+                    b.HasOne("Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("BookmarkeesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_bookmarks_users_bookmarkees_id");
+
+                    b.HasOne("Models.WebserviceEntry", null)
+                        .WithMany()
+                        .HasForeignKey("BookmarksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_bookmarks_webservice_entries_bookmarks_id");
+                });
+
             modelBuilder.Entity("Models.User", b =>
                 {
-                    b.Navigation("Bookmarks");
-
                     b.Navigation("WseDrafts");
                 });
 

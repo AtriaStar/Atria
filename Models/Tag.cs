@@ -13,9 +13,10 @@ public class Tag {
 
     protected virtual ISet<WebserviceEntry> WebserviceEntries { get; set; } = new HashSet<WebserviceEntry>();
 
-    private class TagMapper : IEntityTypeConfiguration<Tag> {
+    private class Mapper : IEntityTypeConfiguration<Tag> {
         public void Configure(EntityTypeBuilder<Tag> builder) {
-            builder.HasMany(x => x.WebserviceEntries)
+            builder
+                .HasMany(x => x.WebserviceEntries)
                 .WithMany(x => x.Tags);
         }
     }

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -37,13 +39,24 @@ public class WebserviceEntry {
     public virtual User ContactPerson { get; set; } = null!;
     
     [JsonIgnore]
-    public ICollection<Question> Questions { get; set; } = new List<Question>();
+    public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
     
     [MaxLength(20)]
     public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
     
     [JsonIgnore]
-    public ICollection<Review> Reviews { get; set; } = new List<Review>();
-    public ICollection<Collaborator> Collaborators { get; set; } = new List<Collaborator>();
+    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public virtual ICollection<Collaborator> Collaborators { get; set; } = new List<Collaborator>();
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+    protected virtual ICollection<User> Bookmarkees { get; set; } = new List<User>();
+
+    private class Mapper : IEntityTypeConfiguration<WebserviceEntry> {
+        public void Configure(EntityTypeBuilder<WebserviceEntry> builder) {
+            builder
+                .HasMany(x => x.Bookmarkees)
+                .WithMany(x => x.Bookmarks)
+                .UsingEntity(x => x.ToTable("bookmarks"));
+        }
+    }
 }

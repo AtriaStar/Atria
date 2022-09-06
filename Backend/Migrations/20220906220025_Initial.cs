@@ -142,6 +142,30 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "bookmarks",
+                columns: table => new
+                {
+                    bookmarkees_id = table.Column<long>(type: "bigint", nullable: false),
+                    bookmarks_id = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_bookmarks", x => new { x.bookmarkees_id, x.bookmarks_id });
+                    table.ForeignKey(
+                        name: "fk_bookmarks_users_bookmarkees_id",
+                        column: x => x.bookmarkees_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_bookmarks_webservice_entries_bookmarks_id",
+                        column: x => x.bookmarks_id,
+                        principalTable: "webservice_entries",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "collaborator",
                 columns: table => new
                 {
@@ -289,6 +313,11 @@ namespace Backend.Migrations
                 column: "creator_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_bookmarks_bookmarks_id",
+                table: "bookmarks",
+                column: "bookmarks_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_collaborator_user_id",
                 table: "collaborator",
                 column: "user_id");
@@ -339,6 +368,9 @@ namespace Backend.Migrations
         {
             migrationBuilder.DropTable(
                 name: "answers");
+
+            migrationBuilder.DropTable(
+                name: "bookmarks");
 
             migrationBuilder.DropTable(
                 name: "collaborator");
