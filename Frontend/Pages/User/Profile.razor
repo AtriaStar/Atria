@@ -160,7 +160,7 @@
 }
 
 @code {
-    
+
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Type { get; set; }
@@ -169,7 +169,7 @@
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
-    
+
     [Parameter]
     [SupplyParameterFromQuery]
     public bool? IsOnline { get; set; } = false;
@@ -186,24 +186,24 @@
     [SupplyParameterFromQuery(Name = "tags")]
     public string[]? SelectedTagsStr { get; set; }
     // Filter and Query end
-    
+
     [Parameter]
     [SupplyParameterFromQuery]
     public int Page { get; set; } = 1;
-    
+
     // UserId from Url
     [Parameter]
     public long UserId { get; set; }
-    
+
     [CascadingParameter]
     private LoginState LoginState { get; set; } = null!;
-    
+
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
     private bool _displayForm;
     private bool _userNotFound;
-    
+
     // Pagination
     private int _numberOfPages;
     private int _numberOfEntries;
@@ -217,7 +217,7 @@
     private User _cloneUser = null!;
 
     private bool _filterDialogOpen;
-    
+
     protected override async Task OnInitializedAsync() {
         var response = await HttpClient.GetAsync($"user/{UserId}");
         if (response.IsSuccessStatusCode) {
@@ -236,12 +236,24 @@
             if (response.IsSuccessStatusCode) {
                 switch (Type) {
                     case null or "wse":
+                        _webserviceEntries = (await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>())!;
+                         _numberOfEntries = _webserviceEntries.Count();
+                        SetNumberOfPages(_numberOfEntries);
+                        break;
                     case "bookmarks":
+                        _webserviceEntries = (await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>())!;
+                         _numberOfEntries = _webserviceEntries.Count();
+                        SetNumberOfPages(_numberOfEntries);
+                        break;
                     case "drafts":
                         _webserviceEntries = (await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>())!;
+                        _numberOfEntries = _webserviceEntries.Count();
+                        SetNumberOfPages(_numberOfEntries);
                         break;
                     case "reviews":
                         _reviews = (await response.Content.ReadFromJsonAsync<IEnumerable<Review>>())!;
+                         _numberOfEntries = _reviews.Count();
+                        SetNumberOfPages(_numberOfEntries);
                         break;
                 }
             }
