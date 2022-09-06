@@ -196,10 +196,13 @@
         var response = await HttpClient.GetAsync("search/user" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         if (response.IsSuccessStatusCode) {
             _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? Array.Empty<User>();
-        } else if (response.StatusCode == HttpStatusCode.BadRequest) {
-            _userList = Array.Empty<User>();
+            
             var responseCount = await HttpClient.GetAsync("search/user/count?query="+Query);
             _numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
+            SetNumberOfPages(_numberOfEntries);
+        } else if (response.StatusCode == HttpStatusCode.BadRequest) {
+            _userList = Array.Empty<User>();
+            _numberOfEntries = 0;
             SetNumberOfPages(_numberOfEntries);
         } else {
             NavigationManager.NavigateTo("/internal-server-error");
