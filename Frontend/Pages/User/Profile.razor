@@ -90,12 +90,12 @@
             <div class="col">
                 <div class="d-flex flex-wrap justify-content-between">
                     <div class="nav nav-pills mb-2">
-                        <NavLink href="@Navigate("type", null)" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
-                        <NavLink href="@Navigate("type", "bookmarks")" class="nav-link me-2">Lesezeichen</NavLink>
-                        <NavLink href="@Navigate("type", "reviews")" class="nav-link me-2">Bewertungen</NavLink>
+                        <NavLink href="@NavigateType(null)" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
+                        <NavLink href="@NavigateType("bookmarks")" class="nav-link me-2">Lesezeichen</NavLink>
+                        <NavLink href="@NavigateType("reviews")" class="nav-link me-2">Bewertungen</NavLink>
                         <AuthView UserIdClaim="UserId">
                             <AuthorizedAndMatching>
-                                <NavLink href="@Navigate("type", "drafts")" class="nav-link">Entwürfe</NavLink>
+                                <NavLink href="@NavigateType("drafts")" class="nav-link">Entwürfe</NavLink>
                             </AuthorizedAndMatching>
                         </AuthView>
                     </div>
@@ -232,7 +232,13 @@
 
     protected override async Task OnParametersSetAsync() {
         if (!_userNotFound) {
-            var response = await HttpClient.GetAsync($"user/{UserId}/{Type ?? "wse"}");
+            // Get only query parameters
+            var queryString = NavigationManager
+                .ToBaseRelativePath(NavigationManager.GetUriWithQueryParameter("type", (string) null!));
+            var i = queryString.IndexOf('?');
+            queryString = i != -1 ? queryString[queryString.IndexOf('?')..] : "";
+            
+            var response = await HttpClient.GetAsync($"user/{UserId}/{Type ?? "wse"}" + queryString);
             if (response.IsSuccessStatusCode) {
                 switch (Type) {
                     case null or "wse":
@@ -287,8 +293,17 @@
         };
     }
 
-    private string Navigate(string key, string? value) {
-        return NavigationManager.GetUriWithQueryParameter(key, value);
+    private string NavigateType(string? value) {
+        if (value is null or "wse" or "bookmarks") {
+            return NavigationManager.GetUriWithQueryParameter("type", value);
+        }
+        return NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> {
+            ["type"] = value,
+            ["IsOnline"] = null,
+            ["IsBookmark"] = null,
+            ["minRating"] = null,
+            ["tags"] = null
+        });
     }
 
     private void SearchInput(KeyboardEventArgs evt) {
@@ -298,7 +313,7 @@
     }
 
     private void Search() {
-        NavigationManager.NavigateTo(Navigate("query", Query));
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("query", Query));
     }
 
     private void OnFilterDialogClose(bool accepted) {
