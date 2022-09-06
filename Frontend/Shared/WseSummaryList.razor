@@ -24,20 +24,17 @@
                             <AuthView>
                                 <Authorized>
                                     @{
-                                        _bookmarkState = LoginState.User!.Bookmarks.Contains(entry) ? "bi-bookmark-fill" : "bi-bookmark";
-                                        _bookmarkTitle = LoginState.User.Bookmarks.Contains(entry) ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                                        var bookmarkState = LoginState.User!.Bookmarks.Contains(entry);
+                                        var bookmarkTitle = bookmarkState ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                                        var bookmarkStyle = bookmarkState ? "bi-bookmark-fill" : "bi-bookmark";
                                     }
-                                    <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="() => ChangeBookmarkStatus(entry)">
-                                        <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
+                                    <button class="btn-outline-light btn p-0" title="@bookmarkTitle" @onclick="() => ChangeBookmarkStatus(entry, bookmarkState)">
+                                        <i class="bi @bookmarkStyle fs-5" style="color: #dc3545"></i>
                                     </button>
                                 </Authorized>
                                 <NotAuthorized>
-                                    @{
-                                        _bookmarkState = "bi-bookmark";
-                                        _bookmarkTitle = "Als Lesezeichen hinzufügen";
-                                    }
-                                    <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="NavigateToLogin">
-                                        <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
+                                    <button class="btn-outline-light btn p-0" title="Als Lesezeichen hinzufügen" @onclick="NavigateToLogin">
+                                        <i class="bi bi-bookmark fs-5" style="color: #dc3545"></i>
                                     </button>
                                 </NotAuthorized>
                             </AuthView>
@@ -101,17 +98,17 @@
 
 @code {
 
+    [Parameter]
+    public IEnumerable<WebserviceEntry> Entries { get; set; } = null!;
+
         @* TODO implement *@
     private double _reviewAverage = 3;
 
     [CascadingParameter]
     private LoginState LoginState { get; set; } = null!;
 
-    private string? _bookmarkState;
-    private string? _bookmarkTitle;
-
-    [Parameter]
-    public IEnumerable<WebserviceEntry> Entries { get; set; } = null!;
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
 
     private string StyleOnlineStatus(WebserviceEntry entry) {
     //return entry.IsOnline ? "text-success" : "text-danger";
@@ -119,13 +116,32 @@
         return "text-danger";
     }
 
+    protected override async Task OnInitializedAsync() {
+        await LoginState.Init;
+        if (LoginState.LoggedIn) {
+            var response = await HttpClient.GetAsync($"user/{LoginState.User.Id}/bookmarks");
+            if (response.IsSuccessStatusCode) {
+                LoginState.User.Bookmarks = (await response.Content.ReadFromJsonAsync<ISet<WebserviceEntry>>())!;
+            }
+        }
+    }
+
     private string GetWseLink(WebserviceEntry entry) {
         return "/wse/" + entry.Id;
     }
 
-    private void ChangeBookmarkStatus(WebserviceEntry entry) {
-        LoginState.User!.Bookmarks.Add(entry);
-        @* TODO http call *@
+    private async Task ChangeBookmarkStatus(WebserviceEntry entry, bool bookmarkState) {
+        if (bookmarkState) {
+            var response = await HttpClient.PostAsync($"user/{LoginState.User!.Id}/bookmarks/remove/{entry.Id}", null);
+            if (response.IsSuccessStatusCode) {
+                LoginState.User.Bookmarks.Remove(entry);
+            }
+        } else {
+            var response = await HttpClient.PostAsync($"user/{LoginState.User!.Id}/bookmarks/add/{entry.Id}", null);
+            if (response.IsSuccessStatusCode) {
+                LoginState.User.Bookmarks.Add(entry);
+            }
+        }
     }
 
     private void NavigateToLogin() {

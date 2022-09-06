@@ -6,7 +6,8 @@
 @if (LoginState.Loaded) {
     <div class="container-lg mt-3">
         <h2 class="mb-3">Einstellungen</h2>
-
+        
+        @* Removed because backend does not exist yet
         <div class="card mt-1 mb-4">
             <h5 class="card-header fw-bold">
                 Benachrichtigungen
@@ -101,6 +102,8 @@
                 </div>
             </div>
         </div>
+        *@
+        
         <div class="card mb-4">
             <h5 class="card-header fw-bold">
                 Konto
@@ -151,8 +154,9 @@
     [CascadingParameter]
     private LoginState LoginState { get; set; } = default!;
 
-    protected override void OnInitialized() {
-        if (LoginState.Loaded && !LoginState.LoggedIn) {
+    protected override async Task OnInitializedAsync() {
+        await LoginState.Init;
+        if (!LoginState.LoggedIn) {
             NavigationManager.NavigateTo("login");
         }
     }

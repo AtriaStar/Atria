@@ -30,8 +30,8 @@ public class WseController : ControllerBase {
             .Paginate(pagination);
 
     [HttpGet("{wseId:long}/review")]
-    public IEnumerable<Review> GetReviews([FromDatabase] WebserviceEntry wse, [FromQuery] Pagination pagination)
-        => wse.Reviews.Paginate(pagination);
+    public IEnumerable<Review> GetReviews(long wseId, [FromQuery] Pagination pagination)
+        => _context.Reviews.Where(x => x.WseId == wseId).Paginate(pagination);
 
     [RequiresAuthentication]
     [HttpPost]
@@ -144,7 +144,8 @@ public class WseController : ControllerBase {
     [RequiresAuthentication]
     [RequiresWseRights(WseRights.DeleteWse)]
     [HttpDelete("{wseId}")]
-    public async Task<IActionResult> DeleteWse([FromDatabase] WebserviceEntry wse) {
+    public async Task<IActionResult> DeleteWse([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse,
+        [FromAuthentication] User _) {
         _context.WebserviceEntries.Remove(wse);
         await _context.SaveChangesAsync();
         return Ok();

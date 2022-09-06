@@ -20,21 +20,22 @@ public class UserController : ControllerBase {
     public User Get([FromDatabase] User user) => user;
 
     [HttpGet("{userId:long}/wse")]
-    public IQueryable<WebserviceEntry> GetWseByUser(long userId)
-        => _context.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId));
+    public IQueryable<WebserviceEntry> GetWseByUser(long userId, [FromQuery] Pagination pagination)
+        => _context.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId))
+            .Paginate(pagination);
 
     [HttpGet("{userId:long}/bookmarks")]
-    public ISet<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user)
-        => user.Bookmarks;
+    public IEnumerable<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user, [FromQuery] Pagination pagination)
+        => user.Bookmarks.Paginate(pagination);
 
     [HttpGet("{userId:long}/reviews")]
-    public IQueryable<Review> GetReviewsByUser(long userId)
-        => _context.Reviews.Where(x => x.CreatorId == userId);
+    public IQueryable<Review> GetReviewsByUser(long userId, [FromQuery] Pagination pagination)
+        => _context.Reviews.Where(x => x.CreatorId == userId).Paginate(pagination);
 
     [RequiresAuthentication]
     [HttpGet("{userId:long}/drafts")]
-    public IActionResult GetWseDrafts([FromDatabase] User user, [FromAuthentication] User authUser)
-        => user.Id == authUser.Id ? Ok(user.WseDrafts) : Forbid();
+    public IActionResult GetWseDrafts([FromDatabase] User user, [FromAuthentication] User authUser, [FromQuery] Pagination pagination)
+        => user.Id == authUser.Id ? Ok(user.WseDrafts.Paginate(pagination)) : Forbid();
 
     [HttpGet("{userId:long}/notifications")]
     public IReadOnlyList<Notification> GetNotifications() => null!;

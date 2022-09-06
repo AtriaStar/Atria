@@ -20,11 +20,13 @@
                             <ion-icon name="settings-outline"></ion-icon>
                         </NavLink>
                     </div>
+                    @* Removed because backend does not exist yet
                     <div class="nav-item me-md-3 me-2">
                         <NavLink href="notifications" ActiveClass="link-active">
                             <ion-icon name="notifications-outline"></ion-icon>
                         </NavLink>
                     </div>
+                    *@
                     <div class="nav-item me-md-3 me-2">
                         <NavLink href="newWse" ActiveClass="link-active">
                             <ion-icon name="add-circle-outline"></ion-icon>
@@ -50,7 +52,7 @@
                 </Authorized>
                 <NotAuthorized>
                     <div class="nav-item me-md-3 me-2">
-                        <NavLink class="nav-link btn-outline-primary py-1" href="@_loginUrl">Einloggen</NavLink>
+                        <NavLink class="nav-link btn-outline-primary py-1" @onclick="SetLoginUrl" href="@_loginUrl">Einloggen</NavLink>
                     </div>
                     <div class="nav-item">
                         <NavLink class="nav-link btn-outline-primary py-1" href="register">Registrieren</NavLink>
@@ -72,15 +74,11 @@
     [Inject]
     private NavigationManager NavigationManager { get; set; } = null!;
 
-    private string _loginUrl = null!;
-
-    protected override void OnInitialized() {
-        _loginUrl = "login?returnurl=" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-    }
+    private string _loginUrl = "login";
 
     private async Task Logout() {
         await HttpClient.PostAsync("auth/logout", null);
-        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        NavigationManager.NavigateTo("", forceLoad: true);
     }
 
     private string GetUrlToProfile(string? type) {
@@ -89,6 +87,10 @@
             returnString += "?type=" + type;
         }
         return returnString;
+    }
+
+    private void SetLoginUrl() {
+        _loginUrl = "login?returnurl=" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
     }
 
 }
