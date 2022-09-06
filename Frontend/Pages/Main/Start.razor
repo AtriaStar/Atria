@@ -23,8 +23,7 @@
             <div class="nav-item">
                 <NavLink href="@Navigate("type", null)" class="nav-link" Match="NavLinkMatch.All">
                     Webservice
-                    @if (Type is null or "wse")
-                    {
+                    @if (Type is null or "wse") {
                         @_numberOfEntries
                     }
                 </NavLink>
@@ -33,16 +32,14 @@
 
                 <NavLink href="@Navigate("type", "user")" class="nav-link">
                     Nutzer
-                    @if (Type is "user")
-                    {
+                    @if (Type is "user") {
                         @_numberOfEntries
                     }
                 </NavLink>
             </div>
         </div>
         <div class="d-flex mb-2 ms-auto">
-            @if (Type is null or "wse")
-            {
+            @if (Type is null or "wse") {
                 <AuthView>
                     <Authorized>
                         <button class="btn-outline-light btn p-0" @onclick="ChangeBookmarkStatusFilter">
@@ -85,10 +82,9 @@
                 break;
         }
     </div>
-    @if (_numberOfPages >= 2)
-    {
-        <Pagination NumberOfPages = "_numberOfPages" CurrentPage="Page" Radius="3"></Pagination>
-     
+    @if (_numberOfPages >= 2) {
+        <Pagination NumberOfPages="_numberOfPages" CurrentPage="Page" Radius="3"></Pagination>
+
     }
 </div>
 
