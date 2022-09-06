@@ -161,15 +161,9 @@
 
 @code {
 
-    private int _numberOfPages;
-
-    private int _numberOfEntries;
-
-    [Inject]
-    private HttpClient HttpClient { get; set; } = default!;
-
-    private bool _displayForm;
-    private bool _userNotFound;
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int Page { get; set; } = 1;
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -197,23 +191,19 @@
     
     [Parameter]
     public long UserId { get; set; }
+    
     [CascadingParameter]
     private LoginState LoginState { get; set; } = null!;
+    
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
 
     private bool _displayForm;
     private bool _userNotFound;
-
     
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public int Page { get; set; } = 1;
-
-
-    
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public int Page { get; set; } = 1;
-
+    // Pagination
+    private int _numberOfPages;
+    private int _numberOfEntries;
 
     //List for subcomponents
     private IEnumerable<WebserviceEntry> _webserviceEntries = new List<WebserviceEntry>();
@@ -223,7 +213,7 @@
     private User _cloneUser = null!;
 
     private bool _filterDialogOpen;
-
+    
     protected override async Task OnInitializedAsync() {
         var response = await HttpClient.GetAsync($"user/{UserId}");
         if (response.IsSuccessStatusCode) {
@@ -301,11 +291,6 @@
 
     private void OpenFilterDialog() {
         _filterDialogOpen = true;
-    }
-
-     private void SetNumberOfPages(int numberOfResults)
-    {
-        _numberOfPages = (numberOfResults / 20) + 1;
     }
 
      private void SetNumberOfPages(int numberOfResults)
