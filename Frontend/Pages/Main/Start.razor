@@ -84,7 +84,6 @@
     </div>
     @if (_numberOfPages >= 2) {
         <Pagination NumberOfPages="_numberOfPages" CurrentPage="Page" Radius="3"></Pagination>
-
     }
 </div>
 
@@ -93,13 +92,13 @@
 }
 
 @code {
-    
+
     /* is needed to allow different number of entries per page
     [Parameter]
     [SupplyParameterFromQuery]
     public int? entriesPerPage  { get; set; }
     */
-    
+
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Type { get; set; }
@@ -108,7 +107,7 @@
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
-    
+
     [Parameter]
     [SupplyParameterFromQuery]
     public bool? IsOnline { get; set; }
@@ -124,34 +123,32 @@
     [Parameter]
     [SupplyParameterFromQuery(Name = "tags")]
     public string[]? SelectedTagsStr { get; set; }
-    
+
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Order { get; set; }
+
     // Filter and Query end
 
     [Parameter]
     [SupplyParameterFromQuery]
     public int Page { get; set; } = 1;
-    
+
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
-    
+
     private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
     private IEnumerable<User> _userList = new List<User>();
 
     private string _bookmarkStateFilter = "bi-bookmark";
     private bool _filterDialogOpen;
-    
+
     // Pagination
     private int _numberOfPages;
     private int _numberOfEntries;
 
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if(Page == 0)
-        {
+    protected override async Task OnParametersSetAsync() {
+        if (Page == 0) {
             Page = 1;
         }
         switch (Type) {
@@ -174,11 +171,9 @@
         var response = await HttpClient.GetAsync("search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? Array.Empty<WebserviceEntry>();
 
-        
         var responseCount = await HttpClient.GetAsync("search/wse/count" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         _numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
         SetNumberOfPages(_numberOfEntries);
-        
     }
 
     private async Task GetAndSetUserList() {
@@ -188,12 +183,12 @@
             SetNumberOfPages(_numberOfEntries);
             return;
         }
-        
+
         var response = await HttpClient.GetAsync("search/user" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         if (response.IsSuccessStatusCode) {
             _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? Array.Empty<User>();
-            
-            var responseCount = await HttpClient.GetAsync("search/user/count?query="+Query);
+
+            var responseCount = await HttpClient.GetAsync("search/user/count?query=" + Query);
             _numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
             SetNumberOfPages(_numberOfEntries);
         } else if (response.StatusCode == HttpStatusCode.BadRequest) {
@@ -245,17 +240,12 @@
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
     }
 
-
-
-    private void SetNumberOfPages(int numberOfResults)
-    {
+    private void SetNumberOfPages(int numberOfResults) {
         _numberOfPages = (numberOfResults / 20) + 1;
     }
 
-    private void SetBookmarkState()
-    {
-        if (IsBookmark.Equals(null) || IsBookmark == false)
-        {
+    private void SetBookmarkState() {
+        if (IsBookmark.Equals(null) || IsBookmark == false) {
             _bookmarkStateFilter = "bi-bookmark";
         } else {
             _bookmarkStateFilter = "bi-bookmark-fill";
