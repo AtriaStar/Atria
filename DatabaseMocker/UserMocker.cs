@@ -45,7 +45,11 @@ public class UserMocker {
             FirstNames = "Testi",
             LastName = "Test",
             Email = "test@test.de",
-            Biography = "Hi ich bin ein Test, bitte sei lieb zu mir :'("
+            Biography = "Hi ich bin ein Test, bitte sei lieb zu mir :'(",
+            PasswordHash = Array.Empty<byte>(),
+            PasswordSalt = Array.Empty<byte>(),
+            SignUpIp = "127.0.0.1",
+            Title = Titles.RandomElement()
         };
 
         await context.Users.AddAsync(userTest);
