@@ -154,8 +154,9 @@
     [CascadingParameter]
     private LoginState LoginState { get; set; } = default!;
 
-    protected override void OnInitialized() {
-        if (LoginState.Loaded && !LoginState.LoggedIn) {
+    protected override async Task OnInitializedAsync() {
+        await LoginState.Init;
+        if (!LoginState.LoggedIn) {
             NavigationManager.NavigateTo("login");
         }
     }
