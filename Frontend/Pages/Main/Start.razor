@@ -103,26 +103,16 @@
     [SupplyParameterFromQuery]
     public int? entriesPerPage  { get; set; }
     */
-
-    [Inject]
-    private HttpClient HttpClient { get; set; } = default!;
-
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public int Page { get; set; } = 1;
-
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public string? Order { get; set; }
-
+    
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Type { get; set; }
 
+    //Filter and Query start
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
-
+    
     [Parameter]
     [SupplyParameterFromQuery]
     public bool? IsOnline { get; set; }
@@ -138,15 +128,27 @@
     [Parameter]
     [SupplyParameterFromQuery(Name = "tags")]
     public string[]? SelectedTagsStr { get; set; }
+    
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Order { get; set; }
+    // Filter and Query end
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int Page { get; set; } = 1;
+    
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+    
     private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
     private IEnumerable<User> _userList = new List<User>();
 
     private string _bookmarkStateFilter = "bi-bookmark";
     private bool _filterDialogOpen;
     
+    // Pagination
     private int _numberOfPages;
-
     private int _numberOfEntries;
 
 

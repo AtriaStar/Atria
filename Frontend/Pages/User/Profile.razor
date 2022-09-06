@@ -160,15 +160,16 @@
 }
 
 @code {
-
-    [Parameter]
-    [SupplyParameterFromQuery]
-    public int Page { get; set; } = 1;
-
+    
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Type { get; set; }
 
+    //Filter and Query start
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Query { get; set; }
+    
     [Parameter]
     [SupplyParameterFromQuery]
     public bool? IsOnline { get; set; } = false;
@@ -184,11 +185,13 @@
     [Parameter]
     [SupplyParameterFromQuery(Name = "tags")]
     public string[]? SelectedTagsStr { get; set; }
-
+    // Filter and Query end
+    
     [Parameter]
     [SupplyParameterFromQuery]
-    public string? Query { get; set; }
+    public int Page { get; set; } = 1;
     
+    // UserId from Url
     [Parameter]
     public long UserId { get; set; }
     
@@ -205,11 +208,12 @@
     private int _numberOfPages;
     private int _numberOfEntries;
 
-    //List for subcomponents
+    // List for subcomponents
     private IEnumerable<WebserviceEntry> _webserviceEntries = new List<WebserviceEntry>();
     private IEnumerable<Review> _reviews = new List<Review>();
     private User? _user;
 
+    // used for from reset
     private User _cloneUser = null!;
 
     private bool _filterDialogOpen;
