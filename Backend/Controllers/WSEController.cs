@@ -144,7 +144,7 @@ public class WseController : ControllerBase {
     [RequiresAuthentication]
     [RequiresWseRights(WseRights.DeleteWse)]
     [HttpDelete("{wseId}")]
-    public async Task<IActionResult> DeleteWse([FromDatabase] WebserviceEntry wse) {
+    public async Task<IActionResult> DeleteWse([FromDatabase] WebserviceEntry wse, [FromAuthentication] User _) {
         _context.WebserviceEntries.Remove(wse);
         await _context.SaveChangesAsync();
         return Ok();

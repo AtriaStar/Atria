@@ -28,7 +28,8 @@ public class TagController : ControllerBase {
     [RequiresAuthentication]
     [RequiresUserRights(UserRights.ModerateTags)]
     [HttpPost("merge/{newTagName}/{oldTagName}")]
-    public async Task<IActionResult> Merge(string newTagName, string oldTagName) {
+    public async Task<IActionResult> Merge(string newTagName, string oldTagName,
+        [FromAuthentication] User _) {
         var newTag = await _context.Tags.FindAsync(newTagName);
         if (newTag == null) { return NotFound(nameof(newTagName)); }
         var oldTag = await _context.Tags.FindAsync(oldTagName);
@@ -49,7 +50,8 @@ public class TagController : ControllerBase {
     [RequiresAuthentication]
     [RequiresUserRights(UserRights.ModerateTags)]
     [HttpPost("set-description/{tagName}")]
-    public async Task<IActionResult> SetDescription(string tagName, string description) {
+    public async Task<IActionResult> SetDescription(string tagName, string description,
+        [FromAuthentication] User _) {
         // TODO: [FromDatabase] with non-long keys.
         var tag = await _context.Tags.FindAsync(tagName);
         if (tag == null) { return NotFound(); }
@@ -62,7 +64,7 @@ public class TagController : ControllerBase {
     [RequiresAuthentication]
     [RequiresUserRights(UserRights.ModerateTags)]
     [HttpDelete("{tagName}")]
-    public async Task<IActionResult> Delete(string tagName) {
+    public async Task<IActionResult> Delete(string tagName, [FromAuthentication] User _) {
         var tag = await _context.Tags.FindAsync(tagName);
         if (tag == null) { return NotFound(); }
         _context.Tags.Remove(tag);
