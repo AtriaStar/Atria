@@ -80,7 +80,7 @@
 
     private async Task Logout() {
         await HttpClient.PostAsync("auth/logout", null);
-        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        NavigationManager.NavigateTo("", forceLoad: true);
     }
 
     private string GetUrlToProfile(string? type) {
