@@ -4,7 +4,8 @@ using Models;
 namespace DatabaseMocker;
 
 public class WseMocker {
-    public static async Task<int> AddWse(AtriaContext context, long uId) {
+    public static async Task<int> AddWse(AtriaContext context, long uId)
+    {
         WebserviceEntry entry = new WebserviceEntry {
             Name = "Google",
             ShortDescription = "Search things",
