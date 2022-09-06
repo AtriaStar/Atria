@@ -13,8 +13,14 @@ public class User {
     public string FirstNames { get; set; } = null!;
     public string LastName { get; set; } = null!;
     private string _email;
+    private string? _profilePicture;
     public string Email { get => _email; set => _email = value.ToLowerInvariant(); }
-    public Uri? ProfilePicture { get; set; }
+
+    [Url]
+    public string? ProfilePicture {
+        get => _profilePicture;
+        set => _profilePicture = string.IsNullOrEmpty(value) ? null : value;
+    }
     public string? Biography { get; set; }
     public string SignUpIp { get; set; } = null!;
     [JsonIgnore]

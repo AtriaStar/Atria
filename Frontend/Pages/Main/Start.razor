@@ -25,7 +25,7 @@
                     Webservice
                     @if (Type is null or "wse")
                     {
-                        @numberOfEntries
+                        @_numberOfEntries
                     }
                 </NavLink>
             </div>
@@ -35,7 +35,7 @@
                     Nutzer
                     @if (Type is "user")
                     {
-                        @numberOfEntries
+                        @_numberOfEntries
                     }
                 </NavLink>
             </div>
@@ -71,8 +71,7 @@
         </div>
     </div>
     <div class="w-100 mt-2 mb-4">
-        @switch (Type)
-        {
+        @switch (Type) {
             case null or "wse":
                 <WseSummaryList Entries="@_wseList"></WseSummaryList>
                 break;
@@ -86,28 +85,19 @@
                 break;
         }
     </div>
-    @if (numberOfPages >= 2)
+    @if (_numberOfPages >= 2)
     {
-        <Pagination NumberOfPages = "numberOfPages" CurrentPage="Page" Radius="3"></Pagination>
+        <Pagination NumberOfPages = "_numberOfPages" CurrentPage="Page" Radius="3"></Pagination>
      
     }
 </div>
 
-@if (FilterDialogOpen)
-{
+@if (_filterDialogOpen) {
     <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" IsBookmark="IsBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
 @code {
-
-    private string? _bookmarkStateFilter = "bi-bookmark";
-
-    private int numberOfPages;
-
-    private int numberOfEntries;
-
-
-
+    
     /* is needed to allow different number of entries per page
     [Parameter]
     [SupplyParameterFromQuery]
@@ -133,9 +123,6 @@
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
 
-    private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
-    private IEnumerable<User> _userList = new List<User>();
-
     [Parameter]
     [SupplyParameterFromQuery]
     public bool? IsOnline { get; set; }
@@ -152,18 +139,16 @@
     [SupplyParameterFromQuery(Name = "tags")]
     public string[]? SelectedTagsStr { get; set; }
 
-    private void SearchInput(KeyboardEventArgs evt)
-    {
-        if (evt.Key == "Enter")
-        {
-            Search();
-        }
-    }
+    private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
+    private IEnumerable<User> _userList = new List<User>();
 
-    private void Search()
-    {
-        NavigationManager.NavigateTo(Navigate("query", Query));
-    }
+    private string _bookmarkStateFilter = "bi-bookmark";
+    private bool _filterDialogOpen;
+    
+    private int _numberOfPages;
+
+    private int _numberOfEntries;
+
 
     protected override async Task OnParametersSetAsync()
     {
@@ -171,9 +156,7 @@
         {
             Page = 1;
         }
-        await base.OnParametersSetAsync();
-        switch (Type)
-        {
+        switch (Type) {
             case "wse":
             case null:
                 await GetAndSetWseList();
@@ -189,43 +172,49 @@
         SetBookmarkState();
     }
 
-    private async Task GetAndSetWseList()
-    {
+    private async Task GetAndSetWseList() {
         var response = await HttpClient.GetAsync("search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? Array.Empty<WebserviceEntry>();
 
         
         var responseCount = await HttpClient.GetAsync("search/wse/count" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
-        SetNumberOfPages(numberOfEntries);
+        _numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
+        SetNumberOfPages(_numberOfEntries);
         
     }
 
-    private async Task GetAndSetUserList()
-    {
+    private async Task GetAndSetUserList() {
         if (Query is null or "") {
             _userList = Array.Empty<User>();
-            numberOfEntries = 0;
-            SetNumberOfPages(numberOfEntries);
+            _numberOfEntries = 0;
+            SetNumberOfPages(_numberOfEntries);
             return;
         }
         
         var response = await HttpClient.GetAsync("search/user" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        if (response.IsSuccessStatusCode)
-        {
+        if (response.IsSuccessStatusCode) {
             _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? Array.Empty<User>();
-            
+        } else if (response.StatusCode == HttpStatusCode.BadRequest) {
+            _userList = Array.Empty<User>();
             var responseCount = await HttpClient.GetAsync("search/user/count?query="+Query);
-            numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
-            SetNumberOfPages(numberOfEntries);
-
+            _numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
+            SetNumberOfPages(_numberOfEntries);
         } else {
             NavigationManager.NavigateTo("/internal-server-error");
         }
     }
 
-    private string Navigate(string key, string? value)
-    {
+    private void SearchInput(KeyboardEventArgs evt) {
+        if (evt.Key == "Enter") {
+            Search();
+        }
+    }
+
+    private void Search() {
+        NavigationManager.NavigateTo(Navigate("query", Query));
+    }
+
+    private string Navigate(string key, string? value) {
         return NavigationManager.GetUriWithQueryParameter(key, value);
     }
 
@@ -236,28 +225,19 @@
         });
     }
 
-    @*for tag modal*@
-    private bool FilterDialogOpen { get; set; }
-
-    private void OnFilterDialogClose(bool accepted)
-    {
-        FilterDialogOpen = false;
+    private void OnFilterDialogClose(bool accepted) {
+        _filterDialogOpen = false;
     }
 
-    private void OpenFilterDialog()
-    {
-        FilterDialogOpen = true;
+    private void OpenFilterDialog() {
+        _filterDialogOpen = true;
     }
 
-    private void ChangeBookmarkStatusFilter()
-    {
-        if (IsBookmark.Equals(null) || IsBookmark == false)
-        {
+    private void ChangeBookmarkStatusFilter() {
+        if (IsBookmark.Equals(null) || IsBookmark == false) {
             IsBookmark = true;
             _bookmarkStateFilter = "bi-bookmark-fill";
-        }
-        else
-        {
+        } else {
             IsBookmark = null;
             _bookmarkStateFilter = "bi-bookmark";
         }
@@ -265,9 +245,10 @@
     }
 
 
+
     private void SetNumberOfPages(int numberOfResults)
     {
-        numberOfPages = (numberOfResults / 20) + 1;
+        _numberOfPages = (numberOfResults / 20) + 1;
     }
 
     private void SetBookmarkState()
@@ -275,10 +256,9 @@
         if (IsBookmark.Equals(null) || IsBookmark == false)
         {
             _bookmarkStateFilter = "bi-bookmark";
-        }
-        else
-        {
+        } else {
             _bookmarkStateFilter = "bi-bookmark-fill";
         }
     }
+
 }

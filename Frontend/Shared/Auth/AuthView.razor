@@ -8,19 +8,11 @@
             if (UserIdClaim == LoginState.User.Id) {
                 @AuthorizedAndMatching
             } else {
-                if (NotAuthorized is null) {
-                    <div>Sie sind nicht dazu befugt, auf diese Ressource zuzugreifen.</div>
-                } else {
-                    @NotAuthorized
-                }
+                @NotAuthorized
             }
         }
     } else {
-        if (NotAuthorized is null) {
-            <div>Um auf diese Ressource zuzugreifen müssen Sie sich anmelden.</div>
-        } else {
-            @NotAuthorized
-        }
+        @NotAuthorized
     }
 }
 

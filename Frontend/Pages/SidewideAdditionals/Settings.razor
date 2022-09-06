@@ -1,192 +1,179 @@
 ﻿@page "/settings"
+@inject NavigationManager NavigationManager
 
 <PageTitle>Einstellungen - Atria</PageTitle>
 
-<div class="container-lg mt-3">
-    <h2 class="mb-3">Einstellungen</h2>
+@if (LoginState.Loaded) {
+    <div class="container-lg mt-3">
+        <h2 class="mb-3">Einstellungen</h2>
 
-    <div class="card mt-1 mb-4">
-        <h5 class="card-header fw-bold">
-            Benachrichtigungen
-        </h5>
-
-        <div class="card-body">
-            <div class="row d-flex align-content-between mb-1">
-                <div class="col">
-                    Alle Benachrichtigungen
+        <div class="card mt-1 mb-4">
+            <h5 class="card-header fw-bold">
+                Benachrichtigungen
+            </h5>
+            <div class="card-body">
+                <div class="row d-flex align-content-between mb-1">
+                    <div class="col">
+                        Alle Benachrichtigungen
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check form-switch d-flex justify-content-between">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-auto">
-                    <div class="form-check form-switch d-flex justify-content-between">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                <hr/>
+                <div class="row d-flex align-content-between ms-2">
+                    <div class="col">
+                        eingehende Fragen
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row d-flex align-content-between ms-2">
+                    <div class="col">
+                        eingehende Antworten
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row d-flex align-content-between ms-2">
+                    <div class="col">
+                        eingehende Bewertungen
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row d-flex align-content-between ms-2">
+                    <div class="col">
+                        Hinzufügen zu einem Webservice-Eintrag
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row d-flex align-content-between ms-2">
+                    <div class="col">
+                        Entfernen aus einem Webservice-Eintrag
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row d-flex align-content-between ms-2">
+                    <div class="col">
+                        Löschen von Webservice-Einträge
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row d-flex align-content-between ms-2">
+                    <div class="col">
+                        E-Mail-Benachrichtigungen
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <hr/>
-
-            <div class="row d-flex align-content-between ms-2">
-                <div class="col">
-                    eingehende Fragen
-                </div>
-                <div class="col-auto">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+        </div>
+        <div class="card mb-4">
+            <h5 class="card-header fw-bold">
+                Konto
+            </h5>
+            <div class="card-body">
+                <div class="row d-flex align-content-between">
+                    <div class="col">
+                        Passwort ändern
+                    </div>
+                    <div class="col-auto">
+                        <div class="btn-group d-flex justify-content-end">
+                            <button class="btn btn-success" type="button" @onclick="OpenChangePasswordDialog">
+                                Passwort ändern
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <hr/>
-                
-            <div class="row d-flex align-content-between ms-2">
-                <div class="col">
-                    eingehende Antworten
-                </div>
-                <div class="col-auto">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                <hr/>
+                <div class="row d-flex align-content-between">
+                    <div class="col">
+                        Konto löschen
                     </div>
-                </div>
-            </div>
-
-            <hr/>
-                
-            <div class="row d-flex align-content-between ms-2">
-                <div class="col">
-                    eingehende Bewertungen
-                </div>
-                <div class="col-auto">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                    </div>
-                </div>
-            </div>
-
-            <hr/>
-                
-            <div class="row d-flex align-content-between ms-2">
-                <div class="col">
-                    Hinzufügen zu einem Webservice-Eintrag
-                </div>
-                <div class="col-auto">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                    </div>
-                </div>
-            </div>
-
-            <hr/>
-                
-            <div class="row d-flex align-content-between ms-2">
-                <div class="col">
-                    Entfernen aus einem Webservice-Eintrag
-                </div>
-                <div class="col-auto">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                    </div>
-                </div>
-            </div>
-
-            <hr/>
-                
-            <div class="row d-flex align-content-between ms-2">
-                <div class="col">
-                    Löschen von Webservice-Einträge
-                </div>
-                <div class="col-auto">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                    </div>
-                </div>
-            </div>
-
-            <hr/>
-
-            <div class="row d-flex align-content-between ms-2">
-                <div class="col">
-                    E-Mail-Benachrichtigungen
-                </div>
-                <div class="col-auto">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+                    <div class="col-auto">
+                        <div class="btn-group d-flex justify-content-end">
+                            <button class="btn btn-danger" type="button" @onclick="OpenDeleteDialog">
+                                Konto löschen
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="card mb-4">
-        <h5 class="card-header fw-bold">
-            Konto
-        </h5>
-        <div class="card-body">
-            <div class="row d-flex align-content-between">
-                <div class="col">
-                    Passwort ändern
-                </div>
-                <div class="col-auto">
-                    <div class="btn-group d-flex justify-content-end">
-                        <button class="btn btn-success" type="button" @onclick="OpenChangePasswordDialog">
-                            Passwort ändern
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <hr/>
-        
-            <div class="row d-flex align-content-between">
-                <div class="col">
-                    Konto löschen
-                </div>
-                <div class="col-auto">
-                    <div class="btn-group d-flex justify-content-end">
-                        <button class="btn btn-danger" type="button" @onclick="OpenDeleteDialog">
-                            Konto löschen
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-        
-</div>
-
-@if (ChangePasswordDialogOpen)
-{
+}
+@if (_changePasswordDialogOpen) {
     <Frontend.Pages.Components.ChangePasswordModal OnClose="@OnChangePasswordDialogClose"></Frontend.Pages.Components.ChangePasswordModal>
 }
 
-@if (DeleteDialogOpen) 
-{
+@if (_deleteDialogOpen) {
     <Frontend.Pages.Components.DeleteModal Title="Konto löschen" Text="Sind Sie sicher, dass Sie Ihr Konto löschen möchten?" OnClose="@OnDeleteDialogClose"></Frontend.Pages.Components.DeleteModal>
 }
 
 
 @code {
-    public bool ChangePasswordDialogOpen { get; set; }
-    public bool DeleteDialogOpen { get; set; }
+    private bool _changePasswordDialogOpen;
+    private bool _deleteDialogOpen;
 
-    private void OnChangePasswordDialogClose(bool accepted)
-    {
-        ChangePasswordDialogOpen = false;
+    [CascadingParameter]
+    private LoginState LoginState { get; set; } = default!;
+
+    protected override void OnInitialized() {
+        if (LoginState.Loaded && !LoginState.LoggedIn) {
+            NavigationManager.NavigateTo("login");
+        }
+    }
+
+    private void OnChangePasswordDialogClose(bool accepted) {
+        _changePasswordDialogOpen = false;
         StateHasChanged();
     }
 
-    private void OpenChangePasswordDialog()
-    {
-        ChangePasswordDialogOpen = true;
+    private void OpenChangePasswordDialog() {
+        _changePasswordDialogOpen = true;
         StateHasChanged();
     }
 
-    private void OnDeleteDialogClose(bool accepted)
-    {
-        DeleteDialogOpen = false;
+    private void OnDeleteDialogClose(bool accepted) {
+        _deleteDialogOpen = false;
         StateHasChanged();
     }
 
-    private void OpenDeleteDialog()
-    {
-        DeleteDialogOpen = true;
+    private void OpenDeleteDialog() {
+        _deleteDialogOpen = true;
         StateHasChanged();
     }
 
