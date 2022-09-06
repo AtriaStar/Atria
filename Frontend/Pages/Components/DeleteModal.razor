@@ -49,7 +49,7 @@
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
 
-    [Inject]
+    [CascadingParameter]
     private LoginState LoginState { get; set; } = default!;
 
     private Task ModalCancel() {
