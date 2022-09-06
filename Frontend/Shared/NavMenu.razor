@@ -50,7 +50,7 @@
                 </Authorized>
                 <NotAuthorized>
                     <div class="nav-item me-md-3 me-2">
-                        <NavLink class="nav-link btn-outline-primary py-1" href="@_loginUrl">Einloggen</NavLink>
+                        <NavLink class="nav-link btn-outline-primary py-1" @onclick="SetLoginUrl" href="@_loginUrl">Einloggen</NavLink>
                     </div>
                     <div class="nav-item">
                         <NavLink class="nav-link btn-outline-primary py-1" href="register">Registrieren</NavLink>
@@ -72,11 +72,7 @@
     [Inject]
     private NavigationManager NavigationManager { get; set; } = null!;
 
-    private string _loginUrl = null!;
-
-    protected override void OnInitialized() {
-        _loginUrl = "login?returnurl=" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-    }
+    private string _loginUrl = "login";
 
     private async Task Logout() {
         await HttpClient.PostAsync("auth/logout", null);
@@ -89,6 +85,10 @@
             returnString += "?type=" + type;
         }
         return returnString;
+    }
+
+    private void SetLoginUrl() {
+        _loginUrl = "login?returnurl=" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
     }
 
 }
