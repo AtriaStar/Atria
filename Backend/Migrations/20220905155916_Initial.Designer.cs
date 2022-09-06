@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220831000055_Initial")]
+    [Migration("20220905155916_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -119,6 +119,29 @@ namespace Backend.Migrations
                         .HasDatabaseName("ix_questions_creator_id");
 
                     b.ToTable("questions", (string)null);
+                });
+
+            modelBuilder.Entity("Models.ResetToken", b =>
+                {
+                    b.Property<byte[]>("Token")
+                        .HasColumnType("bytea")
+                        .HasColumnName("token");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Token")
+                        .HasName("pk_reset_tokens");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_reset_tokens_user_id");
+
+                    b.ToTable("reset_tokens", (string)null);
                 });
 
             modelBuilder.Entity("Models.Review", b =>
@@ -366,6 +389,10 @@ namespace Backend.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long>("CreatorId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("creator_id");
+
                     b.Property<string>("Documentation")
                         .HasColumnType("text")
                         .HasColumnName("documentation");
@@ -392,9 +419,12 @@ namespace Backend.Migrations
                         .HasColumnName("short_description");
 
                     b.HasKey("Id")
-                        .HasName("pk_drafts");
+                        .HasName("pk_wse_draft");
 
-                    b.ToTable("drafts", (string)null);
+                    b.HasIndex("CreatorId")
+                        .HasDatabaseName("ix_wse_draft_creator_id");
+
+                    b.ToTable("wse_draft", (string)null);
                 });
 
             modelBuilder.Entity("TagWebserviceEntry", b =>
@@ -488,6 +518,18 @@ namespace Backend.Migrations
                     b.Navigation("Wse");
                 });
 
+            modelBuilder.Entity("Models.ResetToken", b =>
+                {
+                    b.HasOne("Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_reset_tokens_users_user_id");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Models.Review", b =>
                 {
                     b.HasOne("Models.User", "Creator")
@@ -533,6 +575,18 @@ namespace Backend.Migrations
                     b.Navigation("ContactPerson");
                 });
 
+            modelBuilder.Entity("Models.WseDraft", b =>
+                {
+                    b.HasOne("Models.User", "Creator")
+                        .WithMany("WseDrafts")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_wse_draft_users_creator_id");
+
+                    b.Navigation("Creator");
+                });
+
             modelBuilder.Entity("TagWebserviceEntry", b =>
                 {
                     b.HasOne("Models.Tag", null)
@@ -553,6 +607,8 @@ namespace Backend.Migrations
             modelBuilder.Entity("Models.User", b =>
                 {
                     b.Navigation("Bookmarks");
+
+                    b.Navigation("WseDrafts");
                 });
 
             modelBuilder.Entity("Models.WebserviceEntry", b =>

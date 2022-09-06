@@ -14,5 +14,11 @@ public class Collaborator {
     [JsonIgnore]
     public WebserviceEntry Wse { get; set; } = null!;
 
-    public WseRights Rights { get; set; }
+    public WseRights Rights { get; set; } = WseRights.Default;
+
+    public override bool Equals(object? obj)
+        => obj is Collaborator other && UserId == other.UserId && WseId == other.WseId && Rights == other.Rights;
+
+    public override int GetHashCode()
+        => HashCode.Combine(UserId, WseId, Rights);
 }

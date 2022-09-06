@@ -4,7 +4,8 @@ using Models;
 namespace DatabaseMocker;
 
 public class WseMocker {
-    public static async Task<int> AddWse(AtriaContext context, long uId) {
+    public static async Task<int> AddWse(AtriaContext context, long uId)
+    {
         WebserviceEntry entry = new WebserviceEntry {
             Name = "Google",
             ShortDescription = "Search things",
@@ -160,7 +161,73 @@ public class WseMocker {
             ViewCount = 33331,
             ContactPersonId = uId
         };
-        
+
+
+        WebserviceEntry entry17 = new WebserviceEntry
+        {
+            Name = "AnotherDuckDuckGo7",
+            ShortDescription = "Search things",
+            FullDescription = "search many things",
+            Link = "https://duckduckgo.com/",
+            ViewCount = 33331,
+            ContactPersonId = uId
+        };
+
+
+        WebserviceEntry entry18 = new WebserviceEntry
+        {
+            Name = "AnotherDuckDuckG8o",
+            ShortDescription = "Search things",
+            FullDescription = "search many things",
+            Link = "https://duckduckgo.com/",
+            ViewCount = 33331,
+            ContactPersonId = uId
+        };
+
+
+        WebserviceEntry entry19 = new WebserviceEntry
+        {
+            Name = "AnotherDuckDuckGo9",
+            ShortDescription = "Search things",
+            FullDescription = "search many things",
+            Link = "https://duckduckgo.com/",
+            ViewCount = 33331,
+            ContactPersonId = uId
+        };
+
+
+        WebserviceEntry entry20 = new WebserviceEntry
+        {
+            Name = "AnotherDuckDuckGo20",
+            ShortDescription = "Search things",
+            FullDescription = "search many things",
+            Link = "https://duckduckgo.com/",
+            ViewCount = 33331,
+            ContactPersonId = uId
+        };
+
+
+        WebserviceEntry entry21 = new WebserviceEntry
+        {
+            Name = "AnotherDuckDuckGo21",
+            ShortDescription = "Search things",
+            FullDescription = "search many things",
+            Link = "https://duckduckgo.com/",
+            ViewCount = 33331,
+            ContactPersonId = uId
+        };
+
+
+        WebserviceEntry entry22 = new WebserviceEntry
+        {
+            Name = "AnotherDuckDuckGo22",
+            ShortDescription = "Search things",
+            FullDescription = "search many things",
+            Link = "https://duckduckgo.com/",
+            ViewCount = 33331,
+            ContactPersonId = uId
+        };
+
         await context.WebserviceEntries.AddAsync(entry);
         await context.WebserviceEntries.AddAsync(entry2);
         await context.WebserviceEntries.AddAsync(entry3);
@@ -177,6 +244,12 @@ public class WseMocker {
         await context.WebserviceEntries.AddAsync(entry14);
         await context.WebserviceEntries.AddAsync(entry15);
         await context.WebserviceEntries.AddAsync(entry16);
+        await context.WebserviceEntries.AddAsync(entry17);
+        await context.WebserviceEntries.AddAsync(entry18);
+        await context.WebserviceEntries.AddAsync(entry19);
+        await context.WebserviceEntries.AddAsync(entry20);
+        await context.WebserviceEntries.AddAsync(entry21);
+        await context.WebserviceEntries.AddAsync(entry22);
 
 
         return await context.SaveChangesAsync();

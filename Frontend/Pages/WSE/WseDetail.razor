@@ -1,5 +1,6 @@
-﻿@page "/wse/{WseId:long}"
+﻿@page "/wse/{WseId:long}/{WseName?}"
 @using Models
+@using System.Web
 
 <PageTitle>Atria - WseName</PageTitle>
 
@@ -541,14 +542,25 @@
     [Parameter]
     public long WseId { get; set; }
 
+    [Parameter]
+    public string WseName { get; set; }
+
+	[Inject]
+    private NavigationManager Manager { get; set; } = null!;
+
     protected override async Task OnParametersSetAsync() {
-        await base.OnParametersSetAsync();
-        var response = await HttpClient.GetAsync($"wse/{WseId}");
-        if (response.IsSuccessStatusCode) {
-            Wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
-        } else {
-            @* TODO not found *@
-        }
+	    if (Wse?.Id != WseId) {
+		    var response = await HttpClient.GetAsync($"wse/{WseId}");
+		    if (response.IsSuccessStatusCode) {
+			    Wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
+			    var fullUrl = $"wse/{WseId}/{HttpUtility.UrlEncode(Wse.Name)}";
+			    if (Manager.ToBaseRelativePath(Manager.Uri) != fullUrl) {
+				    Manager.NavigateTo(fullUrl);
+			    }
+		    } else {
+			    @* TODO not found *@
+		    }
+	    }
     }
 
 }

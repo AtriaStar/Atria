@@ -11,26 +11,6 @@ namespace Backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "drafts",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    short_description = table.Column<string>(type: "text", nullable: true),
-                    link = table.Column<string>(type: "text", nullable: true),
-                    full_description = table.Column<string>(type: "text", nullable: true),
-                    documentation_link = table.Column<string>(type: "text", nullable: true),
-                    documentation = table.Column<string>(type: "text", nullable: true),
-                    change_log = table.Column<string>(type: "text", nullable: true),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_drafts", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "tags",
                 columns: table => new
                 {
@@ -64,6 +44,25 @@ namespace Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_users", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "reset_tokens",
+                columns: table => new
+                {
+                    token = table.Column<byte[]>(type: "bytea", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    user_id = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_reset_tokens", x => x.token);
+                    table.ForeignKey(
+                        name: "fk_reset_tokens_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,6 +109,33 @@ namespace Backend.Migrations
                     table.ForeignKey(
                         name: "fk_webservice_entries_users_contact_person_id",
                         column: x => x.contact_person_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "wse_draft",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    short_description = table.Column<string>(type: "text", nullable: true),
+                    link = table.Column<string>(type: "text", nullable: true),
+                    full_description = table.Column<string>(type: "text", nullable: true),
+                    documentation_link = table.Column<string>(type: "text", nullable: true),
+                    documentation = table.Column<string>(type: "text", nullable: true),
+                    change_log = table.Column<string>(type: "text", nullable: true),
+                    creator_id = table.Column<long>(type: "bigint", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_wse_draft", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_wse_draft_users_creator_id",
+                        column: x => x.creator_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -273,6 +299,11 @@ namespace Backend.Migrations
                 column: "creator_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_reset_tokens_user_id",
+                table: "reset_tokens",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_reviews_creator_id",
                 table: "reviews",
                 column: "creator_id");
@@ -297,6 +328,11 @@ namespace Backend.Migrations
                 name: "ix_webservice_entries_contact_person_id",
                 table: "webservice_entries",
                 column: "contact_person_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_wse_draft_creator_id",
+                table: "wse_draft",
+                column: "creator_id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -308,7 +344,7 @@ namespace Backend.Migrations
                 name: "collaborator");
 
             migrationBuilder.DropTable(
-                name: "drafts");
+                name: "reset_tokens");
 
             migrationBuilder.DropTable(
                 name: "reviews");
@@ -318,6 +354,9 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "tag_webservice_entry");
+
+            migrationBuilder.DropTable(
+                name: "wse_draft");
 
             migrationBuilder.DropTable(
                 name: "questions");

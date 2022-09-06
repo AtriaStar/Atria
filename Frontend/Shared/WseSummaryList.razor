@@ -21,21 +21,26 @@
                 <div class="col-auto ps-0 ms-auto d-flex d-block">
                     <div class="d-flex justify-content-sm-end justify-content-start flex-wrap">
                         <div class="ms-3">
-                            @if (LoginState.LoggedIn) {
-                                _bookmarkState = LoginState.User.Bookmarks.Contains(entry) ? "bi-bookmark-fill" : "bi-bookmark";
-                                _bookmarkTitle = LoginState.User.Bookmarks.Contains(entry) ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
-
-                                <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="() => ChangeBookmarkStatus(entry)">
-                                    <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
-                                </button>
-                            } else {
-                                _bookmarkState = "bi-bookmark";
-                                _bookmarkTitle = "Als Lesezeichen hinzufügen";
-
-                                <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="NavigateToLogin">
-                                    <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
-                                </button>
-                            }
+                            <AuthView>
+                                <Authorized>
+                                    @{
+                                        _bookmarkState = LoginState.User!.Bookmarks.Contains(entry) ? "bi-bookmark-fill" : "bi-bookmark";
+                                        _bookmarkTitle = LoginState.User.Bookmarks.Contains(entry) ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                                    }
+                                    <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="() => ChangeBookmarkStatus(entry)">
+                                        <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
+                                    </button>
+                                </Authorized>
+                                <NotAuthorized>
+                                    @{
+                                        _bookmarkState = "bi-bookmark";
+                                        _bookmarkTitle = "Als Lesezeichen hinzufügen";
+                                    }
+                                    <button class="btn-outline-light btn p-0" title="@_bookmarkTitle" @onclick="NavigateToLogin">
+                                        <i class="bi @_bookmarkState fs-5" style="color: #dc3545"></i>
+                                    </button>
+                                </NotAuthorized>
+                            </AuthView>
                         </div>
                         <div class="ms-3" style="min-width: fit-content">
                             @{
@@ -69,7 +74,6 @@
                         @entry.ViewCount Aufrufe
                     </div>
                 }
-
             </div>
 
             <div class="row mb-2">
