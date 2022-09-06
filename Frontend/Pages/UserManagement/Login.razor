@@ -41,11 +41,21 @@
                             <NavLink href="forgotPassword">Passwort vergessen?</NavLink>
                         </div>
                     </div>
-                    <div class="row py-3 justify-content-center">
-                        <div class="col-6 d-grid">
-                            <button type="submit" class="btn btn-primary">Anmelden</button>
+                    @if (_processingRequest) {
+                        <div class="row py-3 justify-content-center">
+                            <div class="col-6 d-flex align-items-center">
+                                <strong>Loading...</strong>
+                                <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                            </div>
                         </div>
-                    </div>
+                    } else {
+                        <div class="row py-3 justify-content-center">
+                            <div class="col-6 d-grid">
+                                <button type="submit" class="btn btn-primary">Anmelden</button>
+                            </div>
+                        </div>
+                    }
+
                 </EditForm>
 
                 <div class="text-center fw-bold text-danger">
@@ -60,15 +70,18 @@
 </div>
 
 @code {
+
     [CascadingParameter]
     private LoginState LoginState { get; set; } = null!;
-    
+
     [Parameter]
     [SupplyParameterFromQuery]
     public string? ReturnUrl { get; set; }
-    
+
     private readonly Models.DTO.Login _login = new();
     private string LoginMessage { get; set; } = null!;
+
+    private bool _processingRequest;
 
     protected override void OnParametersSet() {
         if (LoginState.LoggedIn) {
@@ -77,17 +90,19 @@
     }
 
     private async void HandleValidSubmit() {
+        _processingRequest = true;
+        LoginMessage = "";
         var response = await HttpClient.PostAsJsonAsync("auth/login", _login);
 
         if (response.IsSuccessStatusCode) {
             NavManager.NavigateTo(ReturnUrl ?? "", true);
-        }
-        else if (response.StatusCode == HttpStatusCode.Unauthorized) {
+        } else if (response.StatusCode == HttpStatusCode.Unauthorized) {
             LoginMessage = await response.Content.ReadAsStringAsync();
-            StateHasChanged();
-        }
-        else {
+        } else {
             NavManager.NavigateTo("/internal-server-error");
         }
+        _processingRequest = false;
+        StateHasChanged();
     }
+
 }

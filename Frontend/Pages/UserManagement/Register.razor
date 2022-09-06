@@ -68,11 +68,20 @@
                         </div>
                     </div>
 
-                    <div class="row py-3 justify-content-center">
-                        <div class="col-6 d-grid">
-                            <button type="submit" class="btn btn-primary">Registrieren</button>
+                    @if (_processingRequest) {
+                        <div class="row py-3 justify-content-center">
+                            <div class="col-6 d-flex align-items-center">
+                                <strong>Loading...</strong>
+                                <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                            </div>
                         </div>
-                    </div>
+                    } else {
+                        <div class="row py-3 justify-content-center">
+                            <div class="col-6 d-grid">
+                                <button type="submit" class="btn btn-primary">Registrieren</button>
+                            </div>
+                        </div>
+                    }
                 </EditForm>
 
                 <div class="text-center fw-bold text-danger">
@@ -95,6 +104,7 @@
     [CascadingParameter]
     private LoginState LoginState { get; set; } = null!;
 
+    private bool _processingRequest;
     private string RegisterMessage { get; set; } = null!;
 
     private readonly Registration _registration = new();
@@ -106,8 +116,9 @@
     }
 
     private async void HandleValidSubmit() {
+        _processingRequest = true;
+        RegisterMessage = "";
         var response = await HttpClient.PostAsJsonAsync("auth/register", _registration);
-
         if (response.IsSuccessStatusCode) {
             NavManager.NavigateTo("", forceLoad: true);
         } else if (response.StatusCode == HttpStatusCode.Conflict) {
@@ -116,6 +127,8 @@
         } else {
             NavManager.NavigateTo("/internal-server-error");
         }
+        _processingRequest = false;
+        StateHasChanged();
     }
 
 }
