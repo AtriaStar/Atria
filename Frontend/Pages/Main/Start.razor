@@ -59,11 +59,11 @@
                     Sortieren nach
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <NavLink href="@NavigateOrder(null, true)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>
-                    <NavLink href="@NavigateOrder("viewcount", true)" class="dropdown-item">Aufrufzahl aufsteigend</NavLink>
+                    <NavLink href="@NavigateOrder(null, false)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>
                     <NavLink href="@NavigateOrder("viewcount", false)" class="dropdown-item">Aufrufzahl absteigend</NavLink>
-                    <NavLink href="@NavigateOrder("ReviewAverage", true)" class="dropdown-item">Bewertungsdurchschnitt aufsteigend</NavLink>
+                    <NavLink href="@NavigateOrder("viewcount", true)" class="dropdown-item">Aufrufzahl aufsteigend</NavLink>
                     <NavLink href="@NavigateOrder("ReviewAverage", false)" class="dropdown-item">Bewertungsdurchschnitt absteigend</NavLink>
+                    <NavLink href="@NavigateOrder("ReviewAverage", true)" class="dropdown-item">Bewertungsdurchschnitt aufsteigend</NavLink>
                     <NavLink href="@NavigateOrder("Recency", true)" class="dropdown-item">Neueste</NavLink>
                     <NavLink href="@NavigateOrder("Recency", false)" class="dropdown-item">Älteste</NavLink>
                 </ul>
