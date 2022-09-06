@@ -1,10 +1,7 @@
-﻿@page "/wse/{WseId:long?}"
+﻿@page "/wse/{WseId:long}/{WseName?}"
 @using Models
-@using Models.DTO
+@using System.Web
 @using System.Net
-@inject NavigationManager NavManager
-@inject HttpClient HttpClient
-@inject IJSRuntime Js
 
 <PageTitle>Atria - @_wse.Name</PageTitle>
 
@@ -496,6 +493,10 @@
 }
 
 @code {
+	
+	[Inject]
+	private HttpClient HttpClient { get; set; } = default!;
+
     /*-------------MODALS-------------*/
     private long QuestionIdToDelete { get; set; }
     private long AnswerIdToDelete { get; set; }
@@ -507,8 +508,7 @@
     private bool DeleteReviewDialogOpen { get; set; }
     private bool DeleteWseDialogOpen { get; set; }
 
-    private void OpenCollabDialog()
-    {
+    private void OpenCollabDialog() {
         CollabDialogOpen = true;
         StateHasChanged();
     }
@@ -562,10 +562,6 @@
         StateHasChanged();
     }
 
-    /*-------------TODO-------------*/
-    [Parameter]
-    public long WseId { get; set; }
-
     [Parameter]
     public WebserviceEntry _wse { get; set; } = new();
 
@@ -598,7 +594,10 @@
 
     private string ConflictMessage { get; set; } = null!;
 
-    /*not working man*/
+	[Inject]
+    private NavigationManager NavManager { get; set; } = null!;
+
+	/*not working man*/
     private async void HandleValidSubmit() 
     {
         var response = await HttpClient.PostAsJsonAsync("wse", _wse);
@@ -616,12 +615,11 @@
     }
 
     /*not working man*/
-    private void CancelEdit() 
-    {
+    private void CancelEdit() {
         NavManager.NavigateTo("wse/" + WseId);
     }
 
-    protected override async Task OnInitializedAsync()
+	protected override async Task OnInitializedAsync()
     {
         _wse = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId) ?? new WebserviceEntry() {};
         _isLoggedIn = LoginState.LoggedIn;
@@ -747,8 +745,7 @@
         }
     }
 
-    private async void SubmitNewQuestion()
-    {
+    private async void SubmitNewQuestion() {
         if (NewQuestion != null && _isLoggedIn)
         {
             var response = await HttpClient.PutAsJsonAsync
@@ -768,6 +765,34 @@
         {
             NavManager.NavigateTo("login");
         }
+	}
+    /* API STUFF, DO MERGE */
+
+    [Parameter]
+    public long WseId { get; set; }
+
+    [Parameter]
+    public string WseName { get; set; }
+
+	[Parameter]
+    public WebserviceEntry Wse { get; set; }
+
+	[Inject]
+    private NavigationManager Manager { get; set; } = null!;
+
+    protected override async Task OnParametersSetAsync() {
+	    if (Wse?.Id != WseId) {
+		    var response = await HttpClient.GetAsync($"wse/{WseId}");
+		    if (response.IsSuccessStatusCode) {
+			    Wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
+			    var fullUrl = $"wse/{WseId}/{HttpUtility.UrlEncode(Wse.Name)}";
+			    if (Manager.ToBaseRelativePath(Manager.Uri) != fullUrl) {
+				    Manager.NavigateTo(fullUrl);
+			    }
+		    } else {
+			    @* TODO not found *@
+		    }
+	    }
     }
 
 }

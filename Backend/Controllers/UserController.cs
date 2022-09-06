@@ -9,12 +9,10 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("user")]
-public class UserController : ControllerBase
-{
+public class UserController : ControllerBase {
     private readonly AtriaContext _context;
 
-    public UserController(AtriaContext context)
-    {
+    public UserController(AtriaContext context) {
         _context = context;
     }
 
@@ -22,29 +20,29 @@ public class UserController : ControllerBase
     public User Get([FromDatabase] User user) => user;
 
     [HttpGet("{userId:long}/wse")]
-    public IQueryable<WebserviceEntry> GetWseByUser(long userId)
-        => _context.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId));
+    public IQueryable<WebserviceEntry> GetWseByUser(long userId, [FromQuery] Pagination pagination)
+        => _context.WebserviceEntries.Where(x => x.Collaborators.Any(y => y.UserId == userId))
+            .Paginate(pagination);
 
     [HttpGet("{userId:long}/bookmarks")]
-    public ISet<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user)
-        => user.Bookmarks;
+    public IEnumerable<WebserviceEntry> GetBookmarksByUser([FromDatabase] User user, [FromQuery] Pagination pagination)
+        => user.Bookmarks.Paginate(pagination);
 
     [HttpGet("{userId:long}/reviews")]
-    public IQueryable<Review> GetReviewsByUser(long userId)
-        => _context.Reviews.Where(x => x.CreatorId == userId);
+    public IQueryable<Review> GetReviewsByUser(long userId, [FromQuery] Pagination pagination)
+        => _context.Reviews.Where(x => x.CreatorId == userId).Paginate(pagination);
 
     [RequiresAuthentication]
     [HttpGet("{userId:long}/drafts")]
-    public ICollection<WseDraft> GetWseDrafts([FromDatabase] User user)
-        => user.WseDrafts;
+    public IActionResult GetWseDrafts([FromDatabase] User user, [FromAuthentication] User authUser, [FromQuery] Pagination pagination)
+        => user.Id == authUser.Id ? Ok(user.WseDrafts.Paginate(pagination)) : Forbid();
 
     [HttpGet("{userId:long}/notifications")]
     public IReadOnlyList<Notification> GetNotifications() => null!;
 
     [RequiresAuthentication]
     [HttpPost]
-    public async Task<IActionResult> Edit(User user, [FromAuthentication] User authUser)
-    {
+    public async Task<IActionResult> Edit(User user, [FromAuthentication] User authUser) {
         if (user.Id != authUser.Id) { return Forbid("You can only edit your own profile"); }
 
         if (user.SignUpIp != authUser.SignUpIp) { return BadRequest("Signup ip cannot be modified"); }
@@ -64,16 +62,14 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("{userId:long}/bookmarks/add/{wseId:long}")]
-    public async Task AddBookmark([FromDatabase] User user, [FromDatabase] WebserviceEntry wse)
-    {
+    public async Task AddBookmark([FromDatabase] User user, [FromDatabase] WebserviceEntry wse) {
         user.Bookmarks.Add(wse);
         _context.Update(user);
         await _context.SaveChangesAsync();
     }
 
     [HttpPost("{userId:long}/bookmarks/remove/{wseId:long}")]
-    public async Task RemoveBookmark([FromDatabase] User user, [FromDatabase] WebserviceEntry wse)
-    {
+    public async Task RemoveBookmark([FromDatabase] User user, [FromDatabase] WebserviceEntry wse) {
         user.Bookmarks.Remove(wse);
         _context.Update(user);
         await _context.SaveChangesAsync();
@@ -81,8 +77,7 @@ public class UserController : ControllerBase
 
     [RequiresAuthentication]
     [HttpDelete]
-    public async Task Delete([FromAuthentication] User user)
-    {
+    public async Task Delete([FromAuthentication] User user) {
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
     }

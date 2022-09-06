@@ -1,8 +1,7 @@
 ﻿namespace Models;
 
 [Flags]
-public enum UserRights
-{
+public enum UserRights {
     CreateWse = 1 << 0,
     ModerateTags = 1 << 1,
 

@@ -4,8 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Models;
 
-public class WebserviceEntry
-{
+public class WebserviceEntry {
     private string? _documentationLink;
 
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,8 +22,7 @@ public class WebserviceEntry
     public string? FullDescription { get; set; }
 
     [Url]
-    public string? DocumentationLink
-    {
+    public string? DocumentationLink {
         get => _documentationLink;
         set => _documentationLink = string.IsNullOrEmpty(value) ? null : value;
     }

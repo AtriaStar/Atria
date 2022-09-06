@@ -12,6 +12,8 @@ await context.Users.AddRangeAsync(Enumerable.Range(0, 100)
     .DistinctBy(x => x.Email));
 await context.SaveChangesAsync();
 
+await UserMocker.AddUser(context);
+
 await WseMocker.AddWse(context, context.Users.RandomElement().Id);
 
 await context.SaveChangesAsync();

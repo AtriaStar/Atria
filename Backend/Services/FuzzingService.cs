@@ -37,8 +37,8 @@ public class FuzzingService {
             .Max();
 
     public static double CalculateScore(string query, User user)
-        => Math.Max(_scorer.Score(query, user.Email),
-            _scorer.Score(query, $"{user.Title ?? string.Empty} {user.FirstNames} {user.LastName}"));
+        => Math.Max(_scorer.Score(query, user.Email) / 100.0,
+            _scorer.Score(query, $"{user.Title ?? string.Empty} {user.FirstNames} {user.LastName}") / 100.0);
 
     private record Factor(Func<WebserviceEntry, string?> Mapper, int Weight);
 }

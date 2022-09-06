@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Models;
 
@@ -32,5 +33,10 @@ public class WseDraft {
 
     [MaxLength(20)]
     public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
+
+    public long CreatorId { get; set; }
+    [JsonIgnore]
+    public virtual User Creator { get; set; } = null!;
+    
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

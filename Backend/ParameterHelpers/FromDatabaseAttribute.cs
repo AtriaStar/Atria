@@ -1,4 +1,4 @@
-﻿using Backend.AspPlugins;
+using Backend.AspPlugins;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -23,12 +23,9 @@ public class FromDatabaseAttribute : ModelBinderAttribute {
                 return;
             }
             foreach (var property in bindingContext.ModelMetadata.ValidatorMetadata.OfType<IncludeAttribute>()) {
-                if (obj.GetType().GetProperty(property.Name)!.PropertyType.GetInterface("IEnumerable") == null)
-                {
+                if (obj.GetType().GetProperty(property.Name)!.PropertyType.GetInterface("IEnumerable") == null) {
                     await db.Entry(obj).Reference(property.Name).LoadAsync();
-                }
-                else
-                {
+                } else {
                     await db.Entry(obj).Collection(property.Name).LoadAsync();
                 }
             }

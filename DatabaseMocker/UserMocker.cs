@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Backend.AspPlugins;
+using Models;
 
 namespace DatabaseMocker;
 
@@ -37,7 +38,25 @@ public class UserMocker {
         "Wolff", "Voigt", "Sauer",
     };
 
-    public static User GenerateUser() {
+    public static async Task<int> AddUser(AtriaContext context)
+    {
+        User userTest = new User
+        {
+            FirstNames = "Testi",
+            LastName = "Test",
+            Email = "test@test.de",
+            Biography = "Hi ich bin ein Test, bitte sei lieb zu mir :'("
+        };
+
+        await context.Users.AddAsync(userTest);
+        return await context.SaveChangesAsync();
+
+
+
+    }
+
+
+        public static User GenerateUser() {
         var firstNames = Enumerable.Range(0, (int) Math.Ceiling(0.1 / Random.Shared.NextDouble() + 0.9))
             .Select(_ => FirstNames.RandomElement())
             .ToArray();

@@ -46,17 +46,37 @@ namespace Backend.Migrations
                     documentation_link = table.Column<string>(type: "text", nullable: true),
                     documentation = table.Column<string>(type: "text", nullable: true),
                     change_log = table.Column<string>(type: "text", nullable: true),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    user_id = table.Column<long>(type: "bigint", nullable: true)
+                    creator_id = table.Column<long>(type: "bigint", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_drafts", x => x.id);
                     table.ForeignKey(
-                        name: "fk_drafts_users_user_id",
+                        name: "fk_drafts_users_creator_id",
+                        column: x => x.creator_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "reset_tokens",
+                columns: table => new
+                {
+                    token = table.Column<byte[]>(type: "bytea", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    user_id = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_reset_tokens", x => x.token);
+                    table.ForeignKey(
+                        name: "fk_reset_tokens_users_user_id",
                         column: x => x.user_id,
                         principalTable: "users",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -188,7 +208,7 @@ namespace Backend.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     wse_id = table.Column<long>(type: "bigint", nullable: false),
                     title = table.Column<string>(type: "text", nullable: false),
-                    description = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
                     star_count = table.Column<int>(type: "integer", nullable: false),
                     creation_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     creator_id = table.Column<long>(type: "bigint", nullable: false)
@@ -280,14 +300,19 @@ namespace Backend.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_drafts_user_id",
+                name: "ix_drafts_creator_id",
                 table: "drafts",
-                column: "user_id");
+                column: "creator_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_questions_creator_id",
                 table: "questions",
                 column: "creator_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_reset_tokens_user_id",
+                table: "reset_tokens",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_reviews_creator_id",
@@ -328,6 +353,9 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "collaborator");
+
+            migrationBuilder.DropTable(
+                name: "reset_tokens");
 
             migrationBuilder.DropTable(
                 name: "reviews");

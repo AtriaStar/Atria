@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220904233332_Initial")]
+    [Migration("20220906164938_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -121,6 +121,29 @@ namespace Backend.Migrations
                     b.ToTable("questions", (string)null);
                 });
 
+            modelBuilder.Entity("Models.ResetToken", b =>
+                {
+                    b.Property<byte[]>("Token")
+                        .HasColumnType("bytea")
+                        .HasColumnName("token");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Token")
+                        .HasName("pk_reset_tokens");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_reset_tokens_user_id");
+
+                    b.ToTable("reset_tokens", (string)null);
+                });
+
             modelBuilder.Entity("Models.Review", b =>
                 {
                     b.Property<long>("WseId")
@@ -143,7 +166,6 @@ namespace Backend.Migrations
                         .HasColumnName("creator_id");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("description");
 
@@ -373,6 +395,10 @@ namespace Backend.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long>("CreatorId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("creator_id");
+
                     b.Property<string>("Documentation")
                         .HasColumnType("text")
                         .HasColumnName("documentation");
@@ -398,15 +424,11 @@ namespace Backend.Migrations
                         .HasColumnType("text")
                         .HasColumnName("short_description");
 
-                    b.Property<long?>("UserId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id")
                         .HasName("pk_drafts");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_drafts_user_id");
+                    b.HasIndex("CreatorId")
+                        .HasDatabaseName("ix_drafts_creator_id");
 
                     b.ToTable("drafts", (string)null);
                 });
@@ -502,6 +524,18 @@ namespace Backend.Migrations
                     b.Navigation("Wse");
                 });
 
+            modelBuilder.Entity("Models.ResetToken", b =>
+                {
+                    b.HasOne("Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_reset_tokens_users_user_id");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Models.Review", b =>
                 {
                     b.HasOne("Models.User", "Creator")
@@ -557,10 +591,14 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.WseDraft", b =>
                 {
-                    b.HasOne("Models.User", null)
+                    b.HasOne("Models.User", "Creator")
                         .WithMany("WseDrafts")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("fk_drafts_users_user_id");
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_drafts_users_creator_id");
+
+                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("TagWebserviceEntry", b =>

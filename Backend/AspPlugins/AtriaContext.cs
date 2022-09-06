@@ -12,6 +12,7 @@ public class AtriaContext : DbContext {
     public DbSet<Answer> Answers => Set<Answer>();
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<Session> Sessions => Set<Session>();
+    public DbSet<ResetToken> ResetTokens => Set<ResetToken>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql("Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true")
