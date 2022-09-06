@@ -774,18 +774,15 @@
     [Parameter]
     public string WseName { get; set; }
 
-	[Parameter]
-    public WebserviceEntry Wse { get; set; }
-
 	[Inject]
     private NavigationManager Manager { get; set; } = null!;
 
     protected override async Task OnParametersSetAsync() {
-	    if (Wse?.Id != WseId) {
+	    if (_wse?.Id != WseId) {
 		    var response = await HttpClient.GetAsync($"wse/{WseId}");
 		    if (response.IsSuccessStatusCode) {
-			    Wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
-			    var fullUrl = $"wse/{WseId}/{HttpUtility.UrlEncode(Wse.Name)}";
+			    _wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
+                var fullUrl = $"wse/{WseId}/{HttpUtility.UrlEncode(_wse.Name)}";
 			    if (Manager.ToBaseRelativePath(Manager.Uri) != fullUrl) {
 				    Manager.NavigateTo(fullUrl);
 			    }
