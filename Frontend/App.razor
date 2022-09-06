@@ -21,7 +21,7 @@
     private LoginState LoginState { get; set; } = null!;
 
 	protected override async Task OnInitializedAsync() {
-        LoginState = new();
-		await LoginState.LoadAsync(HttpClient);
+        LoginState = new(HttpClient);
+		await LoginState.Init;
 	}
 }
