@@ -33,6 +33,10 @@ public class WseController : ControllerBase {
     public IEnumerable<Review> GetReviews(long wseId, [FromQuery] Pagination pagination)
         => _context.Reviews.Where(x => x.WseId == wseId).Paginate(pagination);
 
+    [HttpGet("{wseId:long}/review/{reviewId:long}")]
+    public IEnumerable<Review> GetReview(long wseId, long reviewId)
+        => _context.Reviews.Where(x => x.WseId == wseId && x.Id == reviewId);
+
     [RequiresAuthentication]
     [HttpPost]
     public async Task<IActionResult> EditWse(WebserviceEntry wse, [FromAuthentication] User user) {
