@@ -112,14 +112,12 @@
         if (response.StatusCode == HttpStatusCode.OK) {
             if (await response.Content.ReadFromJsonAsync<bool>()) {
                 _onlineStatusStyle = "text-success";
-            }
-            else {
+            } else {
                 _onlineStatusStyle = "text-danger";
             }
-        }
-        else {
+        } else {
             _onlineStatusStyle = "text-secondary";
-        }    
+        }
     }
 
 
@@ -134,8 +132,7 @@
             if (response.IsSuccessStatusCode) {
                 LoginState.User.Bookmarks.Remove(entry);
             }
-        }
-        else {
+        } else {
             var response = await HttpClient.PostAsync($"user/{LoginState.User!.Id}/bookmarks/add/{entry.Id}", null);
             if (response.IsSuccessStatusCode) {
                 LoginState.User.Bookmarks.Add(entry);
