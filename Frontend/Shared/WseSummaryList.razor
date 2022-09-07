@@ -24,7 +24,7 @@
                             <AuthView>
                                 <Authorized>
                                     @{
-                                        var bookmarkState = LoginState.User!.Bookmarks.Contains(entry);
+                                        var bookmarkState = LoginState.User!.Bookmarks.Any(webserviceEntry => webserviceEntry.Id == entry.Id);
                                         var bookmarkTitle = bookmarkState ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
                                         var bookmarkStyle = bookmarkState ? "bi-bookmark-fill" : "bi-bookmark";
                                     }
