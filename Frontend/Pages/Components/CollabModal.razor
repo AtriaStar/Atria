@@ -66,7 +66,7 @@
     public long WseContactPersonId { get; set; }
 
     [Parameter]
-    public ICollection<Collaborator> Collabs { get; set; }
+    public ICollection<Collaborator> Collabs { get; set; } = null!;
 
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }

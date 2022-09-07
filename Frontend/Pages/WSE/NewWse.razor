@@ -179,7 +179,7 @@
         var response = await HttpClient.PutAsJsonAsync("wse", _webserviceEntry);
 
         if (response.IsSuccessStatusCode) {
-            long WseId = (await response.Content.ReadFromJsonAsync<WebserviceEntry>()).Id;
+            long WseId = ((await response.Content.ReadFromJsonAsync<WebserviceEntry>())!).Id;
             NavManager.NavigateTo("wse/" + WseId);
         }
         else if (response.StatusCode == HttpStatusCode.Conflict) {
@@ -210,7 +210,7 @@
         var response = await HttpClient.PutAsJsonAsync("user/draft", _wseDraft);
 
         if (response.IsSuccessStatusCode) {
-            long WseDraftId = (await response.Content.ReadFromJsonAsync<WseDraft>()).Id;
+            long WseDraftId = ((await response.Content.ReadFromJsonAsync<WseDraft>())!).Id;
             NavManager.NavigateTo("wseDraft/" + WseDraftId);
         }
         else if (response.StatusCode == HttpStatusCode.Conflict) {
