@@ -17,46 +17,47 @@ public class WseController : ControllerBase {
     }
 
     [HttpGet("{wseId:long}")]
-    public WebserviceEntry Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse)
-        => wse;
+    public WebserviceEntry Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse) => wse;
 
     [HttpGet("{wseId:long}/question")]
-    public IEnumerable<Question> GetQuestions([FromDatabase] WebserviceEntry wse, [FromQuery] Pagination pagination)
-        => wse.Questions.Paginate(pagination);
+    public IEnumerable<Question> GetQuestions([FromDatabase] WebserviceEntry wse, [FromQuery] Pagination pagination) =>
+        wse.Questions.Paginate(pagination);
 
     [HttpGet("{wseId:long}/question/{questionId:long}")]
-    public IQueryable<Answer> GetAnswers(long wseId, long questionId, [FromQuery] Pagination pagination)
-        => _context.Answers.Where(x => x.WseId == wseId && x.QuestionId == questionId)
-            .Paginate(pagination);
+    public IQueryable<Answer> GetAnswers(long wseId, long questionId, [FromQuery] Pagination pagination) =>
+        _context.Answers.Where(x => x.WseId == wseId && x.QuestionId == questionId).Paginate(pagination);
 
     [HttpGet("{wseId:long}/review")]
-    public IEnumerable<Review> GetReviews(long wseId, [FromQuery] Pagination pagination)
-        => _context.Reviews.Where(x => x.WseId == wseId).Paginate(pagination);
+    public IEnumerable<Review> GetReviews(long wseId, [FromQuery] Pagination pagination) =>
+        _context.Reviews.Where(x => x.WseId == wseId).Paginate(pagination);
 
     [HttpGet("{wseId:long}/review/{reviewId:long}")]
-    public IEnumerable<Review> GetReview(long wseId, long reviewId)
-        => _context.Reviews.Where(x => x.WseId == wseId && x.Id == reviewId);
+    public IEnumerable<Review> GetReview(long wseId, long reviewId) =>
+        _context.Reviews.Where(x => x.WseId == wseId && x.Id == reviewId);
 
     [RequiresAuthentication]
     [HttpPost]
     public async Task<IActionResult> EditWse(WebserviceEntry wse, [FromAuthentication] User user) {
         var existingWse = await _context.WebserviceEntries.FindAsync(wse.Id);
-        if (existingWse == null) { return NotFound(); }
+        if (existingWse == null) {
+            return NotFound();
+        }
         await _context.Entry(existingWse).Collection(x => x.Collaborators).LoadAsync();
         var rights = existingWse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights;
-        if (rights == null) { return Forbid("User is not a collaborator"); }
+        if (rights == null) {
+            return Forbid("User is not a collaborator");
+        }
 
         if ((rights & WseRights.EditData) == 0) {
             return Forbid("Collaborator does not have the right to edit the WSE");
         }
 
-        if (!wse.Collaborators.SequenceEqual(existingWse.Collaborators) && (rights & WseRights.EditCollaborators) == 0)
-        {
+        if (!wse.Collaborators.SequenceEqual(existingWse.Collaborators) &&
+            (rights & WseRights.EditCollaborators) == 0) {
             return Forbid("Collaborator does not have the right to edit collaborators");
         }
 
-        if (wse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights != rights)
-        {
+        if (wse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights != rights) {
             return BadRequest("You cannot modify your own rights");
         }
 
@@ -76,8 +77,11 @@ public class WseController : ControllerBase {
     [RequiresAuthentication]
     [HttpPost("review")]
     public async Task<IActionResult> EditReview(Review review, [FromAuthentication] User user) {
-        var existingReview = await _context.Reviews.FirstOrDefaultAsync(x => x.Id == review.Id && x.WseId == review.WseId);
-        if (existingReview == null) { return NotFound(); }
+        var existingReview =
+            await _context.Reviews.FirstOrDefaultAsync(x => x.Id == review.Id && x.WseId == review.WseId);
+        if (existingReview == null) {
+            return NotFound();
+        }
 
         if (existingReview.CreatorId != user.Id) {
             return Forbid("Only the creator of a review can edit it");
@@ -102,38 +106,50 @@ public class WseController : ControllerBase {
     public async Task<IActionResult> CreateWse(WebserviceEntry wse, [FromAuthentication] User user) {
         wse.Id = 0;
         wse.CreatedAt = DateTimeOffset.UtcNow;
-        wse.Collaborators = new List<Collaborator> { new() { User = user, Rights = WseRights.Owner } };
+        wse.Collaborators = new List<Collaborator> {
+            new() {
+                User = user,
+                Rights = WseRights.Owner
+            }
+        };
         wse.Tags = wse.Tags.Select(x => _context.Tags.Find(x.Name) ?? x).ToHashSet();
         await _context.WebserviceEntries.AddAsync(wse);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(CreateWse), new { wseId = wse.Id }, wse);
+        return CreatedAtAction(nameof(CreateWse), new {
+            wseId = wse.Id
+        }, wse);
     }
 
     [RequiresAuthentication]
     [HttpPut("question")]
-    public async Task<IActionResult> CreateQuestion(Question question,
-        [FromAuthentication] User user) {
+    public async Task<IActionResult> CreateQuestion(Question question, [FromAuthentication] User user) {
         question.Id = 0;
         question.CreationTime = DateTimeOffset.UtcNow;
         question.Creator = user;
         await _context.Questions.AddAsync(question);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(CreateQuestion), new { wseId = question.WseId, questionId = question.Id }, question);
+        return CreatedAtAction(nameof(CreateQuestion), new {
+            wseId = question.WseId,
+            questionId = question.Id
+        }, question);
     }
 
     [RequiresAuthentication]
     [HttpPut("answer")]
-    public async Task<IActionResult> CreateAnswer(Answer answer,
-        [FromAuthentication] User user) {
+    public async Task<IActionResult> CreateAnswer(Answer answer, [FromAuthentication] User user) {
         answer.Id = 0;
         answer.CreationTime = DateTimeOffset.UtcNow;
         answer.Creator = user;
         await _context.Answers.AddAsync(answer);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(CreateAnswer), new { wseId = answer.WseId, questionId = answer.QuestionId, answerId = answer.Id }, answer);
+        return CreatedAtAction(nameof(CreateAnswer), new {
+            wseId = answer.WseId,
+            questionId = answer.QuestionId,
+            answerId = answer.Id
+        }, answer);
     }
 
     [RequiresAuthentication]
@@ -145,13 +161,17 @@ public class WseController : ControllerBase {
         await _context.Reviews.AddAsync(review);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(CreateReview), new { wseId = review.WseId, reviewId = review.Id }, review);
+        return CreatedAtAction(nameof(CreateReview), new {
+            wseId = review.WseId,
+            reviewId = review.Id
+        }, review);
     }
 
     [RequiresAuthentication]
     [RequiresWseRights(WseRights.DeleteWse)]
     [HttpDelete("{wseId}")]
-    public async Task<IActionResult> DeleteWse([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse,
+    public async Task<IActionResult> DeleteWse(
+        [FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse,
         [FromAuthentication] User _) {
         _context.WebserviceEntries.Remove(wse);
         await _context.SaveChangesAsync();
@@ -178,8 +198,10 @@ public class WseController : ControllerBase {
 
     [RequiresAuthentication]
     [HttpDelete("{wseId:long}/question/{questionId:long}/answer/{answerId:long}")]
-    public async Task<IActionResult> DeleteAnswer(long wseId, long questionId,
-        long answerId, [FromAuthentication] User user) {
+    public async Task<IActionResult> DeleteAnswer(long wseId,
+        long questionId,
+        long answerId,
+        [FromAuthentication] User user) {
         var answer = await _context.Answers.FindAsync(answerId, questionId, wseId);
         if (answer == null) {
             return NotFound();
