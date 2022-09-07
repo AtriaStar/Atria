@@ -17,7 +17,8 @@ public class WseController : ControllerBase {
     }
 
     [HttpGet("{wseId:long}")]
-    public async Task<WebserviceEntry> Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse) {
+    public async Task<WebserviceEntry> Get([FromDatabase, Include(nameof(WebserviceEntry.Tags)), Include(nameof(WebserviceEntry.Collaborators))]
+        WebserviceEntry wse) {
         wse.ViewCount++;
         _context.Update(wse);
         await _context.SaveChangesAsync();
