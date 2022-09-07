@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220907192543_Initial")]
-    partial class Initial
+    [Migration("20220907201623_MockMig")]
+    partial class MockMig
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

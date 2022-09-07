@@ -4,7 +4,7 @@
 
 namespace Backend.Migrations
 {
-    public partial class TestMig : Migration
+    public partial class MockMig : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
