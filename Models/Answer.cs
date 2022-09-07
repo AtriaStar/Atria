@@ -18,6 +18,7 @@ public class Answer
     public Question Question { get; set; } = null!;
     public string Text { get; set; } = null!;
     public DateTimeOffset CreationTime { get; set; }
+    public long CreatorId { get; set; }
     [JsonIgnore]
     public User Creator { get; set; } = null!;
 }

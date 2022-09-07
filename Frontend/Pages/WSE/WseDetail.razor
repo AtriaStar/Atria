@@ -245,83 +245,7 @@
 
         @foreach (Question question in _wseQuestions)
         {
-            <div class="accordion mb-4" id="questionAccordion">
-                <div class="accordion-item">
-                    <div class="accordion-header px-4 py-3 bg-light border-bottom" id="question">
-                        <div class="row">
-                            <div class="col-auto">
-                                <h6 class="fw-bold mt-1">Frage:</h6>
-                            </div>
-                            <div class="col ms-3">
-                                <h6 class="fw-bold mt-1 mb-1">
-                                    @question.Creator.FirstNames @question.Creator.LastName
-                                    <small class="text-muted">@question.CreationTime</small>
-                                </h6>
-                                @question.Text
-                            </div>
-                        </div>
-                        <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
-                            @if (_isLoggedIn)
-                            {
-                                <button class="btn btn-outline-success btn-small" type="button">
-                                    Antworten
-                                </button>
-                                @if (@question.CreatorId == _userId)
-                                {
-                                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteQuestionDialog(question.Id)">
-                                        Löschen
-                                    </button>
-                                }
-                            }
-                            @*TODO if answers exist*@
-                            <button class="btn btn-small btn-outline-secondary collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#answerOne" aria-expanded="false" aria-controls="answerOne">
-                                Antworten anzeigen
-                            </button>
-                        </div>
-                    </div>
-
-                    @*TODO if answers exist*@
-                    <div id="answerOne" class="accordion-collapse collapse" aria-labelledby="question" data-bs-parent="#questionAccordion">
-                        <div class="accordion-body">
-                            <ul class="list-group list-group-flush py-0">
-                                @*TODO foreach answer*@
-                                <li class="list-group-item px-0">
-                                    <div class="row">
-                                        <div class="col-auto">
-                                            <h6 class="fw-bold mt-1">Antwort:</h6>
-                                        </div>
-                                        <div class="col">
-                                            <h6 class="fw-bold mt-1 mb-1">
-                                                Creator
-                                                <small class="text-muted">Date</small>
-                                            </h6>
-                                            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-                                        </div>
-                                    </div>
-                                    @*TODO isCreator*@
-                                    @if (true)
-                                    {
-                                        <div class="d-grid mt-2 d-flex justify-content-end">
-                                            <button class="btn btn-outline-danger btn-small" type="button"> @* @onclick="() => OpenDeleteAnswerDialog(question.Id, answer.Id)"*@
-                                                Löschen
-                                            </button>
-                                        </div>
-                                    }
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    @*TODO if more answers exists*@
-                    @if (true)
-                    {
-                        <div class="d-grid d-flex mt-4 mb-4 justify-content-center">
-                            @*when clicked show 3-5 more answers*@
-                            <button class="btn btn-outline-secondary btn-small" type="button">weitere Antworten</button>
-                        </div>
-                    }
-                </div>
-            </div>
+            <Frontend.Pages.Components.QnASection Question="question" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
         }
 
         @if (_wseNextQuestions.Length != 0) {
@@ -333,7 +257,7 @@
         <hr/>
 
         @*------------REVIEWS------------*@
-        <div class="row mb-2">
+        <div class="row mb-4">
             <div class="col-auto">
                 <h6 class="fw-bold">Bewertungen</h6>
             </div>
@@ -383,11 +307,11 @@
                             {
                                <i class="fa fa-star rating-uncolored"></i>
                             }
-                            <div class="card-subtitle mt-1 text-muted">Date</div>
+                            <div class="card-subtitle mt-1 text-muted">@review.CreationTime</div>
                         </div>
                         <div class="col mt-1">
                             <h6 class="card-title fw-bold">@review.Title</h6>
-                            <div class="card-subtitle mb-2 text-muted">@review.Creator.FirstNames @review.Creator.LastName</div>
+                            <div class="card-subtitle mb-2 text-muted">Creator.FirstNames Creator.LastName</div>
                             <p class="card-text">@review.Description</p>
                         </div>
                     </div>
@@ -452,27 +376,6 @@
     OnClose="@OnCollabDialogClose"/>
 }
 
-@if (DeleteQuestionDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal 
-    Title="Frage löschen" 
-    Text="Sind Sie sicher, dass Sie Ihre Frage löschen möchten?" 
-    ToDelete="question" 
-    WseId="WseId"
-    QuestionId="QuestionIdToDelete" 
-    OnClose="@OnDeleteQuestionDialogClose"/>
-}
-
-@if (DeleteAnswerDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal 
-    Title="Antwort löschen" 
-    Text="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?" 
-    ToDelete="answer" 
-    WseId="WseId"
-    QuestionId="QuestionIdToDelete" 
-    AnswerId="AnswerIdToDelete"
-    OnClose="@OnDeleteAnswerDialogClose"/>
-}
-
 @if (DeleteReviewDialogOpen) {
     <Frontend.Pages.Components.DeleteModal 
     Title="Bewertung löschen" 
@@ -493,18 +396,14 @@
 }
 
 @code {
-	
-	[Inject]
-	private HttpClient HttpClient { get; set; } = default!;
+
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
 
     /*-------------MODALS-------------*/
-    private long QuestionIdToDelete { get; set; }
-    private long AnswerIdToDelete { get; set; }
     private long ReviewIdToDelete { get; set; }
 
     private bool CollabDialogOpen { get; set; }
-    private bool DeleteQuestionDialogOpen { get; set; }
-    private bool DeleteAnswerDialogOpen { get; set; }
     private bool DeleteReviewDialogOpen { get; set; }
     private bool DeleteWseDialogOpen { get; set; }
 
@@ -515,29 +414,6 @@
 
     private void OnCollabDialogClose(bool accepted) {
         CollabDialogOpen = false;
-        StateHasChanged();
-    }
-
-    private void OpenDeleteQuestionDialog(long questionId) {
-        DeleteQuestionDialogOpen = true;
-        QuestionIdToDelete = questionId;
-        StateHasChanged();
-    }
-
-    private void OnDeleteQuestionDialogClose(bool accepted) {
-        DeleteQuestionDialogOpen = false;
-        StateHasChanged();
-    }
-
-    private void OpenDeleteAnswerDialog(long questionId, long answerId) {
-        DeleteAnswerDialogOpen = true;
-        QuestionIdToDelete = questionId;
-        AnswerIdToDelete = answerId;
-        StateHasChanged();
-    }
-
-    private void OnDeleteAnswerDialogClose(bool accepted) {
-        DeleteAnswerDialogOpen = false;
         StateHasChanged();
     }
 
@@ -594,10 +470,10 @@
 
     private string ConflictMessage { get; set; } = null!;
 
-	[Inject]
+    [Inject]
     private NavigationManager NavManager { get; set; } = null!;
 
-	/*not working man*/
+    /*not working man*/
     private async void HandleValidSubmit() 
     {
         var response = await HttpClient.PostAsJsonAsync("wse", Wse);
@@ -619,7 +495,7 @@
         NavManager.NavigateTo("wse/" + WseId);
     }
 
-	protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         Wse = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId) ?? new WebserviceEntry() {};
         _isLoggedIn = LoginState.LoggedIn;
@@ -694,9 +570,6 @@
                     }
                 }
             }
-        } else
-        {
-            NavManager.NavigateTo("login");
         }
     }
 
@@ -716,9 +589,6 @@
                     }
                 }
             }
-        } else
-        {
-            NavManager.NavigateTo("login");
         }
     }
 
@@ -726,18 +596,13 @@
     {
         if (_isLoggedIn)
         {
+            _isBookmark = !_isBookmark;
             if (!_isBookmark)
             {
                 var response = await HttpClient.PostAsJsonAsync("user/" + _userId + "/bookmarks/add/" + WseId, "");
-                if (response.IsSuccessStatusCode) {
-                    _isBookmark = !_isBookmark;
-                }
             } else
             {
                 var response = await HttpClient.PostAsJsonAsync("user/" + _userId + "/bookmarks/remove/" + WseId, "");
-                if (response.IsSuccessStatusCode) {
-                    _isBookmark = !_isBookmark;
-                }
             }
         } else
         {
@@ -787,7 +652,7 @@
 				    Manager.NavigateTo(fullUrl);
 			    }
 		    } else {
-			    @* TODO not found *@
+    @* TODO not found *@
 		    }
 	    }
     }

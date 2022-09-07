@@ -20,8 +20,8 @@ public class WseController : ControllerBase {
     public WebserviceEntry Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse) => wse;
 
     [HttpGet("{wseId:long}/question")]
-    public IEnumerable<Question> GetQuestions([FromDatabase] WebserviceEntry wse, [FromQuery] Pagination pagination) =>
-        wse.Questions.Paginate(pagination);
+    public IEnumerable<Question> GetQuestions(long wseId, [FromQuery] Pagination pagination) =>
+        _context.Questions.Where(x => x.WseId == wseId).Paginate(pagination);
 
     [HttpGet("{wseId:long}/question/{questionId:long}")]
     public IQueryable<Answer> GetAnswers(long wseId, long questionId, [FromQuery] Pagination pagination) =>
