@@ -105,10 +105,18 @@
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
-    private string StyleOnlineStatus(WebserviceEntry entry) {
-    //return entry.IsOnline ? "text-success" : "text-danger";
-        @* TODO implement *@
-        return "text-danger";
+    private async Task<string> StyleOnlineStatus(WebserviceEntry entry) {
+        var response = await HttpClient.GetAsync($"wse/{entry.Id}/checks/latest" );
+        if (response.IsSuccessStatusCode) {
+            if (await response.Content.ReadFromJsonAsync<bool>()) {
+                return "text-success";
+            } else {
+                return "text-danger";            
+            }
+        } else {
+            return "text-secondary";
+        }
+
     }
 
     protected override async Task OnInitializedAsync() {
