@@ -12,7 +12,7 @@ public class User {
     public string? Title { get; set; }
     public string FirstNames { get; set; } = null!;
     public string LastName { get; set; } = null!;
-    private string _email;
+    private string _email = null!;
     private string? _profilePicture;
     public string Email { get => _email; set => _email = value.ToLowerInvariant(); }
 
