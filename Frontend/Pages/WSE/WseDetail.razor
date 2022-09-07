@@ -772,9 +772,9 @@
     public long WseId { get; set; }
 
     [Parameter]
-    public string WseName { get; set; }
+    public string WseName { get; set; } = null!;
 
-	[Inject]
+    [Inject]
     private NavigationManager Manager { get; set; } = null!;
 
     protected override async Task OnParametersSetAsync() {

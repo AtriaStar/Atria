@@ -12,11 +12,17 @@ public class LoginState {
 
     public User? User { get; private set; }
 
-    public async Task LoadAsync(HttpClient client) {
+    private async Task LoadAsync(HttpClient client) {
         var cnt = await client.GetAsync("auth");
         if (cnt.IsSuccessStatusCode) {
            User = await cnt.Content.ReadFromJsonAsync<User>();
         }
         Loaded = true;
+    }
+    
+    public Task Init { get; }
+    
+    public LoginState(HttpClient client) {
+        Init = LoadAsync(client);
     }
 }

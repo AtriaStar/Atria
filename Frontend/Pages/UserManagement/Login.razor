@@ -15,15 +15,15 @@
     <div class="row p-2 justify-content-center">
         <div class="col-lg-5 card">
             <div class="card-body">
-                <EditForm Model="_login" OnValidSubmit="HandleValidSubmit">
+                <EditForm Model="_loginDto" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator></DataAnnotationsValidator>
                     <ValidationSummary></ValidationSummary>
                     <div class="row py-3">
                         <div class="col">
                             <label for="email" class="form-label">E-Mail</label>
                             <div>
-                                <InputText type="email" id="email" class="form-control" @bind-Value="_login.Email"></InputText>
-                                <ValidationMessage For="() => _login.Email"></ValidationMessage>
+                                <InputText type="email" id="email" class="form-control" @bind-Value="_loginDto.Email"></InputText>
+                                <ValidationMessage For="() => _loginDto.Email"></ValidationMessage>
                             </div>
                         </div>
                     </div>
@@ -31,8 +31,8 @@
                         <div class="col">
                             <label for="password" class="form-label">Passwort</label>
                             <div>
-                                <InputText type="password" id="password" class="form-control" @bind-Value="_login.Password"></InputText>
-                                <ValidationMessage For="() => _login.Password"></ValidationMessage>
+                                <InputText type="password" id="password" class="form-control" @bind-Value="_loginDto.Password"></InputText>
+                                <ValidationMessage For="() => _loginDto.Password"></ValidationMessage>
                             </div>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
     [SupplyParameterFromQuery]
     public string? ReturnUrl { get; set; }
 
-    private readonly Models.DTO.Login _login = new();
+    private readonly Models.DTO.LoginDto _loginDto = new();
     private string LoginMessage { get; set; } = null!;
 
     private bool _processingRequest;
@@ -92,7 +92,7 @@
     private async void HandleValidSubmit() {
         _processingRequest = true;
         LoginMessage = "";
-        var response = await HttpClient.PostAsJsonAsync("auth/login", _login);
+        var response = await HttpClient.PostAsJsonAsync("auth/login", _loginDto);
 
         if (response.IsSuccessStatusCode) {
             NavManager.NavigateTo(ReturnUrl ?? "", true);

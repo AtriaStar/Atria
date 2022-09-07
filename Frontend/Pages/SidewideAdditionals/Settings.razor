@@ -1,12 +1,14 @@
 ﻿@page "/settings"
+@using System.Net
 @inject NavigationManager NavigationManager
 
 <PageTitle>Einstellungen - Atria</PageTitle>
 
 @if (LoginState.Loaded) {
     <div class="container-lg mt-3">
-        <h2 class="mb-3">Einstellungen</h2>
+        <h2 class="mb-3 fw-bold">Einstellungen</h2>
 
+        @* Removed because backend does not exist yet
         <div class="card mt-1 mb-4">
             <h5 class="card-header fw-bold">
                 Benachrichtigungen
@@ -101,137 +103,90 @@
                 </div>
             </div>
         </div>
+        *@
+
         <div class="card mb-4">
-            <h5 class="card-header fw-bold">
-                Konto
-            </h5>
+            <EditForm Model="_changePasswordDto" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <ValidationSummary></ValidationSummary>
+                <div class="card-body">
+                    <h4 class="card-title fw-bold">Passwort ändern</h4>
+                    <hr/>
+                    <div class="mb-3">
+                        <label for="oldPw" class="form-label">Altes Password</label>
+                        <InputText @bind-Value="_changePasswordDto.Password" type="password" id="oldPw" class="form-control" placeholder="Altes Passwort eingeben..."></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPw" class="form-label">Neues Passwort</label>
+                        <InputText @bind-Value="_changePasswordDto.NewPassword" type="password" id="newPw" class="form-control" placeholder="Neues Passwort eingeben..."></InputText>
+                    </div>
+                    <div class="mb-4">
+                        <label for="confirmPw" class="form-label">Neues Passwort bestätigen</label>
+                        <InputText @bind-Value="_changePasswordDto.ConfirmPassword" type="password" id="confirmPw" class="form-control" placeholder="Neues Passwort bestätigen..."></InputText>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-outline-success col-2" style="min-width: 128px">Speichern</button>
+                    </div>
+                </div>
+            </EditForm>
+            <div class="text-center fw-bold text-danger">
+                @_changePasswordMessage
+            </div>
+        </div>
+
+        <div class="card mb-3">
             <div class="card-body">
-                <div class="row d-flex align-content-between">
-                    <div class="col">
-                        Passwort ändern
-                    </div>
-                    <div class="col-auto">
-                        <div class="btn-group d-flex justify-content-end">
-                            <button class="btn btn-success" type="button" @onclick="OpenChangePasswordDialog">
-                                Passwort ändern
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <h4 class="card-title text-danger fw-bold">Konto löschen</h4>
                 <hr/>
-                <div class="row d-flex align-content-between">
-                    <div class="col">
+                <div>
+                    Dies kann nicht rückgängig gemacht werden! <br/>
+                    Durch das Löschen Ihres Kontos werden Sie aus allen Webservice-Einträgen entfernt.
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-outline-danger col-2" type="button" @onclick="OpenDeleteDialog" style="min-width: 128px">
                         Konto löschen
-                    </div>
-                    <div class="col-auto">
-                        <div class="btn-group d-flex justify-content-end">
-                            <button class="btn btn-danger" type="button" @onclick="OpenDeleteDialog">
-                                Konto löschen
-                            </button>
-                        </div>
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
-        @*<li class="list-group-item">
-            <div class="row d-flex align-content-between">
-                <div class="col">
-                    Dark/Light Mode
-                </div>
-                <div class="col-auto">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                    </div>
-                </div>
-            </div>
-        </li>
-
-        <li class="list-group-item">
-            <div class="row d-flex align-content-between">
-                <div class="col">
-                    Sprache
-                </div>
-                <div class="col-auto">
-                    <div class="btn-group">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Deutsch
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">Deutsch</a></li>
-                            <li><a class="dropdown-item" href="#">English</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </li>*@
-
-    <div class="card mb-4">
-        <h5 class="card-header fw-bold">
-            Konto
-        </h5>
-        <div class="card-body">
-            <div class="row d-flex align-content-between">
-                <div class="col">
-                    Passwort ändern
-                </div>
-                <div class="col-auto">
-                    <div class="btn-group d-flex justify-content-end">
-                        <button class="btn btn-success" type="button" @onclick="OpenChangePasswordDialog">
-                            Passwort ändern
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <hr/>
-        
-            <div class="row d-flex align-content-between">
-                <div class="col">
-                    Konto löschen
-                </div>
-                <div class="col-auto">
-                    <div class="btn-group d-flex justify-content-end">
-                        <button class="btn btn-danger" type="button" @onclick="OpenDeleteDialog">
-                            Konto löschen
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-@if (_changePasswordDialogOpen) {
-    <Frontend.Pages.Components.ChangePasswordModal OnClose="@OnChangePasswordDialogClose"></Frontend.Pages.Components.ChangePasswordModal>
 }
 
 @if (_deleteDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal Title="Konto löschen" Text="Sind Sie sicher, dass Sie Ihr Konto löschen möchten?" OnClose="@OnDeleteDialogClose"></Frontend.Pages.Components.DeleteModal>
+    <DeleteAccountModal Title="Konto löschen" Text="Sind Sie sicher, dass Sie Ihr Konto löschen möchten?" OnClose="@OnDeleteDialogClose"></DeleteAccountModal>
 }
 
 
 @code {
-    private bool _changePasswordDialogOpen;
     private bool _deleteDialogOpen;
+
+    private string? _changePasswordMessage;
+
+    private readonly Models.DTO.ChangePasswordDto _changePasswordDto = new();
 
     [CascadingParameter]
     private LoginState LoginState { get; set; } = default!;
 
-    protected override void OnInitialized() {
-        if (LoginState.Loaded && !LoginState.LoggedIn) {
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync() {
+        await LoginState.Init;
+        if (!LoginState.LoggedIn) {
             NavigationManager.NavigateTo("login");
         }
     }
 
-    private void OnChangePasswordDialogClose(bool accepted) {
-        _changePasswordDialogOpen = false;
-        StateHasChanged();
-    }
+    private async Task HandleValidSubmit() {
+        var response = await HttpClient.PostAsJsonAsync("changePassword", _changePasswordDto);
 
-    private void OpenChangePasswordDialog() {
-        _changePasswordDialogOpen = true;
-        StateHasChanged();
+        if (response.IsSuccessStatusCode) {
+            NavigationManager.NavigateTo("", forceLoad: true); // Refresh header
+        } else if (response.StatusCode == HttpStatusCode.Unauthorized) {
+            _changePasswordMessage = await response.Content.ReadAsStringAsync();
+        } else {
+            NavigationManager.NavigateTo("/internal-server-error");
+        }
     }
 
     private void OnDeleteDialogClose(bool accepted) {
