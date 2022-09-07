@@ -1,6 +1,7 @@
 ﻿using Backend.AspPlugins;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Backend.Controllers;
@@ -16,12 +17,13 @@ public class SearchController : ControllerBase {
 
     private IEnumerable<WebserviceEntry> GetBaseWses(WseSearchParameters parameters)
         => _context.WebserviceEntries
+            .Include(x => x.Tags)
             .Where(x => (!x.Reviews.Any() || x.Reviews.Average(y => (int) y.StarCount) >= (int) parameters.MinReviewAvg)
-                && (parameters.Tags == null || x.Tags.Count(y => parameters.Tags.Contains(y)) == parameters.Tags.Count)
+                && (parameters.Tags == null || x.Tags.Count(y => parameters.Tags.Contains(y)) == parameters.Tags.Count) // Fuck
                 && (parameters.IsOnline == null || true /* TODO */)
                 && (parameters.HasBookmark == null || true /* TODO */))
             .AsEnumerable()
-            .Select(x => (wse: x, score: parameters.Query == null ? 1 : FuzzingService.CalculateScore1(parameters.Query, x)))
+            .Select(x => (wse: x, score: string.IsNullOrEmpty(parameters.Query) ? 1 : FuzzingService.CalculateScore1(parameters.Query, x)))
             .Where(x => x.score > 0.05)
             .Select(x => x with { score = x.score * parameters.Order.GetMapper().Invoke(x.wse) })
             .OrderBy(x => parameters.Ascending ? x.score : -x.score)
