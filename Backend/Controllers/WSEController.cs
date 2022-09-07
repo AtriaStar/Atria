@@ -17,8 +17,12 @@ public class WseController : ControllerBase {
     }
 
     [HttpGet("{wseId:long}")]
-    public WebserviceEntry Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse)
-        => wse;
+    public async Task<WebserviceEntry> Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse) {
+        wse.ViewCount++;
+        _context.Update(wse);
+        await _context.SaveChangesAsync();
+        return wse;
+    }
 
     [HttpGet("{wseId:long}/checks")]
     public async Task<IEnumerable<ApiCheck>> GetChecks(long wseId)
