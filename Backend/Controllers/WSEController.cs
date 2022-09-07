@@ -20,6 +20,22 @@ public class WseController : ControllerBase {
     public WebserviceEntry Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse)
         => wse;
 
+    [HttpGet("{wseId:long}/checks")]
+    public async Task<IEnumerable<ApiCheck>> GetChecks(long wseId)
+        => (await _context.WebserviceEntries
+            .Include(x => x.ApiCheckHistory)
+            .FirstAsync(x => x.Id == wseId))
+            .ApiCheckHistory;
+
+    [HttpGet("{wseId:long}/checks/latest")]
+    public async Task<bool?> GetLastCheck(long wseId)
+        => (await _context.WebserviceEntries
+            .Include(x => x.ApiCheckHistory)
+            .FirstAsync(x => x.Id == wseId))
+            .ApiCheckHistory
+            .MaxBy(x => x.CheckedAt)
+            ?.Success;
+
     [HttpGet("{wseId:long}/question")]
     public IEnumerable<Question> GetQuestions(long wseId, [FromQuery] Pagination pagination)
         => _context.Questions.Where(x => x.WseId == wseId).Paginate(pagination);
@@ -62,6 +78,7 @@ public class WseController : ControllerBase {
             return BadRequest("Creation timestamp cannot be modified");
         }
 
+        wse.ApiCheckHistory = existingWse.ApiCheckHistory;
         wse.Questions = existingWse.Questions;
         wse.Reviews = existingWse.Reviews;
 

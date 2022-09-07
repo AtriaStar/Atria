@@ -24,6 +24,10 @@ public class WebserviceEntry {
     public string? FullDescription { get; set; }
 
     [Url]
+    public string? ApiCheckUrl { get; set; }
+    public ICollection<ApiCheck> ApiCheckHistory { get; set; } = new List<ApiCheck>();
+
+    [Url]
     public string? DocumentationLink {
         get => _documentationLink;
         set => _documentationLink = string.IsNullOrEmpty(value) ? null : value;

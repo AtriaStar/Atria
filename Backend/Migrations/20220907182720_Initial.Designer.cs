@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220907135527_Initial")]
+    [Migration("20220907182720_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,29 @@ namespace Backend.Migrations
                         .HasDatabaseName("ix_answers_creator_id");
 
                     b.ToTable("answers", (string)null);
+                });
+
+            modelBuilder.Entity("Models.ApiCheck", b =>
+                {
+                    b.Property<DateTimeOffset>("CheckedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("checked_at");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("boolean")
+                        .HasColumnName("success");
+
+                    b.Property<long?>("WebserviceEntryId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("webservice_entry_id");
+
+                    b.HasKey("CheckedAt")
+                        .HasName("pk_api_check");
+
+                    b.HasIndex("WebserviceEntryId")
+                        .HasDatabaseName("ix_api_check_webservice_entry_id");
+
+                    b.ToTable("api_check", (string)null);
                 });
 
             modelBuilder.Entity("Models.Collaborator", b =>
@@ -319,6 +342,10 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("ApiCheckUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("api_check_url");
+
                     b.Property<string>("ChangeLog")
                         .HasColumnType("text")
                         .HasColumnName("change_log");
@@ -495,6 +522,14 @@ namespace Backend.Migrations
                     b.Navigation("Wse");
                 });
 
+            modelBuilder.Entity("Models.ApiCheck", b =>
+                {
+                    b.HasOne("Models.WebserviceEntry", null)
+                        .WithMany("ApiCheckHistory")
+                        .HasForeignKey("WebserviceEntryId")
+                        .HasConstraintName("fk_api_check_webservice_entries_webservice_entry_id");
+                });
+
             modelBuilder.Entity("Models.Collaborator", b =>
                 {
                     b.HasOne("Models.User", "User")
@@ -647,6 +682,8 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
+                    b.Navigation("ApiCheckHistory");
+
                     b.Navigation("Collaborators");
 
                     b.Navigation("Questions");
