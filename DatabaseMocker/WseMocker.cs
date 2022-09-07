@@ -67,7 +67,8 @@ public class WseMocker {
             FullDescription = "search many things",
             Link = "https://www.bing.com/",
             ViewCount = 1,
-            ContactPersonId = uId
+            ContactPersonId = uId,
+            ApiCheckUrl = "https://translate.google.de/"
         };
 
         WebserviceEntry entry7 = new WebserviceEntry {
@@ -112,7 +113,7 @@ public class WseMocker {
             FullDescription = "search many things",
             Link = "https://duckduckgo.com/",
             ViewCount = 1145145,
-            ContactPersonId = uId
+            ContactPersonId = uId,
         };
 
         WebserviceEntry entry12 = new WebserviceEntry {
@@ -159,7 +160,8 @@ public class WseMocker {
             FullDescription = "search many things",
             Link = "https://duckduckgo.com/",
             ViewCount = 33331,
-            ContactPersonId = uId
+            ContactPersonId = uId,
+            ApiCheckUrl = "false"
         };
 
 

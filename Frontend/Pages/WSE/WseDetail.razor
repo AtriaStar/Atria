@@ -34,9 +34,9 @@
 <div class="card mb-4">
     <div class="card-body">
         <div class="row mb-2">
-            <div class="col-auto mt-sm-1">
-                <i class="fa-solid fa-circle text-success"/>
-            </div>
+             <div class="col-auto">
+                    <i class="fa-solid fa-circle @StyleOnlineStatus(Wse)"></i>
+                </div>
             <div class="col ps-0">
                 <h3 class="card-title fw-bold">
                     @if (!_displayForm) {
@@ -561,6 +561,19 @@
 			    @* TODO not found *@
 		    }
 	    }
+    }
+
+    private async Task<string> StyleOnlineStatus(WebserviceEntry entry) {
+        var response = await HttpClient.GetAsync($"wse/{entry.Id}/checks/latest" );
+        if (response.IsSuccessStatusCode) {
+            if (await response.Content.ReadFromJsonAsync<bool>()) {
+                return "text-success";
+            } else {
+                return "text-danger";            
+            }
+        } else {
+            return "text-secondary";
+        }
     }
 
 }

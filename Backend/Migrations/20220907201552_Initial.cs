@@ -96,6 +96,7 @@ namespace Backend.Migrations
                     short_description = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     link = table.Column<string>(type: "text", nullable: false),
                     full_description = table.Column<string>(type: "text", nullable: true),
+                    api_check_url = table.Column<string>(type: "text", nullable: true),
                     documentation_link = table.Column<string>(type: "text", nullable: true),
                     documentation = table.Column<string>(type: "text", nullable: true),
                     change_log = table.Column<string>(type: "text", nullable: true),
@@ -139,6 +140,24 @@ namespace Backend.Migrations
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "api_check",
+                columns: table => new
+                {
+                    checked_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    success = table.Column<bool>(type: "boolean", nullable: false),
+                    webservice_entry_id = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_api_check", x => x.checked_at);
+                    table.ForeignKey(
+                        name: "fk_api_check_webservice_entries_webservice_entry_id",
+                        column: x => x.webservice_entry_id,
+                        principalTable: "webservice_entries",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -313,6 +332,11 @@ namespace Backend.Migrations
                 column: "creator_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_api_check_webservice_entry_id",
+                table: "api_check",
+                column: "webservice_entry_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_bookmarks_bookmarks_id",
                 table: "bookmarks",
                 column: "bookmarks_id");
@@ -368,6 +392,9 @@ namespace Backend.Migrations
         {
             migrationBuilder.DropTable(
                 name: "answers");
+
+            migrationBuilder.DropTable(
+                name: "api_check");
 
             migrationBuilder.DropTable(
                 name: "bookmarks");

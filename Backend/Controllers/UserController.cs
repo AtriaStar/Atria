@@ -56,6 +56,7 @@ public class UserController : ControllerBase {
         user.WseDrafts = authUser.WseDrafts;
         user.Bookmarks = authUser.Bookmarks;
 
+        _context.ChangeTracker.Clear(); // TODO: WHY IS THIS NEEDED??
         _context.Update(user);
         await _context.SaveChangesAsync();
         return Ok();
