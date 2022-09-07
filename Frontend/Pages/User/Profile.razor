@@ -279,7 +279,7 @@
     private async void HandleValidSubmit() {
         _displayForm = !_displayForm;
         CloneUser();
-        await HttpClient.PostAsJsonAsync($"user/{UserId}", _user);
+        await HttpClient.PostAsJsonAsync("user", _user);
     }
 
     private void CloneUser() {
