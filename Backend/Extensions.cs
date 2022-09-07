@@ -4,21 +4,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Models;
 
 namespace Backend; 
 
 public static class Extensions {
-    public static IQueryable<T> Paginate<T>(this IQueryable<T> queryable, Pagination pagination)
-        => queryable.Skip(Math.Max(0, pagination.Page - 1) * pagination.EntriesPerPage)
-                    .Take(pagination.EntriesPerPage);
+    public static bool IsNullable(this Type t)
+        => Nullable.GetUnderlyingType(t) != null;
 
-    public static IEnumerable<T> Paginate<T>(this IEnumerable<T> queryable, Pagination pagination)
-        => queryable.Skip(Math.Max(0, pagination.Page - 1) * pagination.EntriesPerPage)
-                    .Take(pagination.EntriesPerPage);
+
+    public static MethodInfo? GetMethod(this ActionExecutingContext context)
+        => (context.ActionDescriptor as ControllerActionDescriptor)?.MethodInfo;
 
     public static IEnumerable<ParameterInfo> GetBasicParameters(this ActionExecutingContext context)
-        => (context.ActionDescriptor as ControllerActionDescriptor)?.MethodInfo.GetParameters()
+        => context.GetMethod()?.GetParameters()
             .Where(x => x.Name != null)
             ?? Enumerable.Empty<ParameterInfo>();
 

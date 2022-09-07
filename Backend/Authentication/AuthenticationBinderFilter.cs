@@ -1,0 +1,64 @@
+﻿using System.Reflection;
+using Backend.AspPlugins;
+using Backend.ParameterHelpers;
+using Backend.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
+using Models;
+
+namespace Backend.Authentication; 
+
+public class AuthenticationBinderFilter : IAsyncActionFilter, IOrderedFilter {
+    public int Order => 0;
+
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next) {
+        var authParams = context.GetParametersWithAttribute<FromAuthenticationAttribute>().ToArray();
+        var optional = authParams.All(x => x.ParameterType.IsNullable())
+                       && context.GetMethod()?.GetCustomAttribute<RequiresAuthenticationAttribute>() == null;
+        if (!authParams.Any() && optional) {
+            return;
+        }
+
+        var services = context.HttpContext.RequestServices;
+        var db = services.GetRequiredService<AtriaContext>();
+        var ss = services.GetRequiredService<SessionService>();
+        Session? session;
+        if (!context.HttpContext.Request.Cookies.TryGetValue(ss.AuthorizationCookieName, out var token)
+            || (session = await db.Sessions
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Token == token)) == null) {
+            Reject();
+            return;
+        }
+
+        if (!ss.IsValid(session)) {
+            await ss.DeleteSession(session, db, context.HttpContext.Response);
+            Reject();
+            return;
+        }
+
+        void Reject() {
+            if (!optional) {
+                context.Result = new UnauthorizedResult();
+            }
+        }
+
+        foreach (var p in authParams) {
+            object entity;
+            if (p.ParameterType == typeof(Session)) {
+                entity = session;
+            } else if (p.ParameterType == typeof(User)) {
+                entity = session.User;
+            } else {
+                throw new ArgumentOutOfRangeException(p.Name, p.ParameterType, "Must be Session or User");
+            }
+            context.ActionArguments[p.Name!] = entity;
+
+            await p.GetCustomAttributes<IncludeAttribute>()
+                .ApplyToAsync(db, entity);
+        }
+
+        await next();
+    }
+}

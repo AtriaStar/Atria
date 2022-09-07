@@ -1,17 +1,17 @@
 ﻿using Backend;
 using Backend.AspPlugins;
-
+using Backend.Authentication;
 using Backend.ParameterHelpers;
 
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(options => {
         options.Filters.Add<DatabaseBinderNullFilter>();
+        options.Filters.Add<AuthenticationBinderFilter>();
         options.UseCentralRoutePrefix(new RouteAttribute("api"));
         options.ModelMetadataDetailsProviders.Add(new IncludeAttributeProvider());
     })
@@ -37,7 +37,7 @@ if (app.Environment.IsDevelopment()) {
     app.UseSwaggerUI();
 }
 app.UseRouting();
-app.UseCors(policy => 
+app.UseCors(policy =>
     policy.WithOrigins("https://localhost:7206")
         .AllowAnyMethod()
         .AllowAnyHeader()
