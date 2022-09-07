@@ -120,11 +120,21 @@
                         <h6 class="card-title fw-bold">Bewertung</h6>
                         <div class="row">
                             <div class="col-auto">
-                                <i class="fa fa-star rating-uncolored"/>
-                                <i class="fa fa-star rating-uncolored"/>
-                                <i class="fa fa-star rating-uncolored"/>
-                                <i class="fa fa-star rating-uncolored"/>
-                                <i class="fa fa-star rating-uncolored"/>
+                                @for (int i = 1; i <= Convert.ToInt32(Math.Floor(_avgReview)); i++)
+                                {
+                                    <i class="fa fa-star rating-color"/>
+                                }
+                                @if (_avgReview - Convert.ToInt32(Math.Floor(_avgReview)) == .5)
+                                {
+                                    <i class="fa-regular fa-star-half-stroke rating-color"/>
+                                } else
+                                {
+                                    <i class="fa fa-star rating-uncolored"/>
+                                }
+                                @for (int i = Convert.ToInt32(Math.Floor(_avgReview)) + 2; i <= 5; i++)
+                                {
+                                    <i class="fa fa-star rating-uncolored"/>
+                                }
                             </div>
                             <div class="col-auto">
                                 <p>@Wse.Questions.Count() Bewertungen</p>
@@ -245,7 +255,7 @@
 
         @foreach (Question question in _wseQuestions)
         {
-            <Frontend.Pages.Components.QnASection Question="question" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
+            <Frontend.Pages.Components.QuestionComponent Question="question" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
         }
 
         @if (_wseNextQuestions.Length != 0) {
@@ -266,14 +276,14 @@
                     <button class="btn btn-outline-success btn-small" type="button">neue Bewertung</button>
                 </div>
             }
-            @if (_wseReviews.Length > 0)
+            @*@if (_wseReviews.Length > 0)
             {
                 <div class="col-auto ms-auto">
                     <div class="dropdown">
                         <a class="btn btn-outline-secondary btn-small dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                             Sortieren nach
                         </a>
-                        @*TODO sort logic*@
+                        TODO sort logic
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
                                 <a class="dropdown-item" href="#">Neuste</a>
@@ -290,44 +300,12 @@
                         </ul>
                     </div>
                 </div>
-            }
+            }*@
         </div>
 
         @foreach (Review review in _wseReviews)
         {
-            <div class="card mt-3 mb-4">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-auto">
-                            @for (int i = 1; i <= (int)review.StarCount; i++)
-                            {
-                               <i class="fa fa-star rating-color"></i>
-                            }
-                            @for (int i = (int)review.StarCount + 1; i <= 5; i++)
-                            {
-                               <i class="fa fa-star rating-uncolored"></i>
-                            }
-                            <div class="card-subtitle mt-1 text-muted">@review.CreationTime</div>
-                        </div>
-                        <div class="col mt-1">
-                            <h6 class="card-title fw-bold">@review.Title</h6>
-                            <div class="card-subtitle mb-2 text-muted">Creator.FirstNames Creator.LastName</div>
-                            <p class="card-text">@review.Description</p>
-                        </div>
-                    </div>
-                    @if (_isLoggedIn && review.CreatorId == _userId)
-                    {
-                        <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
-                            <button class="btn btn-outline-success btn-small" type="button" href="editReview">
-                                Bearbeiten
-                            </button>
-                            <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteReviewDialog(review.Id)">
-                                Löschen
-                            </button>
-                        </div>
-                    }
-                </div>
-            </div>
+            <Frontend.Pages.Components.ReviewComponent Review="review" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
         }
         @if (_wseNextReviews.Length != 0)
         {
@@ -376,16 +354,6 @@
     OnClose="@OnCollabDialogClose"/>
 }
 
-@if (DeleteReviewDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal 
-    Title="Bewertung löschen" 
-    Text="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?" 
-    ToDelete="review" 
-    WseId="WseId"
-    ReviewId="ReviewIdToDelete"
-    OnClose="@OnDeleteReviewDialogClose"/>
-}
-
 @if (DeleteWseDialogOpen) {
     <Frontend.Pages.Components.DeleteModal 
     Title="Eintrag löschen" 
@@ -414,17 +382,6 @@
 
     private void OnCollabDialogClose(bool accepted) {
         CollabDialogOpen = false;
-        StateHasChanged();
-    }
-
-    private void OpenDeleteReviewDialog(long reviewId) {
-        DeleteReviewDialogOpen = true;
-        ReviewIdToDelete = reviewId;
-        StateHasChanged();
-    }
-
-    private void OnDeleteReviewDialogClose(bool accepted) {
-        DeleteReviewDialogOpen = false;
         StateHasChanged();
     }
 
@@ -504,10 +461,22 @@
             _userId = LoginState.User!.Id;
             CurrentUser = await HttpClient.GetFromJsonAsync<User>("user/" + _userId);
         }
+        await GetAvgReview();
         await CheckCurrentUserCollab();
         await CheckCurrentUserBookmark();
         await InitReviews();
         await InitQuestions();
+    }
+
+    private async Task GetAvgReview() {
+        Review[] allReviews = await HttpClient.GetFromJsonAsync<Review[]>
+            ("wse/" + WseId + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] {};
+        double sum = 0;
+        foreach (Review review in allReviews) {
+            sum += (int)review.StarCount;
+        }
+        sum = sum / allReviews.Count();
+        _avgReview = Math.Round(sum * 2, MidpointRounding.AwayFromZero) / 2;
     }
 
     private async Task InitReviews()
@@ -518,6 +487,7 @@
         _wseNextReviews = await HttpClient.GetFromJsonAsync<Review[]>
             ("wse/" + WseId + "/review?page=" + ReviewPage + "&entriesPerPage=" + ReviewEntryNum) ?? new Review[] {};
         ReviewPage++;
+        _wseReviews = _wseReviews.OrderByDescending(r => (int)r.StarCount).ToArray();
     }
 
     private async Task InitQuestions()
@@ -544,9 +514,9 @@
 
     private async Task GetNextQuestions()
     {
-        var loadedQuestions = new Question[_wseReviews.Length + _wseNextReviews.Length];
+        var loadedQuestions = new Question[_wseQuestions.Length + _wseNextQuestions.Length];
         _wseQuestions.CopyTo(loadedQuestions, 0);
-        _wseNextQuestions.CopyTo(loadedQuestions, _wseReviews.Length);
+        _wseNextQuestions.CopyTo(loadedQuestions, _wseQuestions.Length);
         _wseQuestions = loadedQuestions;
 
         _wseNextQuestions = await HttpClient.GetFromJsonAsync<Question[]>
