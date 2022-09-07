@@ -52,8 +52,8 @@
             </div>
             <div class="col-auto d-flex align-content-end me-1">
                 @{
-                    var bookmarkState = isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
-                    var bookmarkTitle = isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                    var bookmarkState = hasBookmark ? "bi-bookmark-fill" : "bi-bookmark";
+                    var bookmarkTitle = hasBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
                 }
                 <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
             </div>
@@ -440,7 +440,7 @@
     public bool isLoggedIn = true;
     public bool isCollab = true;
     public bool isCreator = true;
-    public bool isBookmark = false;
+    public bool hasBookmark = false;
 
     private bool _displayForm = false;
 
@@ -450,7 +450,7 @@
     private WebserviceEntry _cloneWse = null!;
 
     private void ChangeBookmarkStatus() {
-        isBookmark = !isBookmark;
+        hasBookmark = !hasBookmark;
         @* TODO logic *@
     }
 
