@@ -20,10 +20,4 @@ public class Tag {
                 .WithMany(x => x.Tags);
         }
     }
-
-    public override bool Equals(object? obj)
-        => obj is Tag tag && tag.Name == Name;
-
-    public override int GetHashCode()
-        => Name.GetHashCode();
 }
