@@ -94,7 +94,7 @@
     private Answer[] NextAnswers = new Answer[] { };
 
     protected override async Task OnInitializedAsync() {
-        QuestionCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Question.CreatorId);
+        QuestionCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Question.CreatorId) ?? new User() {};
 
         Answers = await HttpClient.GetFromJsonAsync<Answer[]>
             ("wse/" + WseId + "/question/" + Question.Id + "?page=" + AnswerPage + "&entriesPerPage=" + AnswerEntryNum) ?? new Answer[] {};

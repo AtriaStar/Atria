@@ -58,7 +58,7 @@
     private User AnswerCreator { get; set; } = new();
 
     protected override async Task OnInitializedAsync() {
-        AnswerCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Answer.CreatorId);
+        AnswerCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Answer.CreatorId) ?? new User() {};
     }
 
     /*-------------MODALS-------------*/

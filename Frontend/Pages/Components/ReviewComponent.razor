@@ -65,13 +65,8 @@
 
     private User ReviewCreator { get; set; } = new();
 
-    private int AnswerPage = 1;
-    private int AnswerEntryNum = 3;
-    private Answer[] Answers = new Answer[] { };
-    private Answer[] NextAnswers = new Answer[] { };
-
     protected override async Task OnInitializedAsync() {
-        ReviewCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Review.CreatorId);
+        ReviewCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Review.CreatorId) ?? new User() {};
     }
 
     /*-------------MODALS-------------*/
