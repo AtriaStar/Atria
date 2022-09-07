@@ -106,7 +106,7 @@
         *@
 
         <div class="card mb-4">
-            <EditForm Model="_changePassword" OnValidSubmit="HandleValidSubmit">
+            <EditForm Model="_changePasswordDto" OnValidSubmit="HandleValidSubmit">
                 <DataAnnotationsValidator></DataAnnotationsValidator>
                 <ValidationSummary></ValidationSummary>
                 <div class="card-body">
@@ -114,15 +114,15 @@
                     <hr/>
                     <div class="mb-3">
                         <label for="oldPw" class="form-label">Altes Password</label>
-                        <InputText @bind-Value="_changePassword.Password" type="password" id="oldPw" class="form-control" placeholder="Altes Passwort eingeben..."></InputText>
+                        <InputText @bind-Value="_changePasswordDto.Password" type="password" id="oldPw" class="form-control" placeholder="Altes Passwort eingeben..."></InputText>
                     </div>
                     <div class="mb-3">
                         <label for="newPw" class="form-label">Neues Passwort</label>
-                        <InputText @bind-Value="_changePassword.NewPassword" type="password" id="newPw" class="form-control" placeholder="Neues Passwort eingeben..."></InputText>
+                        <InputText @bind-Value="_changePasswordDto.NewPassword" type="password" id="newPw" class="form-control" placeholder="Neues Passwort eingeben..."></InputText>
                     </div>
                     <div class="mb-4">
                         <label for="confirmPw" class="form-label">Neues Passwort bestätigen</label>
-                        <InputText @bind-Value="_changePassword.ConfirmPassword" type="password" id="confirmPw" class="form-control" placeholder="Neues Passwort bestätigen..."></InputText>
+                        <InputText @bind-Value="_changePasswordDto.ConfirmPassword" type="password" id="confirmPw" class="form-control" placeholder="Neues Passwort bestätigen..."></InputText>
                     </div>
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-outline-success col-2" style="min-width: 128px">Speichern</button>
@@ -162,7 +162,7 @@
 
     private string? _changePasswordMessage;
 
-    private readonly Models.DTO.ChangePassword _changePassword = new();
+    private readonly Models.DTO.ChangePasswordDto _changePasswordDto = new();
 
     [CascadingParameter]
     private LoginState LoginState { get; set; } = default!;
@@ -178,7 +178,7 @@
     }
 
     private async Task HandleValidSubmit() {
-        var response = await HttpClient.PostAsJsonAsync("changePassword", _changePassword);
+        var response = await HttpClient.PostAsJsonAsync("changePassword", _changePasswordDto);
 
         if (response.IsSuccessStatusCode) {
             NavigationManager.NavigateTo("", forceLoad: true); // Refresh header

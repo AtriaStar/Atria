@@ -1,20 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Models.DTO;
 
-public class ChangePassword
-{
-
+public class ChangePasswordDto {
     [Required]
     [DataType(DataType.Password)]
-    public string Password { get; set; }
+    public string Password { get; set; } = null!;
 
     [Required]
     [DataType(DataType.Password)]
     [StringLength(255, ErrorMessage = "Must be between 5 and 255 characters", MinimumLength = 5)]
-    public string NewPassword { get; set; }
+    public string NewPassword { get; set; } = null!;
 
     [Required]
     [CompareProperty(nameof(NewPassword))]
-    public string ConfirmPassword { get; set; }
+    [JsonIgnore]
+    public string ConfirmPassword { get; set; } = null!;
 }

@@ -15,15 +15,15 @@
     <div class="row p-2 justify-content-center">
         <div class="col-lg-5 card">
             <div class="card-body">
-                <EditForm Model="_registration" OnValidSubmit="HandleValidSubmit">
+                <EditForm Model="_registrationDto" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator></DataAnnotationsValidator>
                     <ValidationSummary></ValidationSummary>
                     <div class="row py-3">
                         <div class="col">
                             <label for="lastName" class="form-label">Name</label>
                             <div>
-                                <InputText id="lastName" class="form-control" @bind-Value="_registration.LastName"></InputText>
-                                <ValidationMessage For="() => _registration.LastName"></ValidationMessage>
+                                <InputText id="lastName" class="form-control" @bind-Value="_registrationDto.LastName"></InputText>
+                                <ValidationMessage For="() => _registrationDto.LastName"></ValidationMessage>
                             </div>
                         </div>
                     </div>
@@ -32,8 +32,8 @@
                         <div class="col">
                             <label for="firstName" class="form-label">Vorname</label>
                             <div>
-                                <InputText id="firstName" class="form-control" @bind-Value="_registration.FirstNames"></InputText>
-                                <ValidationMessage For="() => _registration.FirstNames"></ValidationMessage>
+                                <InputText id="firstName" class="form-control" @bind-Value="_registrationDto.FirstNames"></InputText>
+                                <ValidationMessage For="() => _registrationDto.FirstNames"></ValidationMessage>
                             </div>
                         </div>
                     </div>
@@ -42,8 +42,8 @@
                         <div class="col">
                             <label for="email" class="form-label">E-Mail</label>
                             <div>
-                                <InputText type="email" id="email" class="form-control" @bind-Value="_registration.Email"></InputText>
-                                <ValidationMessage For="() => _registration.Email"></ValidationMessage>
+                                <InputText type="email" id="email" class="form-control" @bind-Value="_registrationDto.Email"></InputText>
+                                <ValidationMessage For="() => _registrationDto.Email"></ValidationMessage>
                             </div>
                         </div>
                     </div>
@@ -52,8 +52,8 @@
                         <div class="col">
                             <label for="password" class="form-label">Passwort</label>
                             <div>
-                                <InputText type="password" id="password" class="form-control" @bind-Value="_registration.Password"></InputText>
-                                <ValidationMessage For="() => _registration.Password"></ValidationMessage>
+                                <InputText type="password" id="password" class="form-control" @bind-Value="_registrationDto.Password"></InputText>
+                                <ValidationMessage For="() => _registrationDto.Password"></ValidationMessage>
                             </div>
                         </div>
                     </div>
@@ -62,8 +62,8 @@
                         <div class="col">
                             <label for="confirmPassword" class="form-label">Passwort bestätigen</label>
                             <div>
-                                <InputText type="password" id="confirmPassword" class="form-control" @bind-Value="_registration.ConfirmPassword"></InputText>
-                                <ValidationMessage For="() => _registration.ConfirmPassword"></ValidationMessage>
+                                <InputText type="password" id="confirmPassword" class="form-control" @bind-Value="_registrationDto.ConfirmPassword"></InputText>
+                                <ValidationMessage For="() => _registrationDto.ConfirmPassword"></ValidationMessage>
                             </div>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
     private bool _processingRequest;
     private string RegisterMessage { get; set; } = null!;
 
-    private readonly Registration _registration = new();
+    private readonly RegistrationDto _registrationDto = new();
 
     protected override void OnParametersSet() {
         if (LoginState.LoggedIn) {
@@ -118,7 +118,7 @@
     private async void HandleValidSubmit() {
         _processingRequest = true;
         RegisterMessage = "";
-        var response = await HttpClient.PostAsJsonAsync("auth/register", _registration);
+        var response = await HttpClient.PostAsJsonAsync("auth/register", _registrationDto);
         if (response.IsSuccessStatusCode) {
             NavManager.NavigateTo("", forceLoad: true);
         } else if (response.StatusCode == HttpStatusCode.Conflict) {

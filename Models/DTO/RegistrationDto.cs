@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Models.DTO; 
 
-public class Registration {
+public class RegistrationDto {
     [Required]
     public string FirstNames { get; set; } = null!;
 
@@ -19,5 +20,6 @@ public class Registration {
     public string Password { get; set; } = null!;
     
     [CompareProperty(nameof(Password))]
+    [JsonIgnore]
     public string ConfirmPassword { get; set; } = null!;
 }
