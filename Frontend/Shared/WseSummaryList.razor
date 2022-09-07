@@ -1,5 +1,6 @@
 ﻿@using Models.DTO
 @using Models
+@using Services
 @inject NavigationManager NavigationManager
 
 @foreach (WebserviceEntry entry in Entries) {
@@ -59,18 +60,12 @@
             </div>
 
             <div class="row mb-1">
-                <div class="col">
-                    @entry.ShortDescription
-                </div>
-                @if (entry.ViewCount == 1) {
-                    <div class="col-auto ms-auto">
-                        @entry.ViewCount Aufruf
-                    </div>
-                } else {
-                    <div class="col-auto ms-auto">
-                        @entry.ViewCount Aufrufe
-                    </div>
-                }
+	            <div class="col">
+		            @entry.ShortDescription
+	            </div>
+	            <div class="col-auto ms-auto">
+                    @($"{NiceNumberFormatterService.NiceFormat(entry.ViewCount)} Aufruf{(entry.ViewCount == 1 ? "" : "e")}")
+	            </div>
             </div>
 
             <div class="row mb-2">
