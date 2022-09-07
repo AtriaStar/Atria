@@ -253,8 +253,7 @@
             </div>
         }
 
-        @foreach (Question question in _wseQuestions)
-        {
+        @foreach (Question question in _wseQuestions) {
             <Frontend.Pages.Components.QuestionComponent Question="question" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
         }
 
@@ -349,8 +348,8 @@
 @if (CollabDialogOpen) {
     <Frontend.Pages.Components.CollabModal 
     WseId="WseId"
-    WseContactPersonId="@Wse.ContactPersonId"
-    Collabs="@Wse.Collaborators" 
+    WseContactPersonId="Wse.ContactPersonId"
+    Collabs="Wse.Collaborators" 
     OnClose="@OnCollabDialogClose"/>
 }
 
