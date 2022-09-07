@@ -25,11 +25,11 @@ public class WebserviceEntry {
     public string? FullDescription { get; set; }
 
     [Url]
-    public string? ApiCheckUrl { 
-        get => _apiCheckUrl; 
+    public string? ApiCheckUrl {
+        get => _apiCheckUrl;
         set => _apiCheckUrl = string.IsNullOrEmpty(value) ? null : value;
     }
-    public ICollection<ApiCheck> ApiCheckHistory { get; set; } = new List<ApiCheck>();
+    public virtual ICollection<ApiCheck> ApiCheckHistory { get; set; } = new List<ApiCheck>();
 
     [Url]
     public string? DocumentationLink {
