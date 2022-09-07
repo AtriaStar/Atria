@@ -17,6 +17,7 @@ public class AuthenticationBinderFilter : IAsyncActionFilter, IOrderedFilter {
         var optional = authParams.All(x => x.ParameterType.IsNullable())
                        && context.GetMethod()?.GetCustomAttribute<RequiresAuthenticationAttribute>() == null;
         if (!authParams.Any() && optional) {
+            await next();
             return;
         }
 
