@@ -24,16 +24,16 @@ public class User {
     public string? Biography { get; set; }
     public string SignUpIp { get; set; } = null!;
     [JsonIgnore]
-    public byte[] PasswordHash { get; set; } = null!;
+    public virtual byte[] PasswordHash { get; set; } = null!;
     [JsonIgnore]
-    public byte[] PasswordSalt { get; set; } = null!;
+    public virtual byte[] PasswordSalt { get; set; } = null!;
     public UserRights Rights { get; set; } = UserRights.Default;
 
     [JsonIgnore]
-    public ISet<WebserviceEntry> Bookmarks { get; set; } = new HashSet<WebserviceEntry>();
+    public virtual ISet<WebserviceEntry> Bookmarks { get; set; } = new HashSet<WebserviceEntry>();
 
     [JsonIgnore]
-    public ICollection<WseDraft> WseDrafts { get; set; } = new List<WseDraft>();
+    public virtual ICollection<WseDraft> WseDrafts { get; set; } = new List<WseDraft>();
 
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

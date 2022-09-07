@@ -25,7 +25,7 @@ public class WebserviceEntry {
 
     [Url]
     public string? ApiCheckUrl { get; set; }
-    public ICollection<ApiCheck> ApiCheckHistory { get; set; } = new List<ApiCheck>();
+    public virtual ICollection<ApiCheck> ApiCheckHistory { get; set; } = new List<ApiCheck>();
 
     [Url]
     public string? DocumentationLink {
