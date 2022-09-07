@@ -69,7 +69,7 @@ public class UserController : ControllerBase {
     }
 
     [HttpPost("{userId:long}/bookmarks/remove/{wseId:long}")]
-    public async Task RemoveBookmark([FromDatabase] User user, [FromDatabase] WebserviceEntry wse) {
+    public async Task RemoveBookmark([FromDatabase, Include(nameof(Models.User.Bookmarks))] User user, [FromDatabase] WebserviceEntry wse) {
         user.Bookmarks.Remove(wse);
         _context.Update(user);
         await _context.SaveChangesAsync();

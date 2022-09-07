@@ -17,8 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Frontend\Frontend.csproj" />
-    <ProjectReference Include="..\Models\Models.csproj" />
+	  <ProjectReference Include="..\Models\Models.csproj" />
   </ItemGroup>
 
 </Project>
