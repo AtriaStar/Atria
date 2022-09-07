@@ -10,15 +10,16 @@ using Models;
 namespace Backend.Authentication; 
 
 public class AuthenticationBinderFilter : IAsyncActionFilter, IOrderedFilter {
+    private static readonly NullabilityInfoContext Nullability = new();
+
     public int Order => 0;
 
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next) {
+    private async Task<bool> Execute(ActionExecutingContext context) {
         var authParams = context.GetParametersWithAttribute<FromAuthenticationAttribute>().ToArray();
-        var optional = authParams.All(x => x.ParameterType.IsNullable())
+        var optional = authParams.All(x => Nullability.Create(x).ReadState == NullabilityState.Nullable)
                        && context.GetMethod()?.GetCustomAttribute<RequiresAuthenticationAttribute>() == null;
         if (!authParams.Any() && optional) {
-            await next();
-            return;
+            return true;
         }
 
         var services = context.HttpContext.RequestServices;
@@ -29,20 +30,19 @@ public class AuthenticationBinderFilter : IAsyncActionFilter, IOrderedFilter {
             || (session = await db.Sessions
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Token == token)) == null) {
-            Reject();
-            return;
+            return RejectIfMandatory();
         }
 
         if (!ss.IsValid(session)) {
             await ss.DeleteSession(session, db, context.HttpContext.Response);
-            Reject();
-            return;
+            return RejectIfMandatory();
         }
 
-        void Reject() {
+        bool RejectIfMandatory() {
             if (!optional) {
                 context.Result = new UnauthorizedResult();
             }
+            return optional;
         }
 
         foreach (var p in authParams) {
@@ -60,6 +60,12 @@ public class AuthenticationBinderFilter : IAsyncActionFilter, IOrderedFilter {
                 .ApplyToAsync(db, entity);
         }
 
-        await next();
+        return true;
+    }
+
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next) {
+        if (await Execute(context)) {
+            await next();
+        }
     }
 }

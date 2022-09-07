@@ -8,10 +8,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 namespace Backend; 
 
 public static class Extensions {
-    public static bool IsNullable(this Type t)
-        => Nullable.GetUnderlyingType(t) != null;
-
-
     public static MethodInfo? GetMethod(this ActionExecutingContext context)
         => (context.ActionDescriptor as ControllerActionDescriptor)?.MethodInfo;
 
