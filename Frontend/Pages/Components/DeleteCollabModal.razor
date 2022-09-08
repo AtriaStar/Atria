@@ -1,4 +1,8 @@
-﻿<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+﻿@inject NavigationManager NavManager
+@inject HttpClient HttpClient
+@using Models
+
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -17,21 +21,25 @@
 
 @code {
     [Parameter]
-    public string Title { get; set; } = null!;
+    public long WseId { get; set; }
 
     [Parameter]
-    public string Text { get; set; } = null!;
+    public long CollabIdToDelete { get; set; }
+
+    [Parameter]
+    public List<Collaborator> Collabs { get; set; } = null!;
 
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
-    public Task ModalCancel()
+    public void ModalCancel()
     {
-        return OnClose.InvokeAsync(false);
+        NavManager.NavigateTo("/wse/" + WseId, true);
     }
 
-    public Task ModalDelete()
+    public async Task ModalDelete()
     {
-        return OnClose.InvokeAsync(true);
+        Collabs.RemoveAll(c => c.UserId == CollabIdToDelete);
+        await HttpClient.PostAsJsonAsync($"wse/{WseId}/collaborators", Collabs);
     }
 }

@@ -12,23 +12,23 @@
             </div>
 
             <div class="modal-body">
-                @foreach (Collaborator collab in Collabs) {
+                @foreach (User user in Users) {
                     <div class="card mb-2">
                         <div class="row">
                             <div class="col-2">
-                                <img src="@collab.User.ProfilePicture"/>
+                                <img src="@user.ProfilePicture"/>
                             </div>
                             <div class="col">
                                 <div class="card-body">
                                     <div class="card-title">
-                                        @collab.User.FirstNames @collab.User.LastName
-                                        @if (@collab.UserId == WseContactPersonId) {
+                                        @user.FirstNames @user.LastName
+                                        @if (@user.Id == WseContactPersonId) {
                                             <small style="color: red">*Ansprechpartner</small>
                                         }
                                     </div>
-                                    <div class="card-subtitle">@collab.User.Email</div>
+                                    <div class="card-subtitle">@user.Email</div>
                                     <div class="d-grid d-flex justify-content-end">
-                                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteCollabDialog">
+                                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteCollabDialog(user.Id)">
                                             Entfernen
                                         </button>
                                     </div>
@@ -56,7 +56,7 @@
 </div>
 
 @if (DeleteCollabDialogOpen) {
-    <Frontend.Pages.Components.DeleteCollabModal OnClose="@OnDeleteCollabDialogClose"/>
+    <Frontend.Pages.Components.DeleteCollabModal WseId="WseId" Collabs="CollabsList" CollabIdToDelete="CollabIdToDelete" OnClose="@OnDeleteCollabDialogClose"/>
 }
 
 @code {
@@ -75,10 +75,18 @@
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
-    private Collaborator[] Collabs = new Collaborator[] {};
+    private Collaborator[] Collabs { get; set; } = new Collaborator[] {};
+    private List<Collaborator> CollabsList { get; set; } = new List<Collaborator> { };
+    private List<User> Users { get; set; } = new List<User> {};
+    private long CollabIdToDelete { get; set; }
 
     protected override async Task OnInitializedAsync() {
         Collabs = await HttpClient.GetFromJsonAsync<Collaborator[]>("wse/" + WseId + "/collaborators") ?? new Collaborator[] {};
+        CollabsList = Collabs.ToList();
+        foreach (Collaborator collab in Collabs) {
+            User user = await HttpClient.GetFromJsonAsync<User>("user/" + collab.UserId) ?? new User { };
+            Users.Add(user);
+        }
     }
 
     public Task ModalClose()
@@ -94,9 +102,10 @@
     @*delete modal*@
     public bool DeleteCollabDialogOpen { get; set; }
 
-    private void OpenDeleteCollabDialog()
+    private void OpenDeleteCollabDialog(long userId)
     {
         DeleteCollabDialogOpen = true;
+        CollabIdToDelete = userId;
         StateHasChanged();
     }
 
