@@ -58,12 +58,6 @@ public class WebserviceEntry {
     public virtual ICollection<Collaborator> Collaborators { get; set; } = new List<Collaborator>();
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
-    public override bool Equals(object? obj)
-        => obj is User user && user.Id == Id;
-
-    public override int GetHashCode()
-        => Id.GetHashCode();
-
     protected virtual ICollection<User> Bookmarkees { get; set; } = new List<User>();
 
     private class Mapper : IEntityTypeConfiguration<WebserviceEntry> {
