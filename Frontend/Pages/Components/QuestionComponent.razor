@@ -20,10 +20,14 @@
             <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
                 @if (_isLoggedIn)
                 {
-                    <button class="btn btn-outline-success btn-small" type="button">
-                        Antworten
-                    </button>
-                    @if (Question.CreatorId == _userId)
+                    @if (!_createNewAnswer)
+                    {
+                        <button class="btn btn-outline-success btn-small" type="button" @onclick="() => _createNewAnswer = !_createNewAnswer">
+                            Antworten
+                        </button>
+                    }
+                    
+                    @if (Question.CreatorId == _userId && !_createNewAnswer)
                     {
                         <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteQuestionDialog(Question.Id)">
                             Löschen
@@ -31,13 +35,27 @@
                     }
                 }
                         
-                @if (Answers.Length != 0)
+                @if (Answers.Length != 0 && !_createNewAnswer)
                 {
                     <button class="btn btn-small btn-outline-secondary collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#answerOne" aria-expanded="false" aria-controls="answerOne">
                         Antworten anzeigen
                     </button>
                 }
             </div>
+            @if (_createNewAnswer)
+            {
+                <div class="row">
+                    <input class="form-control mb-2" @bind="_newAnswer"/> 
+                </div>
+                <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
+                    <button class="btn btn-outline-danger btn-small" type="submit" @onclick="() => _createNewAnswer = !_createNewAnswer">
+                        Abbrechen
+                    </button>
+                    <button class="btn btn-outline-success btn-small" type="submit" @onclick="CreateNewAnswer">
+                        Antworten
+                    </button>
+                </div>
+            }
         </div>
 
         <div id="answerOne" class="accordion-collapse collapse" aria-labelledby="question" data-bs-parent="#questionAccordion">
@@ -74,6 +92,9 @@
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
+    [Inject]
+    private NavigationManager NavManager { get; set; } = null!;
+
     [Parameter]
     public Question Question { get; set; } = null!;
 
@@ -88,10 +109,15 @@
 
     private User QuestionCreator { get; set; } = new();
 
+    private bool _createNewAnswer = false;
+    private string _newAnswer { get; set; } = null!;
+
     private int AnswerPage = 1;
     private int AnswerEntryNum = 3;
     private Answer[] Answers = new Answer[] { };
     private Answer[] NextAnswers = new Answer[] { };
+
+    private string ConflictMessage { get; set; } = null!;
 
     protected override async Task OnInitializedAsync() {
         QuestionCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Question.CreatorId) ?? new User() {};
@@ -104,8 +130,7 @@
         AnswerPage++;
     }
 
-    private async Task GetNextAnswers()
-    {
+    private async Task GetNextAnswers() {
         var loadedAnswers = new Answer[Answers.Length + NextAnswers.Length];
         Answers.CopyTo(loadedAnswers, 0);
         NextAnswers.CopyTo(loadedAnswers, Answers.Length);
@@ -114,6 +139,22 @@
         NextAnswers = await HttpClient.GetFromJsonAsync<Answer[]>
             ("wse/" + WseId + "/question/" + Question.Id + "?page=" + AnswerPage + "&entriesPerPage=" + AnswerEntryNum) ?? new Answer[] {};
         AnswerPage++;
+    }
+
+    private async Task CreateNewAnswer() {
+        var response = await HttpClient.PutAsJsonAsync("wse/answer", new Answer {Text = _newAnswer, WseId = WseId, QuestionId = Question.Id});
+
+        if (response.IsSuccessStatusCode) {
+            NavManager.NavigateTo("wse/" + WseId, true);
+        }
+        else if (response.StatusCode == HttpStatusCode.Conflict) {
+            /*TODO specify message*/
+            ConflictMessage = "There was an conflict";
+            StateHasChanged();
+        }
+        else {
+            NavManager.NavigateTo("/internal-server-error");
+        }
     }
 
     /*-------------MODALS-------------*/
