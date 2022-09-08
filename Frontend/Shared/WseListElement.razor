@@ -131,11 +131,13 @@
             var response = await HttpClient.PostAsync($"user/{LoginState.User!.Id}/bookmarks/remove/{entry.Id}", null);
             if (response.IsSuccessStatusCode) {
                 LoginState.User.Bookmarks.Remove(entry);
+                NavigationManager.NavigateTo(NavigationManager.Uri);
             }
         } else {
             var response = await HttpClient.PostAsync($"user/{LoginState.User!.Id}/bookmarks/add/{entry.Id}", null);
             if (response.IsSuccessStatusCode) {
                 LoginState.User.Bookmarks.Add(entry);
+                NavigationManager.NavigateTo(NavigationManager.Uri);
             }
         }
     }
