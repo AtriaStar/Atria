@@ -178,7 +178,7 @@
     }
 
     private async Task HandleValidSubmit() {
-        var response = await HttpClient.PostAsJsonAsync("change-password-uwu", _changePasswordDto);
+        var response = await HttpClient.PostAsJsonAsync("auth/change-password-uwu", _changePasswordDto);
 
         if (response.IsSuccessStatusCode) {
             NavigationManager.NavigateTo("", forceLoad: true); // Refresh header

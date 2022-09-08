@@ -113,8 +113,8 @@ public class AuthenticationController : ControllerBase {
 
     [RequiresAuthentication]
     [HttpPost("change-password-uwu")]
-    public async Task PasswordChange([FromAuthentication] User user, string newPassword) {
-        ChangePassword(user, newPassword);
+    public async Task PasswordChange([FromAuthentication] User user, ChangePasswordDto newPassword) {
+        ChangePassword(user, newPassword.NewPassword);
         _context.Update(user);
         await _context.SaveChangesAsync();
     }
