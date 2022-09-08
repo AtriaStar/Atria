@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Models;
+namespace Models; 
 
-public class ApiCheck
-{
+public class ApiCheck {
     [Key]
     public DateTimeOffset CheckedAt { get; set; } = DateTimeOffset.UtcNow;
 

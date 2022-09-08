@@ -645,4 +645,17 @@
 	    }
     }
 
+    private async Task<string> StyleOnlineStatus(WebserviceEntry entry) {
+        var response = await HttpClient.GetAsync($"wse/{entry.Id}/checks/latest" );
+        if (response.IsSuccessStatusCode) {
+            if (await response.Content.ReadFromJsonAsync<bool>()) {
+                return "text-success";
+            } else {
+                return "text-danger";            
+            }
+        } else {
+            return "text-secondary";
+        }
+    }
+
 }

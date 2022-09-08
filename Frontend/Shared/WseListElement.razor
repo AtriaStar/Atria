@@ -1,0 +1,143 @@
+@using Models
+@inject NavigationManager NavigationManager
+@using Services
+@using System.Net
+
+<div class="card-body">
+    <div class="row">
+        <div class="col-auto">
+            <i class="fa-solid fa-circle @_onlineStatusStyle"></i>
+        </div>
+
+        <div class="col-auto ps-0 d-flex d-block">
+            <h5>
+                <NavLink href="@_wseLink">
+                    @Entry.Name
+                </NavLink>
+            </h5>
+        </div>
+
+        <div class="col-auto ps-0 ms-auto d-flex d-block">
+            <div class="d-flex justify-content-sm-end justify-content-start flex-wrap">
+                <div class="ms-3">
+                    <AuthView>
+                        <Authorized>
+                            @{
+                                var bookmarkState = LoginState.User!.Bookmarks.Any(webserviceEntry => webserviceEntry.Id == Entry.Id);
+                                var bookmarkTitle = bookmarkState ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                                var bookmarkStyle = bookmarkState ? "bi-bookmark-fill" : "bi-bookmark";
+                            }
+                            <button class="btn-outline-light btn p-0" title="@bookmarkTitle" @onclick="() => ChangeBookmarkStatus(Entry, bookmarkState)">
+                                <i class="bi @bookmarkStyle fs-5" style="color: #dc3545"></i>
+                            </button>
+                        </Authorized>
+                        <NotAuthorized>
+                            <button class="btn-outline-light btn p-0" title="Als Lesezeichen hinzufügen" @onclick="NavigateToLogin">
+                                <i class="bi bi-bookmark fs-5" style="color: #dc3545"></i>
+                            </button>
+                        </NotAuthorized>
+                    </AuthView>
+                </div>
+                <div class="ms-3" style="min-width: fit-content">
+                    @{
+                        int i = 0;
+                        for (; i < _reviewAverage; i++) {
+                            <i class="fa fa-star rating-color"></i>
+                        }
+                        if (_reviewAverage - i >= 0.5) {
+                            <i class="fa-regular fa-star-half-stroke rating-color"></i>
+                            i++;
+                        }
+                        for (; i < 5; i++) {
+                            <i class="fa fa-star rating-uncolored"></i>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-1">
+        <div class="col">
+            @Entry.ShortDescription
+        </div>
+        <div class="col-auto ms-auto">
+            @($"{NiceNumberFormatterService.NiceFormat(Entry.ViewCount)} Aufruf{(Entry.ViewCount == 1 ? "" : "e")}")
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        @foreach (Tag tag in Entry.Tags) {
+            <div class="col-auto pe-0">
+                <span class="badge bg-info me-2">@tag.Name</span>
+            </div>
+        }
+    </div>
+
+    <div class="row justify-content-between">
+        <div class="col">
+            @Entry.CreatedAt
+        </div>
+        <div class="col-auto">
+            <NavLink href="@Entry.Link">
+                <i class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-4" title="Zur Webservice"></i>
+            </NavLink>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public WebserviceEntry Entry { get; set; } = null!;
+
+    [CascadingParameter]
+    private LoginState LoginState { get; set; } = null!;
+
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+
+    private string _onlineStatusStyle = "text-secondary";
+    private string _wseLink = "";
+
+        @* TODO implement *@
+    private double _reviewAverage = 3;
+
+    protected override void OnParametersSet() {
+        _wseLink = "/wse/" + Entry.Id;
+    }
+
+    protected override async Task OnParametersSetAsync() {
+        var response = await HttpClient.GetAsync($"wse/{Entry.Id}/checks/latest");
+        if (response.StatusCode == HttpStatusCode.OK) {
+            if (await response.Content.ReadFromJsonAsync<bool>()) {
+                _onlineStatusStyle = "text-success";
+            } else {
+                _onlineStatusStyle = "text-danger";
+            }
+        } else {
+            _onlineStatusStyle = "text-secondary";
+        }
+    }
+
+
+    private void NavigateToLogin() {
+        NavigationManager.NavigateTo("login");
+    }
+
+
+    private async Task ChangeBookmarkStatus(WebserviceEntry entry, bool bookmarkState) {
+        if (bookmarkState) {
+            var response = await HttpClient.PostAsync($"user/{LoginState.User!.Id}/bookmarks/remove/{entry.Id}", null);
+            if (response.IsSuccessStatusCode) {
+                LoginState.User.Bookmarks.Remove(entry);
+            }
+        } else {
+            var response = await HttpClient.PostAsync($"user/{LoginState.User!.Id}/bookmarks/add/{entry.Id}", null);
+            if (response.IsSuccessStatusCode) {
+                LoginState.User.Bookmarks.Add(entry);
+            }
+        }
+    }
+
+}

@@ -6,8 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Models;
 
-public class WebserviceEntry
-{
+public class WebserviceEntry {
     private string? _documentationLink;
     private string? _apiCheckUrl;
 
@@ -26,16 +25,14 @@ public class WebserviceEntry
     public string? FullDescription { get; set; }
 
     [Url]
-    public string? ApiCheckUrl
-    {
+    public string? ApiCheckUrl {
         get => _apiCheckUrl;
         set => _apiCheckUrl = string.IsNullOrEmpty(value) ? null : value;
     }
     public virtual ICollection<ApiCheck> ApiCheckHistory { get; set; } = new List<ApiCheck>();
 
     [Url]
-    public string? DocumentationLink
-    {
+    public string? DocumentationLink {
         get => _documentationLink;
         set => _documentationLink = string.IsNullOrEmpty(value) ? null : value;
     }
@@ -57,16 +54,14 @@ public class WebserviceEntry
 
     [JsonIgnore]
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
-    [JsonIgnore]
+    [MaxLength(20)]
     public virtual ICollection<Collaborator> Collaborators { get; set; } = new List<Collaborator>();
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
     protected virtual ICollection<User> Bookmarkees { get; set; } = new List<User>();
 
-    private class Mapper : IEntityTypeConfiguration<WebserviceEntry>
-    {
-        public void Configure(EntityTypeBuilder<WebserviceEntry> builder)
-        {
+    private class Mapper : IEntityTypeConfiguration<WebserviceEntry> {
+        public void Configure(EntityTypeBuilder<WebserviceEntry> builder) {
             builder
                 .HasMany(x => x.Bookmarkees)
                 .WithMany(x => x.Bookmarks)
