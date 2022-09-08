@@ -1,81 +1,150 @@
-﻿@page "/editReview"
+﻿@page "/wse/{WseId:long}/editReview/{ReviewId:long?}"
+@using Models
+@using System.Web
+@using System.Net
 
 <PageTitle>Atria - Bewertung</PageTitle>
 
 <div class="container-xxl mt-4">
 
-    @if (newReview)
-    {
+    @if (newReview) {
         <h2 class="mb-3">Bewertung erstellen</h2>
-    } else if (editReview)
-    {
-        @*TODO fill inputs with data*@
+    } else {
         <h2 class="mb-3">Bewertung bearbeiten</h2>
     }
 
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title fw-bold mb-2">Bewertung zu</h5>
-            <a class="card-link">Name WSE</a>
+    <EditForm Model="@ReviewToEdit">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-bold mb-2">Bewertung zu @Wse.Name</h5>
 
-            <h5 class="card-title fw-bold mt-3 mb-2">
-                Sternbewertung
-                <small style="color: red">*Pflicht</small>
-            </h5>
+                <h5 class="card-title fw-bold mt-3 mb-2">
+                    Sternbewertung
+                    <small style="color: red">*Pflicht</small>
+                </h5>
             
-            <div class="row mt-2">
-                <div class="col-2">
-                    <select class="form-select form-select-sm" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px" @bind="selectedStarNum">
-                        <option value="0" selected>0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
-                </div>
-                <div class="col-auto">
-                    @for (int i = 1; i <= selectedStarNum; i++)
-                    {
-                        <i class="fa fa-star rating-color me-1"></i>
-                    }
-                    @if (selectedStarNum != 5)
-                    {
-                        @for (int i = 1; i <= (5 - selectedStarNum); i++)
-                        {
-                            <i class="fa fa-star rating-uncolored me-1"></i>
+                <div class="row mt-2">
+                    <div class="col-2">
+                        <InputSelect class="select form-select form-select-sm" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px" @bind-Value="ReviewToEdit.StarCount">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </InputSelect>
+                        <ValidationMessage For="() => ReviewToEdit.StarCount"></ValidationMessage>
+                    </div>
+                    <div class="col-auto">
+                        @for (int i = 1; i <= (int)ReviewToEdit.StarCount; i++) {
+                            <i class="fa fa-star rating-color me-1"></i>
                         }
-                    }
+                        @if ((int)ReviewToEdit.StarCount != 5) {
+                            @for (int i = 1; i <= (5 - (int)ReviewToEdit.StarCount); i++) {
+                                <i class="fa fa-star rating-uncolored me-1"></i>
+                            }
+                        }
+                    </div>
                 </div>
-            </div>
 
-            <label class="form-label fw-bold mt-2">
-                Titel der Bewertung
-                <small style="color: red">*Pflicht</small>
-            </label>
-            <div class="ui-field">
-                @*TODO change to InputText when EditForm included*@
-                <input type="text" class="form-control mb-2"/>
-            </div>
+                <label class="form-label fw-bold mt-2">
+                    Titel der Bewertung
+                    <small style="color: red">*Pflicht</small>
+                </label>
+                <div class="ui-field">
+                    <InputText type="text" class="form-control mb-2" @bind-Value="ReviewToEdit.Title"/>
+                </div>
+                <ValidationMessage For="() => ReviewToEdit.Title"></ValidationMessage>
 
-            <label class="form-label fw-bold">schriftliche Bewertung</label>
-            <div class="ui-field">
-                @*TODO change to InputTextArea when EditForm included*@
-                <textarea type="text" class="form-control"/>
+                <label class="form-label fw-bold">schriftliche Bewertung</label>
+                <div class="ui-field">
+                    <InputTextArea type="text" class="form-control" @bind-Value="ReviewToEdit.Description"/>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-        <button class="btn btn-success" type="submit">
-            Speichern
-        </button>
-    </div>
+        <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+            <button class="btn btn-success" type="submit" @onclick="HandleValidSubmit">
+                Speichern
+            </button>
+        </div>  
+    </EditForm>
 
 </div>
 
 @code {
-    public bool newReview = true;
-    public bool editReview = false;
-    public int selectedStarNum = 0;
+    [Inject]
+    private HttpClient HttpClient { get; set; } = null!;
+
+    [Inject]
+    private NavigationManager NavManager { get; set; } = null!;
+
+    [Parameter]
+    public long? ReviewId { get; set; }
+
+    [Parameter]
+    public long WseId { get; set; }
+
+    [Parameter]
+    public Review ReviewToEdit { get; set; } = new();
+
+    [Parameter]
+    public WebserviceEntry Wse { get; set; } = new();
+
+    [CascadingParameter] 
+    private LoginState LoginState { get; init; } = null!;
+
+    private bool newReview { get; set; }
+    private bool _isLoggedIn { get; set; }
+    private long _userId { get; set; } = new();
+
+    private string ConflictMessage { get; set; } = null!;
+
+    private async void HandleValidSubmit() {
+
+        Review review = new Review {
+                WseId = WseId,
+                StarCount = ReviewToEdit.StarCount,
+                Title = ReviewToEdit.Title,
+                Description = ReviewToEdit.Description
+            };
+
+        var response = new HttpResponseMessage {};
+        if (newReview) {
+            response = await HttpClient.PutAsJsonAsync("review", review);
+        } else {
+            response = await HttpClient.PostAsJsonAsync("review", ReviewToEdit);
+        }
+        if (response.IsSuccessStatusCode) {
+            NavManager.NavigateTo("wse/" + WseId);
+        } else if (response.StatusCode == HttpStatusCode.Conflict) {
+            /*TODO specify message*/
+            ConflictMessage = "There was an conflict";
+            StateHasChanged();
+        } else {
+            NavManager.NavigateTo("/internal-server-error");
+        }
+    }
+
+	protected override async Task OnInitializedAsync() {
+
+        _isLoggedIn = LoginState.LoggedIn;
+        if (_isLoggedIn) {
+            _userId = LoginState.User!.Id;
+            Wse = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId) ?? new WebserviceEntry() {};
+            if (ReviewId is not null) {
+                newReview = false;
+                ReviewToEdit = await HttpClient.GetFromJsonAsync<Review>("wse/" + WseId + "/review/" + ReviewId) ?? new Review() {};
+            } else {
+                newReview = true;
+            }
+        } else {
+            NavManager.NavigateTo("login");
+        }
+    }
+
+    protected override async Task OnParametersSetAsync() {
+	    /*check if route params valid*/
+    }
 }

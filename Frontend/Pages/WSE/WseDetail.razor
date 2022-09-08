@@ -277,7 +277,7 @@
             </div>
             @if (_isLoggedIn) {
                 <div class="col-auto">
-                    <button class="btn btn-outline-success btn-small" type="button">neue Bewertung</button>
+                    <button class="btn btn-outline-success btn-small" type="button" @onclick="CreateNewReview">neue Bewertung</button>
                 </div>
             }
             @*@if (_wseReviews.Length > 0)
@@ -613,6 +613,15 @@
             NavManager.NavigateTo("login");
         }
 	}
+
+    private void CreateNewReview() {
+        if (_isLoggedIn) {
+            NavManager.NavigateTo("/wse/" + WseId + "/editReview");
+        } else {
+            NavManager.NavigateTo("login");
+        }
+    }
+
     /* API STUFF, DO MERGE */
 
     [Parameter]

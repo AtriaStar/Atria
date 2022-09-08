@@ -25,7 +25,7 @@
         @if (_isLoggedIn && Review.CreatorId == _userId)
         {
             <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
-                <button class="btn btn-outline-success btn-small" type="button" href="editReview">
+                <button class="btn btn-outline-success btn-small" type="button" @onclick="() => EditReview(Review.Id)">
                     Bearbeiten
                 </button>
                 <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteReviewDialog(Review.Id)">
@@ -51,6 +51,9 @@
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
+    [Inject]
+    private NavigationManager NavManager { get; set; } = default!;
+
     [Parameter]
     public long WseId { get; set; }
 
@@ -67,6 +70,14 @@
 
     protected override async Task OnInitializedAsync() {
         ReviewCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Review.CreatorId) ?? new User() {};
+    }
+
+    private void EditReview(long reviewId) {
+        if (_isLoggedIn) {
+            NavManager.NavigateTo("/wse/" + WseId + "/editReview" + reviewId);
+        } else {
+            NavManager.NavigateTo("login");
+        }
     }
 
     /*-------------MODALS-------------*/
