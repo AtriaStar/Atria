@@ -4,6 +4,7 @@ using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.DTO;
 
 namespace Backend.Controllers;
 
@@ -92,6 +93,35 @@ public class WseController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok();
+    }
+
+    [RequiresAuthentication]
+    [RequiresWseRights(WseRights.EditCollaborators)]
+    [HttpPost("{wseId:long}/collaborators")]
+    public async Task<IActionResult> EditCollaborators([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse,
+        CollaboratorDto[] collaborators, [FromAuthentication] User user) {
+        if (collaborators.Length == 0) {
+            return BadRequest("Collaborator list cannot be empty");
+        }
+
+        wse.Collaborators = collaborators.Select(x => new Collaborator {
+            WseId = wse.Id,
+            UserId = x.UserId,
+            Rights = x.Rights,
+        }).ToArray();
+
+        _context.Update(wse);
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [RequiresAuthentication]
+    [HttpPost("{wseId:long}/leave")]
+    public async Task Leave([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse,
+        [FromAuthentication] User user) {
+        wse.Collaborators.Remove(wse.Collaborators.First(x => x.UserId == user.Id));
+        _context.Update(wse);
+        await _context.SaveChangesAsync();
     }
 
     [RequiresAuthentication]
