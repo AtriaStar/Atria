@@ -2,6 +2,7 @@
 @using Models
 @using System.Web
 @using System.Net
+@inject NavigationManager NavManager
 
 <PageTitle>Atria - @Wse.Name</PageTitle>
 
@@ -361,11 +362,6 @@
     private long ReviewIdToDelete { get; set; }
 
     private WebserviceEntry _cloneWse = null!;
-
-    private void ChangeBookmarkStatus() {
-        hasBookmark = !hasBookmark;
-        @* TODO logic *@
-    }
 
     private void OpenCollabDialog() {
         CollabDialogOpen = true;

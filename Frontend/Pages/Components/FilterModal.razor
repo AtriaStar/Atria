@@ -133,7 +133,7 @@
     }
 
     private Task ModalApply() {
-        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> { ["IsOnline"] = IsOnline, ["IsBookmark"] = IsBookmark, ["minRating"] = SelectedStarNum, ["tags"] = SelectedTagsStr, }));
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> { ["IsOnline"] = IsOnline, ["HasBookmark"] = hasBookmark, ["minRating"] = SelectedStarNum, ["tags"] = SelectedTagsStr, }));
         return OnClose.InvokeAsync(true);
     }
 
