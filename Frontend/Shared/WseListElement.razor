@@ -130,7 +130,9 @@
         if (bookmarkState) {
             var response = await HttpClient.PostAsync($"user/{LoginState.User!.Id}/bookmarks/remove/{entry.Id}", null);
             if (response.IsSuccessStatusCode) {
-                LoginState.User.Bookmarks.Remove(entry);
+                var set = (HashSet<WebserviceEntry>)LoginState.User.Bookmarks;
+                set.RemoveWhere(webserviceEntry => webserviceEntry.Id == entry.Id);
+                LoginState.User.Bookmarks = set;
             }
         } else {
             var response = await HttpClient.PostAsync($"user/{LoginState.User!.Id}/bookmarks/add/{entry.Id}", null);
