@@ -67,7 +67,7 @@
             }
         </div>
         <h5 class="card-subtitle mb-2 me-2 text-muted">
-            Ansprechpartner
+            @ContactPerson.FirstNames @ContactPerson.LastName
             <button class="btn btn-outline-secondary btn-small ms-2" @onclick="OpenCollabDialog">weitere Kollaboratoren</button>
         </h5>
         @if (!_displayEditForm) {
@@ -123,9 +123,9 @@
                                 {
                                     <i class="fa fa-star rating-uncolored"/>
                                 }*@
-                            <i class="fa fa-star rating-color"/>
-                            <i class="fa fa-star rating-color"/>
-                            <i class="fa-regular fa-star-half-stroke rating-color"/>
+                            <i class="fa fa-star rating-uncolored"/>
+                            <i class="fa fa-star rating-uncolored"/>
+                            <i class="fa fa-star rating-uncolored"/>
                             <i class="fa fa-star rating-uncolored"/>
                             <i class="fa fa-star rating-uncolored"/>
                         </div>
@@ -383,6 +383,8 @@
     [CascadingParameter]
     private LoginState LoginState { get; init; } = null!;
 
+    private User ContactPerson { get; set; } = new();
+
     private long _userId { get; set; } = new();
     private User? CurrentUser { get; set; }
     private WebserviceEntry[]? CurrentUserWse { get; set; }
@@ -434,8 +436,8 @@
     }
 
     protected override async Task OnInitializedAsync() {
-        Wse = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId) ?? new WebserviceEntry() {
-        };
+        Wse = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId) ?? new WebserviceEntry() { };
+        ContactPerson = await HttpClient.GetFromJsonAsync<User>("user/" + Wse.ContactPersonId) ?? new User { };
         _isLoggedIn = LoginState.LoggedIn;
         if (_isLoggedIn) {
             _userId = LoginState.User!.Id;
