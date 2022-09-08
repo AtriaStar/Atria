@@ -53,18 +53,16 @@
                     }
                 </h3>
             </div>
-            @if (!_displayEditForm) {
-                <div class="col-auto d-flex align-content-end me-1">
-                    @{
-                        var bookmarkState = _isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
-                        var bookmarkTitle = _isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
-                    }
-                    <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
-                </div>
-                <div class="col-auto d-flex align-content-end">
-                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@Wse.Link"/>
-                </div>
-            }
+            <div class="col-auto d-flex align-content-end me-1">
+                @{
+                    var bookmarkState = hasBookmark ? "bi-bookmark-fill" : "bi-bookmark";
+                    var bookmarkTitle = hasBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                }
+                <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
+            </div>
+            <div class="col-auto d-flex align-content-end">
+                <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@Wse.Link"/>
+            </div>
         </div>
         <h5 class="card-subtitle mb-2 me-2 text-muted">
             @ContactPerson.FirstNames @ContactPerson.LastName
@@ -347,15 +345,27 @@
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
-    [Inject]
-    private NavigationManager NavManager { get; set; } = null!;
+    public bool CollabDialogOpen { get; set; }
+    public bool DeleteQuestionDialogOpen { get; set; }
+    public bool DeleteAnswerDialogOpen { get; set; }
+    public bool DeleteReviewDialogOpen { get; set; }
+    public bool DeleteWseDialogOpen { get; set; }
+    public bool isLoggedIn = true;
+    public bool isCollab = true;
+    public bool isCreator = true;
+    public bool hasBookmark = false;
+
+    private bool _displayForm = false;
 
     /*-------------MODALS-------------*/
     private long ReviewIdToDelete { get; set; }
 
-    private bool CollabDialogOpen { get; set; }
-    private bool DeleteReviewDialogOpen { get; set; }
-    private bool DeleteWseDialogOpen { get; set; }
+    private WebserviceEntry _cloneWse = null!;
+
+    private void ChangeBookmarkStatus() {
+        hasBookmark = !hasBookmark;
+        @* TODO logic *@
+    }
 
     private void OpenCollabDialog() {
         CollabDialogOpen = true;

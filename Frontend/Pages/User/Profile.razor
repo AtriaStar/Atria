@@ -155,7 +155,7 @@
 }
 
 @if (_filterDialogOpen) {
-    <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" IsBookmark="IsBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+    <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" hasBookmark="hasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
 @code {
@@ -175,7 +175,7 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public bool? IsBookmark { get; set; }
+    public bool? hasBookmark { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "minRating")]
@@ -300,7 +300,7 @@
         return NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> {
             ["type"] = value,
             ["IsOnline"] = null,
-            ["IsBookmark"] = null,
+            ["hasBookmark"] = null,
             ["minRating"] = null,
             ["tags"] = null
         });
