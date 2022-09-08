@@ -13,8 +13,7 @@
             </div>
 
             <div class="modal-body">
-                @foreach (Collaborator collab in Collabs)
-                {
+                @foreach (Collaborator collab in Collabs) {
                     <div class="card mb-2">
                         <div class="row">
                             <div class="col-2">
@@ -24,11 +23,10 @@
                                 <div class="card-body">
                                     <div class="card-title">
                                         @collab.User.FirstNames @collab.User.LastName
-                                        @if (@collab.UserId == WseContactPersonId)
-                                        {
-                                           <small style="color: red">*Ansprechpartner</small>
+                                        @if (@collab.UserId == WseContactPersonId) {
+                                            <small style="color: red">*Ansprechpartner</small>
                                         }
-                                     </div>
+                                    </div>
                                     <div class="card-subtitle">@collab.User.Email</div>
                                     <div class="d-grid d-flex justify-content-end">
                                         <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteCollabDialog">
@@ -53,8 +51,7 @@
     </div>
 </div>
 
-@if (DeleteCollabDialogOpen) 
-{
+@if (DeleteCollabDialogOpen) {
     <Frontend.Pages.Components.DeleteCollabModal OnClose="@OnDeleteCollabDialogClose"/>
 }
 
@@ -66,10 +63,13 @@
     public long WseContactPersonId { get; set; }
 
     [Parameter]
-    public ICollection<Collaborator> Collabs { get; set; } = null!;
-
-    [Parameter]
     public EventCallback<bool> OnClose { get; set; }
+
+    private Collaborator[] Collabs = new Collaborator[] {};
+
+    protected override async Task OnInitializedAsync() {
+        Collabs = await HttpClient.GetFromJsonAsync<Collaborator[]>("wse/" + WseId + "/collaborators") ?? new Collaborator[] {};
+    }
 
     public Task ModalClose()
     {

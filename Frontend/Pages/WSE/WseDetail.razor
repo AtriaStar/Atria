@@ -354,7 +354,6 @@
     <Frontend.Pages.Components.CollabModal 
     WseId="WseId"
     WseContactPersonId="Wse.ContactPersonId"
-    Collabs="Wse.Collaborators" 
     OnClose="@OnCollabDialogClose"/>
 }
 
@@ -442,7 +441,7 @@
         var response = await HttpClient.PostAsJsonAsync("wse", Wse);
 
         if (response.IsSuccessStatusCode) {
-            NavManager.NavigateTo("wse/" + WseId);
+            NavManager.NavigateTo("wse/" + WseId, true);
         }
         else if (response.StatusCode == HttpStatusCode.Conflict) {
             /*TODO specify message*/
@@ -455,7 +454,7 @@
 
     /*not working man*/
     private void CancelEdit() {
-        NavManager.NavigateTo("wse/" + WseId);
+        NavManager.NavigateTo("wse/" + WseId, true);
     }
 
     protected override async Task OnInitializedAsync()
