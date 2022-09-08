@@ -354,6 +354,8 @@
     <Frontend.Pages.Components.CollabModal 
     WseId="WseId"
     WseContactPersonId="Wse.ContactPersonId"
+    UserId="_userId"
+    _isLoggedIn="_isLoggedIn"
     OnClose="@OnCollabDialogClose"/>
 }
 
@@ -370,6 +372,9 @@
 
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
+    
+    [Inject]
+    private NavigationManager NavManager { get; set; } = null!;
 
     /*-------------MODALS-------------*/
     private long ReviewIdToDelete { get; set; }
@@ -431,9 +436,6 @@
     private int _avgReviewRounded { get; set; }
 
     private string ConflictMessage { get; set; } = null!;
-
-    [Inject]
-    private NavigationManager NavManager { get; set; } = null!;
 
     /*not working man*/
     private async void HandleValidSubmit() 
@@ -619,17 +621,14 @@
     [Parameter]
     public string WseName { get; set; } = null!;
 
-    [Inject]
-    private NavigationManager Manager { get; set; } = null!;
-
     protected override async Task OnParametersSetAsync() {
 	    if (Wse?.Id != WseId) {
 		    var response = await HttpClient.GetAsync($"wse/{WseId}");
 		    if (response.IsSuccessStatusCode) {
 			    Wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
                 var fullUrl = $"wse/{WseId}/{HttpUtility.UrlEncode(Wse.Name)}";
-			    if (Manager.ToBaseRelativePath(Manager.Uri) != fullUrl) {
-				    Manager.NavigateTo(fullUrl);
+			    if (NavManager.ToBaseRelativePath(NavManager.Uri) != fullUrl) {
+				    NavManager.NavigateTo(fullUrl);
 			    }
 		    } else {
     @* TODO not found *@

@@ -1,7 +1,6 @@
 ﻿@using Models
 @inject NavigationManager NavManager
 @inject HttpClient HttpClient
-@inject IJSRuntime Js
 
 <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -38,14 +37,19 @@
                         </div>
                     </div>
                 }
-                @*TODO UserSearch*@
-                <label class="form-label mt-2">E-Mail oder Name des neuen Kollaborators</label>
-                <div class="ui-field">
-                    <input class="form-control"/>
-                </div>
-                <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
-                    <button type="button" class="btn btn-success" @onclick="@ModalAddCollab">Hinzufügen</button>
-                </div>
+                
+                @if (_isLoggedIn && Array.Exists(Collabs, c => c.UserId == UserId))
+                {
+                    <label class="form-label mt-2">E-Mail oder Name des neuen Kollaborators</label>
+                    <div class="ui-field">
+                        @*TODO UserSearch*@
+                        <input class="form-control"/>
+                    </div>
+                    <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
+                        <button type="button" class="btn btn-success" @onclick="@ModalAddCollab">Hinzufügen</button>
+                    </div>
+                }
+                
             </div>
         </div>
     </div>
@@ -61,6 +65,12 @@
 
     [Parameter]
     public long WseContactPersonId { get; set; }
+
+    [Parameter]
+    public long UserId { get; set; }
+
+    [Parameter]
+    public bool _isLoggedIn { get; set; }
 
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }

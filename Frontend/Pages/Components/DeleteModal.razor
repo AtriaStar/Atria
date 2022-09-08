@@ -51,27 +51,37 @@
 
     private async void ModalDelete()
     {
+        var response = new HttpResponseMessage { };
+
         switch (ToDelete)
         {
             case "wse":
-                await HttpClient.DeleteAsync("wse/" + WseId);
-                NavManager.NavigateTo("");
+                response = await HttpClient.DeleteAsync("wse/" + WseId);
+                if (response.IsSuccessStatusCode) {
+                    NavManager.NavigateTo("", true);
+                }
                 break;
             case "question":
-                await HttpClient.DeleteAsync("wse/" + WseId + "/question/" + QuestionId);
-                NavManager.NavigateTo("/wse/" + WseId);
+                response = await HttpClient.DeleteAsync("wse/" + WseId + "/question/" + QuestionId);
+                if (response.IsSuccessStatusCode) {
+                    NavManager.NavigateTo("/wse/" + WseId, true);
+                }
                 break;
             case "answer":
-                await HttpClient.DeleteAsync("wse/" + WseId + "/question/" + QuestionId + "/answer/" + AnswerId);
-                NavManager.NavigateTo("/wse/" + WseId);
+                response = await HttpClient.DeleteAsync("wse/" + WseId + "/question/" + QuestionId + "/answer/" + AnswerId);
+                if (response.IsSuccessStatusCode) {
+                    NavManager.NavigateTo("/wse/" + WseId, true);
+                }
                 break;
             case "review":
-                await HttpClient.DeleteAsync("wse/" + WseId + "/review/" + ReviewId);
-                NavManager.NavigateTo("/wse/" + WseId);
+                response = await HttpClient.DeleteAsync("wse/" + WseId + "/review/" + ReviewId);
+                if (response.IsSuccessStatusCode) {
+                    NavManager.NavigateTo("/wse/" + WseId, true);
+                }
                 break;
             case "collab":
                 /*TODO add delete collab endpoint*/
-                await HttpClient.DeleteAsync("");
+                response = await HttpClient.DeleteAsync("");
                 NavManager.NavigateTo("/wse/" + WseId);
                 break;
         }
