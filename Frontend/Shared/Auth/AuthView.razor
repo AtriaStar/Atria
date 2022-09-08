@@ -1,5 +1,7 @@
 ﻿@if (!LoginState.Loaded) {
-    <h6>Authentifiziere...</h6>
+    <div class="d-flex justify-content-center align-items-center">
+        <h6 class="m-0">Authentifiziere...</h6>
+    </div>
 } else {
     if (LoginState.LoggedIn) {
         if (AuthorizedAndMatching is null) {
