@@ -19,14 +19,16 @@ public class WseController : ControllerBase
     }
 
     [HttpGet("{wseId:long}")]
-    public async Task<WebserviceEntry> Get([FromDatabase, Include(nameof(WebserviceEntry.Tags)), Include(nameof(WebserviceEntry.Collaborators))]
-        WebserviceEntry wse)
-    {
+    public async Task<WebserviceEntry> Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse) {
         wse.ViewCount++;
         _context.Update(wse);
         await _context.SaveChangesAsync();
         return wse;
     }
+
+    [HttpGet("{wseId:long}/collaborators")]
+    public IEnumerable<Collaborator> GetCollaborators([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse)
+        => wse.Collaborators;
 
     [HttpGet("{wseId:long}/checks")]
     public async Task<IEnumerable<ApiCheck>> GetChecks(long wseId)
@@ -76,25 +78,16 @@ public class WseController : ControllerBase
             return Forbid("Collaborator does not have the right to edit the WSE");
         }
 
-        if (!wse.Collaborators.SequenceEqual(existingWse.Collaborators) && (rights & WseRights.EditCollaborators) == 0)
-        {
-            return Forbid("Collaborator does not have the right to edit collaborators");
-        }
-
-        if (wse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights != rights)
-        {
-            return BadRequest("You cannot modify your own rights");
-        }
-
-        if (wse.CreatedAt != existingWse.CreatedAt)
-        {
+        if (wse.CreatedAt != existingWse.CreatedAt) {
             return BadRequest("Creation timestamp cannot be modified");
         }
 
+        wse.Collaborators = existingWse.Collaborators;
         wse.ApiCheckHistory = existingWse.ApiCheckHistory;
         wse.Questions = existingWse.Questions;
         wse.Reviews = existingWse.Reviews;
 
+        _context.ChangeTracker.Clear();
         _context.WebserviceEntries.Update(wse);
         await _context.SaveChangesAsync();
 
