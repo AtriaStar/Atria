@@ -112,9 +112,9 @@
 
         var response = new HttpResponseMessage {};
         if (newReview) {
-            response = await HttpClient.PutAsJsonAsync("review", review);
+            response = await HttpClient.PutAsJsonAsync("wse/review", review);
         } else {
-            response = await HttpClient.PostAsJsonAsync("review", ReviewToEdit);
+            response = await HttpClient.PostAsJsonAsync("wse/review", ReviewToEdit);
         }
         if (response.IsSuccessStatusCode) {
             NavManager.NavigateTo("wse/" + WseId);
