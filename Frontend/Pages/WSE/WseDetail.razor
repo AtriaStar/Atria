@@ -120,24 +120,29 @@
                         <h6 class="card-title fw-bold">Bewertung</h6>
                         <div class="row">
                             <div class="col-auto">
-                                @for (int i = 1; i <= Convert.ToInt32(Math.Floor(_avgReview)); i++)
+                                @*@for (int i = 1; i < _avgReview; i++)
                                 {
                                     <i class="fa fa-star rating-color"/>
                                 }
-                                @if (_avgReview - Convert.ToInt32(Math.Floor(_avgReview)) == .5)
+                                @if (_avgReview - _avgReviewRounded == .5)
                                 {
                                     <i class="fa-regular fa-star-half-stroke rating-color"/>
                                 } else
                                 {
                                     <i class="fa fa-star rating-uncolored"/>
                                 }
-                                @for (int i = Convert.ToInt32(Math.Floor(_avgReview)) + 2; i <= 5; i++)
+                                @for (int i = _avgReviewRounded + 2; i <= 5; i++)
                                 {
                                     <i class="fa fa-star rating-uncolored"/>
-                                }
+                                }*@
+                                <i class="fa fa-star rating-color"/>
+                                <i class="fa fa-star rating-color"/>
+                                <i class="fa-regular fa-star-half-stroke rating-color"/>
+                                <i class="fa fa-star rating-uncolored"/>
+                                <i class="fa fa-star rating-uncolored"/>
                             </div>
                             <div class="col-auto">
-                                <p>@Wse.Questions.Count() Bewertungen</p>
+                                <p>@ReviewNum Bewertungen</p>
                             </div>
                         </div>
                         @* TODO scrollspy or leave it out
@@ -408,6 +413,7 @@
     private string? NewQuestion { get; set; }
     private string? NewAnswer { get; set; }
 
+    private int ReviewNum { get; set; }
     private int ReviewPage = 1;
     private int ReviewEntryNum = 3;
     private Review[] _wseReviews = new Review[] { };
@@ -423,6 +429,7 @@
     private bool _isBookmark { get; set; }
     private bool _displayEditForm = false;
     private double _avgReview { get; set; }
+    private int _avgReviewRounded { get; set; }
 
     private string ConflictMessage { get; set; } = null!;
 
@@ -460,7 +467,11 @@
             _userId = LoginState.User!.Id;
             CurrentUser = await HttpClient.GetFromJsonAsync<User>("user/" + _userId);
         }
-        await GetAvgReview();
+
+        Review[] allReviews = await HttpClient.GetFromJsonAsync<Review[]>
+            ("wse/" + WseId + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] {};
+        ReviewNum = allReviews.Count();
+
         await CheckCurrentUserCollab();
         await CheckCurrentUserBookmark();
         await InitReviews();
@@ -476,6 +487,7 @@
         }
         sum = sum / allReviews.Count();
         _avgReview = Math.Round(sum * 2, MidpointRounding.AwayFromZero) / 2;
+        _avgReviewRounded = (int)Math.Round(_avgReview, 0);
     }
 
     private async Task InitReviews()
