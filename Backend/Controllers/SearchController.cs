@@ -1,4 +1,6 @@
 ﻿using Backend.AspPlugins;
+using Backend.Authentication;
+using Backend.ParameterHelpers;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,13 +17,13 @@ public class SearchController : ControllerBase {
         _context = context;
     }
 
-    private IEnumerable<WebserviceEntry> GetBaseWses(WseSearchParameters parameters)
+    private IEnumerable<WebserviceEntry> GetBaseWses(WseSearchParameters parameters, User? user)
         => _context.WebserviceEntries
             .Include(x => x.Tags)
             .Where(x => (!x.Reviews.Any() || x.Reviews.Average(y => (int) y.StarCount) >= (int) parameters.MinReviewAvg)
                 && (parameters.Tags == null || x.Tags.Count(y => parameters.Tags.Contains(y)) == parameters.Tags.Count) // Fuck
                 && (parameters.IsOnline == null || true /* TODO */)
-                && (parameters.HasBookmark == null || true /* TODO */))
+                && (parameters.HasBookmark == null || user == null || user.Bookmarks.Contains(x) == parameters.HasBookmark))
             .AsEnumerable()
             .Select(x => (wse: x, score: string.IsNullOrEmpty(parameters.Query) ? 1 : FuzzingService.CalculateScore1(parameters.Query, x)))
             .Where(x => x.score > 0.05)
@@ -33,11 +35,13 @@ public class SearchController : ControllerBase {
             });
 
     [HttpGet("wse")]
-    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WseSearchParameters parameters, [FromQuery] Pagination pagination)
-        => GetBaseWses(parameters).Paginate(pagination);
+    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WseSearchParameters parameters, [FromQuery] Pagination pagination,
+        [FromAuthentication, Include(nameof(Models.User.Bookmarks))] User? user)
+        => GetBaseWses(parameters, user).Paginate(pagination);
 
     [HttpGet("wse/count")]
-    public long GetWseCount([FromQuery] WseSearchParameters parameters) => GetBaseWses(parameters).LongCount();
+    public long GetWseCount([FromQuery] WseSearchParameters parameters, [FromAuthentication, Include(nameof(Models.User.Bookmarks))] User? user)
+        => GetBaseWses(parameters, user).LongCount();
 
     private IEnumerable<User> GetBaseUsers(string query)
         => _context.Users

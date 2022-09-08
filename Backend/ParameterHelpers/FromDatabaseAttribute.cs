@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Backend.AspPlugins;
+﻿using Backend.AspPlugins;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -23,13 +22,9 @@ public class FromDatabaseAttribute : ModelBinderAttribute {
                 bindingContext.Result = ModelBindingResult.Success(DatabaseBinderNullFilter.NullFromDatabase);
                 return;
             }
-            foreach (var property in bindingContext.ModelMetadata.ValidatorMetadata.OfType<IncludeAttribute>()) {
-                if (obj.GetType().GetProperty(property.Name)!.PropertyType.GetInterface("IEnumerable") == null) {
-                    await db.Entry(obj).Reference(property.Name).LoadAsync();
-                } else {
-                    await db.Entry(obj).Collection(property.Name).LoadAsync();
-                }
-            }
+
+            await bindingContext.ModelMetadata.ValidatorMetadata.OfType<IncludeAttribute>()
+                .ApplyToAsync(db, obj);
 
             bindingContext.ValidationState.Add(obj, new() { SuppressValidation = true });
             bindingContext.Result = ModelBindingResult.Success(obj);

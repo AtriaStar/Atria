@@ -20,7 +20,7 @@
                 </div>
                 @*
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="flexCheckBookmarks" @bind="IsBookmark" />
+                    <input class="form-check-input" type="checkbox" id="flexCheckBookmarks" @bind="hasBookmark" />
                     <label class="form-check-label" for="flexCheckBookmarks">
                         <i class="fa-solid fa-bookmark pe-1" style="color: red"></i>
                         Lesezeichen
@@ -112,7 +112,7 @@
     public bool? IsOnline { get; set; }
 
     [Parameter]
-    public bool? IsBookmark { get; set; }
+    public bool? hasBookmark { get; set; }
 
     [Parameter]
     public int? SelectedStarNum { get; set; }
@@ -140,7 +140,7 @@
 
     private Task ModalApply()
     {
-        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> { ["IsOnline"] = IsOnline, ["IsBookmark"] = IsBookmark, ["minRating"] = SelectedStarNum, ["tags"] = SelectedTagsStr, }));
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> { ["IsOnline"] = IsOnline, ["hasBookmark"] = hasBookmark, ["minRating"] = SelectedStarNum, ["tags"] = SelectedTagsStr, }));
         return OnClose.InvokeAsync(true);
     }
 
