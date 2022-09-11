@@ -2,12 +2,6 @@
 using Backend.AspPlugins;
 using DatabaseMocker;
 using Microsoft.Extensions.Configuration;
-using Models;
-
-Console.WriteLine(RootDirectory.GetTest());
-Console.WriteLine(Directory.GetParent(RootDirectory.GetTest()));
-Console.WriteLine(Directory.GetParent(RootDirectory.GetTest().Replace('\\', '/')));
-// TODO: Works correctly here??
 
 await using var context = new AtriaContext(new ConfigurationBuilder()
     .AddStandardSources("Mocker").Build()
