@@ -39,16 +39,21 @@
                     </AuthView>
                 </div>
                 <div class="ms-3" style="min-width: fit-content">
-                    @{
-                        int i = 0;
-                        for (; i < _reviewAverage; i++) {
+	                @{
+		                var itTo = (int) _reviewAverage;
+		                var i = 0;
+                        for (; i < itTo; i++) {
                             <i class="fa fa-star rating-color"></i>
                         }
-                        if (_reviewAverage - i >= 0.5) {
-                            <i class="fa-regular fa-star-half-stroke rating-color"></i>
-                            i++;
-                        }
-                        for (; i < 5; i++) {
+
+                        var widthPercent = _reviewAverage % 1 * 100;
+		                <i class="fa fa-star star-partial-parent">
+                            <i class="fa fa-star rating-color star-partial" style="--star-partial-width:@(widthPercent)%;"></i>
+                            <i class="fa fa-star rating-uncolored star-partial star-partial-right" style="--star-partial-width:@(100 - widthPercent)%;"></i>
+		                </i>
+		                i++;
+
+		                for (; i < 5; i++) {
                             <i class="fa fa-star rating-uncolored"></i>
                         }
                     }
@@ -101,7 +106,7 @@
     private string _wseLink = "";
 
         @* TODO implement *@
-    private double _reviewAverage = 3;
+    private double _reviewAverage = 2.4;
 
     protected override void OnParametersSet() {
         _wseLink = "/wse/" + Entry.Id;

@@ -74,3 +74,30 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.star-partial-parent {
+	position: relative;
+}
+
+    .star-partial-parent::before {
+        visibility: hidden;
+	}
+
+.star-partial {
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+    .star-partial::before {
+        display: inline-block;
+        width: var(--star-partial-width);
+    }
+
+.star-partial-right {
+	transform: scaleX(-1);
+}
+
+	.star-partial-right::before {
+		overflow: hidden;
+	}
