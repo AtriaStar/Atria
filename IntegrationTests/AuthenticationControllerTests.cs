@@ -34,7 +34,7 @@ namespace IntegrationTests
 
                 var user = await context.Users.FirstAsync();
                 //Arrange
-                Registration _registration = new()
+                RegistrationDto _registration = new()
                 {
                     FirstNames = "Floppa",
                     LastName = "Floppington",
@@ -60,7 +60,7 @@ namespace IntegrationTests
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
                 var user = await context.Users.FirstAsync();
 
-                Registration _registration = new()
+                RegistrationDto _registration = new()
                 {
                     FirstNames = "Floppa",
                     LastName = "Floppington",
@@ -87,13 +87,13 @@ namespace IntegrationTests
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
                 var user = await context.Users.FirstAsync();
 
-                Login login1 = new()
+                LoginDto login1 = new()
                 {
                     Password = "12345",
                     Email = "inValidEmail@email.com",
                 };
 
-                Login login2 = new()
+                LoginDto login2 = new()
                 {
                     Password = "12345",
                     Email = user.Email,
@@ -117,7 +117,7 @@ namespace IntegrationTests
                 //Arrange
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
 
-                Registration _registration = new()
+                RegistrationDto _registration = new()
                 {
                     FirstNames = "Floppa",
                     LastName = "Floppington",
@@ -126,7 +126,7 @@ namespace IntegrationTests
                     Email = "testEmail@email.com",
                 };
 
-                Login login = new()
+                LoginDto login = new()
                 {
                     Password = "12345",
                     Email = "testEmail@email.com",

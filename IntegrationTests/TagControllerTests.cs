@@ -41,7 +41,6 @@ namespace IntegrationTests
                     Name = "GetAllTag1",
                     Description = "GetAllTag1Description",
                     CreationTime = DateTimeOffset.UtcNow,
-                    UseCount = 100,
                 };
 
                 var tag2 = new Tag()
@@ -49,7 +48,6 @@ namespace IntegrationTests
                     Name = "GetAllTag2",
                     Description = "GetAllTag2Description",
                     CreationTime = DateTimeOffset.UtcNow,
-                    UseCount = 200,
                 };
 
                 var tag3 = new Tag()
@@ -57,7 +55,6 @@ namespace IntegrationTests
                     Name = "GetAllTag3",
                     Description = "GetAllTag3Description",
                     CreationTime = DateTimeOffset.UtcNow,
-                    UseCount = 300,
                 };
 
                 await context.Tags.AddAsync(tag1);
@@ -137,8 +134,6 @@ namespace IntegrationTests
                 {
                     Name = "MergeTag",
                     Description = "GetMergeDescription",
-                    CreationTime = DateTimeOffset.UtcNow,
-                    UseCount = 100,
                 };
                 await context.Tags.AddAsync(tag);
 

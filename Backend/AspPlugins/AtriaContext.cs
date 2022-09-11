@@ -5,6 +5,7 @@ namespace Backend.AspPlugins;
 
 public class AtriaContext : DbContext {
     public DbSet<User> Users => Set<User>();
+    public DbSet<WseDraft> Drafts => Set<WseDraft>();
     public DbSet<WebserviceEntry> WebserviceEntries => Set<WebserviceEntry>();
     public DbSet<Review> Reviews => Set<Review>();
     public DbSet<Question> Questions => Set<Question>();
