@@ -6,7 +6,6 @@ using Backend.ParameterHelpers;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Models;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment;

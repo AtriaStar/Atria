@@ -41,11 +41,11 @@ public class SearchController : ControllerBase {
     [HttpGet("wse")]
     public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WseSearchParameters parameters, [FromQuery] Pagination pagination,
         [FromAuthentication, Include(nameof(Models.User.Bookmarks))] User? user)
-        => GetBaseWse(parameters).Paginate(pagination);
+        => GetBaseWse(parameters, user).Paginate(pagination);
 
     [HttpGet("wse/count")]
     public long GetWseCount([FromQuery] WseSearchParameters parameters, [FromAuthentication, Include(nameof(Models.User.Bookmarks))] User? user)
-        => GetBaseWse(parameters).LongCount();
+        => GetBaseWse(parameters, user).LongCount();
 
     private IEnumerable<User> GetBaseUsers(string query)
         => _context.Users
