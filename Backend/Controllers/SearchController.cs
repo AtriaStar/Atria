@@ -1,6 +1,9 @@
 ﻿using Backend.AspPlugins;
+using Backend.Authentication;
+using Backend.ParameterHelpers;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Backend.Controllers;
@@ -9,40 +12,47 @@ namespace Backend.Controllers;
 [Route("search")]
 public class SearchController : ControllerBase {
     private readonly AtriaContext _context;
+    private readonly BackendSettings _options;
+    private readonly FuzzingService _fuzzer;
 
-    public SearchController(AtriaContext context) {
+    public SearchController(AtriaContext context, BackendSettings opt, FuzzingService fuzzer) {
         _context = context;
+        _options = opt;
+        _fuzzer = fuzzer;
     }
 
-    private IEnumerable<WebserviceEntry> GetBaseWses(WseSearchParameters parameters)
+    private IEnumerable<WebserviceEntry> GetBaseWse(WseSearchParameters parameters, User? user)
         => _context.WebserviceEntries
+            .Include(x => x.Tags)
             .Where(x => (!x.Reviews.Any() || x.Reviews.Average(y => (int) y.StarCount) >= (int) parameters.MinReviewAvg)
-            && (parameters.Tags == null || x.Tags.Intersect(parameters.Tags).Count() == parameters.Tags.Count)
-            && (parameters.IsOnline == null || true /* TODO */)
-            && (parameters.HasBookmark == null || true /* TODO */))
+                && (parameters.Tags == null || x.Tags.Count(y => parameters.Tags.Contains(y)) == parameters.Tags.Count) // Fuck
+                && (parameters.IsOnline == null || true /* TODO */)
+                && (parameters.HasBookmark == null || user == null || user.Bookmarks.Contains(x) == parameters.HasBookmark))
             .AsEnumerable()
-            .Select(x => (wse: x, score: parameters.Order.GetMapper().Invoke(x)
-                                         * (parameters.Query == null ? 1 : FuzzingService.CalculateScore1(parameters.Query, x))))
+            .Select(x => (wse: x, score: string.IsNullOrEmpty(parameters.Query) ? 1 : _fuzzer.CalculateScore1(parameters.Query, x)))
+            .Where(x => x.score >= _options.MinimumWseScore)
+            .Select(x => x with { score = x.score * parameters.Order.GetMapper().Invoke(x.wse) })
             .OrderBy(x => parameters.Ascending ? x.score : -x.score)
-            .TakeWhile(x => parameters.Query == null || x.score > 0.05)
             .Select(x => {
                 x.wse.ChangeLog = x.score.ToString();
                 return x.wse;
             });
 
     [HttpGet("wse")]
-    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WseSearchParameters parameters, [FromQuery] Pagination pagination)
-        => GetBaseWses(parameters).Paginate(pagination);
+    public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WseSearchParameters parameters, [FromQuery] Pagination pagination,
+        [FromAuthentication, Include(nameof(Models.User.Bookmarks))] User? user)
+        => GetBaseWse(parameters, user).Paginate(pagination);
 
     [HttpGet("wse/count")]
-    public long GetWseCount([FromQuery] WseSearchParameters parameters) => GetBaseWses(parameters).LongCount();
+    public long GetWseCount([FromQuery] WseSearchParameters parameters, [FromAuthentication, Include(nameof(Models.User.Bookmarks))] User? user)
+        => GetBaseWse(parameters, user).LongCount();
 
     private IEnumerable<User> GetBaseUsers(string query)
         => _context.Users
             .AsEnumerable()
-            .Select(x => (user: x, score: FuzzingService.CalculateScore(query, x)))
+            .Select(x => (user: x, score: _fuzzer.CalculateScore(query, x)))
             .OrderByDescending(x => x.score)
-            .TakeWhile(x => x.score > 0.5)
+            .TakeWhile(x => x.score >= _options.MinimumUserScore)
             .Select(x => x.user);
 
     [HttpGet("user")]

@@ -4,41 +4,45 @@ using Backend.Authentication;
 using Backend.ParameterHelpers;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.Extensions.DependencyInjection;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var env = builder.Environment;
+var config = builder.Configuration;
+var services = builder.Services;
 
-builder.Services.AddControllers(options => {
+config.AddStandardSources(env.EnvironmentName);
+
+var opt = config.CreateAtriaOptions<BackendSettings>();
+
+services.AddControllers(options => {
         options.Filters.Add<DatabaseBinderNullFilter>();
-        options.UseCentralRoutePrefix(new RouteAttribute("api"));
+        options.Filters.Add<AuthenticationBinderFilter>();
+        options.UseCentralRoutePrefix(new RouteAttribute(opt.ApiPrefix));
         options.ModelMetadataDetailsProviders.Add(new IncludeAttributeProvider());
     })
-    // Pretty printed JSON in debug env.
-    .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = builder.Environment.IsDevelopment());
+    .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = env.IsDevelopment());
 
-var baseValidator = builder.Services.First(x => x.ServiceType == typeof(IObjectModelValidator));
-builder.Services.Remove(baseValidator);
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services
+services
+    .AddSelectiveValidator()
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddSingleton<SessionService>()
+    .AddSingleton<FuzzingService>()
     .AddDbContext<AtriaContext>()
-    .AddHostedService<SessionClearerService>()
-    .AddSingleton<IObjectModelValidator, SelectiveValidator>(s => new((IObjectModelValidator)baseValidator.ImplementationFactory!(s)));
+    .AddHostedService<ClearerService>()
+    .AddSingleton(opt);
 
 var app = builder.Build();
+var options = app.Services.GetRequiredService<BackendSettings>();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment()) {
+if (options.ShouldUseSwagger) {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 app.UseRouting();
-app.UseCors(policy => 
-    policy.WithOrigins("https://localhost:7206")
+app.UseCors(policy =>
+    policy.WithOrigins(opt.AllowedOrigin)
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());

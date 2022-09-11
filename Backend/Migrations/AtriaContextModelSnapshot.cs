@@ -25,305 +25,469 @@ namespace Backend.Migrations
             modelBuilder.Entity("Models.Answer", b =>
                 {
                     b.Property<long>("WseId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("wse_id");
 
                     b.Property<long>("QuestionId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("question_id");
 
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation_time");
 
                     b.Property<long>("CreatorId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("creator_id");
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("text");
 
-                    b.HasKey("WseId", "QuestionId", "Id");
+                    b.HasKey("WseId", "QuestionId", "Id")
+                        .HasName("pk_answers");
 
-                    b.HasIndex("CreatorId");
+                    b.HasIndex("CreatorId")
+                        .HasDatabaseName("ix_answers_creator_id");
 
-                    b.ToTable("Answers");
+                    b.ToTable("answers", (string)null);
+                });
+
+            modelBuilder.Entity("Models.ApiCheck", b =>
+                {
+                    b.Property<DateTimeOffset>("CheckedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("checked_at");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("boolean")
+                        .HasColumnName("success");
+
+                    b.Property<long?>("WebserviceEntryId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("webservice_entry_id");
+
+                    b.HasKey("CheckedAt")
+                        .HasName("pk_api_check");
+
+                    b.HasIndex("WebserviceEntryId")
+                        .HasDatabaseName("ix_api_check_webservice_entry_id");
+
+                    b.ToTable("api_check", (string)null);
                 });
 
             modelBuilder.Entity("Models.Collaborator", b =>
                 {
                     b.Property<long>("WseId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("wse_id");
 
                     b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
 
                     b.Property<int>("Rights")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("rights");
 
-                    b.HasKey("WseId", "UserId");
+                    b.HasKey("WseId", "UserId")
+                        .HasName("pk_collaborator");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_collaborator_user_id");
 
-                    b.ToTable("Collaborator");
+                    b.ToTable("collaborator", (string)null);
                 });
 
             modelBuilder.Entity("Models.Question", b =>
                 {
                     b.Property<long>("WseId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("wse_id");
 
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation_time");
 
                     b.Property<long>("CreatorId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("creator_id");
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("text");
 
-                    b.HasKey("WseId", "Id");
+                    b.HasKey("WseId", "Id")
+                        .HasName("pk_questions");
 
-                    b.HasIndex("CreatorId");
+                    b.HasIndex("CreatorId")
+                        .HasDatabaseName("ix_questions_creator_id");
 
-                    b.ToTable("Questions");
+                    b.ToTable("questions", (string)null);
+                });
+
+            modelBuilder.Entity("Models.ResetToken", b =>
+                {
+                    b.Property<byte[]>("Token")
+                        .HasColumnType("bytea")
+                        .HasColumnName("token");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Token")
+                        .HasName("pk_reset_tokens");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_reset_tokens_user_id");
+
+                    b.ToTable("reset_tokens", (string)null);
                 });
 
             modelBuilder.Entity("Models.Review", b =>
                 {
                     b.Property<long>("WseId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("wse_id");
 
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation_time");
 
                     b.Property<long>("CreatorId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("creator_id");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<int>("StarCount")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("star_count");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("title");
 
-                    b.HasKey("WseId", "Id");
+                    b.HasKey("WseId", "Id")
+                        .HasName("pk_reviews");
 
-                    b.HasIndex("CreatorId");
+                    b.HasIndex("CreatorId")
+                        .HasDatabaseName("ix_reviews_creator_id");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("reviews", (string)null);
                 });
 
             modelBuilder.Entity("Models.Session", b =>
                 {
                     b.Property<string>("Token")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("token");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Ip")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("ip");
 
                     b.Property<string>("UserAgent")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("user_agent");
 
                     b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Token");
+                    b.HasKey("Token")
+                        .HasName("pk_sessions");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_sessions_user_id");
 
-                    b.ToTable("Sessions");
+                    b.ToTable("sessions", (string)null);
                 });
 
             modelBuilder.Entity("Models.Tag", b =>
                 {
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<DateTimeOffset>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation_time");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
-                    b.Property<long>("UseCount")
-                        .HasColumnType("bigint");
+                    b.HasKey("Name")
+                        .HasName("pk_tags");
 
-                    b.Property<long?>("WebserviceEntryId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Name");
-
-                    b.HasIndex("WebserviceEntryId");
-
-                    b.ToTable("Tags");
+                    b.ToTable("tags", (string)null);
                 });
 
             modelBuilder.Entity("Models.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Biography")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("biography");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("email");
 
                     b.Property<string>("FirstNames")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("first_names");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("last_name");
 
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea")
+                        .HasColumnName("password_hash");
 
                     b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("bytea")
+                        .HasColumnName("password_salt");
 
                     b.Property<string>("ProfilePicture")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("profile_picture");
 
                     b.Property<int>("Rights")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("rights");
 
                     b.Property<string>("SignUpIp")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("sign_up_ip");
 
                     b.Property<string>("Title")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("title");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_users");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_email");
 
-                    b.ToTable("Users");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("ApiCheckUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("api_check_url");
+
                     b.Property<string>("ChangeLog")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("change_log");
 
                     b.Property<long>("ContactPersonId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("contact_person_id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Documentation")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("documentation");
 
                     b.Property<string>("DocumentationLink")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("documentation_link");
 
                     b.Property<string>("FullDescription")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("full_description");
 
                     b.Property<string>("Link")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("link");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<string>("ShortDescription")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("short_description");
 
                     b.Property<long>("ViewCount")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("view_count");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_webservice_entries");
 
-                    b.HasIndex("ContactPersonId");
+                    b.HasIndex("ContactPersonId")
+                        .HasDatabaseName("ix_webservice_entries_contact_person_id");
 
-                    b.ToTable("WebserviceEntries");
+                    b.ToTable("webservice_entries", (string)null);
                 });
 
             modelBuilder.Entity("Models.WseDraft", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ChangeLog")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("change_log");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long>("CreatorId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("creator_id");
 
                     b.Property<string>("Documentation")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("documentation");
 
                     b.Property<string>("DocumentationLink")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("documentation_link");
 
                     b.Property<string>("FullDescription")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("full_description");
 
                     b.Property<string>("Link")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("link");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<string>("ShortDescription")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("short_description");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_wse_draft");
 
-                    b.ToTable("Drafts");
+                    b.HasIndex("CreatorId")
+                        .HasDatabaseName("ix_wse_draft_creator_id");
+
+                    b.ToTable("wse_draft", (string)null);
+                });
+
+            modelBuilder.Entity("TagWebserviceEntry", b =>
+                {
+                    b.Property<string>("TagsName")
+                        .HasColumnType("text")
+                        .HasColumnName("tags_name");
+
+                    b.Property<long>("WebserviceEntriesId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("webservice_entries_id");
+
+                    b.HasKey("TagsName", "WebserviceEntriesId")
+                        .HasName("pk_tag_webservice_entry");
+
+                    b.HasIndex("WebserviceEntriesId")
+                        .HasDatabaseName("ix_tag_webservice_entry_webservice_entries_id");
+
+                    b.ToTable("tag_webservice_entry", (string)null);
+                });
+
+            modelBuilder.Entity("UserWebserviceEntry", b =>
+                {
+                    b.Property<long>("BookmarkeesId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("bookmarkees_id");
+
+                    b.Property<long>("BookmarksId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("bookmarks_id");
+
+                    b.HasKey("BookmarkeesId", "BookmarksId")
+                        .HasName("pk_bookmarks");
+
+                    b.HasIndex("BookmarksId")
+                        .HasDatabaseName("ix_bookmarks_bookmarks_id");
+
+                    b.ToTable("bookmarks", (string)null);
                 });
 
             modelBuilder.Entity("Models.Answer", b =>
@@ -332,19 +496,22 @@ namespace Backend.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_answers_users_creator_id");
 
                     b.HasOne("Models.WebserviceEntry", "Wse")
                         .WithMany()
                         .HasForeignKey("WseId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_answers_webservice_entries_wse_id");
 
                     b.HasOne("Models.Question", "Question")
                         .WithMany()
                         .HasForeignKey("WseId", "QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_answers_questions_wse_id_question_id");
 
                     b.Navigation("Creator");
 
@@ -353,19 +520,29 @@ namespace Backend.Migrations
                     b.Navigation("Wse");
                 });
 
+            modelBuilder.Entity("Models.ApiCheck", b =>
+                {
+                    b.HasOne("Models.WebserviceEntry", null)
+                        .WithMany("ApiCheckHistory")
+                        .HasForeignKey("WebserviceEntryId")
+                        .HasConstraintName("fk_api_check_webservice_entries_webservice_entry_id");
+                });
+
             modelBuilder.Entity("Models.Collaborator", b =>
                 {
                     b.HasOne("Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_collaborator_users_user_id");
 
                     b.HasOne("Models.WebserviceEntry", "Wse")
                         .WithMany("Collaborators")
                         .HasForeignKey("WseId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_collaborator_webservice_entries_wse_id");
 
                     b.Navigation("User");
 
@@ -378,17 +555,31 @@ namespace Backend.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_questions_users_creator_id");
 
                     b.HasOne("Models.WebserviceEntry", "Wse")
                         .WithMany("Questions")
                         .HasForeignKey("WseId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_questions_webservice_entries_wse_id");
 
                     b.Navigation("Creator");
 
                     b.Navigation("Wse");
+                });
+
+            modelBuilder.Entity("Models.ResetToken", b =>
+                {
+                    b.HasOne("Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_reset_tokens_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Models.Review", b =>
@@ -397,13 +588,15 @@ namespace Backend.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_reviews_users_creator_id");
 
                     b.HasOne("Models.WebserviceEntry", "Wse")
                         .WithMany("Reviews")
                         .HasForeignKey("WseId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_reviews_webservice_entries_wse_id");
 
                     b.Navigation("Creator");
 
@@ -416,43 +609,84 @@ namespace Backend.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_sessions_users_user_id");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Models.Tag", b =>
-                {
-                    b.HasOne("Models.WebserviceEntry", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("WebserviceEntryId");
                 });
 
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
                     b.HasOne("Models.User", "ContactPerson")
-                        .WithMany("Bookmarks")
+                        .WithMany()
                         .HasForeignKey("ContactPersonId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_webservice_entries_users_contact_person_id");
 
                     b.Navigation("ContactPerson");
                 });
 
+            modelBuilder.Entity("Models.WseDraft", b =>
+                {
+                    b.HasOne("Models.User", "Creator")
+                        .WithMany("WseDrafts")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_wse_draft_users_creator_id");
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("TagWebserviceEntry", b =>
+                {
+                    b.HasOne("Models.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_tag_webservice_entry_tags_tags_name");
+
+                    b.HasOne("Models.WebserviceEntry", null)
+                        .WithMany()
+                        .HasForeignKey("WebserviceEntriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_tag_webservice_entry_webservice_entries_webservice_entries_");
+                });
+
+            modelBuilder.Entity("UserWebserviceEntry", b =>
+                {
+                    b.HasOne("Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("BookmarkeesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_bookmarks_users_bookmarkees_id");
+
+                    b.HasOne("Models.WebserviceEntry", null)
+                        .WithMany()
+                        .HasForeignKey("BookmarksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_bookmarks_webservice_entries_bookmarks_id");
+                });
+
             modelBuilder.Entity("Models.User", b =>
                 {
-                    b.Navigation("Bookmarks");
+                    b.Navigation("WseDrafts");
                 });
 
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
+                    b.Navigation("ApiCheckHistory");
+
                     b.Navigation("Collaborators");
 
                     b.Navigation("Questions");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
         }

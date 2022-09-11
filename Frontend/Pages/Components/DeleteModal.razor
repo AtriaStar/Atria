@@ -1,4 +1,8 @@
-﻿<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+﻿@inject NavigationManager NavManager
+@inject HttpClient HttpClient
+@inject IJSRuntime Js
+
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -23,15 +27,53 @@
     public string Text { get; set; } = null!;
 
     [Parameter]
+    public string ToDelete { get; set; } = null!;
+
+    [Parameter]
+    public long WseId { get; set; }
+
+    [Parameter]
+    public long? QuestionId { get; set; }
+
+    [Parameter]
+    public long? AnswerId { get; set; }
+
+    [Parameter]
+    public long? ReviewId { get; set; }
+
+    [Parameter]
     public EventCallback<bool> OnClose { get; set; }
 
-    public Task ModalCancel()
+    private Task ModalCancel()
     {
         return OnClose.InvokeAsync(false);
     }
 
-    public Task ModalDelete()
+    private async void ModalDelete()
     {
-        return OnClose.InvokeAsync(true);
+        switch (ToDelete)
+        {
+            case "wse":
+                await HttpClient.DeleteAsync("wse/" + WseId);
+                NavManager.NavigateTo("");
+                break;
+            case "question":
+                await HttpClient.DeleteAsync("wse/" + WseId + "/question/" + QuestionId);
+                NavManager.NavigateTo("/wse" + WseId);
+                break;
+            case "answer":
+                await HttpClient.DeleteAsync("wse/" + WseId + "/question/" + QuestionId + "/answer/" + AnswerId);
+                NavManager.NavigateTo("/wse" + WseId);
+                break;
+            case "review":
+                await HttpClient.DeleteAsync("wse/" + WseId + "/review/" + ReviewId);
+                NavManager.NavigateTo("/wse" + WseId);
+                break;
+            case "collab":
+                /*TODO add delete collab endpoint*/
+                await HttpClient.DeleteAsync("");
+                NavManager.NavigateTo("/wse" + WseId);
+                break;
+        }
     }
 }
