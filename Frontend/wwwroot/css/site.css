@@ -75,29 +75,19 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
-.star-partial-parent {
+.stars {
 	position: relative;
 }
 
-    .star-partial-parent::before {
-        visibility: hidden;
-	}
-
-.star-partial {
-	position: absolute;
-	left: 0;
-	top: 0;
-}
-
-    .star-partial::before {
-        display: inline-block;
-        width: var(--star-partial-width);
+    .stars::after {
+	    content: "\f005\f005\f005\f005\f005";
+		display: inline-block;
     }
 
-.star-partial-right {
+.stars-child {
+    position: absolute;
+    right: 0;
+    top: 0;
 	transform: scaleX(-1);
+	overflow: hidden;
 }
-
-	.star-partial-right::before {
-		overflow: hidden;
-	}
