@@ -20,7 +20,7 @@ public class AuthenticationController : ControllerBase {
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegistrationDto registrationDto, [FromServices] SessionService ss, [FromServices] BackendOptions opt) {
+    public async Task<IActionResult> Register(RegistrationDto registrationDto, [FromServices] SessionService ss, [FromServices] BackendSettings opt) {
         if (await _context.Users.AnyAsync(x => x.Email == registrationDto.Email)) {
             return Conflict("Email is already taken");
         }
@@ -44,7 +44,7 @@ public class AuthenticationController : ControllerBase {
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginDto loginDto, [FromServices] SessionService ss, [FromServices] BackendOptions opt) {
+    public async Task<IActionResult> Login(LoginDto loginDto, [FromServices] SessionService ss, [FromServices] BackendSettings opt) {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
         if (user == null || !user.PasswordHash.SequenceEqual(HashingService.Hash(loginDto.Password, user.PasswordSalt))) {
             return Unauthorized("Email or password invalid");
@@ -98,7 +98,7 @@ public class AuthenticationController : ControllerBase {
     }
     
     [HttpPost("reset/finish")]
-    public async Task<IActionResult> PasswordReset(ResetPasswordDto dto, [FromServices] BackendOptions opt) {
+    public async Task<IActionResult> PasswordReset(ResetPasswordDto dto, [FromServices] BackendSettings opt) {
         var token = Base64UrlTextEncoder.Decode(dto.Token);
         var resetToken = await _context.ResetTokens.FirstOrDefaultAsync(x => x.Token.SequenceEqual(token));
         if (resetToken == null) { return BadRequest("Invalid token"); }

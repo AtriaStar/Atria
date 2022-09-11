@@ -16,7 +16,7 @@ public class AtriaContext : DbContext {
     private readonly string _connectingString;
     private readonly bool _detailedErrors;
 
-    public AtriaContext(BackendOptions opt) {
+    public AtriaContext(BackendSettings opt) {
         _connectingString = opt.DatabaseString;
         _detailedErrors = opt.DatabaseDetailedErrors;
     }

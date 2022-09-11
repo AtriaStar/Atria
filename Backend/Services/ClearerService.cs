@@ -7,9 +7,9 @@ public class ClearerService : IHostedService {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly Timer _timer;
     private readonly SessionService _sessionService;
-    private readonly BackendOptions _options;
+    private readonly BackendSettings _options;
 
-    public ClearerService(IServiceScopeFactory scopeFactory, SessionService sessionService, BackendOptions opt) {
+    public ClearerService(IServiceScopeFactory scopeFactory, SessionService sessionService, BackendSettings opt) {
         _scopeFactory = scopeFactory;
         _sessionService = sessionService;
         _options = opt;

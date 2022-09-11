@@ -5,7 +5,6 @@ using Backend.ParameterHelpers;
 
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
-using Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment;
@@ -14,7 +13,7 @@ var services = builder.Services;
 
 config.AddStandardSources(env.EnvironmentName);
 
-var opt = config.CreateAtriaOptions<BackendOptions>();
+var opt = config.CreateAtriaOptions<BackendSettings>();
 
 services.AddControllers(options => {
         options.Filters.Add<DatabaseBinderNullFilter>();
@@ -35,7 +34,7 @@ services
     .AddSingleton(opt);
 
 var app = builder.Build();
-var options = app.Services.GetRequiredService<BackendOptions>();
+var options = app.Services.GetRequiredService<BackendSettings>();
 
 if (options.ShouldUseSwagger) {
     app.UseSwagger();

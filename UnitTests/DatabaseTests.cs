@@ -3,7 +3,6 @@ using Backend.AspPlugins;
 using DatabaseMocker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Models;
 
 namespace UnitTests;
 
@@ -13,7 +12,7 @@ public class DatabaseTests {
     public DatabaseTests() {
         _context = new(new ConfigurationBuilder()
             .AddStandardSources("Tests").Build()
-            .CreateAtriaOptions<BackendOptions>());
+            .CreateAtriaOptions<BackendSettings>());
 
         foreach (var property in typeof(AtriaContext).GetProperties()
                      .Where(x => x.PropertyType.IsGenericType

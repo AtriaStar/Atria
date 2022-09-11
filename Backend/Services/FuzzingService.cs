@@ -15,7 +15,7 @@ public class FuzzingService {
     private readonly Factor[] _factors;
     private readonly int _scorePower;
 
-    public FuzzingService(BackendOptions opt) {
+    public FuzzingService(BackendSettings opt) {
         var weights = opt.Weights;
         _factors = new Factor[] {
             new(w => w.Name, weights.Name),

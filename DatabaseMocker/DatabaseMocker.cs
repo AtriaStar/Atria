@@ -11,7 +11,7 @@ Console.WriteLine(Directory.GetParent(RootDirectory.GetTest().Replace('\\', '/')
 
 await using var context = new AtriaContext(new ConfigurationBuilder()
     .AddStandardSources("Mocker").Build()
-    .CreateAtriaOptions<BackendOptions>());
+    .CreateAtriaOptions<BackendSettings>());
 
 context.WebserviceEntries.RemoveRange(context.WebserviceEntries);
 context.Users.RemoveRange(context.Users);

@@ -12,10 +12,10 @@ namespace Backend.Controllers;
 [Route("search")]
 public class SearchController : ControllerBase {
     private readonly AtriaContext _context;
-    private readonly BackendOptions _options;
+    private readonly BackendSettings _options;
     private readonly FuzzingService _fuzzer;
 
-    public SearchController(AtriaContext context, BackendOptions opt, FuzzingService fuzzer) {
+    public SearchController(AtriaContext context, BackendSettings opt, FuzzingService fuzzer) {
         _context = context;
         _options = opt;
         _fuzzer = fuzzer;

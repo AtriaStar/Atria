@@ -12,7 +12,7 @@ public class SessionService {
 
     private readonly string _cookiePath;
 
-    public SessionService(BackendOptions opt) {
+    public SessionService(BackendSettings opt) {
         ExpireDuration = opt.AuthenticationTokenExpireDuration;
         _cookiePath = $"/{opt.ApiPrefix}/";
     }
