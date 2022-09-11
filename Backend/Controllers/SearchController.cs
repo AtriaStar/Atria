@@ -5,7 +5,6 @@ using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
-using Models.DTO;
 
 namespace Backend.Controllers;
 

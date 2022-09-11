@@ -2,7 +2,6 @@
 using Backend.Authentication;
 using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Backend.Controllers;
