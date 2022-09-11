@@ -1,0 +1,90 @@
+﻿@inject NavigationManager NavigationManager
+
+
+ <nav aria-label="Search results pages">
+                <ul class="pagination justify-content-center">
+                    
+                    @foreach (var pageItem in _pageItems)
+                    {
+                        <li class="page-item @(pageItem.Enabled ? null : "disabled") @(pageItem.Active ? "active" : null)"
+                            style="cursor: pointer;" @onclick="() => SelectedPage(pageItem)">
+                               
+                   <span class="page-link">@pageItem.Text</span>
+                   </li>
+                    }
+                </ul>
+            </nav>
+
+
+@code {
+    [Parameter]
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public int NumberOfPages { get; set; }
+
+    [Parameter]
+    public int Radius { get; set; }
+
+    private List<PageItem> _pageItems = new();
+
+    protected override void OnParametersSet()
+    {
+        LoadPages();
+    }
+
+    private void LoadPages()
+    {
+        _pageItems = new List<PageItem>();
+
+        var isPreviousPageEnabled = (CurrentPage > 1);
+        var previousPage = CurrentPage - 1;
+        _pageItems.Add(new PageItem(previousPage, isPreviousPageEnabled, "Zurück"));
+
+        for (int i = 1; i <= NumberOfPages; i++)
+        {
+           if (i >= CurrentPage - Radius && i <= CurrentPage + Radius)
+            {
+                _pageItems.Add(new PageItem(i) { Active = (CurrentPage == i) });
+            }
+        }
+
+        var isNextPageEnabled = (CurrentPage < NumberOfPages);
+        var nextPage = CurrentPage + 1;
+        _pageItems.Add(new PageItem(nextPage, isNextPageEnabled, "Weiter"));
+    }
+
+    private void SelectedPage(PageItem pageItem)
+    {
+        if(pageItem.Page == CurrentPage)
+        {
+            return;
+        }
+        if (!pageItem.Enabled)
+        {
+            return;
+        }
+        CurrentPage = pageItem.Page;
+  
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("Page", CurrentPage));
+    }
+
+    public class PageItem
+    {
+        public PageItem(int page) : this(page, true) { }
+
+        public PageItem(int page, bool enabled):this(page, enabled, page.ToString()) {}
+
+        public PageItem(int page, bool enabled, string text)
+        {
+            Page = page;
+            Enabled = enabled;
+            Text = text;
+        }
+
+        public string Text { get; set; }
+        public int Page { get; set; }
+        public bool Enabled { get; set; } = true;
+        public bool Active { get; set; } = false;
+    }
+}

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220831000055_Initial")]
+    [Migration("20220907201552_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,29 @@ namespace Backend.Migrations
                         .HasDatabaseName("ix_answers_creator_id");
 
                     b.ToTable("answers", (string)null);
+                });
+
+            modelBuilder.Entity("Models.ApiCheck", b =>
+                {
+                    b.Property<DateTimeOffset>("CheckedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("checked_at");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("boolean")
+                        .HasColumnName("success");
+
+                    b.Property<long?>("WebserviceEntryId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("webservice_entry_id");
+
+                    b.HasKey("CheckedAt")
+                        .HasName("pk_api_check");
+
+                    b.HasIndex("WebserviceEntryId")
+                        .HasDatabaseName("ix_api_check_webservice_entry_id");
+
+                    b.ToTable("api_check", (string)null);
                 });
 
             modelBuilder.Entity("Models.Collaborator", b =>
@@ -119,6 +142,29 @@ namespace Backend.Migrations
                         .HasDatabaseName("ix_questions_creator_id");
 
                     b.ToTable("questions", (string)null);
+                });
+
+            modelBuilder.Entity("Models.ResetToken", b =>
+                {
+                    b.Property<byte[]>("Token")
+                        .HasColumnType("bytea")
+                        .HasColumnName("token");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Token")
+                        .HasName("pk_reset_tokens");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_reset_tokens_user_id");
+
+                    b.ToTable("reset_tokens", (string)null);
                 });
 
             modelBuilder.Entity("Models.Review", b =>
@@ -296,6 +342,10 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("ApiCheckUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("api_check_url");
+
                     b.Property<string>("ChangeLog")
                         .HasColumnType("text")
                         .HasColumnName("change_log");
@@ -366,6 +416,10 @@ namespace Backend.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long>("CreatorId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("creator_id");
+
                     b.Property<string>("Documentation")
                         .HasColumnType("text")
                         .HasColumnName("documentation");
@@ -392,9 +446,12 @@ namespace Backend.Migrations
                         .HasColumnName("short_description");
 
                     b.HasKey("Id")
-                        .HasName("pk_drafts");
+                        .HasName("pk_wse_draft");
 
-                    b.ToTable("drafts", (string)null);
+                    b.HasIndex("CreatorId")
+                        .HasDatabaseName("ix_wse_draft_creator_id");
+
+                    b.ToTable("wse_draft", (string)null);
                 });
 
             modelBuilder.Entity("TagWebserviceEntry", b =>
@@ -414,6 +471,25 @@ namespace Backend.Migrations
                         .HasDatabaseName("ix_tag_webservice_entry_webservice_entries_id");
 
                     b.ToTable("tag_webservice_entry", (string)null);
+                });
+
+            modelBuilder.Entity("UserWebserviceEntry", b =>
+                {
+                    b.Property<long>("BookmarkeesId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("bookmarkees_id");
+
+                    b.Property<long>("BookmarksId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("bookmarks_id");
+
+                    b.HasKey("BookmarkeesId", "BookmarksId")
+                        .HasName("pk_bookmarks");
+
+                    b.HasIndex("BookmarksId")
+                        .HasDatabaseName("ix_bookmarks_bookmarks_id");
+
+                    b.ToTable("bookmarks", (string)null);
                 });
 
             modelBuilder.Entity("Models.Answer", b =>
@@ -444,6 +520,14 @@ namespace Backend.Migrations
                     b.Navigation("Question");
 
                     b.Navigation("Wse");
+                });
+
+            modelBuilder.Entity("Models.ApiCheck", b =>
+                {
+                    b.HasOne("Models.WebserviceEntry", null)
+                        .WithMany("ApiCheckHistory")
+                        .HasForeignKey("WebserviceEntryId")
+                        .HasConstraintName("fk_api_check_webservice_entries_webservice_entry_id");
                 });
 
             modelBuilder.Entity("Models.Collaborator", b =>
@@ -488,6 +572,18 @@ namespace Backend.Migrations
                     b.Navigation("Wse");
                 });
 
+            modelBuilder.Entity("Models.ResetToken", b =>
+                {
+                    b.HasOne("Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_reset_tokens_users_user_id");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Models.Review", b =>
                 {
                     b.HasOne("Models.User", "Creator")
@@ -524,13 +620,25 @@ namespace Backend.Migrations
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
                     b.HasOne("Models.User", "ContactPerson")
-                        .WithMany("Bookmarks")
+                        .WithMany()
                         .HasForeignKey("ContactPersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_webservice_entries_users_contact_person_id");
 
                     b.Navigation("ContactPerson");
+                });
+
+            modelBuilder.Entity("Models.WseDraft", b =>
+                {
+                    b.HasOne("Models.User", "Creator")
+                        .WithMany("WseDrafts")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_wse_draft_users_creator_id");
+
+                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("TagWebserviceEntry", b =>
@@ -550,13 +658,32 @@ namespace Backend.Migrations
                         .HasConstraintName("fk_tag_webservice_entry_webservice_entries_webservice_entries_");
                 });
 
+            modelBuilder.Entity("UserWebserviceEntry", b =>
+                {
+                    b.HasOne("Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("BookmarkeesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_bookmarks_users_bookmarkees_id");
+
+                    b.HasOne("Models.WebserviceEntry", null)
+                        .WithMany()
+                        .HasForeignKey("BookmarksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_bookmarks_webservice_entries_bookmarks_id");
+                });
+
             modelBuilder.Entity("Models.User", b =>
                 {
-                    b.Navigation("Bookmarks");
+                    b.Navigation("WseDrafts");
                 });
 
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
+                    b.Navigation("ApiCheckHistory");
+
                     b.Navigation("Collaborators");
 
                     b.Navigation("Questions");

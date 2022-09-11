@@ -22,9 +22,9 @@ public class FromDatabaseAttribute : ModelBinderAttribute {
                 bindingContext.Result = ModelBindingResult.Success(DatabaseBinderNullFilter.NullFromDatabase);
                 return;
             }
-            foreach (var property in bindingContext.ModelMetadata.ValidatorMetadata.OfType<IncludeAttribute>()) {
-                await db.Entry(obj).Reference(property.Name).LoadAsync();
-            }
+
+            await bindingContext.ModelMetadata.ValidatorMetadata.OfType<IncludeAttribute>()
+                .ApplyToAsync(db, obj);
 
             bindingContext.ValidationState.Add(obj, new() { SuppressValidation = true });
             bindingContext.Result = ModelBindingResult.Success(obj);

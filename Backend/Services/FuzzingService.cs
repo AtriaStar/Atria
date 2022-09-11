@@ -48,6 +48,6 @@ public class FuzzingService {
             .Max();
 
     public double CalculateScore(string query, User user)
-        => Math.Max(_scorer.Score(query, user.Email),
+        => 0.01 * Math.Max(_scorer.Score(query, user.Email),
             _scorer.Score(query, $"{user.Title ?? string.Empty} {user.FirstNames} {user.LastName}"));
 }

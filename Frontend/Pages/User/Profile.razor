@@ -1,10 +1,9 @@
-﻿@page "/profile/{UserId:long?}"
+﻿@page "/profile/{UserId:long}"
 @using Models
-@using Models.DTO
 @using System.Net
 @inject NavigationManager NavigationManager
 
-@if (User is not null) {
+@if (_user is not null) {
     <div class="container-xxl">
         <div class="row mt-4">
             <div class="col-12 col-xl-3">
@@ -13,62 +12,66 @@
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-column flex-sm-row flex-xl-column">
                                 <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
-                                    @if (User.ProfilePicture is not null) {
-                                        <img class="avatar avatar-w" alt="" src="@User.ProfilePicture">
+                                    @if (_user.ProfilePicture is not null) {
+                                        <img class="avatar avatar-w" alt="" src="@_user.ProfilePicture">
                                     } else {
                                         <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
                                     }
                                 </div>
                                 <div class="d-flex flex-column justify-content-center">
-                                    <div>@User.Title</div>
-                                    <h5>@User.FirstNames @User.LastName</h5>
-                                    <div>@User.Biography</div>
-                                    <div class="top-border pt-2 mt-2 mb-2">@User.Email</div>
+                                    <div>@_user.Title</div>
+                                    <h5>@_user.FirstNames @_user.LastName</h5>
+                                    <div>@_user.Biography</div>
+                                    <div class="top-border pt-2 mt-2 mb-2">@_user.Email</div>
                                 </div>
                             </div>
-
-                            @if (UserId == User.Id) {
-                                <div class="top-border pt-3 d-flex">
-                                    <button type="button" class="btn-success btn flex-fill" @onclick="() => _displayForm = !_displayForm">Profil bearbeiten</button>
-                                </div>
-                            }
+                            <AuthView UserIdClaim="UserId">
+                                <AuthorizedAndMatching>
+                                    <div class="top-border pt-3 d-flex">
+                                        <button type="button" class="btn-success btn flex-fill" @onclick="() => _displayForm = !_displayForm">Profil bearbeiten</button>
+                                    </div>
+                                </AuthorizedAndMatching>
+                            </AuthView>
 
                         </div>
                     } else {
-                        <EditForm Model="User" OnValidSubmit="HandleValidSubmit">
+                        <EditForm Model="_user" OnValidSubmit="HandleValidSubmit">
                             <DataAnnotationsValidator></DataAnnotationsValidator>
                             <div class="d-flex flex-column">
                                 <div class="d-flex flex-column flex-sm-row flex-xl-column">
-                                    <div class="mb-3 me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex">
-                                        <label for="image_upload" style="cursor: pointer" title="Bild ändern">
-                                            @if (User.ProfilePicture is not null) {
-                                                <img class="avatar avatar-w" alt="" src="@User.ProfilePicture">
+                                    <div class="me-0 me-sm-3 me-xl-0 align-items-center justify-content-center d-flex flex-column">
+                                        <div class="mb-3">
+                                            @if (_user.ProfilePicture is not null) {
+                                                <img class="avatar avatar-w" alt="" src="@_user.ProfilePicture">
                                             } else {
                                                 <img class="avatar avatar-w" alt="default avatar" src="images/default_avatar.png"/>
                                             }
-                                        </label>
-                                        <InputFile OnChange="@LoadFiles" id="image_upload" style="display: none"></InputFile>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <InputText @bind-Value="_user.ProfilePicture" id="picture" type="text" class="form-control" placeholder="Link zu Profilbild"></InputText>
+                                            <label for="picture" class="form-label">Link zu Profilbild</label>
+                                        </div>
                                     </div>
                                     <div class="flex-fill">
                                         <div class="form-floating mb-3">
-                                            <InputText @bind-Value="User.Title" id="title" type="text" class="form-control" placeholder="Titel"></InputText>
+                                            <InputText @bind-Value="_user.Title" id="title" type="text" class="form-control" placeholder="Titel"></InputText>
                                             <label for="title" class="form-label">Titel</label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <InputText @bind-Value="User.FirstNames" id="first_name" type="text" class="form-control" placeholder="Vorname"></InputText>
+                                            <InputText @bind-Value="_user.FirstNames" id="first_name" type="text" class="form-control" placeholder="Vorname"></InputText>
                                             <label for="first_name" class="form-label">Vorname</label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <InputText @bind-Value="User.LastName" id="last_name" type="text" class="form-control" placeholder="Nachname"></InputText>
+                                            <InputText @bind-Value="_user.LastName" id="last_name" type="text" class="form-control" placeholder="Nachname"></InputText>
                                             <label for="last_name" class="form-label">Nachname</label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <InputTextArea @bind-Value="User.Biography" id="bio" class="form-control"></InputTextArea>
+                                            <InputTextArea @bind-Value="_user.Biography" id="bio" class="form-control"></InputTextArea>
                                             <label for="bio" class="form-label">Bio</label>
                                         </div>
                                         <div class="top-border pt-2">
                                             <div class="form-floating">
-                                                <InputText readonly type="email" id="email" class="form-control-plaintext" @bind-Value="User.Email" placeholder="Email"></InputText>
+                                                <InputText readonly type="email" id="email" class="form-control-plaintext" @bind-Value="_user.Email" placeholder="Email"></InputText>
                                                 <label for="email" class="form-label">Email-Adresse</label>
                                             </div>
                                         </div>
@@ -87,16 +90,22 @@
             <div class="col">
                 <div class="d-flex flex-wrap justify-content-between">
                     <div class="nav nav-pills mb-2">
-                        <NavLink href="@Navigate("type", null)" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
-                        <NavLink href="@Navigate("type", "bookmarks")" class="nav-link me-2">Lesezeichen</NavLink>
-                        <NavLink href="@Navigate("type", "reviews")" class="nav-link me-2">Bewertungen</NavLink>
-                        <NavLink href="@Navigate("type", "drafts")" class="nav-link">Entwürfe</NavLink>
+                        <NavLink href="@NavigateType(null)" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
+                        <NavLink href="@NavigateType("bookmarks")" class="nav-link me-2">Lesezeichen</NavLink>
+                        <NavLink href="@NavigateType("reviews")" class="nav-link me-2">Bewertungen</NavLink>
+                        <AuthView UserIdClaim="UserId">
+                            <AuthorizedAndMatching>
+                                <NavLink href="@NavigateType("drafts")" class="nav-link">Entwürfe</NavLink>
+                            </AuthorizedAndMatching>
+                        </AuthView>
                     </div>
 
                     <div class="d-flex mb-2 ms-auto">
-                        <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
-                            Filter
-                        </button>
+                        @if (Type is null or "wse" or "bookmarks") {
+                            <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
+                                Filter
+                            </button>
+                        }
 
                         <div class="ms-3 d-flex">
                             <div class="form-control form-control-sm border" style="box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px; border-radius: 0.375rem">
@@ -114,16 +123,20 @@
                 <div class="w-100 mt-2 mb-4">
                     @switch (Type) {
                         case null or "wse":
-                            <WseSummaryList Entries="_webserviceEntries ?? new List<WebserviceEntry>()"/>
+                            <WseSummaryList Entries="_webserviceEntries"/>
                             break;
                         case "bookmarks":
-                            <WseSummaryList Entries="_webserviceEntries ?? new List<WebserviceEntry>()"/>
+                            <WseSummaryList Entries="_webserviceEntries"/>
                             break;
                         case "reviews":
-                            <ReviewList Reviews="_reviews ?? new List<Review>()"/>
+                            <ReviewList Reviews="_reviews"/>
                             break;
                         case "drafts":
-                            <WseSummaryList Entries="_webserviceEntries ?? new List<WebserviceEntry>()"/>
+                            <AuthView UserIdClaim="UserId">
+                                <AuthorizedAndMatching>
+                                    <WseSummaryList Entries="_webserviceEntries"/>
+                                </AuthorizedAndMatching>
+                            </AuthView>
                             break;
                         default:
                             NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string)null!));
@@ -133,28 +146,28 @@
             </div>
         </div>
     </div>
+
+    @if (_numberOfPages >= 2) {
+        <Pagination NumberOfPages="_numberOfPages" CurrentPage="Page" Radius="3"></Pagination>
+    }
 } else if (_userNotFound) {
     <NotFound></NotFound>
 }
 
-@if (FilterDialogOpen) {
-    <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" IsBookmark="IsBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+@if (_filterDialogOpen) {
+    <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" hasBookmark="hasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
 @code {
-
-    [Inject]
-    private HttpClient HttpClient { get; set; } = default!;
-
-    private bool _displayForm;
-    private bool _userNotFound;
 
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Type { get; set; }
 
-    [CascadingParameter]
-    private LoginState LoginState { get; set; } = null!;
+    //Filter and Query start
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Query { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -162,7 +175,7 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public bool? IsBookmark { get; set; }
+    public bool? hasBookmark { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "minRating")]
@@ -170,91 +183,127 @@
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "tags")]
-    public string[]? SelectedTagsStr { get; set; } = new string[] { };
+    public string[]? SelectedTagsStr { get; set; }
 
-    [Parameter]
-    public long? UserId { get; set; }
+    // Filter and Query end
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public string? Query { get; set; }
+    public int Page { get; set; } = 1;
 
-    //List for subcomponents
-    private IEnumerable<WebserviceEntry>? _webserviceEntries;
-    private IEnumerable<Review>? _reviews;
-    private User? User { get; set; }
+    // UserId from Url
+    [Parameter]
+    public long UserId { get; set; }
 
-    private UserDto _cloneUserDto = null!;
+    [CascadingParameter]
+    private LoginState LoginState { get; set; } = null!;
+
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+
+    private bool _displayForm;
+    private bool _userNotFound;
+
+    // Pagination
+    private int _numberOfPages;
+    private int _numberOfEntries;
+
+    // List for subcomponents
+    private IEnumerable<WebserviceEntry> _webserviceEntries = new List<WebserviceEntry>();
+    private IEnumerable<Review> _reviews = new List<Review>();
+    private User? _user;
+
+    // used for from reset
+    private User _cloneUser = null!;
+
+    private bool _filterDialogOpen;
+
+    protected override async Task OnInitializedAsync() {
+        var response = await HttpClient.GetAsync($"user/{UserId}");
+        if (response.IsSuccessStatusCode) {
+            _user = await response.Content.ReadFromJsonAsync<User>();
+            CloneUser();
+        } else if (response.StatusCode == HttpStatusCode.NotFound) {
+            _userNotFound = true;
+        } else {
+            NavigationManager.NavigateTo("/internal-server-error");
+        }
+    }
 
     protected override async Task OnParametersSetAsync() {
-        await base.OnParametersSetAsync();
-        if (UserId is null) {
-            if (LoginState.LoggedIn) {
-                User = LoginState.User;
-                UserId = User!.Id;
-                CloneUser();
-            } else {
-                NavigationManager.NavigateTo("/login");
-            }
-        } else {
-            var response = await HttpClient.GetAsync($"user/{UserId}");
+        if (!_userNotFound) {
+            // Get only query parameters
+            var queryString = NavigationManager
+                .ToBaseRelativePath(NavigationManager.GetUriWithQueryParameter("type", (string) null!));
+            var i = queryString.IndexOf('?');
+            queryString = i != -1 ? queryString[queryString.IndexOf('?')..] : "";
+            
+            var response = await HttpClient.GetAsync($"user/{UserId}/{Type ?? "wse"}" + queryString);
             if (response.IsSuccessStatusCode) {
-                User = (await response.Content.ReadFromJsonAsync<User>())!;
-                CloneUser();
-
                 switch (Type) {
                     case null or "wse":
-                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/wse");
+                        _webserviceEntries = (await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>())!;
+                        _numberOfEntries = _webserviceEntries.Count();
+                        SetNumberOfPages(_numberOfEntries);
                         break;
                     case "bookmarks":
-                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/bookmarks");
-                        break;
-                    case "reviews":
-                        _reviews = await HttpClient.GetFromJsonAsync<IEnumerable<Review>>($"user/{UserId}/reviews");
+                        _webserviceEntries = (await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>())!;
+                        _numberOfEntries = _webserviceEntries.Count();
+                        SetNumberOfPages(_numberOfEntries);
                         break;
                     case "drafts":
-                        _webserviceEntries = await HttpClient.GetFromJsonAsync<IEnumerable<WebserviceEntry>>($"user/{UserId}/drafts");
+                        _webserviceEntries = (await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>())!;
+                        _numberOfEntries = _webserviceEntries.Count();
+                        SetNumberOfPages(_numberOfEntries);
+                        break;
+                    case "reviews":
+                        _reviews = (await response.Content.ReadFromJsonAsync<IEnumerable<Review>>())!;
+                        _numberOfEntries = _reviews.Count();
+                        SetNumberOfPages(_numberOfEntries);
                         break;
                 }
-            } else if (response.StatusCode == HttpStatusCode.NotFound) {
-                _userNotFound = true;
-            } else {
-                NavigationManager.NavigateTo("/internal-server-error");
             }
         }
     }
 
     private void ResetDto() {
-        User!.FirstNames = _cloneUserDto.FirstNames;
-        User.LastName = _cloneUserDto.LastName;
-        User.Email = _cloneUserDto.Email;
-        User.Biography = _cloneUserDto.Biography;
-        User.Title = _cloneUserDto.Title;
+        _user!.FirstNames = _cloneUser.FirstNames;
+        _user.LastName = _cloneUser.LastName;
+        _user.Email = _cloneUser.Email;
+        _user.Biography = _cloneUser.Biography;
+        _user.Title = _cloneUser.Title;
+        _user.ProfilePicture = _cloneUser.ProfilePicture;
         _displayForm = !_displayForm;
     }
 
-    private void LoadFiles(InputFileChangeEventArgs e) {
-        @* TODO implement *@
-    }
-
-    private void HandleValidSubmit() {
+    private async void HandleValidSubmit() {
         _displayForm = !_displayForm;
         CloneUser();
-        var response = HttpClient.PostAsJsonAsync($"user/{UserId}", User);
+        await HttpClient.PostAsJsonAsync("user", _user);
     }
 
     private void CloneUser() {
-        _cloneUserDto = new UserDto {
-            FirstNames = User!.FirstNames,
-            LastName = User.LastName,
-            Email = User.Email,
-            Title = User.Title,
-            Biography = User.Biography
+        _cloneUser = new User() {
+            FirstNames = _user!.FirstNames,
+            LastName = _user.LastName,
+            Email = _user.Email,
+            Title = _user.Title,
+            Biography = _user.Biography,
+            ProfilePicture = _user.ProfilePicture
         };
     }
 
-    private string Navigate(string key, string? value) {
-        return NavigationManager.GetUriWithQueryParameter(key, value);
+    private string NavigateType(string? value) {
+        if (value is null or "wse" or "bookmarks") {
+            return NavigationManager.GetUriWithQueryParameter("type", value);
+        }
+        return NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> {
+            ["type"] = value,
+            ["IsOnline"] = null,
+            ["hasBookmark"] = null,
+            ["minRating"] = null,
+            ["tags"] = null
+        });
     }
 
     private void SearchInput(KeyboardEventArgs evt) {
@@ -264,17 +313,19 @@
     }
 
     private void Search() {
-        NavigationManager.NavigateTo(Navigate("query", Query));
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("query", Query));
     }
 
-    private bool FilterDialogOpen { get; set; }
-
     private void OnFilterDialogClose(bool accepted) {
-        FilterDialogOpen = false;
+        _filterDialogOpen = false;
     }
 
     private void OpenFilterDialog() {
-        FilterDialogOpen = true;
+        _filterDialogOpen = true;
+    }
+
+    private void SetNumberOfPages(int numberOfResults) {
+        _numberOfPages = (numberOfResults / 20) + 1;
     }
 
 }

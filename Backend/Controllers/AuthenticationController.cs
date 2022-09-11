@@ -20,19 +20,19 @@ public class AuthenticationController : ControllerBase {
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(Registration registration, [FromServices] SessionService ss, [FromServices] BackendOptions opt) {
-        if (await _context.Users.AnyAsync(x => x.Email == registration.Email)) {
+    public async Task<IActionResult> Register(RegistrationDto registrationDto, [FromServices] SessionService ss, [FromServices] BackendOptions opt) {
+        if (await _context.Users.AnyAsync(x => x.Email == registrationDto.Email)) {
             return Conflict("Email is already taken");
         }
 
         var salt = HashingService.GenerateSalt();
 
         var user = new User {
-            FirstNames = registration.FirstNames,
-            LastName = registration.LastName,
-            Email = registration.Email,
+            FirstNames = registrationDto.FirstNames,
+            LastName = registrationDto.LastName,
+            Email = registrationDto.Email,
             SignUpIp = HttpContext.Connection.RemoteIpAddress!.ToString(),
-            PasswordHash = HashingService.Hash(registration.Password, salt),
+            PasswordHash = HashingService.Hash(registrationDto.Password, salt),
             PasswordSalt = salt,
         };
 
@@ -44,9 +44,9 @@ public class AuthenticationController : ControllerBase {
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(Login login, [FromServices] SessionService ss, [FromServices] BackendOptions opt) {
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == login.Email);
-        if (user == null || !user.PasswordHash.SequenceEqual(HashingService.Hash(login.Password, user.PasswordSalt))) {
+    public async Task<IActionResult> Login(LoginDto loginDto, [FromServices] SessionService ss, [FromServices] BackendOptions opt) {
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
+        if (user == null || !user.PasswordHash.SequenceEqual(HashingService.Hash(loginDto.Password, user.PasswordSalt))) {
             return Unauthorized("Email or password invalid");
         }
         await ss.GenerateSession(user, _context, HttpContext);

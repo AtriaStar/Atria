@@ -1,5 +1,6 @@
-﻿@page "/wse/{WseId:long}"
+﻿@page "/wse/{WseId:long}/{WseName?}"
 @using Models
+@using System.Web
 
 <PageTitle>Atria - WseName</PageTitle>
 
@@ -33,9 +34,9 @@
 <div class="card mb-4">
     <div class="card-body">
         <div class="row mb-2">
-            <div class="col-auto mt-sm-1">
-                <i class="fa-solid fa-circle text-success"/>
-            </div>
+             <div class="col-auto">
+                    <i class="fa-solid fa-circle @StyleOnlineStatus(Wse)"></i>
+                </div>
             <div class="col ps-0">
                 <h3 class="card-title fw-bold">
                     @if (!_displayForm) {
@@ -51,8 +52,8 @@
             </div>
             <div class="col-auto d-flex align-content-end me-1">
                 @{
-                    var bookmarkState = isBookmark ? "bi-bookmark-fill" : "bi-bookmark";
-                    var bookmarkTitle = isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                    var bookmarkState = hasBookmark ? "bi-bookmark-fill" : "bi-bookmark";
+                    var bookmarkTitle = hasBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
                 }
                 <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
             </div>
@@ -439,7 +440,7 @@
     public bool isLoggedIn = true;
     public bool isCollab = true;
     public bool isCreator = true;
-    public bool isBookmark = false;
+    public bool hasBookmark = false;
 
     private bool _displayForm = false;
 
@@ -449,7 +450,7 @@
     private WebserviceEntry _cloneWse = null!;
 
     private void ChangeBookmarkStatus() {
-        isBookmark = !isBookmark;
+        hasBookmark = !hasBookmark;
         @* TODO logic *@
     }
 
@@ -541,13 +542,37 @@
     [Parameter]
     public long WseId { get; set; }
 
+    [Parameter]
+    public string WseName { get; set; } = null!;
+
+    [Inject]
+    private NavigationManager Manager { get; set; } = null!;
+
     protected override async Task OnParametersSetAsync() {
-        await base.OnParametersSetAsync();
-        var response = await HttpClient.GetAsync($"wse/{WseId}");
+	    if (Wse?.Id != WseId) {
+		    var response = await HttpClient.GetAsync($"wse/{WseId}");
+		    if (response.IsSuccessStatusCode) {
+			    Wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
+			    var fullUrl = $"wse/{WseId}/{HttpUtility.UrlEncode(Wse.Name)}";
+			    if (Manager.ToBaseRelativePath(Manager.Uri) != fullUrl) {
+				    Manager.NavigateTo(fullUrl);
+			    }
+		    } else {
+			    @* TODO not found *@
+		    }
+	    }
+    }
+
+    private async Task<string> StyleOnlineStatus(WebserviceEntry entry) {
+        var response = await HttpClient.GetAsync($"wse/{entry.Id}/checks/latest" );
         if (response.IsSuccessStatusCode) {
-            Wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
+            if (await response.Content.ReadFromJsonAsync<bool>()) {
+                return "text-success";
+            } else {
+                return "text-danger";            
+            }
         } else {
-            @* TODO not found *@
+            return "text-secondary";
         }
     }
 

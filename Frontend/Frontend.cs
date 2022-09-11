@@ -18,7 +18,6 @@ builder.Configuration.AddStandardSources(builder.HostEnvironment.Environment);
 var opt = builder.Configuration.CreateAtriaOptions<FrontendOptions>();
 
 builder.Services
-    .AddScoped<LoginState>()
     .AddScoped<CookieHandler>()
     .AddHttpClient(Options.DefaultName, client => client.BaseAddress = new($"{opt.AddressRoot}/{opt.ApiPrefix}/"))
     .AddHttpMessageHandler<CookieHandler>();

@@ -21,19 +21,33 @@
     <div class="d-flex flex-wrap">
         <div class="nav nav-pills mb-2">
             <div class="nav-item">
-                <NavLink href="@Navigate("type", null)" class="nav-link" Match="NavLinkMatch.All">Webservice</NavLink>
+                <NavLink href="@Navigate("type", null)" class="nav-link" Match="NavLinkMatch.All">
+                    Webservice
+                    @if (Type is null or "wse") {
+                        @_numberOfEntries
+                    }
+                </NavLink>
             </div>
             <div class="nav-item ms-3">
-                <NavLink href="@Navigate("type", "user")" class="nav-link">Nutzer</NavLink>
+
+                <NavLink href="@Navigate("type", "user")" class="nav-link">
+                    Nutzer
+                    @if (Type is "user") {
+                        @_numberOfEntries
+                    }
+                </NavLink>
             </div>
         </div>
         <div class="d-flex mb-2 ms-auto">
-            @if (Type is null or "wse")
-            {
-                <button class="btn-outline-light btn p-0 me-2" @onclick="ChangeBookmarkStatusFilter">
-                    <i class="bi @_bookmarkStateFilter fs-5" style="color: #dc3545"></i>
-                </button>
-                <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
+            @if (Type is null or "wse") {
+                <AuthView>
+                    <Authorized>
+                        <button class="btn-outline-light btn p-0" @onclick="ChangeBookmarkStatusFilter">
+                            <i class="bi @_bookmarkStateFilter fs-5" style="color: #dc3545" title="Lesezeichen"></i>
+                        </button>
+                    </Authorized>
+                </AuthView>
+                <button class="btn btn-outline-primary ms-3" type="button" @onclick="OpenFilterDialog">
                     Filter
                 </button>
             }
@@ -42,20 +56,19 @@
                     Sortieren nach
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <NavLink href="@Navigate("sort", null)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>
-                    <NavLink href="@Navigate("sort", "useCountAsc")" class="dropdown-item">Aufrufzahl aufsteigend</NavLink>
-                    <NavLink href="@Navigate("sort", "useCountDesc")" class="dropdown-item">Aufrufzahl absteigend</NavLink>
-                    <NavLink href="@Navigate("sort", "reviewAverageAsc")" class="dropdown-item">Bewertungsdurchschnitt aufsteigend</NavLink>
-                    <NavLink href="@Navigate("sort", "reviewAverageDesc")" class="dropdown-item">Bewertungsdurchschnitt absteigend</NavLink>
-                    <NavLink href="@Navigate("sort", "recencyDesc")" class="dropdown-item">Neueste</NavLink>
-                    <NavLink href="@Navigate("sort", "recencyAsc")" class="dropdown-item">Älteste</NavLink>
+                    <NavLink href="@NavigateOrder(null, false)" class="dropdown-item" Match="NavLinkMatch.All">Relevanz</NavLink>
+                    <NavLink href="@NavigateOrder("viewcount", false)" class="dropdown-item">Aufrufzahl absteigend</NavLink>
+                    <NavLink href="@NavigateOrder("viewcount", true)" class="dropdown-item">Aufrufzahl aufsteigend</NavLink>
+                    <NavLink href="@NavigateOrder("ReviewAverage", false)" class="dropdown-item">Bewertungsdurchschnitt absteigend</NavLink>
+                    <NavLink href="@NavigateOrder("ReviewAverage", true)" class="dropdown-item">Bewertungsdurchschnitt aufsteigend</NavLink>
+                    <NavLink href="@NavigateOrder("Recency", true)" class="dropdown-item">Neueste</NavLink>
+                    <NavLink href="@NavigateOrder("Recency", false)" class="dropdown-item">Älteste</NavLink>
                 </ul>
             </div>
         </div>
     </div>
     <div class="w-100 mt-2 mb-4">
-        @switch (Type)
-        {
+        @switch (Type) {
             case null or "wse":
                 <WseSummaryList Entries="@_wseList"></WseSummaryList>
                 break;
@@ -69,34 +82,31 @@
                 break;
         }
     </div>
+    @if (_numberOfPages >= 2) {
+        <Pagination NumberOfPages="_numberOfPages" CurrentPage="Page" Radius="3"></Pagination>
+    }
 </div>
 
-@if (FilterDialogOpen)
-{
-    <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" IsBookmark="IsBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+@if (_filterDialogOpen) {
+    <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" hasBookmark="hasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
 @code {
 
-    private string? _bookmarkStateFilter = "bi-bookmark";
-
-    [Inject]
-    private HttpClient HttpClient { get; set; } = default!;
-
+    /* is needed to allow different number of entries per page
     [Parameter]
     [SupplyParameterFromQuery]
-    public string? Sort { get; set; }
+    public int? entriesPerPage  { get; set; }
+    */
 
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Type { get; set; }
 
+    //Filter and Query start
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Query { get; set; }
-
-    private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
-    private IEnumerable<User> _userList = new List<User>();
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -104,7 +114,7 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public bool? IsBookmark { get; set; }
+    public bool? hasBookmark { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "minRating")]
@@ -114,24 +124,34 @@
     [SupplyParameterFromQuery(Name = "tags")]
     public string[]? SelectedTagsStr { get; set; }
 
-    private void SearchInput(KeyboardEventArgs evt)
-    {
-        if (evt.Key == "Enter")
-        {
-            Search();
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Order { get; set; }
+
+    // Filter and Query end
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int Page { get; set; } = 1;
+
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+
+    private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
+    private IEnumerable<User> _userList = new List<User>();
+
+    private string _bookmarkStateFilter = "bi-bookmark";
+    private bool _filterDialogOpen;
+
+    // Pagination
+    private int _numberOfPages;
+    private int _numberOfEntries;
+
+    protected override async Task OnParametersSetAsync() {
+        if (Page == 0) {
+            Page = 1;
         }
-    }
-
-    private void Search()
-    {
-        NavigationManager.NavigateTo(Navigate("query", Query));
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        await base.OnParametersSetAsync();
-        switch (Type)
-        {
+        switch (Type) {
             case "wse":
             case null:
                 await GetAndSetWseList();
@@ -143,62 +163,93 @@
                 Navigate("type", null);
                 break;
         }
+
+        SetBookmarkState();
     }
 
-    private async Task GetAndSetWseList()
-    {
+    private async Task GetAndSetWseList() {
         var response = await HttpClient.GetAsync("search/wse" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         _wseList = await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>() ?? Array.Empty<WebserviceEntry>();
+
+        var responseCount = await HttpClient.GetAsync("search/wse/count" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        _numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
+        SetNumberOfPages(_numberOfEntries);
     }
 
-    private async Task GetAndSetUserList()
-    {
-        var response = await HttpClient.GetAsync("search/user" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        if (response.IsSuccessStatusCode)
-        {
-            _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? Array.Empty<User>();
-        }
-        else if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
+    private async Task GetAndSetUserList() {
+        if (Query is null or "") {
             _userList = Array.Empty<User>();
+            _numberOfEntries = 0;
+            SetNumberOfPages(_numberOfEntries);
+            return;
         }
-        else
-        {
+
+        var response = await HttpClient.GetAsync("search/user" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        if (response.IsSuccessStatusCode) {
+            _userList = await response.Content.ReadFromJsonAsync<IEnumerable<User>>() ?? Array.Empty<User>();
+
+            var responseCount = await HttpClient.GetAsync("search/user/count?query=" + Query);
+            _numberOfEntries = await responseCount.Content.ReadFromJsonAsync<int>();
+            SetNumberOfPages(_numberOfEntries);
+        } else if (response.StatusCode == HttpStatusCode.BadRequest) {
+            _userList = Array.Empty<User>();
+            _numberOfEntries = 0;
+            SetNumberOfPages(_numberOfEntries);
+        } else {
             NavigationManager.NavigateTo("/internal-server-error");
         }
     }
 
-    private string Navigate(string key, string? value)
-    {
+    private void SearchInput(KeyboardEventArgs evt) {
+        if (evt.Key == "Enter") {
+            Search();
+        }
+    }
+
+    private void Search() {
+        NavigationManager.NavigateTo(Navigate("query", Query));
+    }
+
+    private string Navigate(string key, string? value) {
         return NavigationManager.GetUriWithQueryParameter(key, value);
     }
 
-    @*for tag modal*@
-    private bool FilterDialogOpen { get; set; }
-
-    private void OnFilterDialogClose(bool accepted)
-    {
-        FilterDialogOpen = false;
+    private string NavigateOrder(string? order, bool asc) {
+        return NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> {
+            ["order"] = order,
+            ["ascending"] = asc
+        });
     }
 
-    private void OpenFilterDialog()
-    {
-        FilterDialogOpen = true;
+    private void OnFilterDialogClose(bool accepted) {
+        _filterDialogOpen = false;
     }
 
-    private void ChangeBookmarkStatusFilter()
-    {
-        if (IsBookmark.Equals(null))
-        {
-            IsBookmark = true;
+    private void OpenFilterDialog() {
+        _filterDialogOpen = true;
+    }
+
+    private void ChangeBookmarkStatusFilter() {
+        if (hasBookmark.Equals(null) || hasBookmark == false) {
+            hasBookmark = true;
             _bookmarkStateFilter = "bi-bookmark-fill";
-        }
-        else
-        {
-            IsBookmark = null;
+        } else {
+            hasBookmark = null;
             _bookmarkStateFilter = "bi-bookmark";
         }
-       NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("IsBookmark", IsBookmark));
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("hasBookmark", hasBookmark));
+    }
+
+    private void SetNumberOfPages(int numberOfResults) {
+        _numberOfPages = (numberOfResults / 20) + 1;
+    }
+
+    private void SetBookmarkState() {
+        if (hasBookmark.Equals(null) || hasBookmark == false) {
+            _bookmarkStateFilter = "bi-bookmark";
+        } else {
+            _bookmarkStateFilter = "bi-bookmark-fill";
+        }
     }
 
 }

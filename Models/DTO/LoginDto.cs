@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Models.DTO; 
+namespace Models.DTO;
 
-public class Login {
-    
+public class LoginDto {
     [Required]
-    [EmailAddress]
+    [EmailAddress] 
     public string Email { get; set; } = null!;
 
     [Required]

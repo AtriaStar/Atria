@@ -17,17 +17,57 @@ public class WseController : ControllerBase {
     }
 
     [HttpGet("{wseId:long}")]
-    public WebserviceEntry Get([FromDatabase] WebserviceEntry wse) => wse;
+    public async Task<WebserviceEntry> Get([FromDatabase, Include(nameof(WebserviceEntry.Tags)), Include(nameof(WebserviceEntry.Collaborators))]
+        WebserviceEntry wse) {
+        wse.ViewCount++;
+        _context.Update(wse);
+        await _context.SaveChangesAsync();
+        return wse;
+    }
+
+    [HttpGet("{wseId:long}/checks")]
+    public async Task<IEnumerable<ApiCheck>> GetChecks(long wseId)
+        => (await _context.WebserviceEntries
+            .Include(x => x.ApiCheckHistory)
+            .FirstAsync(x => x.Id == wseId))
+            .ApiCheckHistory;
+
+    [HttpGet("{wseId:long}/checks/latest")]
+    public async Task<bool?> GetLastCheck(long wseId)
+        => (await _context.WebserviceEntries
+            .Include(x => x.ApiCheckHistory)
+            .FirstAsync(x => x.Id == wseId))
+            .ApiCheckHistory
+            .MaxBy(x => x.CheckedAt)
+            ?.Success;
+
+    [HttpGet("{wseId:long}/question")]
+    public IEnumerable<Question> GetQuestions(long wseId, [FromQuery] Pagination pagination)
+        => _context.Questions.Where(x => x.WseId == wseId).Paginate(pagination);
+
+    [HttpGet("{wseId:long}/question/{questionId:long}")]
+    public IQueryable<Answer> GetAnswers(long wseId, long questionId, [FromQuery] Pagination pagination)
+        => _context.Answers.Where(x => x.WseId == wseId && x.QuestionId == questionId)
+            .Paginate(pagination);
+
+    [HttpGet("{wseId:long}/review")]
+    public IEnumerable<Review> GetReviews(long wseId, [FromQuery] Pagination pagination)
+        => _context.Reviews.Where(x => x.WseId == wseId).Paginate(pagination);
+
+    [HttpGet("{wseId:long}/review/{reviewId:long}")]
+    public IEnumerable<Review> GetReview(long wseId, long reviewId)
+        => _context.Reviews.Where(x => x.WseId == wseId && x.Id == reviewId);
 
     [RequiresAuthentication]
     [HttpPost]
     public async Task<IActionResult> EditWse(WebserviceEntry wse, [FromAuthentication] User user) {
         var existingWse = await _context.WebserviceEntries.FindAsync(wse.Id);
         if (existingWse == null) { return NotFound(); }
+        await _context.Entry(existingWse).Collection(x => x.Collaborators).LoadAsync();
         var rights = existingWse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights;
         if (rights == null) { return Forbid("User is not a collaborator"); }
 
-        if ((rights & WseRights.EditCollaborators) == 0) {
+        if ((rights & WseRights.EditData) == 0) {
             return Forbid("Collaborator does not have the right to edit the WSE");
         }
 
@@ -40,9 +80,10 @@ public class WseController : ControllerBase {
         }
 
         if (wse.CreatedAt != existingWse.CreatedAt) {
-            return BadRequest("The creation timestamp cannot be modified");
+            return BadRequest("Creation timestamp cannot be modified");
         }
 
+        wse.ApiCheckHistory = existingWse.ApiCheckHistory;
         wse.Questions = existingWse.Questions;
         wse.Reviews = existingWse.Reviews;
 
@@ -129,7 +170,8 @@ public class WseController : ControllerBase {
     [RequiresAuthentication]
     [RequiresWseRights(WseRights.DeleteWse)]
     [HttpDelete("{wseId}")]
-    public async Task<IActionResult> DeleteWse([FromDatabase] WebserviceEntry wse) {
+    public async Task<IActionResult> DeleteWse([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse,
+        [FromAuthentication] User _) {
         _context.WebserviceEntries.Remove(wse);
         await _context.SaveChangesAsync();
         return Ok();
