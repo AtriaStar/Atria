@@ -86,23 +86,23 @@ public class AuthenticationController : ControllerBase {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
         if (user == null) { return; }
 
-        var token = await _context.ResetTokens.AddAsync(new() {
+        var token = RandomNumberGenerator.GetBytes(64);
+        await _context.ResetTokens.AddAsync(new() {
             User = user,
-            Token = RandomNumberGenerator.GetBytes(64),
+            Token = token,
         });
         await _context.SaveChangesAsync();
 
-        var textToken = Base64UrlTextEncoder.Encode(token.Entity.Token);
+        var textToken = Base64UrlTextEncoder.Encode(token);
         // TODO: Send via email
     }
     
     [HttpPost("reset/finish")]
-    public async Task<IActionResult> PasswordReset(ResetPasswordDto dto) {
+    public async Task<IActionResult> PasswordReset(ResetPasswordDto dto, [FromServices] BackendSettings opt) {
         var token = Base64UrlTextEncoder.Decode(dto.Token);
         var resetToken = await _context.ResetTokens.FirstOrDefaultAsync(x => x.Token.SequenceEqual(token));
         if (resetToken == null) { return BadRequest("Invalid token"); }
-        // TODO: Timespan
-        if (DateTimeOffset.UtcNow - resetToken.CreatedAt > TimeSpan.FromMinutes(15)) { return BadRequest("Token expired"); }
+        if (resetToken.CreatedAt.OlderThan(opt.ResetTokenExpireDuration)) { return BadRequest("Token expired"); }
         var user = resetToken.User;
         ChangePassword(user, dto.Password);
         _context.ResetTokens.Remove(resetToken);
