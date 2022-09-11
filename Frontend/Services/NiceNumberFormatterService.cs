@@ -34,6 +34,10 @@ public static class NiceNumberFormatterService {
         };
 
     public static string NiceFormat(long num) {
+        if (num < 0) {
+            throw new ArgumentOutOfRangeException(nameof(num), num, "Number must be positive");
+        }
+
         if (num < 10_000) {
             return num.ToString();
         }

@@ -75,9 +75,9 @@
     </div>
 
     <div class="row justify-content-between">
-        <div class="col">
-            @Entry.CreatedAt
-        </div>
+	    <div class="col">
+            @NiceTimeSpanFormatterService.NiceFormat(DateTimeOffset.UtcNow - Entry.CreatedAt)
+	    </div>
         <div class="col-auto">
             <NavLink href="@Entry.Link">
                 <i class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-4" title="Zur Webservice"></i>
