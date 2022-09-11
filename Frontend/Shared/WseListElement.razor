@@ -39,9 +39,7 @@
                     </AuthView>
                 </div>
 	            <div class="ms-3" style="min-width: fit-content">
-                    <i class="fa stars rating-color">
-                        <i class="fa stars stars-child rating-uncolored" style="width: @(100 - _reviewAverage * 100 / 5)%"></i>
-                    </i>
+		            <Rating ReviewAverage="@_reviewAverage"/>
 	            </div>
             </div>
         </div>

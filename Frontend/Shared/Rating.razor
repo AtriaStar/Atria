@@ -1,0 +1,8 @@
+﻿<i class="fa stars rating-color">
+	<i class="fa stars stars-child rating-uncolored" style="width: @(100 - ReviewAverage * 100 / 5)%"></i>
+</i>
+
+@code {
+	[Parameter]
+	public double ReviewAverage { get; set; }
+}
