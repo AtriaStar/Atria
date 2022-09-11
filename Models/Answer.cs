@@ -4,8 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Models;
 
-public class Answer
-{
+public class Answer {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
     [Key]

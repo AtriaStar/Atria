@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+
 namespace Models;
-public class Collaborator
-{
+
+public class Collaborator {
     [ForeignKey(nameof(User))]
     public long UserId { get; set; }
     [JsonIgnore]
