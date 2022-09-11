@@ -20,7 +20,7 @@ public class AuthenticationController : ControllerBase {
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegistrationDto registrationDto, [FromServices] SessionService ss, [FromServices] BackendSettings opt) {
+    public async Task<IActionResult> Register(RegistrationDto registrationDto, [FromServices] SessionService ss) {
         if (await _context.Users.AnyAsync(x => x.Email == registrationDto.Email)) {
             return Conflict("Email is already taken");
         }
@@ -44,7 +44,7 @@ public class AuthenticationController : ControllerBase {
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginDto loginDto, [FromServices] SessionService ss, [FromServices] BackendSettings opt) {
+    public async Task<IActionResult> Login(LoginDto loginDto, [FromServices] SessionService ss) {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
         if (user == null || !user.PasswordHash.SequenceEqual(HashingService.Hash(loginDto.Password, user.PasswordSalt))) {
             return Unauthorized("Email or password invalid");

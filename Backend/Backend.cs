@@ -41,7 +41,7 @@ if (options.ShouldUseSwagger) {
     app.UseSwaggerUI();
 }
 app.UseRouting();
-app.UseCors(policy => 
+app.UseCors(policy =>
     policy.WithOrigins(opt.AllowedOrigin)
         .AllowAnyMethod()
         .AllowAnyHeader()
