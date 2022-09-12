@@ -1,7 +1,9 @@
-﻿<i class="fa stars">
+﻿@using System.Globalization
+<i class="fa stars">
 	@{ var percentage = ReviewAverage * 100 / 5; }
-	<i class="fa stars stars-child rating-color" style="width: @(percentage)%;"></i>
-	<i class="fa stars stars-child rating-uncolored" style="width: @(100 - percentage)%; right: 0; transform: scaleX(-1);"></i>
+	<i class="fa stars stars-child rating-color" style="width: @percentage.ToString(CultureInfo.InvariantCulture)%;"></i>
+	<i class="fa stars stars-child rating-uncolored" style="width: @((100 - percentage).ToString(CultureInfo.InvariantCulture))%;
+	                                                        right: 0; transform: scaleX(-1);"></i>
 </i>
 
 @code {
