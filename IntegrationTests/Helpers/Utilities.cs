@@ -35,7 +35,7 @@ public static class Utilities {
     public static readonly byte[] MASTER_HASHED_PASSWORD = HashingService.Hash(MASTER_PASSWORD, MASTER_SALT);
 
     public static async Task<Session> GetAuthenticatedUser(AtriaContext db) {
-        var session = db.Sessions.FirstOrDefault();
+        var session = db.Sessions.Include(x => x.User).FirstOrDefault();
         if (session == null) {
             var user = await db.Users.FirstAsync();
             session = new() {

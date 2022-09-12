@@ -15,7 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MigrationHelper", "Migratio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseMocker", "DatabaseMocker\DatabaseMocker.csproj", "{8E497D4F-6826-4E1B-870C-4B2C935F082E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{C3C67631-D9FC-43D2-A2C4-6E996FE5799B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{C3C67631-D9FC-43D2-A2C4-6E996FE5799B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Helpers", "Helpers", "{4DF1EBE8-705E-4AA1-BB7C-F5EABA6979B9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5E387A9C-E604-4A51-A2BC-C017A18A5FF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +58,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CA2C62D4-AB8B-44B0-853F-95AF9044BB85} = {5E387A9C-E604-4A51-A2BC-C017A18A5FF7}
+		{F9D4E9E2-496C-463F-A107-1C857DC53FB8} = {4DF1EBE8-705E-4AA1-BB7C-F5EABA6979B9}
+		{8E497D4F-6826-4E1B-870C-4B2C935F082E} = {4DF1EBE8-705E-4AA1-BB7C-F5EABA6979B9}
+		{C3C67631-D9FC-43D2-A2C4-6E996FE5799B} = {5E387A9C-E604-4A51-A2BC-C017A18A5FF7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0879FDD3-1495-46AF-AED1-C47FBFBAF16F}
