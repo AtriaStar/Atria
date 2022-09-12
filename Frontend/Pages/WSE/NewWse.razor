@@ -3,16 +3,19 @@
 @using Models
 @using Models.DTO
 @using System.Net
-@inject NavigationManager NavManager
+@inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
-@inject IJSRuntime Js
 
 <PageTitle>Atria - Neuer Eintrag</PageTitle>
 
 <div class="container-lg mt-3">
 
     <h2>Neuer Eintrag</h2>
-    
+
+    <div class="fw-bold text-danger">
+        @_conflictMessage
+    </div>
+
     @*TODO: draft only needs name; to publish name, short description and link needed*@
     <EditForm Model="@_webserviceEntry" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator/>
@@ -71,31 +74,32 @@
             <div class="col-auto mb-2">
                 <div class="form-control form-control-sm border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
                     <div class="input-group input-group-sm">
-                        <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
-                        <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="TagQuery" @onkeyup="SearchTags">
+                        <button class="btn btn-sm btn-link text-dark">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="_tagQuery" @onkeyup="SearchTags">
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="row mb-1">
-            @foreach (Tag tag in SelectedTags)
-            {
+            @foreach (Tag tag in _selectedTags) {
                 <div class="col-auto">
                     <h6>
                         <span class="badge bg-info">
                             @tag.Name
-                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"/>
+                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"></button>
                         </span>
                     </h6>
                 </div>
             }
         </div>
-        
+
         <div class="ui-field">
             <select class="form-select mb-3" size="8" multiple @onchange="SelectedTagsChanged">
-                @foreach (Tag tag in SearchedTags) {
-                <option value="@tag.Name">@tag.Name</option>
+                @foreach (Tag tag in _searchedTags) {
+                    <option value="@tag.Name">@tag.Name</option>
                 }
             </select>
         </div>
@@ -116,7 +120,7 @@
         <div class="mt-4 mb-3">
             <label class="form-label fw-bold">Dokumentation</label>
             <div class="ui-field">
-                <InputText class="form-control mb-2" type="url" placeholder="Link" id="docLink" @bind-Value="_webserviceEntry.DocumentationLink"/> 
+                <InputText class="form-control mb-2" type="url" placeholder="Link" id="docLink" @bind-Value="_webserviceEntry.DocumentationLink"/>
             </div>
             <div class="ui-field">
                 <InputTextArea class="form-control" rows="3" placeholder="Text" id="doc" @bind-Value="_webserviceEntry.Documentation"/>
@@ -139,7 +143,7 @@
 
         <div class="d-grid gap-2 d-flex justify-content-end mb-4">
             <div class="btn-group">
-                <button class="btn btn-success" type="submit" @onclick="() => SaveAsDraft()"> 
+                <button class="btn btn-success" type="submit" @onclick="() => SaveAsDraft()">
                     Als Entwurf speichern
                 </button>
             </div>
@@ -153,25 +157,28 @@
 </div>
 
 @code {
-    [CascadingParameter] 
+
+    [CascadingParameter]
     private LoginState LoginState { get; init; } = null!;
+
     private readonly WebserviceEntry _webserviceEntry = new();
     private readonly TagDto _tagDto = new();
 
-    private List<Tag> SearchedTags = new();
-    private List<Tag> SelectedTags = new();
-    private string[] SelectedTagsStr = { };
-    private Tag[]? AllTags { get; set; }
+    private List<Tag> _searchedTags = new();
+    private List<Tag> _selectedTags = new();
+    private string[] _selectedTagsStr = { };
+    private Tag[]? _allTags;
 
-    private string? TagQuery { get; set; }
-    private string ConflictMessage { get; set; } = null!;
+    private string? _tagQuery;
+    private string? _conflictMessage;
 
     private void HandleValidSubmit() {
         _webserviceEntry.ContactPersonId = LoginState.User!.Id;
-        _webserviceEntry.Tags = new HashSet<Tag>(SelectedTags);
+        _webserviceEntry.Tags = new HashSet<Tag>(_selectedTags);
 
-	    _webserviceEntry.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',').Select(x => new Tag {Name = x})
-	                                    ?? Enumerable.Empty<Tag>());
+        _webserviceEntry.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',').Select(x => new Tag {
+            Name = x
+        }) ?? Enumerable.Empty<Tag>());
     }
 
     private async void PublishWse() {
@@ -179,24 +186,21 @@
         var response = await HttpClient.PutAsJsonAsync("wse", _webserviceEntry);
 
         if (response.IsSuccessStatusCode) {
-            long WseId = ((await response.Content.ReadFromJsonAsync<WebserviceEntry>())!).Id;
-            NavManager.NavigateTo("wse/" + WseId);
-        }
-        else if (response.StatusCode == HttpStatusCode.Conflict) {
-            /*TODO specify message*/
-            ConflictMessage = "There was an conflict";
+            long wseId = ((await response.Content.ReadFromJsonAsync<WebserviceEntry>())!).Id;
+            NavigationManager.NavigateTo("wse/" + wseId);
+        } else if (response.StatusCode == HttpStatusCode.Conflict) {
+    /*TODO specify message*/
+            _conflictMessage = "There was an conflict";
             StateHasChanged();
-        }
-        else {
-            NavManager.NavigateTo("/internal-server-error");
+        } else {
+            NavigationManager.NavigateTo("/internal-server-error");
         }
     }
 
     private async void SaveAsDraft() {
         HandleValidSubmit();
 
-        WseDraft _wseDraft = new()
-        {
+        WseDraft _wseDraft = new() {
             Name = _webserviceEntry.Name,
             ShortDescription = _webserviceEntry.ShortDescription,
             Link = _webserviceEntry.Link,
@@ -210,63 +214,55 @@
         var response = await HttpClient.PutAsJsonAsync("user/draft", _wseDraft);
 
         if (response.IsSuccessStatusCode) {
-            long WseDraftId = ((await response.Content.ReadFromJsonAsync<WseDraft>())!).Id;
-            NavManager.NavigateTo("wseDraft/" + WseDraftId);
-        }
-        else if (response.StatusCode == HttpStatusCode.Conflict) {
-            /*TODO specify message*/
-            ConflictMessage = "There was an conflict";
+            long wseDraftId = ((await response.Content.ReadFromJsonAsync<WseDraft>())!).Id;
+            NavigationManager.NavigateTo("wseDraft/" + wseDraftId);
+        } else if (response.StatusCode == HttpStatusCode.Conflict) {
+    /*TODO specify message*/
+            _conflictMessage = "There was an conflict";
             StateHasChanged();
-        }
-        else {
-            NavManager.NavigateTo("/internal-server-error");
+        } else {
+            NavigationManager.NavigateTo("/internal-server-error");
         }
     }
 
-    @*------------TAG SEARCH------------*@
-    private void SearchTags(KeyboardEventArgs evt) {
-        SearchedTags = new List<Tag>();
+        @*------------TAG SEARCH------------*@
 
-        if (evt.Key == "Enter" && TagQuery is not null && AllTags is not null) {
-            foreach (Tag tag in AllTags)
-            {
-                if (tag.Name.Contains(TagQuery, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    SearchedTags.Add(tag);
+    private void SearchTags(KeyboardEventArgs evt) {
+        _searchedTags = new List<Tag>();
+
+        if (evt.Key == "Enter" && _tagQuery is not null && _allTags is not null) {
+            foreach (Tag tag in _allTags) {
+                if (tag.Name.Contains(_tagQuery, StringComparison.CurrentCultureIgnoreCase)) {
+                    _searchedTags.Add(tag);
                 }
             }
         }
     }
 
-    @*---------------TAGS---------------*@
-    protected override async Task OnInitializedAsync()
-    {
-        AllTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag") ?? new Tag[] {};
-        SearchedTags = AllTags.ToList();
+        @*---------------TAGS---------------*@
+
+    protected override async Task OnInitializedAsync() {
+        _allTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag") ?? new Tag[] { };
+        _searchedTags = _allTags.ToList();
     }
 
-    private void DeleteSelectedTags()
-    {
-        SelectedTags = new List<Tag>();
+    private void DeleteSelectedTags() {
+        _selectedTags = new List<Tag>();
     }
 
-    private void RemoveTag(Tag tag)
-    {
-        SelectedTags = SelectedTags.Where(t => t.Name != tag.Name).ToList();
+    private void RemoveTag(Tag tag) {
+        _selectedTags = _selectedTags.Where(t => t.Name != tag.Name).ToList();
     }
 
-    private void SelectedTagsChanged(ChangeEventArgs e)
-    {
-        if (e.Value is not null)
-        {
-            SelectedTagsStr = (string[])e.Value;
+    private void SelectedTagsChanged(ChangeEventArgs e) {
+        if (e.Value is not null) {
+            _selectedTagsStr = (string[])e.Value;
         }
 
-        foreach (string str in SelectedTagsStr)
-        {
-            if (!SelectedTags.Exists(t => t.Name == str) && AllTags is not null) {
-                Tag selectedTag = Array.Find(AllTags, t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
-                SelectedTags.Add(selectedTag);
+        foreach (string str in _selectedTagsStr) {
+            if (!_selectedTags.Exists(t => t.Name == str) && _allTags is not null) {
+                Tag selectedTag = Array.Find(_allTags, t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
+                _selectedTags.Add(selectedTag);
             }
         }
     }
