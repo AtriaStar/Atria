@@ -74,3 +74,19 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.stars {
+	position: relative;
+	visibility: hidden;
+}
+
+    .stars::after {
+	    content: "\f005\f005\f005\f005\f005";
+		display: inline-block;
+    }
+
+.stars-child {
+    position: absolute;
+	overflow: hidden;
+	visibility: visible;
+}
