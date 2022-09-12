@@ -1,6 +1,7 @@
 ﻿using Backend.AspPlugins;
 using IntegrationTests.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Models;
 using System;
@@ -33,7 +34,6 @@ namespace IntegrationTests
             {
                 //Arrange
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
-                AuthenticationAuthorizationUserFactory userFactory = new AuthenticationAuthorizationUserFactory(context);
 
                 //Todo: method for creating random tags
                 var tag1 = new Tag()
@@ -88,10 +88,8 @@ namespace IntegrationTests
             {
                 //Arrange
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
-                AuthenticationAuthorizationUserFactory userFactory = new AuthenticationAuthorizationUserFactory(context);
-                var facoryResult = await userFactory.GetAuthenticatedAdminUser();
-                var authenticatedUser = facoryResult.Item1;
-                var session = facoryResult.Item2;
+                var session = await Utilities.GetAuthenticatedUser(context);
+                var authenticatedUser = session.User;
 
                 var tagName = "CreateTagTest";
 
@@ -123,10 +121,8 @@ namespace IntegrationTests
             {
                 //Arrange
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
-                AuthenticationAuthorizationUserFactory userFactory = new AuthenticationAuthorizationUserFactory(context);
-                var facoryResult = await userFactory.GetAuthenticatedAdminUser();
-                var authenticatedUser = facoryResult.Item1;
-                var session = facoryResult.Item2;
+                var session = await Utilities.GetAuthenticatedUser(context);
+                var authenticatedUser = session.User;
                 var newTagName = "newMergeTag";
 
                 //Todo: method for creating random tags
