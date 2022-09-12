@@ -1,10 +1,6 @@
-﻿using System.Globalization;
-
-namespace Frontend.Services; 
+﻿namespace Frontend.Services; 
 
 public static class NiceNumberFormatterService {
-    private static readonly IFormatProvider GermanCulture = new CultureInfo("de-DE");
-
     private static (byte Exp, long Pow) FloorLogK(long num) {
         long init = 1000;
         byte i = 0;
@@ -26,11 +22,11 @@ public static class NiceNumberFormatterService {
             _ => throw new ArgumentOutOfRangeException(nameof(exp), exp, "Not a valid long number exponent"),
         };
 
-    private static string DetermineFormat(int remainder)
+    private static byte DetermineDigits(int remainder)
         => remainder switch {
-            >= 100 => "N0",
-            >= 10 => "N1",
-            _ => "N2",
+            >= 100 => 0,
+            >= 10 => 1,
+            _ => 2,
         };
 
     public static string NiceFormat(long num) {
@@ -44,6 +40,9 @@ public static class NiceNumberFormatterService {
         
         var (exp, pow) = FloorLogK(num);
         var sig = (float)num / pow;
-        return sig.ToString(DetermineFormat((byte)sig), GermanCulture) + " " + ExpToStr(exp);
+        var digits = DetermineDigits((byte) sig);
+        var powFmt = Math.Pow(10, digits);
+        sig = (float)(Math.Floor(sig * powFmt) / powFmt);
+        return sig.ToString("N" + digits) + " " + ExpToStr(exp);
     }
 }
