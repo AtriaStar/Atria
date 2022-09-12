@@ -444,12 +444,12 @@ namespace Backend.Migrations
                         .HasColumnName("short_description");
 
                     b.HasKey("Id")
-                        .HasName("pk_wse_draft");
+                        .HasName("pk_drafts");
 
                     b.HasIndex("CreatorId")
-                        .HasDatabaseName("ix_wse_draft_creator_id");
+                        .HasDatabaseName("ix_drafts_creator_id");
 
-                    b.ToTable("wse_draft", (string)null);
+                    b.ToTable("drafts", (string)null);
                 });
 
             modelBuilder.Entity("TagWebserviceEntry", b =>
@@ -634,7 +634,7 @@ namespace Backend.Migrations
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_wse_draft_users_creator_id");
+                        .HasConstraintName("fk_drafts_users_creator_id");
 
                     b.Navigation("Creator");
                 });

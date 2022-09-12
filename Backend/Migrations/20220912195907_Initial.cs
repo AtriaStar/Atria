@@ -47,6 +47,33 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "drafts",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    short_description = table.Column<string>(type: "text", nullable: true),
+                    link = table.Column<string>(type: "text", nullable: true),
+                    full_description = table.Column<string>(type: "text", nullable: true),
+                    documentation_link = table.Column<string>(type: "text", nullable: true),
+                    documentation = table.Column<string>(type: "text", nullable: true),
+                    change_log = table.Column<string>(type: "text", nullable: true),
+                    creator_id = table.Column<long>(type: "bigint", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_drafts", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_drafts_users_creator_id",
+                        column: x => x.creator_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "reset_tokens",
                 columns: table => new
                 {
@@ -110,33 +137,6 @@ namespace Backend.Migrations
                     table.ForeignKey(
                         name: "fk_webservice_entries_users_contact_person_id",
                         column: x => x.contact_person_id,
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "wse_draft",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    short_description = table.Column<string>(type: "text", nullable: true),
-                    link = table.Column<string>(type: "text", nullable: true),
-                    full_description = table.Column<string>(type: "text", nullable: true),
-                    documentation_link = table.Column<string>(type: "text", nullable: true),
-                    documentation = table.Column<string>(type: "text", nullable: true),
-                    change_log = table.Column<string>(type: "text", nullable: true),
-                    creator_id = table.Column<long>(type: "bigint", nullable: false),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_wse_draft", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_wse_draft_users_creator_id",
-                        column: x => x.creator_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -347,6 +347,11 @@ namespace Backend.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_drafts_creator_id",
+                table: "drafts",
+                column: "creator_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_questions_creator_id",
                 table: "questions",
                 column: "creator_id");
@@ -381,11 +386,6 @@ namespace Backend.Migrations
                 name: "ix_webservice_entries_contact_person_id",
                 table: "webservice_entries",
                 column: "contact_person_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_wse_draft_creator_id",
-                table: "wse_draft",
-                column: "creator_id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -403,6 +403,9 @@ namespace Backend.Migrations
                 name: "collaborator");
 
             migrationBuilder.DropTable(
+                name: "drafts");
+
+            migrationBuilder.DropTable(
                 name: "reset_tokens");
 
             migrationBuilder.DropTable(
@@ -413,9 +416,6 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "tag_webservice_entry");
-
-            migrationBuilder.DropTable(
-                name: "wse_draft");
 
             migrationBuilder.DropTable(
                 name: "questions");

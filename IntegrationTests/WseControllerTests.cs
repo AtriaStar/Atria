@@ -1,6 +1,5 @@
 ﻿using Backend.AspPlugins;
 using IntegrationTests.Helpers;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Models;
@@ -8,8 +7,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 
-namespace IntegrationTests
-{
+namespace IntegrationTests {
     public class WseControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>, IAsyncLifetime, IDisposable {
         private readonly HttpClient _client;
         private readonly CustomWebApplicationFactory<Program> _factory;
@@ -92,35 +90,32 @@ namespace IntegrationTests
 
 
         [Fact]
-        public async Task EditWse_UpdatesWseInDb_WhenUserAuhtorized()
-        {
+        public async Task EditWse_UpdatesWseInDb_WhenUserAuhtorized() {
             //Arrange
             var wse = _context.WebserviceEntries.First();
             var wseId = wse.Id;
 
-            WebserviceEntry newWse = new WebserviceEntry
-            {
+            WebserviceEntry newWse = new WebserviceEntry {
                 Name = "EditWseAuhtorized",
                 ShortDescription = "Search things",
                 FullDescription = "search many things",
                 Link = "https://www.Edit.com/",
                 ViewCount = 1,
                 ContactPersonId = _authenticatedUser.Id,
-                Collaborators = new List<Collaborator> { new() { User = _authenticatedUser, Rights = WseRights.Owner }},
+                Collaborators = new List<Collaborator> { new() { User = _authenticatedUser, Rights = WseRights.Owner } },
 
             };
 
             await _context.WebserviceEntries.AddAsync(newWse);
 
-            WebserviceEntry editedWse = new WebserviceEntry
-            {
+            WebserviceEntry editedWse = new WebserviceEntry {
                 Name = "EditedEditWseAuhtorized",
                 ShortDescription = "Search things",
                 FullDescription = "search many things",
                 Link = "https://www.Edit.com/",
                 ViewCount = 1,
                 ContactPersonId = _authenticatedUser.Id,
-                Collaborators = new List<Collaborator> { new() { User = _authenticatedUser, Rights = WseRights.Owner }},
+                Collaborators = new List<Collaborator> { new() { User = _authenticatedUser, Rights = WseRights.Owner } },
 
             };
 
@@ -136,7 +131,7 @@ namespace IntegrationTests
             var wseInDb = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Name.Equals(editedWse.Name));
 
             //Assert
-            if(wseInDb == null) {
+            if (wseInDb == null) {
                 Assert.True(false, "wse not updated in database");
                 return;
             }
@@ -146,14 +141,12 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public async Task EditWse_ReturnsUnauthorized_WhenUserAuthenticatedButUnauthorized()
-        {
+        public async Task EditWse_ReturnsUnauthorized_WhenUserAuthenticatedButUnauthorized() {
             //Arrange
             var wse = _context.WebserviceEntries.First();
             var wseId = wse.Id;
 
-            WebserviceEntry newWse = new WebserviceEntry
-            {
+            WebserviceEntry newWse = new WebserviceEntry {
                 Name = "EditWseUnauthorized",
                 ShortDescription = "Search things",
                 FullDescription = "search many things",
@@ -172,17 +165,16 @@ namespace IntegrationTests
             request.Headers.Add("Cookie", "Authorization=12345");
 
             var response = await _client.SendAsync(request);
-              
+
             //Assert
-                
+
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
         public async Task GetAfterCreate_GetsCorrectWse_WhenUserAuthenticated() {
             //Arrange
-            WebserviceEntry newWse = new WebserviceEntry
-            {
+            WebserviceEntry newWse = new WebserviceEntry {
                 Name = "CreatedWse",
                 ShortDescription = "test",
                 FullDescription = "test",
@@ -202,20 +194,18 @@ namespace IntegrationTests
             var responseCreate = await _client.SendAsync(requestCreate);
             var wseInDb = await _context.WebserviceEntries.FirstOrDefaultAsync(x => x.Name.Equals(newWse.Name));
 
-            if (wseInDb == null)
-            {
+            if (wseInDb == null) {
                 Assert.True(false, "wse not created in database");
                 return;
             }
 
             HttpRequestMessage requestGet = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7038/api/wse/{wseInDb.Id}");
-                     
+
             var responseGet = await _client.SendAsync(requestGet);
             var responseGetWse = await responseGet.Content.ReadFromJsonAsync<WebserviceEntry>();
             //Assert
 
-            if (responseGetWse == null)
-            {
+            if (responseGetWse == null) {
                 Assert.True(false, "wse not in database");
                 return;
             }

@@ -6,36 +6,29 @@ using Microsoft.Extensions.DependencyInjection;
 using Models.DTO;
 using System.Net.Http.Json;
 
-namespace IntegrationTests
-{
+namespace IntegrationTests {
 
-    public class AuthenticationControllerTests : IClassFixture<CustomWebApplicationFactory<Program>>
-    {
+    public class AuthenticationControllerTests : IClassFixture<CustomWebApplicationFactory<Program>> {
         private readonly HttpClient _client;
         private readonly CustomWebApplicationFactory<Program> _factory;
 
 
 
-        public AuthenticationControllerTests(CustomWebApplicationFactory<Program> factory)
-        {
+        public AuthenticationControllerTests(CustomWebApplicationFactory<Program> factory) {
             _factory = factory;
-            _client = factory.CreateClient(new WebApplicationFactoryClientOptions
-            {
+            _client = factory.CreateClient(new WebApplicationFactoryClientOptions {
                 AllowAutoRedirect = false
             });
         }
 
         [Fact]
-        public async Task Register_ReturnsCOnflict_WhenEmailAlreadyTaken()
-        {
-            using (var scope = _factory.Services.CreateScope())
-            {
+        public async Task Register_ReturnsCOnflict_WhenEmailAlreadyTaken() {
+            using (var scope = _factory.Services.CreateScope()) {
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
 
                 var user = await context.Users.FirstAsync();
                 //Arrange
-                RegistrationDto _registration = new()
-                {
+                RegistrationDto _registration = new() {
                     FirstNames = "Floppa",
                     LastName = "Floppington",
                     Password = "12345",
@@ -52,16 +45,13 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public async Task Register_ReturnsSessionCookie_WhenRegistrationValid()
-        {
-            using (var scope = _factory.Services.CreateScope())
-            {
+        public async Task Register_ReturnsSessionCookie_WhenRegistrationValid() {
+            using (var scope = _factory.Services.CreateScope()) {
                 //Arrange
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
                 var user = await context.Users.FirstAsync();
 
-                RegistrationDto _registration = new()
-                {
+                RegistrationDto _registration = new() {
                     FirstNames = "Floppa",
                     LastName = "Floppington",
                     Password = "12345",
@@ -79,22 +69,18 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public async Task Login_ReturnsUnauthorized_WhenLoginInvalid()
-        {
-            using (var scope = _factory.Services.CreateScope())
-            {
+        public async Task Login_ReturnsUnauthorized_WhenLoginInvalid() {
+            using (var scope = _factory.Services.CreateScope()) {
                 //Arrange
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
                 var user = await context.Users.FirstAsync();
 
-                LoginDto login1 = new()
-                {
+                LoginDto login1 = new() {
                     Password = "12345",
                     Email = "inValidEmail@email.com",
                 };
 
-                LoginDto login2 = new()
-                {
+                LoginDto login2 = new() {
                     Password = "12345",
                     Email = user.Email,
                 };
@@ -110,15 +96,12 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public async Task RegisterLogin_ReturnsSessionCookie_WhenLoginValid()
-        {
-            using (var scope = _factory.Services.CreateScope())
-            {
+        public async Task RegisterLogin_ReturnsSessionCookie_WhenLoginValid() {
+            using (var scope = _factory.Services.CreateScope()) {
                 //Arrange
                 var context = scope.ServiceProvider.GetRequiredService<AtriaContext>();
 
-                RegistrationDto _registration = new()
-                {
+                RegistrationDto _registration = new() {
                     FirstNames = "Floppa",
                     LastName = "Floppington",
                     Password = "12345",
@@ -126,8 +109,7 @@ namespace IntegrationTests
                     Email = "testEmail@email.com",
                 };
 
-                LoginDto login = new()
-                {
+                LoginDto login = new() {
                     Password = "12345",
                     Email = "testEmail@email.com",
                 };
