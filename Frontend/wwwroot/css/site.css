@@ -77,6 +77,7 @@ a, .btn-link {
 
 .stars {
 	position: relative;
+	visibility: hidden;
 }
 
     .stars::after {
@@ -86,7 +87,6 @@ a, .btn-link {
 
 .stars-child {
     position: absolute;
-    right: 0;
-	transform: scaleX(-1);
 	overflow: hidden;
+	visibility: visible;
 }
