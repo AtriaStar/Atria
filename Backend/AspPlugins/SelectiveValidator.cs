@@ -29,3 +29,13 @@ public class SelectiveValidator : IObjectModelValidator {
         }
     }
 }
+
+public static class SelectiveValidatorExtensions {
+    public static IServiceCollection AddSelectiveValidator(this IServiceCollection services) {
+        var baseValidator = services.First(x => x.ServiceType == typeof(IObjectModelValidator));
+        services.Remove(baseValidator);
+        services.AddSingleton<IObjectModelValidator, SelectiveValidator>(s
+            => new((IObjectModelValidator) baseValidator.ImplementationFactory!(s)));
+        return services;
+    }
+}

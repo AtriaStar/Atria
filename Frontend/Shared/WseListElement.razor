@@ -38,21 +38,9 @@
                         </NotAuthorized>
                     </AuthView>
                 </div>
-                <div class="ms-3" style="min-width: fit-content">
-                    @{
-                        int i = 0;
-                        for (; i < _reviewAverage; i++) {
-                            <i class="fa fa-star rating-color"></i>
-                        }
-                        if (_reviewAverage - i >= 0.5) {
-                            <i class="fa-regular fa-star-half-stroke rating-color"></i>
-                            i++;
-                        }
-                        for (; i < 5; i++) {
-                            <i class="fa fa-star rating-uncolored"></i>
-                        }
-                    }
-                </div>
+	            <div class="ms-3" style="min-width: fit-content">
+		            <Rating ReviewAverage="@_reviewAverage"/>
+	            </div>
             </div>
         </div>
     </div>
@@ -75,9 +63,9 @@
     </div>
 
     <div class="row justify-content-between">
-        <div class="col">
-            @Entry.CreatedAt
-        </div>
+	    <div class="col">
+            @NiceTimeSpanFormatterService.NiceFormat(DateTimeOffset.UtcNow - Entry.CreatedAt)
+	    </div>
         <div class="col-auto">
             <NavLink href="@Entry.Link">
                 <i class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-4" title="Zur Webservice"></i>
@@ -101,7 +89,7 @@
     private string _wseLink = "";
 
         @* TODO implement *@
-    private double _reviewAverage = 3;
+    private double _reviewAverage = 2.4;
 
     protected override void OnParametersSet() {
         _wseLink = "/wse/" + Entry.Id;
