@@ -19,25 +19,26 @@
 
         <div class="col-auto ps-0 ms-auto d-flex d-block">
             <div class="d-flex justify-content-sm-end justify-content-start flex-wrap align-items-center">
-                    <AuthView>
-                        <Authorized>
-                            @{
-                                var bookmarkState = LoginState.User!.Bookmarks.Any(webserviceEntry => webserviceEntry.Id == Entry.Id);
-                                var bookmarkTitle = bookmarkState ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
-                                var bookmarkStyle = bookmarkState ? "fa-solid" : "fa-regular";
-                            }
-                            <i class="fa-bookmark @bookmarkStyle fs-5 ms-3" type="button" title="@bookmarkTitle" style="color: #dc3545" 
-                               @onclick="() => ChangeBookmarkStatus(Entry, bookmarkState)"></i>
-                        </Authorized>
-                        <NotAuthorized>
-                            <i class="fa-bookmark fa-regular fs-5 ms-3" type="button"  style="color: #dc3545"
-                               title="Als Lesezeichen hinzufügen" @onclick="NavigateToLogin"></i>
-                        </NotAuthorized>
-                    </AuthView>
-                </div>
-	            <div class="ms-3" style="min-width: fit-content">
-		            <Rating ReviewAverage="@_reviewAverage"/>
-	            </div>
+                <AuthView>
+                    <Authorized>
+                        @{
+                            var bookmarkState = LoginState.User!.Bookmarks.Any(webserviceEntry => webserviceEntry.Id == Entry.Id);
+                            var bookmarkTitle = bookmarkState ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                            var bookmarkStyle = bookmarkState ? "fa-solid" : "fa-regular";
+                        }
+                        <i class="fa-bookmark @bookmarkStyle fs-5 ms-3" type="button" style="color: #dc3545"
+                           title="@bookmarkTitle" @onclick="() => ChangeBookmarkStatus(Entry, bookmarkState)">
+                        </i>
+                    </Authorized>
+                    <NotAuthorized>
+                        <i class="fa-bookmark fa-regular fs-5 ms-3" type="button" style="color: #dc3545"
+                           title="Als Lesezeichen hinzufügen" @onclick="NavigateToLogin">
+                        </i>
+                    </NotAuthorized>
+                </AuthView>
+            </div>
+            <div class="ms-3" style="min-width: fit-content">
+                <Rating ReviewAverage="@_reviewAverage"/>
             </div>
         </div>
     </div>
@@ -60,9 +61,9 @@
     </div>
 
     <div class="row justify-content-between">
-	    <div class="col">
+        <div class="col">
             @NiceTimeSpanFormatterService.NiceFormat(DateTimeOffset.UtcNow - Entry.CreatedAt)
-	    </div>
+        </div>
         <div class="col-auto">
             <NavLink href="@Entry.Link">
                 <i class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-4" title="Zur Webservice"></i>
@@ -105,11 +106,9 @@
         }
     }
 
-
     private void NavigateToLogin() {
         NavigationManager.NavigateTo("login");
     }
-
 
     private async Task ChangeBookmarkStatus(WebserviceEntry entry, bool bookmarkState) {
         if (bookmarkState) {
