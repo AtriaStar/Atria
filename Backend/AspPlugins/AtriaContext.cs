@@ -14,11 +14,22 @@ public class AtriaContext : DbContext {
     public DbSet<Session> Sessions => Set<Session>();
     public DbSet<ResetToken> ResetTokens => Set<ResetToken>();
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=Atria;Username=user;Password=password;Include Error Detail=true")
-            .UseSnakeCaseNamingConvention()
-            .EnableSensitiveDataLogging();
-        // TODO: Change sensitive stuff to config option
+    private readonly string _connectingString;
+    private readonly bool _detailedErrors;
+
+    public AtriaContext(BackendSettings opt) {
+        _connectingString = opt.DatabaseString;
+        _detailedErrors = opt.DatabaseDetailedErrors;
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+        optionsBuilder.UseNpgsql(_connectingString)
+            .UseSnakeCaseNamingConvention();
+        if (_detailedErrors) {
+            optionsBuilder.EnableSensitiveDataLogging()
+                .EnableDetailedErrors();
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(WebserviceEntry).Assembly);

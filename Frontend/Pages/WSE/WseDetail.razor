@@ -107,26 +107,7 @@
                     <h6 class="card-title fw-bold">Bewertung</h6>
                     <div class="row">
                         <div class="col-auto">
-                            @*@for (int i = 1; i < _avgReview; i++)
-                                {
-                                    <i class="fa fa-star rating-color"/>
-                                }
-                                @if (_avgReview - _avgReviewRounded == .5)
-                                {
-                                    <i class="fa-regular fa-star-half-stroke rating-color"/>
-                                } else
-                                {
-                                    <i class="fa fa-star rating-uncolored"/>
-                                }
-                                @for (int i = _avgReviewRounded + 2; i <= 5; i++)
-                                {
-                                    <i class="fa fa-star rating-uncolored"/>
-                                }*@
-                            <i class="fa fa-star rating-uncolored"/>
-                            <i class="fa fa-star rating-uncolored"/>
-                            <i class="fa fa-star rating-uncolored"/>
-                            <i class="fa fa-star rating-uncolored"/>
-                            <i class="fa fa-star rating-uncolored"/>
+                            <Rating ReviewAverage="@_avgReview"/>
                         </div>
                         <div class="col-auto">
                             <p>@ReviewNum Bewertungen</p>

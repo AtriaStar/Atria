@@ -79,6 +79,10 @@ public class WseController : ControllerBase {
             return BadRequest("Creation timestamp cannot be modified");
         }
 
+        if (wse.ViewCount != existingWse.ViewCount) {
+            return BadRequest("View count cannot be modified");
+        }
+
         wse.Collaborators = existingWse.Collaborators;
         wse.ApiCheckHistory = existingWse.ApiCheckHistory;
         wse.Questions = existingWse.Questions;

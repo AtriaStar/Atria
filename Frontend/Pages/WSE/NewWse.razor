@@ -1,22 +1,23 @@
 ﻿@page "/newWse"
-@using Microsoft.AspNetCore.Components
 @using Models
 @using Models.DTO
 @using System.Net
-@inject NavigationManager NavManager
+@inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
-@inject IJSRuntime Js
 
 <PageTitle>Atria - Neuer Eintrag</PageTitle>
 
 <div class="container-lg mt-3">
 
     <h2>Neuer Eintrag</h2>
-    
-    @*TODO: draft only needs name; to publish name, short description and link needed*@
-    <EditForm Model="@_webserviceEntry" OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator/>
-        <ValidationSummary/>
+
+    <div class="fw-bold text-danger">
+        @_conflictMessage
+    </div>
+
+    <EditForm EditContext="@_editContext">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
 
         <div class="mt-3 mb-3">
             <label class="form-label fw-bold">
@@ -71,31 +72,32 @@
             <div class="col-auto mb-2">
                 <div class="form-control form-control-sm border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
                     <div class="input-group input-group-sm">
-                        <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
-                        <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="TagQuery" @onkeyup="SearchTags">
+                        <button class="btn btn-sm btn-link text-dark">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="_tagQuery" @onkeyup="SearchTags">
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="row mb-1">
-            @foreach (Tag tag in SelectedTags)
-            {
+            @foreach (var tag in _selectedTags) {
                 <div class="col-auto">
                     <h6>
                         <span class="badge bg-info">
                             @tag.Name
-                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"/>
+                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"></button>
                         </span>
                     </h6>
                 </div>
             }
         </div>
-        
+
         <div class="ui-field">
             <select class="form-select mb-3" size="8" multiple @onchange="SelectedTagsChanged">
-                @foreach (Tag tag in SearchedTags) {
-                <option value="@tag.Name">@tag.Name</option>
+                @foreach (var tag in _searchedTags) {
+                    <option value="@tag.Name">@tag.Name</option>
                 }
             </select>
         </div>
@@ -116,7 +118,7 @@
         <div class="mt-4 mb-3">
             <label class="form-label fw-bold">Dokumentation</label>
             <div class="ui-field">
-                <InputText class="form-control mb-2" type="url" placeholder="Link" id="docLink" @bind-Value="_webserviceEntry.DocumentationLink"/> 
+                <InputText class="form-control mb-2" type="url" placeholder="Link" id="docLink" @bind-Value="_webserviceEntry.DocumentationLink"/>
             </div>
             <div class="ui-field">
                 <InputTextArea class="form-control" rows="3" placeholder="Text" id="doc" @bind-Value="_webserviceEntry.Documentation"/>
@@ -139,12 +141,12 @@
 
         <div class="d-grid gap-2 d-flex justify-content-end mb-4">
             <div class="btn-group">
-                <button class="btn btn-success" type="submit" @onclick="() => SaveAsDraft()"> 
+                <button class="btn btn-success" type="button" @onclick="SaveAsDraft">
                     Als Entwurf speichern
                 </button>
             </div>
             <div class="btn-group">
-                <button class="btn btn-success" type="submit" @onclick="() => PublishWse()">
+                <button class="btn btn-success" type="button" @onclick="PublishWse">
                     Veröffentlichen
                 </button>
             </div>
@@ -153,120 +155,151 @@
 </div>
 
 @code {
-    [CascadingParameter] 
+
+    /*
+     * if this is false, the current context is using wse as model and the wse field is populated.
+     * if this is true, the current context is using draft as model and the draft field is populated.
+     * default is using wse as model
+     */
+    private bool _drafting = false;
+
+    private EditContext? _editContext;
+    private WebserviceEntry _webserviceEntry = new();
+    private WseDraft _draft = new();
+    
+    [CascadingParameter]
     private LoginState LoginState { get; init; } = null!;
-    private readonly WebserviceEntry _webserviceEntry = new();
+
     private readonly TagDto _tagDto = new();
 
-    private List<Tag> SearchedTags = new();
-    private List<Tag> SelectedTags = new();
-    private string[] SelectedTagsStr = { };
-    private Tag[]? AllTags { get; set; }
+    private List<Tag> _searchedTags = new();
+    private List<Tag> _selectedTags = new();
+    private string[] _selectedTagsStr = { };
+    private Tag[]? _allTags;
 
-    private string? TagQuery { get; set; }
-    private string ConflictMessage { get; set; } = null!;
+    private string? _tagQuery;
+    private string? _conflictMessage;
 
-    private void HandleValidSubmit() {
-        _webserviceEntry.ContactPersonId = LoginState.User!.Id;
-        _webserviceEntry.Tags = new HashSet<Tag>(SelectedTags);
-
-	    _webserviceEntry.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',').Select(x => new Tag {Name = x})
-	                                    ?? Enumerable.Empty<Tag>());
+    protected override void OnInitialized() {
+        _editContext = new EditContext(_webserviceEntry);
     }
 
     private async void PublishWse() {
-        HandleValidSubmit();
-        var response = await HttpClient.PutAsJsonAsync("wse", _webserviceEntry);
+    // if previous attempt was to create a draft, now try to create a wse
+        if (_drafting) {
+            _webserviceEntry = new WebserviceEntry {
+                Name = _draft.Name,
+                ShortDescription = _draft.ShortDescription!, // if null then null is wanted for validation
+                Link = _draft.Link!, // if null then null is wanted for validation
+                FullDescription = _draft.FullDescription,
+                DocumentationLink = _draft.DocumentationLink,
+                Documentation = _draft.Documentation,
+                ChangeLog = _draft.ChangeLog,
+                Tags = _draft.Tags
+            };
+            _editContext = new EditContext(_webserviceEntry);
+            _editContext.EnableDataAnnotationsValidation();
+        }
+        
+        if (_editContext!.Validate()) {
+    //set contact and tags
+            _webserviceEntry.ContactPersonId = LoginState.User!.Id;
+            _webserviceEntry.Tags = new HashSet<Tag>(_selectedTags);
 
-        if (response.IsSuccessStatusCode) {
-            long WseId = ((await response.Content.ReadFromJsonAsync<WebserviceEntry>())!).Id;
-            NavManager.NavigateTo("wse/" + WseId);
+            _webserviceEntry.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',').Select(x => new Tag {
+                Name = x
+            }) ?? Enumerable.Empty<Tag>());
+
+    // send to api
+            var response = await HttpClient.PutAsJsonAsync("wse", _webserviceEntry);
+            if (response.IsSuccessStatusCode) {
+                var wseId = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!.Id;
+                NavigationManager.NavigateTo("wse/" + wseId);
+            } else if (response.StatusCode == HttpStatusCode.Conflict) {
+                _conflictMessage = await response.Content.ReadAsStringAsync();
+            } else {
+                NavigationManager.NavigateTo("/internal-server-error");
+            }
         }
-        else if (response.StatusCode == HttpStatusCode.Conflict) {
-            /*TODO specify message*/
-            ConflictMessage = "There was an conflict";
-            StateHasChanged();
-        }
-        else {
-            NavManager.NavigateTo("/internal-server-error");
-        }
+        _drafting = false;
+        StateHasChanged();
+
     }
 
     private async void SaveAsDraft() {
-        HandleValidSubmit();
-
-        WseDraft _wseDraft = new()
-        {
-            Name = _webserviceEntry.Name,
-            ShortDescription = _webserviceEntry.ShortDescription,
-            Link = _webserviceEntry.Link,
-            FullDescription = _webserviceEntry.FullDescription,
-            DocumentationLink = _webserviceEntry.DocumentationLink,
-            Documentation = _webserviceEntry.Documentation,
-            ChangeLog = _webserviceEntry.ChangeLog,
-            Tags = _webserviceEntry.Tags
-        };
-
-        var response = await HttpClient.PutAsJsonAsync("user/draft", _wseDraft);
-
-        if (response.IsSuccessStatusCode) {
-            long WseDraftId = ((await response.Content.ReadFromJsonAsync<WseDraft>())!).Id;
-            NavManager.NavigateTo("wseDraft/" + WseDraftId);
+    // if previous attempt was to create a draft, now try to create a wse
+        if (!_drafting) {
+            _draft = new WseDraft {
+                Name = _webserviceEntry.Name,
+                ShortDescription = _webserviceEntry.ShortDescription,
+                Link = _webserviceEntry.Link,
+                FullDescription = _webserviceEntry.FullDescription,
+                DocumentationLink = _webserviceEntry.DocumentationLink,
+                Documentation = _webserviceEntry.Documentation,
+                ChangeLog = _webserviceEntry.ChangeLog,
+                Tags = _webserviceEntry.Tags
+            };
+            _editContext = new EditContext(_draft);
+            _editContext.EnableDataAnnotationsValidation();
         }
-        else if (response.StatusCode == HttpStatusCode.Conflict) {
-            /*TODO specify message*/
-            ConflictMessage = "There was an conflict";
-            StateHasChanged();
+
+        if (_editContext!.Validate()) {
+    /* set tags */
+            _draft.Tags = new HashSet<Tag>(_selectedTags);
+            _draft.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',').Select(x => new Tag {
+                Name = x
+            }) ?? Enumerable.Empty<Tag>());
+
+            var response = await HttpClient.PutAsJsonAsync("user/draft", _draft);
+            if (response.IsSuccessStatusCode) {
+                var wseDraftId = (await response.Content.ReadFromJsonAsync<WseDraft>())!.Id;
+                NavigationManager.NavigateTo("wseDraft/" + wseDraftId);
+            } else if (response.StatusCode == HttpStatusCode.Conflict) {
+                _conflictMessage = await response.Content.ReadAsStringAsync();
+            } else {
+                NavigationManager.NavigateTo("/internal-server-error");
+            }
         }
-        else {
-            NavManager.NavigateTo("/internal-server-error");
-        }
+        _drafting = true;
+        StateHasChanged();
     }
 
-    @*------------TAG SEARCH------------*@
-    private void SearchTags(KeyboardEventArgs evt) {
-        SearchedTags = new List<Tag>();
+        @*------------TAG SEARCH------------*@
 
-        if (evt.Key == "Enter" && TagQuery is not null && AllTags is not null) {
-            foreach (Tag tag in AllTags)
-            {
-                if (tag.Name.Contains(TagQuery, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    SearchedTags.Add(tag);
+    private void SearchTags(KeyboardEventArgs evt) {
+        _searchedTags = new List<Tag>();
+
+        if (evt.Key == "Enter" && _tagQuery is not null && _allTags is not null) {
+            foreach (var tag in _allTags) {
+                if (tag.Name.Contains(_tagQuery, StringComparison.CurrentCultureIgnoreCase)) {
+                    _searchedTags.Add(tag);
                 }
             }
         }
     }
 
-    @*---------------TAGS---------------*@
-    protected override async Task OnInitializedAsync()
-    {
-        AllTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag") ?? new Tag[] {};
-        SearchedTags = AllTags.ToList();
+    protected override async Task OnInitializedAsync() {
+        _allTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag") ?? new Tag[] { };
+        _searchedTags = _allTags.ToList();
     }
 
-    private void DeleteSelectedTags()
-    {
-        SelectedTags = new List<Tag>();
+    private void DeleteSelectedTags() {
+        _selectedTags = new List<Tag>();
     }
 
-    private void RemoveTag(Tag tag)
-    {
-        SelectedTags = SelectedTags.Where(t => t.Name != tag.Name).ToList();
+    private void RemoveTag(Tag tag) {
+        _selectedTags = _selectedTags.Where(t => t.Name != tag.Name).ToList();
     }
 
-    private void SelectedTagsChanged(ChangeEventArgs e)
-    {
-        if (e.Value is not null)
-        {
-            SelectedTagsStr = (string[])e.Value;
+    private void SelectedTagsChanged(ChangeEventArgs e) {
+        if (e.Value is not null) {
+            _selectedTagsStr = (string[])e.Value;
         }
 
-        foreach (string str in SelectedTagsStr)
-        {
-            if (!SelectedTags.Exists(t => t.Name == str) && AllTags is not null) {
-                Tag selectedTag = Array.Find(AllTags, t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
-                SelectedTags.Add(selectedTag);
+        foreach (var str in _selectedTagsStr) {
+            if (!_selectedTags.Exists(t => t.Name == str) && _allTags is not null) {
+                var selectedTag = Array.Find(_allTags, t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
+                _selectedTags.Add(selectedTag);
             }
         }
     }

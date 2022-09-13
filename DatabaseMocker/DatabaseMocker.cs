@@ -1,7 +1,11 @@
-﻿using Backend.AspPlugins;
+﻿using Backend;
+using Backend.AspPlugins;
 using DatabaseMocker;
+using Microsoft.Extensions.Configuration;
 
-await using var context = new AtriaContext();
+await using var context = new AtriaContext(new ConfigurationBuilder()
+    .AddStandardSources("Mocker").Build()
+    .CreateAtriaOptions<BackendSettings>());
 
 context.WebserviceEntries.RemoveRange(context.WebserviceEntries);
 context.Users.RemoveRange(context.Users);
