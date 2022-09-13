@@ -74,7 +74,3 @@ a, .btn-link {
     .blazor-error-boundary:after {
         content: "An error has occurred."
     }
-
-.icon-align-vertical:before {
-	vertical-align: top !important;
-}
