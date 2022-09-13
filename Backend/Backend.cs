@@ -31,7 +31,7 @@ services
     .AddSingleton<FuzzingService>()
     .AddDbContext<AtriaContext>()
     .AddHostedService<ClearerService>()
-    .AddHostedService<OnlineStatusRecorderService>()
+    .AddHostedService<ApiCheckerService>()
     .AddSingleton(opt);
 
 var app = builder.Build();
