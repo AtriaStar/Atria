@@ -1,4 +1,4 @@
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using Backend.AspPlugins;
 using Backend.Authentication;
 using Backend.Services;
@@ -116,7 +116,7 @@ public class AuthenticationController : AtriaControllerBase {
     public async Task<IActionResult> PasswordChange([FromAuthentication] User user, ChangePasswordDto dto) {
         var loggedIn = await LoginAsync(user.Email, dto.Password);
         if (loggedIn == null) {
-            return Forbid("Wrong old password");
+            return Forbidden("Wrong old password");
         }
         ChangePassword(user, dto.NewPassword);
         _context.Update(user);
