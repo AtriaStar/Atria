@@ -84,7 +84,7 @@ public class WseController : ControllerBase {
         }
 
         if (wse.ViewCount != existingWse.ViewCount) {
-            return BadRequest("ViewCount cannot be modified");
+            return BadRequest("View count cannot be modified");
         }
 
         wse.ApiCheckHistory = existingWse.ApiCheckHistory;
