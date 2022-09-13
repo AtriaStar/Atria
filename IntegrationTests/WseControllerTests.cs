@@ -72,7 +72,7 @@ public class WseControllerTests : AuthenticatedUserTests {
         Assert.Equal(wseInDb.Name, newWse.Name);
     }
 
-    [Fact(Skip = "https://github.com/AtriaStar/Atria/issues/155")]
+    [Fact]
     public async Task EditWse_ReturnsUnauthorized_WhenUserAuthenticatedButUnauthorized() {
         //Arrange
         var wse = await Context.WebserviceEntries
@@ -83,9 +83,10 @@ public class WseControllerTests : AuthenticatedUserTests {
 
         //Act
         using var response = await Client.PostAsJsonAsync("https://localhost:7038/api/wse", wse);
+        var test = await response.Content.ReadAsStringAsync();
 
         //Assert
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
     [Fact]
