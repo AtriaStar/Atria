@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.AspPlugins;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 
 namespace Backend.Controllers;
 
 [ApiController]
 [Route("notification")]
-public class NotificationController : ControllerBase {
+public class NotificationController : AtriaControllerBase {
 
     [HttpPost]
     public void SetAllowedNotification(Notification notification, bool state) { }

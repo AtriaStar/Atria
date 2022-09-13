@@ -5,7 +5,6 @@ using Backend.ParameterHelpers;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
-
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment;
 var config = builder.Configuration;

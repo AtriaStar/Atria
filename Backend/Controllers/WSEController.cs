@@ -4,12 +4,13 @@ using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.DTO;
 
 namespace Backend.Controllers;
 
 [ApiController]
 [Route("wse")]
-public class WseController : ControllerBase {
+public class WseController : AtriaControllerBase {
     private readonly AtriaContext _context;
 
     public WseController(AtriaContext context) {
@@ -17,13 +18,16 @@ public class WseController : ControllerBase {
     }
 
     [HttpGet("{wseId:long}")]
-    public async Task<WebserviceEntry> Get([FromDatabase, Include(nameof(WebserviceEntry.Tags)), Include(nameof(WebserviceEntry.Collaborators))]
-        WebserviceEntry wse) {
+    public async Task<WebserviceEntry> Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse) {
         wse.ViewCount++;
         _context.Update(wse);
         await _context.SaveChangesAsync();
         return wse;
     }
+
+    [HttpGet("{wseId:long}/collaborators")]
+    public IEnumerable<Collaborator> GetCollaborators([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse)
+        => wse.Collaborators;
 
     [HttpGet("{wseId:long}/checks")]
     public async Task<IEnumerable<ApiCheck>> GetChecks(long wseId)
@@ -65,32 +69,59 @@ public class WseController : ControllerBase {
         if (existingWse == null) { return NotFound(); }
         await _context.Entry(existingWse).Collection(x => x.Collaborators).LoadAsync();
         var rights = existingWse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights;
-        if (rights == null) { return Forbid("User is not a collaborator"); }
+        if (rights == null) { return Forbidden("User is not a collaborator"); }
 
         if ((rights & WseRights.EditData) == 0) {
-            return Forbid("Collaborator does not have the right to edit the WSE");
-        }
-
-        if (!wse.Collaborators.SequenceEqual(existingWse.Collaborators) && (rights & WseRights.EditCollaborators) == 0) {
-            return Forbid("Collaborator does not have the right to edit collaborators");
-        }
-
-        if (wse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights != rights) {
-            return BadRequest("You cannot modify your own rights");
+            return Forbidden("Collaborator does not have the right to edit the WSE");
         }
 
         if (wse.CreatedAt != existingWse.CreatedAt) {
             return BadRequest("Creation timestamp cannot be modified");
         }
 
+        if (wse.ViewCount != existingWse.ViewCount) {
+            return BadRequest("View count cannot be modified");
+        }
+
+        wse.Collaborators = existingWse.Collaborators;
         wse.ApiCheckHistory = existingWse.ApiCheckHistory;
         wse.Questions = existingWse.Questions;
         wse.Reviews = existingWse.Reviews;
 
+        _context.ChangeTracker.Clear();
         _context.WebserviceEntries.Update(wse);
         await _context.SaveChangesAsync();
 
         return Ok();
+    }
+
+    [RequiresAuthentication]
+    [RequiresWseRights(WseRights.EditCollaborators)]
+    [HttpPost("{wseId:long}/collaborators")]
+    public async Task<IActionResult> EditCollaborators([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse,
+        CollaboratorDto[] collaborators, [FromAuthentication] User user) {
+        if (collaborators.Length == 0) {
+            return BadRequest("Collaborator list cannot be empty");
+        }
+
+        wse.Collaborators = collaborators.Select(x => new Collaborator {
+            WseId = wse.Id,
+            UserId = x.UserId,
+            Rights = x.Rights,
+        }).ToArray();
+
+        _context.Update(wse);
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [RequiresAuthentication]
+    [HttpPost("{wseId:long}/leave")]
+    public async Task Leave([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse,
+        [FromAuthentication] User user) {
+        wse.Collaborators.Remove(wse.Collaborators.First(x => x.UserId == user.Id));
+        _context.Update(wse);
+        await _context.SaveChangesAsync();
     }
 
     [RequiresAuthentication]
@@ -100,7 +131,7 @@ public class WseController : ControllerBase {
         if (existingReview == null) { return NotFound(); }
 
         if (existingReview.CreatorId != user.Id) {
-            return Forbid("Only the creator of a review can edit it");
+            return Forbidden("Only the creator of a review can edit it");
         }
 
         if (review.CreatorId != user.Id) {
@@ -186,7 +217,7 @@ public class WseController : ControllerBase {
         }
 
         if (question.Creator != user) {
-            return Forbid("Only the creator can delete a question");
+            return Forbidden("Only the creator can delete a question");
         }
 
         _context.Questions.Remove(question);
@@ -205,7 +236,7 @@ public class WseController : ControllerBase {
         }
 
         if (answer.Creator != user) {
-            return Forbid("Only the creator can delete an answer");
+            return Forbidden("Only the creator can delete an answer");
         }
 
         _context.Answers.Remove(answer);
@@ -223,7 +254,7 @@ public class WseController : ControllerBase {
         }
 
         if (review.Creator != user) {
-            return Forbid("Only the creator can delete a review");
+            return Forbidden("Only the creator can delete a review");
         }
 
         _context.Reviews.Remove(review);

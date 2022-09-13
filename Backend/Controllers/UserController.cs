@@ -8,7 +8,7 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("user")]
-public class UserController : ControllerBase {
+public class UserController : AtriaControllerBase {
     private readonly AtriaContext _context;
 
     public UserController(AtriaContext context) {
@@ -34,7 +34,7 @@ public class UserController : ControllerBase {
     [RequiresAuthentication]
     [HttpGet("{userId:long}/drafts")]
     public IActionResult GetWseDrafts([FromDatabase] User user, [FromAuthentication] User authUser, [FromQuery] Pagination pagination)
-        => user.Id == authUser.Id ? Ok(user.WseDrafts.Paginate(pagination)) : Forbid();
+        => user.Id == authUser.Id ? Ok(user.WseDrafts.Paginate(pagination)) : Forbidden();
 
     [HttpGet("{userId:long}/notifications")]
     public IReadOnlyList<Notification> GetNotifications() => null!;
@@ -42,7 +42,7 @@ public class UserController : ControllerBase {
     [RequiresAuthentication]
     [HttpPost]
     public async Task<IActionResult> Edit(User user, [FromAuthentication] User authUser) {
-        if (user.Id != authUser.Id) { return Forbid("You can only edit your own profile"); }
+        if (user.Id != authUser.Id) { return Forbidden("You can only edit your own profile"); }
 
         if (user.SignUpIp != authUser.SignUpIp) { return BadRequest("Signup ip cannot be modified"); }
         if (user.Rights != authUser.Rights) { return BadRequest("Rights cannot be modified"); }
