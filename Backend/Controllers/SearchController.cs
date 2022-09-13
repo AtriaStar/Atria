@@ -10,7 +10,7 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("search")]
-public class SearchController : ControllerBase {
+public class SearchController : AtriaControllerBase {
     private readonly AtriaContext _context;
     private readonly BackendSettings _options;
     private readonly FuzzingService _fuzzer;

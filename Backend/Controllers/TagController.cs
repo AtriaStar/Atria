@@ -7,7 +7,7 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("tag")]
-public class TagController : ControllerBase {
+public class TagController : AtriaControllerBase {
     private readonly AtriaContext _context;
 
     public TagController(AtriaContext context) {

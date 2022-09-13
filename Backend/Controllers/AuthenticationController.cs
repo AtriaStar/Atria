@@ -12,7 +12,7 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AuthenticationController : ControllerBase {
+public class AuthenticationController : AtriaControllerBase {
     private readonly AtriaContext _context;
 
     public AuthenticationController(AtriaContext context) {

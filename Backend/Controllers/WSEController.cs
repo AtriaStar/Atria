@@ -10,7 +10,7 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("wse")]
-public class WseController : ControllerBase {
+public class WseController : AtriaControllerBase {
     private readonly AtriaContext _context;
 
     public WseController(AtriaContext context) {
@@ -69,10 +69,10 @@ public class WseController : ControllerBase {
         if (existingWse == null) { return NotFound(); }
         await _context.Entry(existingWse).Collection(x => x.Collaborators).LoadAsync();
         var rights = existingWse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights;
-        if (rights == null) { return Forbid("User is not a collaborator"); }
+        if (rights == null) { return Forbidden("User is not a collaborator"); }
 
         if ((rights & WseRights.EditData) == 0) {
-            return Forbid("Collaborator does not have the right to edit the WSE");
+            return Forbidden("Collaborator does not have the right to edit the WSE");
         }
 
         if (wse.CreatedAt != existingWse.CreatedAt) {
@@ -131,7 +131,7 @@ public class WseController : ControllerBase {
         if (existingReview == null) { return NotFound(); }
 
         if (existingReview.CreatorId != user.Id) {
-            return Forbid("Only the creator of a review can edit it");
+            return Forbidden("Only the creator of a review can edit it");
         }
 
         if (review.CreatorId != user.Id) {
@@ -217,7 +217,7 @@ public class WseController : ControllerBase {
         }
 
         if (question.Creator != user) {
-            return Forbid("Only the creator can delete a question");
+            return Forbidden("Only the creator can delete a question");
         }
 
         _context.Questions.Remove(question);
@@ -236,7 +236,7 @@ public class WseController : ControllerBase {
         }
 
         if (answer.Creator != user) {
-            return Forbid("Only the creator can delete an answer");
+            return Forbidden("Only the creator can delete an answer");
         }
 
         _context.Answers.Remove(answer);
@@ -254,7 +254,7 @@ public class WseController : ControllerBase {
         }
 
         if (review.Creator != user) {
-            return Forbid("Only the creator can delete a review");
+            return Forbidden("Only the creator can delete a review");
         }
 
         _context.Reviews.Remove(review);
