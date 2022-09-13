@@ -54,15 +54,15 @@
                     }
                 </h3>
             </div>
-            <div class="col-auto d-flex align-content-end me-1">
-                @{
-                    var bookmarkState = hasBookmark ? "bi-bookmark-fill" : "bi-bookmark";
-                    var bookmarkTitle = hasBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
-                }
-                <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
-            </div>
-            <div class="col-auto d-flex align-content-end">
-                <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@Wse.Link"/>
+            <div class="col-auto">
+                <div class="d-flex align-items-center">
+                    @{
+                        var bookmarkTitle = hasBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                        var bookmarkStyle = hasBookmark ? "fa-solid" : "fa-regular";
+                    }
+                    <i class="fa-bookmark @bookmarkStyle fs-4 mx-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zum Webservice" href="@Wse.Link"></a>
+                </div>
             </div>
         </div>
         <h5 class="card-subtitle mb-2 me-2 text-muted">
@@ -423,8 +423,10 @@
     }
 
     protected override async Task OnInitializedAsync() {
-        Wse = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId) ?? new WebserviceEntry() { };
-        ContactPerson = await HttpClient.GetFromJsonAsync<User>("user/" + Wse.ContactPersonId) ?? new User { };
+        Wse = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId) ?? new WebserviceEntry() {
+        };
+        ContactPerson = await HttpClient.GetFromJsonAsync<User>("user/" + Wse.ContactPersonId) ?? new User {
+        };
         _isLoggedIn = LoginState.LoggedIn;
         if (_isLoggedIn) {
             _userId = LoginState.User!.Id;
