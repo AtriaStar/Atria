@@ -9,24 +9,33 @@ namespace Models;
 public class User {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
+
     public string? Title { get; set; }
     public string FirstNames { get; set; } = null!;
     public string LastName { get; set; } = null!;
     private string _email = null!;
     private string? _profilePicture;
-    public string Email { get => _email; set => _email = value.ToLowerInvariant(); }
+
+    public string Email {
+        get => _email;
+        set => _email = value.ToLowerInvariant();
+    }
 
     [Url]
     public string? ProfilePicture {
         get => _profilePicture;
         set => _profilePicture = string.IsNullOrEmpty(value) ? null : value;
     }
+
     public string? Biography { get; set; }
     public string SignUpIp { get; set; } = null!;
+
     [JsonIgnore]
     public virtual byte[] PasswordHash { get; set; } = null!;
+
     [JsonIgnore]
     public virtual byte[] PasswordSalt { get; set; } = null!;
+
     public UserRights Rights { get; set; } = UserRights.Default;
 
     [JsonIgnore]

@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using Backend.AspPlugins;
 using Backend.Authentication;
 using Backend.Services;
@@ -45,8 +45,8 @@ public class AuthenticationController : ControllerBase {
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto loginDto, [FromServices] SessionService ss) {
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
-        if (user == null || !user.PasswordHash.SequenceEqual(HashingService.Hash(loginDto.Password, user.PasswordSalt))) {
+        var user = await LoginAsync(loginDto.Email, loginDto.Password);
+        if (user == null) {
             return Unauthorized("Email or password invalid");
         }
         await ss.GenerateSession(user, _context, HttpContext);
@@ -113,14 +113,25 @@ public class AuthenticationController : ControllerBase {
 
     [RequiresAuthentication]
     [HttpPost("change-password-uwu")]
-    public async Task PasswordChange([FromAuthentication] User user, string newPassword) {
-        ChangePassword(user, newPassword);
+    public async Task<IActionResult> PasswordChange([FromAuthentication] User user, ChangePasswordDto dto) {
+        var loggedIn = await LoginAsync(user.Email, dto.Password);
+        if (loggedIn == null) {
+            return Forbid("Wrong old password");
+        }
+        ChangePassword(user, dto.NewPassword);
         _context.Update(user);
         await _context.SaveChangesAsync();
+        return Ok();
     }
 
     private static void ChangePassword(User user, string newPassword) {
         user.PasswordSalt = HashingService.GenerateSalt();
         user.PasswordHash = HashingService.Hash(newPassword, user.PasswordSalt);
+    }
+
+    private async Task<User?> LoginAsync(string email, string password) {
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+        return user != null && user.PasswordHash.SequenceEqual(HashingService.Hash(password, user.PasswordSalt))
+            ? user : null;
     }
 }

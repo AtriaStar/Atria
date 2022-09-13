@@ -1,4 +1,4 @@
-﻿namespace Models; 
+﻿namespace Models;
 
 [Flags]
 public enum UserRights {

@@ -30,8 +30,13 @@ public class WseDraft {
 
     public string? Documentation { get; set; }
     public string? ChangeLog { get; set; }
+
+    [MaxLength(20)]
+    public ISet<Tag> Tags { get; set; } = new HashSet<Tag>();
+
     public long CreatorId { get; set; }
     [JsonIgnore]
     public virtual User Creator { get; set; } = null!;
+    
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

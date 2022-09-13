@@ -4,6 +4,7 @@ using Backend.ParameterHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.DTO;
 
 namespace Backend.Controllers;
 
@@ -17,13 +18,16 @@ public class WseController : ControllerBase {
     }
 
     [HttpGet("{wseId:long}")]
-    public async Task<WebserviceEntry> Get([FromDatabase, Include(nameof(WebserviceEntry.Tags)), Include(nameof(WebserviceEntry.Collaborators))]
-        WebserviceEntry wse) {
+    public async Task<WebserviceEntry> Get([FromDatabase, Include(nameof(WebserviceEntry.Tags))] WebserviceEntry wse) {
         wse.ViewCount++;
         _context.Update(wse);
         await _context.SaveChangesAsync();
         return wse;
     }
+
+    [HttpGet("{wseId:long}/collaborators")]
+    public IEnumerable<Collaborator> GetCollaborators([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse)
+        => wse.Collaborators;
 
     [HttpGet("{wseId:long}/checks")]
     public async Task<IEnumerable<ApiCheck>> GetChecks(long wseId)
@@ -71,26 +75,53 @@ public class WseController : ControllerBase {
             return Forbid("Collaborator does not have the right to edit the WSE");
         }
 
-        if (!wse.Collaborators.SequenceEqual(existingWse.Collaborators) && (rights & WseRights.EditCollaborators) == 0) {
-            return Forbid("Collaborator does not have the right to edit collaborators");
-        }
-
-        if (wse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights != rights) {
-            return BadRequest("You cannot modify your own rights");
-        }
-
         if (wse.CreatedAt != existingWse.CreatedAt) {
             return BadRequest("Creation timestamp cannot be modified");
         }
 
+        if (wse.ViewCount != existingWse.ViewCount) {
+            return BadRequest("View count cannot be modified");
+        }
+
+        wse.Collaborators = existingWse.Collaborators;
         wse.ApiCheckHistory = existingWse.ApiCheckHistory;
         wse.Questions = existingWse.Questions;
         wse.Reviews = existingWse.Reviews;
 
+        _context.ChangeTracker.Clear();
         _context.WebserviceEntries.Update(wse);
         await _context.SaveChangesAsync();
 
         return Ok();
+    }
+
+    [RequiresAuthentication]
+    [RequiresWseRights(WseRights.EditCollaborators)]
+    [HttpPost("{wseId:long}/collaborators")]
+    public async Task<IActionResult> EditCollaborators([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse,
+        CollaboratorDto[] collaborators, [FromAuthentication] User user) {
+        if (collaborators.Length == 0) {
+            return BadRequest("Collaborator list cannot be empty");
+        }
+
+        wse.Collaborators = collaborators.Select(x => new Collaborator {
+            WseId = wse.Id,
+            UserId = x.UserId,
+            Rights = x.Rights,
+        }).ToArray();
+
+        _context.Update(wse);
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [RequiresAuthentication]
+    [HttpPost("{wseId:long}/leave")]
+    public async Task Leave([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse,
+        [FromAuthentication] User user) {
+        wse.Collaborators.Remove(wse.Collaborators.First(x => x.UserId == user.Id));
+        _context.Update(wse);
+        await _context.SaveChangesAsync();
     }
 
     [RequiresAuthentication]
