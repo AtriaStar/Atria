@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220908113642_Initial")]
+    [Migration("20220913151516_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,9 +69,9 @@ namespace Backend.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("checked_at");
 
-                    b.Property<bool>("Success")
-                        .HasColumnType("boolean")
-                        .HasColumnName("success");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
 
                     b.Property<long?>("WebserviceEntryId")
                         .HasColumnType("bigint")
