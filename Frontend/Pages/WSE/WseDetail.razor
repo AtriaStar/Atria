@@ -56,13 +56,13 @@
             </div>
             <div class="col-auto d-flex align-content-end me-1">
                 @{
-                    var bookmarkState = hasBookmark ? "bi-bookmark-fill" : "bi-bookmark";
                     var bookmarkTitle = hasBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                    var bookmarkStyle = hasBookmark ? "fa-solid" : "fa-regular";
                 }
-                <i class="bi icon-align-vertical @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
+                <i class="fa-bookmark icon-align-vertical @bookmarkStyle fs-3" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
             </div>
             <div class="col-auto d-flex align-content-end">
-                <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-4 icon-align-vertical" title="Zum Webservice" href="@Wse.Link"/>
+                <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2 icon-align-vertical" title="Zum Webservice" href="@Wse.Link"></a>
             </div>
         </div>
         <h5 class="card-subtitle mb-2 me-2 text-muted">

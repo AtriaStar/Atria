@@ -4,7 +4,7 @@
 @using System.Net
 
 <div class="card-body">
-    <div class="row">
+    <div class="row mb-1">
         <div class="col-auto">
             <i class="fa-solid fa-circle @_onlineStatusStyle"></i>
         </div>
@@ -18,26 +18,23 @@
         </div>
 
         <div class="col-auto ps-0 ms-auto d-flex d-block">
-            <div class="d-flex justify-content-sm-end justify-content-start flex-wrap">
-                <div class="ms-3">
+            <div class="d-flex justify-content-sm-end justify-content-start flex-wrap align-items-center">
                     <AuthView>
                         <Authorized>
                             @{
                                 var bookmarkState = LoginState.User!.Bookmarks.Any(webserviceEntry => webserviceEntry.Id == Entry.Id);
                                 var bookmarkTitle = bookmarkState ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
-                                var bookmarkStyle = bookmarkState ? "bi-bookmark-fill" : "bi-bookmark";
+                                var bookmarkStyle = bookmarkState ? "fa-solid" : "fa-regular";
                             }
-                            <button class="btn-outline-light btn p-0" title="@bookmarkTitle" @onclick="() => ChangeBookmarkStatus(Entry, bookmarkState)">
-                                <i class="bi @bookmarkStyle fs-5" style="color: #dc3545"></i>
-                            </button>
+                            <i class="fa-bookmark @bookmarkStyle fs-5 ms-3" type="button" title="@bookmarkTitle" style="color: #dc3545" 
+                               @onclick="() => ChangeBookmarkStatus(Entry, bookmarkState)"></i>
                         </Authorized>
                         <NotAuthorized>
-                            <button class="btn-outline-light btn p-0" title="Als Lesezeichen hinzufügen" @onclick="NavigateToLogin">
-                                <i class="bi bi-bookmark fs-5" style="color: #dc3545"></i>
-                            </button>
+                            <i class="fa-bookmark fa-regular fs-5 ms-3" type="button"  style="color: #dc3545"
+                               title="Als Lesezeichen hinzufügen" @onclick="NavigateToLogin"></i>
                         </NotAuthorized>
                     </AuthView>
-                </div>
+                
                 <div class="ms-3" style="min-width: fit-content">
                     @{
                         int i = 0;

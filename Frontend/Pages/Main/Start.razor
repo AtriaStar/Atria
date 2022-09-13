@@ -38,13 +38,12 @@
                 </NavLink>
             </div>
         </div>
-        <div class="d-flex mb-2 ms-auto">
+        <div class="d-flex mb-2 ms-auto align-items-center">
             @if (Type is null or "wse") {
                 <AuthView>
                     <Authorized>
-                        <button class="btn-outline-light btn p-0" @onclick="ChangeBookmarkStatusFilter">
-                            <i class="bi @_bookmarkStateFilter fs-5" style="color: #dc3545" title="Lesezeichen"></i>
-                        </button>
+                        <i class="fa-bookmark @_bookmarkStateFilter fs-4" style="color: #dc3545" type="button" title="Lesezeichen"
+                           @onclick="ChangeBookmarkStatusFilter"></i>
                     </Authorized>
                 </AuthView>
                 <button class="btn btn-outline-primary ms-3" type="button" @onclick="OpenFilterDialog">
@@ -140,7 +139,7 @@
     private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
     private IEnumerable<User> _userList = new List<User>();
 
-    private string _bookmarkStateFilter = "bi-bookmark";
+    private string _bookmarkStateFilter = "fa-regular";
     private bool _filterDialogOpen;
 
     // Pagination
@@ -232,10 +231,8 @@
     private void ChangeBookmarkStatusFilter() {
         if (hasBookmark.Equals(null) || hasBookmark == false) {
             hasBookmark = true;
-            _bookmarkStateFilter = "bi-bookmark-fill";
         } else {
             hasBookmark = null;
-            _bookmarkStateFilter = "bi-bookmark";
         }
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("hasBookmark", hasBookmark));
     }
@@ -246,9 +243,9 @@
 
     private void SetBookmarkState() {
         if (hasBookmark.Equals(null) || hasBookmark == false) {
-            _bookmarkStateFilter = "bi-bookmark";
+            _bookmarkStateFilter = "fa-regular";
         } else {
-            _bookmarkStateFilter = "bi-bookmark-fill";
+            _bookmarkStateFilter = "fa-solid";
         }
     }
 
