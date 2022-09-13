@@ -1,16 +1,17 @@
 ﻿@page "/wse/{WseId:long}/{WseName?}"
 @using Models
 @using System.Web
+@using System.Net
+@inject NavigationManager NavManager
 
-<PageTitle>Atria - WseName</PageTitle>
+<PageTitle>Atria - @Wse.Name</PageTitle>
 
 <div class="container-xxl mt-4">
 
-
-@if (isCollab) {
-    @if (!_displayForm) {
+@if (_isCollab) {
+    @if (!_displayEditForm) {
         <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-            <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
+            <button class="btn btn-success" type="button" @onclick="() => _displayEditForm = !_displayEditForm">
                 Bearbeiten
             </button>
             <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDialog">
@@ -18,14 +19,17 @@
             </button>
         </div>
     } else {
-        <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
-            <DataAnnotationsValidator></DataAnnotationsValidator>
+        <EditForm Model="Wse">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
             <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-                <button class="btn btn-success" type="submit">
+                <button class="btn btn-danger" type="button" @onclick="CancelEdit">
+                    Abbrechen
+                </button>
+                <button class="btn btn-success" type="submit" @onclick="HandleValidSubmit">
                     Speichern
                 </button>
             </div>
-            <ValidationSummary></ValidationSummary>
         </EditForm>
     }
 }
@@ -34,12 +38,12 @@
 <div class="card mb-4">
     <div class="card-body">
         <div class="row mb-2">
-             <div class="col-auto">
-                    <i class="fa-solid fa-circle @StyleOnlineStatus(Wse)"></i>
-                </div>
+            <div class="col-auto mt-sm-1">
+                <i class="fa-solid fa-circle text-success"/>
+            </div>
             <div class="col ps-0">
                 <h3 class="card-title fw-bold">
-                    @if (!_displayForm) {
+                    @if (!_displayEditForm) {
                         @Wse.Name
                     } else {
                         <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
@@ -50,22 +54,22 @@
                     }
                 </h3>
             </div>
-            <div class="col-auto d-flex align-content-end me-1">
-                @{
-                    var bookmarkState = hasBookmark ? "bi-bookmark-fill" : "bi-bookmark";
-                    var bookmarkTitle = hasBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
-                }
-                <i class="bi @bookmarkState fs-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
-            </div>
-            <div class="col-auto d-flex align-content-end">
-                <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zur Webservice" href="@Wse.Link"/>
+            <div class="col-auto">
+                <div class="d-flex align-items-center">
+                    @{
+                        var bookmarkTitle = hasBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                        var bookmarkStyle = hasBookmark ? "fa-solid" : "fa-regular";
+                    }
+                    <i class="fa-bookmark @bookmarkStyle fs-4 mx-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
+                    <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zum Webservice" href="@Wse.Link"></a>
+                </div>
             </div>
         </div>
         <h5 class="card-subtitle mb-2 me-2 text-muted">
-            Ansprechpartner
-            <button class="btn btn-outline-secondary btn-small" @onclick="OpenCollabDialog">weitere Kollaboratoren</button>
+            @ContactPerson.FirstNames @ContactPerson.LastName
+            <button class="btn btn-outline-secondary btn-small ms-2" @onclick="OpenCollabDialog">weitere Kollaboratoren</button>
         </h5>
-        @if (!_displayForm) {
+        @if (!_displayEditForm) {
             <div class="card-text">@Wse.ShortDescription</div>
         } else {
             <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
@@ -78,7 +82,7 @@
     </div>
 </div>
 
-@if (_displayForm) {
+@if (_displayEditForm) {
     <div class="col-auto mt-sm-1">
 
         <div class="card mb-4">
@@ -97,31 +101,32 @@
 <div class="row mb-4">
     @*------------REVIEW AND TAGS------------*@
     <div class="col-md-3 mb-4">
-        <div class="card mb-4">
-            <div class="card-body">
-                <h6 class="card-title fw-bold">Bewertung</h6>
-                <div class="row">
-	                <div class="col-auto">
-		                <Rating ReviewAverage="3.14159"/>
-	                </div>
-                    <div class="col-auto">
-                        <p>xx Bewertungen</p>
+        @if (!_displayEditForm) {
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h6 class="card-title fw-bold">Bewertung</h6>
+                    <div class="row">
+                        <div class="col-auto">
+                            <Rating ReviewAverage="@_avgReview"/>
+                        </div>
+                        <div class="col-auto">
+                            <p>@ReviewNum Bewertungen</p>
+                        </div>
                     </div>
+                    @* TODO scrollspy or leave it out
+                            <div class="d-grid d-flex justify-content-end">
+                            <button class="btn btn-outline-secondary btn-small" type="button">zu den Bewertungen</button>
+                            </div>*@
                 </div>
-                @* TODO scrollspy or leave it out
-                    <div class="d-grid d-flex justify-content-end">
-                    <button class="btn btn-outline-secondary btn-small" type="button">zu den Bewertungen</button>
-                    </div>*@
             </div>
-        </div>
+        }
 
         <div class="card">
             <div class="card-body">
                 <h6 class="card-title fw-bold">Tags</h6>
-                @*mock tags*@
                 <div class="card-text">
-                    @for (int i = 0; i <= 20; i++) {
-                        <div class="badge bg-info me-1" value="@i">Tag @i</div>
+                    @foreach (Tag tag in Wse.Tags) {
+                        <div class="badge bg-info me-1" value="@tag.Name">@tag.Name</div>
                     }
                 </div>
             </div>
@@ -132,15 +137,14 @@
     <div class="col-md-9">
 
         <div class="card mb-4">
-
             <h6 class="card-header fw-bold">Änderungshistorie</h6>
             <div class="card-body">
-                @if (!_displayForm) {
+                @if (!_displayEditForm) {
                     @Wse.ChangeLog
                 } else {
                     <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
                         <DataAnnotationsValidator></DataAnnotationsValidator>
-                        <InputText @bind-Value="Wse.ChangeLog" id="changeLog" type="text" class="form-control" placeholder="Änderungshistorie"></InputText>
+                        <InputTextArea @bind-Value="Wse.ChangeLog" id="changeLog" type="text" class="form-control" placeholder="Änderungshistorie"></InputTextArea>
                         <ValidationSummary></ValidationSummary>
                     </EditForm>
                 }
@@ -153,21 +157,20 @@
                 <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-5 ms-1" title="Zur Dokumetation" href="@Wse.DocumentationLink"/>
             </h6>
             <div class="card-body">
-                @if (!_displayForm) {
+                @if (!_displayEditForm) {
                     <div class="card-text">@Wse.Documentation</div>
                 } else {
                     <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
                         <DataAnnotationsValidator></DataAnnotationsValidator>
-                        <InputText @bind-Value="Wse.Documentation" id="documentation" type="text" class="form-control" placeholder="Dokumentation"></InputText>
+                        <InputTextArea @bind-Value="Wse.Documentation" id="documentation" type="text" class="form-control" placeholder="Dokumentation"></InputTextArea>
                         <ValidationSummary></ValidationSummary>
                     </EditForm>
                 }
             </div>
         </div>
 
-        @if (_displayForm) {
+        @if (_displayEditForm) {
             <div class="col-auto mt-sm-1">
-
                 <div class="card mb-4">
                     <h6 class="card-header fw-bold">Dokumentations-Link</h6>
                     <div class="card-body">
@@ -184,12 +187,12 @@
         <div class="card">
             <h6 class="card-header fw-bold">Volltextbeschreibung</h6>
             <div class="card-body">
-                @if (!_displayForm) {
+                @if (!_displayEditForm) {
                     <div class="card-text">@Wse.FullDescription</div>
                 } else {
                     <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
                         <DataAnnotationsValidator></DataAnnotationsValidator>
-                        <InputText @bind-Value="Wse.FullDescription" id="fullDescription" type="text" class="form-control" placeholder="Volltextbeschreibung"></InputText>
+                        <InputTextArea @bind-Value="Wse.FullDescription" id="fullDescription" type="text" class="form-control" placeholder="Volltextbeschreibung"></InputTextArea>
                         <ValidationSummary></ValidationSummary>
                     </EditForm>
                 }
@@ -198,191 +201,86 @@
     </div>
 </div>
 
-<hr/>
+@if (!_displayEditForm) {
+    <hr/>
 
-@*------------QNA------------*@
-<h6 class="fw-bold mt-2 mb-2">Q&A</h6>
+        @*------------QNA------------*@
+    <h6 class="fw-bold mt-2 mb-2">Q&A</h6>
 
-@if (isLoggedIn) {
-    <div class="ui-field">
-        @*TODO change to InputTextArea when EditForm added*@
-        <textarea class="form-control mt-4 mb-3" type="text" placeholder="Haben Sie eine Frage?" />
-    </div>
-    <div class="d-grid gap-2 mt-2 mb-4 d-flex justify-content-end">
-        <button class="btn btn-outline-success btn-small" type="button">
-            Speichern
-        </button>
-    </div>
-}
-
-@*foreach question*@
-<div class="accordion mb-4" id="questionAccordion">
-    <div class="accordion-item">
-        <div class="accordion-header px-4 py-3 bg-light border-bottom" id="question">
-            <div class="row">
-                <div class="col-auto">
-                    <h6 class="fw-bold mt-1">Frage:</h6>
-                </div>
-                <div class="col ms-3">
-                    <h6 class="fw-bold mt-1 mb-1">
-                        Creator
-                        <small class="text-muted">Date</small>
-                    </h6>
-                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-                </div>
-                @*if answers exist*@
-            </div>
-            <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
-                @if (isLoggedIn) {
-                    <button class="btn btn-outline-success btn-small" type="button">
-                        Antworten
-                    </button>
-                    @if (isCreator) {
-                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteQuestionDialog">
-                            Löschen
-                        </button>
-                    }
-                }
-                @*if answers exist*@
-                <button class="btn btn-small btn-outline-secondary collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#answerOne" aria-expanded="false" aria-controls="answerOne">
-                    Antworten anzeigen
-                </button>
-            </div>
+    @if (_isLoggedIn) {
+        <div class="ui-field">
+            <textarea class="form-control mt-4 mb-3" type="text" placeholder="Haben Sie eine Frage?" @bind="NewQuestion"/>
         </div>
-
-        @*if answers exist*@
-        <div id="answerOne" class="accordion-collapse collapse" aria-labelledby="question" data-bs-parent="#questionAccordion">
-            <div class="accordion-body">
-                <ul class="list-group list-group-flush py-0">
-                    @*foreach answer*@
-                    <li class="list-group-item px-0">
-                        <div class="row">
-                            <div class="col-auto">
-                                <h6 class="fw-bold mt-1">Antwort:</h6>
-                            </div>
-                            <div class="col">
-                                <h6 class="fw-bold mt-1 mb-1">
-                                    Creator
-                                    <small class="text-muted">Date</small>
-                                </h6>
-                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-                            </div>
-                        </div>
-                        @if (isCreator) {
-                            <div class="d-grid mt-2 d-flex justify-content-end">
-                                <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteAnswerDialog">
-                                    Löschen
-                                </button>
-                            </div>
-                        }
-                    </li>
-                    <li class="list-group-item px-0">
-                        <div class="row">
-                            <div class="col-auto">
-                                <h6 class="fw-bold mt-1">Antwort:</h6>
-                            </div>
-                            <div class="col">
-                                <h6 class="fw-bold mt-1 mb-1">
-                                    Creator
-                                    <small class="text-muted">Date</small>
-                                </h6>
-                                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-                            </div>
-                        </div>
-                        @if (isCreator) {
-                            <div class="d-grid mt-2 d-flex justify-content-end">
-                                <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteAnswerDialog">
-                                    Löschen
-                                </button>
-                            </div>
-                        }
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-@*if more questions exist*@
-<div class="d-grid d-flex mt-2 mb-4 justify-content-center">
-    <button class="btn btn-outline-secondary btn-small" type="button" href="">weitere Fragen</button>
-</div>
-
-<hr/>
-
-@*------------REVIEWS------------*@
-<div class="row mb-2">
-    <div class="col-auto">
-        <h6 class="fw-bold">Bewertungen</h6>
-    </div>
-    @if (isLoggedIn) {
-        <div class="col-auto">
-            <button class="btn btn-outline-success btn-small" type="button" href="">neue Bewertung</button>
+        <div class="d-grid gap-2 mt-2 mb-4 d-flex justify-content-end">
+            <button class="btn btn-outline-success btn-small" type="button" @onclick="SubmitNewQuestion">
+                Speichern
+            </button>
         </div>
     }
-    <div class="col-auto ms-auto">
-        <div class="dropdown">
-            <a class="btn btn-outline-secondary btn-small dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                Sortieren nach
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <a class="dropdown-item" href="#">Neuste</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="#">Älteste</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="#">Absteigend</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="#">Aufsteigend</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
 
-@*foreach review*@
-<div class="card mt-3 mb-4">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-auto">
-                <i class="fa fa-star rating-color"></i>
-                <i class="fa fa-star rating-color"></i>
-                <i class="fa fa-star rating-color"></i>
-                <i class="fa fa-star rating-color"></i>
-                <i class="fa fa-star rating-uncolored"></i>
-                <div class="card-subtitle mt-1 text-muted">Date</div>
-            </div>
-            <div class="col mt-1">
-                <h6 class="card-title fw-bold">Title</h6>
-                <div class="card-subtitle mb-2 text-muted">Creator</div>
-                <p class="card-text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
-            </div>
+    @foreach (Question question in _wseQuestions) {
+        <Frontend.Pages.Components.QuestionComponent Question="question" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
+    }
+
+    @if (_wseNextQuestions.Length != 0) {
+        <div class="d-grid d-flex mt-2 mb-4 justify-content-center">
+            <button class="btn btn-outline-secondary btn-small" type="button" @onclick="GetNextQuestions">weitere Fragen</button>
         </div>
-        @if (isCreator) {
-            <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
-                <button class="btn btn-outline-success btn-small" type="button" @onclick="() => _displayForm = !_displayForm">
-                    Bearbeiten
-                </button>
-                <button class="btn btn-outline-danger btn-small" type="button" @onclick="OpenDeleteReviewDialog">
-                    Löschen
-                </button>
+    }
+
+    <hr/>
+
+        @*------------REVIEWS------------*@
+    <div class="row mb-4">
+        <div class="col-auto">
+            <h6 class="fw-bold">Bewertungen</h6>
+        </div>
+        @if (_isLoggedIn) {
+            <div class="col-auto">
+                <button class="btn btn-outline-success btn-small" type="button" @onclick="CreateNewReview">neue Bewertung</button>
             </div>
         }
+        @*@if (_wseReviews.Length > 0)
+            {
+                <div class="col-auto ms-auto">
+                    <div class="dropdown">
+                        <a class="btn btn-outline-secondary btn-small dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                            Sortieren nach
+                        </a>
+                        TODO sort logic
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">Neuste</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Älteste</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Absteigend</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Aufsteigend</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }*@
     </div>
-</div>
 
-@*if more reviews exist*@
-<div class="d-grid d-flex mt-2 mb-2 justify-content-center">
-    <button class="btn btn-outline-secondary btn-small" type="button" href="">weitere Bewertungen</button>
-</div>
+    @foreach (Review review in _wseReviews) {
+        <Frontend.Pages.Components.ReviewComponent Review="review" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
+    }
+    @if (_wseNextReviews.Length != 0) {
+        <div class="d-grid d-flex mt-2 mb-2 justify-content-center">
+            <button class="btn btn-outline-secondary btn-small" type="button" @onclick="GetNextReviews">weitere Bewertungen</button>
+        </div>
+    }
+}
 
-@if (isCollab) {
-    @if (!_displayForm) {
+@if (_isCollab) {
+    @if (!_displayEditForm) {
         <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-            <button class="btn btn-success" type="button" @onclick="() => _displayForm = !_displayForm">
+            <button class="btn btn-success" type="button" @onclick="() => _displayEditForm = !_displayEditForm">
                 Bearbeiten
             </button>
             <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDialog">
@@ -390,37 +288,38 @@
             </button>
         </div>
     } else {
-        <EditForm Model="Wse" OnValidSubmit="HandleValidSubmit">
-            <DataAnnotationsValidator></DataAnnotationsValidator>
+        <EditForm Model="Wse">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
             <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-                <button class="btn btn-success" type="submit">
+                <button class="btn btn-danger" type="button" @onclick="CancelEdit">
+                    Abbrechen
+                </button>
+                <button class="btn btn-success" type="submit" @onclick="HandleValidSubmit">
                     Speichern
                 </button>
             </div>
-            <ValidationSummary></ValidationSummary>
         </EditForm>
     }
 }
 </div>
 
 @if (CollabDialogOpen) {
-    <Frontend.Pages.Components.CollabModal OnClose="@OnCollabDialogClose"/>
-}
-
-@if (DeleteQuestionDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal Title="Frage löschen" Text="Sind Sie sicher, dass Sie Ihre Frage löschen möchten?" OnClose="@OnDeleteQuestionDialogClose"/>
-}
-
-@if (DeleteAnswerDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal Title="Antwort löschen" Text="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?" OnClose="@OnDeleteAnswerDialogClose"/>
-}
-
-@if (DeleteReviewDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal Title="Bewertung löschen" Text="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?" OnClose="@OnDeleteReviewDialogClose"/>
+    <Frontend.Pages.Components.CollabModal
+        WseId="WseId"
+        WseContactPersonId="Wse.ContactPersonId"
+        UserId="_userId"
+        _isLoggedIn="_isLoggedIn"
+        OnClose="@OnCollabDialogClose"/>
 }
 
 @if (DeleteWseDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal Title="Eintrag löschen" Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?" OnClose="@OnDeleteWseDialogClose"/>
+    <Frontend.Pages.Components.DeleteModal
+        Title="Eintrag löschen"
+        Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?"
+        ToDelete="wse"
+        WseId="WseId"
+        OnClose="@OnDeleteWseDialogClose"/>
 }
 
 @code {
@@ -438,17 +337,12 @@
     public bool isCreator = true;
     public bool hasBookmark = false;
 
-    private bool _displayForm = false;
+    //private bool _displayForm = false;
 
-    [Parameter]
-    public WebserviceEntry Wse { get; set; } = null!;
+    /*-------------MODALS-------------*/
+    private long ReviewIdToDelete { get; set; }
 
-    private WebserviceEntry _cloneWse = null!;
-
-    private void ChangeBookmarkStatus() {
-        hasBookmark = !hasBookmark;
-        @* TODO logic *@
-    }
+    //private WebserviceEntry _cloneWse = null!;
 
     private void OpenCollabDialog() {
         CollabDialogOpen = true;
@@ -457,36 +351,6 @@
 
     private void OnCollabDialogClose(bool accepted) {
         CollabDialogOpen = false;
-        StateHasChanged();
-    }
-
-    private void OpenDeleteQuestionDialog() {
-        DeleteQuestionDialogOpen = true;
-        StateHasChanged();
-    }
-
-    private void OnDeleteQuestionDialogClose(bool accepted) {
-        DeleteQuestionDialogOpen = false;
-        StateHasChanged();
-    }
-
-    private void OpenDeleteAnswerDialog() {
-        DeleteAnswerDialogOpen = true;
-        StateHasChanged();
-    }
-
-    private void OnDeleteAnswerDialogClose(bool accepted) {
-        DeleteAnswerDialogOpen = false;
-        StateHasChanged();
-    }
-
-    private void OpenDeleteReviewDialog() {
-        DeleteReviewDialogOpen = true;
-        StateHasChanged();
-    }
-
-    private void OnDeleteReviewDialogClose(bool accepted) {
-        DeleteReviewDialogOpen = false;
         StateHasChanged();
     }
 
@@ -500,37 +364,200 @@
         StateHasChanged();
     }
 
-    protected override void OnInitialized() {
-        @* Mock Data generation *@
-        Wse = new WebserviceEntry {
-            Name = "Google",
-            ShortDescription = "Lorem ipsum dolor sit amet",
-            Link = "https://www.google.de/",
-            FullDescription = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
-            ChangeLog = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam non",
-            DocumentationLink = "https://de.wikipedia.org/wiki/Google",
-            Documentation = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna ",
-        };
+    [Parameter]
+    public WebserviceEntry Wse { get; set; } = new();
 
-        CloneWse();
+    [CascadingParameter]
+    private LoginState LoginState { get; init; } = null!;
+
+    private User ContactPerson { get; set; } = new();
+
+    private long _userId { get; set; } = new();
+    private User? CurrentUser { get; set; }
+    private WebserviceEntry[]? CurrentUserWse { get; set; }
+    private WebserviceEntry[]? CurrentUserBookmarks { get; set; }
+
+    private string? NewQuestion { get; set; }
+    private string? NewAnswer { get; set; }
+
+    private int ReviewNum { get; set; }
+    private int ReviewPage = 1;
+    private int ReviewEntryNum = 3;
+    private Review[] _wseReviews = new Review[] { };
+    private Review[] _wseNextReviews = new Review[] { };
+
+    private int QuestionPage = 1;
+    private int QuestionEntryNum = 3;
+    private Question[] _wseQuestions = new Question[] { };
+    private Question[] _wseNextQuestions = new Question[] { };
+
+    private bool _isLoggedIn { get; set; }
+    private bool _isCollab { get; set; }
+    private bool _isBookmark { get; set; }
+    private bool _displayEditForm = false;
+    private double _avgReview { get; set; }
+    private int _avgReviewRounded { get; set; }
+
+    private string ConflictMessage { get; set; } = null!;
+
+    /*not working man*/
+
+    private async void HandleValidSubmit() {
+        var response = await HttpClient.PostAsJsonAsync("wse", Wse);
+
+        if (response.IsSuccessStatusCode) {
+            NavManager.NavigateTo("wse/" + WseId, true);
+        } else if (response.StatusCode == HttpStatusCode.Conflict) {
+    /*TODO specify message*/
+            ConflictMessage = "There was an conflict";
+            StateHasChanged();
+        } else {
+            NavManager.NavigateTo("/internal-server-error");
+        }
     }
 
-    private void HandleValidSubmit() {
-        _displayForm = !_displayForm;
-        CloneWse();
-        @* TODO implement backend communication *@
+    /*not working man*/
+
+    private void CancelEdit() {
+        NavManager.NavigateTo("wse/" + WseId, true);
     }
 
-    private void CloneWse() {
-        _cloneWse = new WebserviceEntry {
-            Name = Wse.Name,
-            ShortDescription = Wse.ShortDescription,
-            Link = Wse.Link,
-            FullDescription = Wse.FullDescription,
-            ChangeLog = Wse.ChangeLog,
-            DocumentationLink = Wse.DocumentationLink,
-            Documentation = Wse.Documentation
+    protected override async Task OnInitializedAsync() {
+        Wse = await HttpClient.GetFromJsonAsync<WebserviceEntry>("wse/" + WseId) ?? new WebserviceEntry() {
         };
+        ContactPerson = await HttpClient.GetFromJsonAsync<User>("user/" + Wse.ContactPersonId) ?? new User {
+        };
+        _isLoggedIn = LoginState.LoggedIn;
+        if (_isLoggedIn) {
+            _userId = LoginState.User!.Id;
+            CurrentUser = await HttpClient.GetFromJsonAsync<User>("user/" + _userId);
+        }
+
+        Review[] allReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] { };
+        ReviewNum = allReviews.Count();
+
+        await CheckCurrentUserCollab();
+        await CheckCurrentUserBookmark();
+        await InitReviews();
+        await InitQuestions();
+    }
+
+    private async Task GetAvgReview() {
+        Review[] allReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] { };
+        double sum = 0;
+        foreach (Review review in allReviews) {
+            sum += (int)review.StarCount;
+        }
+        sum = sum / allReviews.Count();
+        _avgReview = Math.Round(sum * 2, MidpointRounding.AwayFromZero) / 2;
+        _avgReviewRounded = (int)Math.Round(_avgReview, 0);
+    }
+
+    private async Task InitReviews() {
+        _wseReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + ReviewPage + "&entriesPerPage=" + ReviewEntryNum) ?? new Review[] { };
+        ReviewPage++;
+        _wseNextReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + ReviewPage + "&entriesPerPage=" + ReviewEntryNum) ?? new Review[] { };
+        ReviewPage++;
+        _wseReviews = _wseReviews.OrderByDescending(r => (int)r.StarCount).ToArray();
+    }
+
+    private async Task InitQuestions() {
+        _wseQuestions = await HttpClient.GetFromJsonAsync<Question[]>("wse/" + WseId + "/question?page=" + QuestionPage + "&entriesPerPage=" + QuestionEntryNum) ?? new Question[] { };
+        QuestionPage++;
+        _wseNextQuestions = await HttpClient.GetFromJsonAsync<Question[]>("wse/" + WseId + "/question?page=" + QuestionPage + "&entriesPerPage=" + QuestionEntryNum) ?? new Question[] { };
+        QuestionPage++;
+    }
+
+    private async Task GetNextReviews() {
+        var loadedReviews = new Review[_wseReviews.Length + _wseNextReviews.Length];
+        _wseReviews.CopyTo(loadedReviews, 0);
+        _wseNextReviews.CopyTo(loadedReviews, _wseReviews.Length);
+        _wseReviews = loadedReviews;
+
+        _wseNextReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + ReviewPage + "&entriesPerPage=" + ReviewEntryNum) ?? new Review[] { };
+        ReviewPage++;
+    }
+
+    private async Task GetNextQuestions() {
+        var loadedQuestions = new Question[_wseQuestions.Length + _wseNextQuestions.Length];
+        _wseQuestions.CopyTo(loadedQuestions, 0);
+        _wseNextQuestions.CopyTo(loadedQuestions, _wseQuestions.Length);
+        _wseQuestions = loadedQuestions;
+
+        _wseNextQuestions = await HttpClient.GetFromJsonAsync<Question[]>("wse/" + WseId + "/question?page=" + QuestionPage + "&entriesPerPage=" + QuestionEntryNum) ?? new Question[] { };
+        QuestionPage++;
+    }
+
+    private async Task CheckCurrentUserCollab() {
+        if (_isLoggedIn) {
+            CurrentUserWse = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + _userId + "/wse");
+            if (CurrentUserWse != null) {
+                foreach (WebserviceEntry userWse in CurrentUserWse) {
+                    if (userWse.Id == WseId) {
+                        _isCollab = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private async Task CheckCurrentUserBookmark() {
+        if (_isLoggedIn) {
+            CurrentUserBookmarks = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + _userId + "/bookmarks");
+            if (CurrentUserBookmarks != null) {
+                foreach (WebserviceEntry userBm in CurrentUserBookmarks) {
+                    if (userBm.Id == WseId) {
+                        _isBookmark = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private async void ChangeBookmarkStatus() {
+        if (_isLoggedIn) {
+            _isBookmark = !_isBookmark;
+            if (!_isBookmark) {
+                var response = await HttpClient.PostAsJsonAsync("user/" + _userId + "/bookmarks/add/" + WseId, "");
+            } else {
+                var response = await HttpClient.PostAsJsonAsync("user/" + _userId + "/bookmarks/remove/" + WseId, "");
+            }
+        } else {
+            NavManager.NavigateTo("login");
+        }
+    }
+
+    private async void SubmitNewQuestion() {
+        if (NewQuestion != null && _isLoggedIn) {
+            var response = await HttpClient.PutAsJsonAsync("wse/question", new Question() {
+                WseId = WseId,
+                Text = NewQuestion,
+                CreationTime = DateTimeOffset.UtcNow,
+                CreatorId = _userId
+            });
+
+            if (response.IsSuccessStatusCode) {
+                NavManager.NavigateTo("wse/" + WseId, forceLoad: true);
+            } else if (response.StatusCode == HttpStatusCode.Conflict) {
+    /*TODO specify message*/
+                ConflictMessage = "There was an conflict";
+                StateHasChanged();
+            } else {
+                NavManager.NavigateTo("/internal-server-error");
+            }
+        } else {
+            NavManager.NavigateTo("login");
+        }
+    }
+
+    private void CreateNewReview() {
+        if (_isLoggedIn) {
+            NavManager.NavigateTo("/wse/" + WseId + "/editReview");
+        } else {
+            NavManager.NavigateTo("login");
+        }
     }
 
     /* API STUFF, DO MERGE */
@@ -541,31 +568,28 @@
     [Parameter]
     public string WseName { get; set; } = null!;
 
-    [Inject]
-    private NavigationManager Manager { get; set; } = null!;
-
     protected override async Task OnParametersSetAsync() {
-	    if (Wse?.Id != WseId) {
-		    var response = await HttpClient.GetAsync($"wse/{WseId}");
-		    if (response.IsSuccessStatusCode) {
-			    Wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
-			    var fullUrl = $"wse/{WseId}/{HttpUtility.UrlEncode(Wse.Name)}";
-			    if (Manager.ToBaseRelativePath(Manager.Uri) != fullUrl) {
-				    Manager.NavigateTo(fullUrl);
-			    }
-		    } else {
-			    @* TODO not found *@
-		    }
-	    }
+        if (Wse?.Id != WseId) {
+            var response = await HttpClient.GetAsync($"wse/{WseId}");
+            if (response.IsSuccessStatusCode) {
+                Wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
+                var fullUrl = $"wse/{WseId}/{HttpUtility.UrlEncode(Wse.Name)}";
+                if (NavManager.ToBaseRelativePath(NavManager.Uri) != fullUrl) {
+                    NavManager.NavigateTo(fullUrl);
+                }
+            } else {
+                @* TODO not found *@
+            }
+        }
     }
 
     private async Task<string> StyleOnlineStatus(WebserviceEntry entry) {
-        var response = await HttpClient.GetAsync($"wse/{entry.Id}/checks/latest" );
+        var response = await HttpClient.GetAsync($"wse/{entry.Id}/checks/latest");
         if (response.IsSuccessStatusCode) {
             if (await response.Content.ReadFromJsonAsync<bool>()) {
                 return "text-success";
             } else {
-                return "text-danger";            
+                return "text-danger";
             }
         } else {
             return "text-secondary";

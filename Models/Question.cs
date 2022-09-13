@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace Models; 
+namespace Models;
 
 public class Question {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]

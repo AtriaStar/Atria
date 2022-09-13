@@ -13,7 +13,7 @@ public class Review {
     public WebserviceEntry Wse { get; set; } = null!;
     [Required]
     public string Title { get; set; } = null!;
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
     [Required]
     public StarCount StarCount { get; set; }
     public DateTimeOffset CreationTime { get; set; }

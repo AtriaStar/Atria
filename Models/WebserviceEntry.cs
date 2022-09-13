@@ -54,7 +54,7 @@ public class WebserviceEntry {
 
     [JsonIgnore]
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
-    [MaxLength(20)]
+    [JsonIgnore, MaxLength(20)]
     public virtual ICollection<Collaborator> Collaborators { get; set; } = new List<Collaborator>();
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 

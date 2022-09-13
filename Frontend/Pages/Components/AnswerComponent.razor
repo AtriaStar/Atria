@@ -1,0 +1,80 @@
+﻿@using Models
+@using System.Web
+@using System.Net
+
+<li class="list-group-item px-0">
+    <div class="row">
+        <div class="col-auto">
+            <h6 class="fw-bold mt-1">Antwort:</h6>
+        </div>
+        <div class="col">
+            <h6 class="fw-bold mt-1 mb-1">
+                @AnswerCreator.FirstNames @AnswerCreator.LastName
+                <small class="text-muted">@Answer.CreationTime</small>
+            </h6>
+            @Answer.Text
+        </div>
+    </div>
+    @if (Answer.CreatorId == _userId)
+    {
+        <div class="d-grid mt-2 d-flex justify-content-end">
+            <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteAnswerDialog(Question.Id, Answer.Id)">
+                Löschen
+            </button>
+        </div>
+    }
+</li>
+
+@if (DeleteAnswerDialogOpen) {
+    <Frontend.Pages.Components.DeleteModal 
+    Title="Antwort löschen" 
+    Text="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?" 
+    ToDelete="answer" 
+    WseId="WseId"
+    QuestionId="QuestionIdToDelete" 
+    AnswerId="AnswerIdToDelete"
+    OnClose="@OnDeleteAnswerDialogClose"/>
+}
+
+@code {
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+
+    [Parameter]
+    public Question Question { get; set; } = null!;
+
+    [Parameter]
+    public Answer Answer { get; set; } = null!;
+    
+    [Parameter]
+    public long WseId { get; set; }
+
+    [Parameter]
+    public bool _isLoggedIn { get; set; }
+
+    [Parameter]
+    public long _userId { get; set; }
+
+    private User AnswerCreator { get; set; } = new();
+
+    protected override async Task OnInitializedAsync() {
+        AnswerCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Answer.CreatorId) ?? new User() {};
+    }
+
+    /*-------------MODALS-------------*/
+    private long QuestionIdToDelete { get; set; }
+    private long AnswerIdToDelete { get; set; }
+    private bool DeleteAnswerDialogOpen { get; set; }
+
+    private void OpenDeleteAnswerDialog(long questionId, long answerId) {
+        DeleteAnswerDialogOpen = true;
+        QuestionIdToDelete = questionId;
+        AnswerIdToDelete = answerId;
+        StateHasChanged();
+    }
+
+    private void OnDeleteAnswerDialogClose(bool accepted) {
+        DeleteAnswerDialogOpen = false;
+        StateHasChanged();
+    }
+}
