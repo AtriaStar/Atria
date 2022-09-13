@@ -143,23 +143,18 @@
                     Durch das Löschen Ihres Kontos werden Sie aus allen Webservice-Einträgen entfernt.
                 </div>
                 <div class="d-flex justify-content-end">
-                    <button class="btn btn-outline-danger col-2" type="button" @onclick="OpenDeleteDialog" style="min-width: 128px">
+                    <button class="btn btn-outline-danger col-2" type="button" style="min-width: 128px" data-bs-toggle="modal" data-bs-target="#deleteAccModal">
                         Konto löschen
                     </button>
+                    <DeleteAccountModal></DeleteAccountModal>
                 </div>
             </div>
         </div>
     </div>
 }
 
-@if (_deleteDialogOpen) {
-    <DeleteAccountModal Title="Konto löschen" Text="Sind Sie sicher, dass Sie Ihr Konto löschen möchten?" OnClose="@OnDeleteDialogClose"></DeleteAccountModal>
-}
-
-
 @code {
-    private bool _deleteDialogOpen;
-
+    
     private string? _changePasswordMessage;
 
     private readonly Models.DTO.ChangePasswordDto _changePasswordDto = new();
@@ -178,7 +173,7 @@
     }
 
     private async Task HandleValidSubmit() {
-        var response = await HttpClient.PostAsJsonAsync("changePassword", _changePasswordDto);
+        var response = await HttpClient.PostAsJsonAsync("auth/change-password-uwu", _changePasswordDto);
 
         if (response.IsSuccessStatusCode) {
             NavigationManager.NavigateTo("", forceLoad: true); // Refresh header
@@ -187,16 +182,6 @@
         } else {
             NavigationManager.NavigateTo("/internal-server-error");
         }
-    }
-
-    private void OnDeleteDialogClose(bool accepted) {
-        _deleteDialogOpen = false;
-        StateHasChanged();
-    }
-
-    private void OpenDeleteDialog() {
-        _deleteDialogOpen = true;
-        StateHasChanged();
     }
 
 }

@@ -1,8 +1,8 @@
-﻿<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+﻿<div class="modal fade" id="deleteAccModal" style="background-color: rgba(10,10,10,.8);" tabindex="-1" aria-labelledby="deleteAccModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@Title</h5>
+                <h5 class="modal-title">Konto löschen</h5>
             </div>
             @if (_hasBeenDeleted) {
                 <div class="modal-body">
@@ -16,10 +16,10 @@
                 </div>
             } else {
                 <div class="modal-body">
-                    <p>@Text</p>
+                    <p>Sind Sie sicher, dass Sie Ihr Konto löschen möchten?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" @onclick="@ModalCancel">Abbrechen</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Abbrechen</button>
                     <button type="button" class="btn btn-danger" @onclick="@ModalDelete">Löschen</button>
                 </div>
             }
@@ -34,15 +34,6 @@
 
     private int _time = 4;
 
-    [Parameter]
-    public string Title { get; set; } = null!;
-
-    [Parameter]
-    public string Text { get; set; } = null!;
-
-    [Parameter]
-    public EventCallback<bool> OnClose { get; set; }
-
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
@@ -51,10 +42,6 @@
 
     [CascadingParameter]
     private LoginState LoginState { get; set; } = default!;
-
-    private Task ModalCancel() {
-        return OnClose.InvokeAsync(true);
-    }
 
     private async Task ModalDelete() {
         var response = await HttpClient.DeleteAsync("user");

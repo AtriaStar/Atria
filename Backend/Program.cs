@@ -2,7 +2,6 @@
 using Backend.AspPlugins;
 using Backend.Authentication;
 using Backend.ParameterHelpers;
-
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,3 +50,8 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 app.Run();
+
+//allows us to reference this class globally
+public partial class Program { }
+
+

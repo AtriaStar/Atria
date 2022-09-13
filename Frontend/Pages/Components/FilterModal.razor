@@ -20,7 +20,7 @@
                 </div>
                 @*
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="flexCheckBookmarks" @bind="hasBookmark" />
+                    <input class="form-check-input" type="checkbox" id="flexCheckBookmarks" @bind="IsBookmark" />
                     <label class="form-check-label" for="flexCheckBookmarks">
                         <i class="fa-solid fa-bookmark pe-1" style="color: red"></i>
                         Lesezeichen
@@ -43,13 +43,11 @@
                         </div>
                     </div>
                     <div class="col-auto">
-                        @for (int i = 1; i <= SelectedStarNum; i++)
-                        {
+                        @for (int i = 1; i <= SelectedStarNum; i++) {
                             <i class="fa fa-star rating-color me-1"></i>
                         }
 
-                        @for (int i = 1; i <= (5 - SelectedStarNum); i++)
-                        {
+                        @for (int i = 1; i <= (5 - SelectedStarNum); i++) {
                             <i class="fa fa-star rating-uncolored me-1"></i>
                         }
                     </div>
@@ -69,8 +67,7 @@
                 </div>
                 <div class="row mt-3 mb-1">
 
-                    @foreach (Tag tag in _selectedTags)
-                    {
+                    @foreach (Tag tag in _selectedTags) {
                         <div class="col-auto">
                             <h6>
                                 <span class="badge bg-info">
@@ -85,8 +82,7 @@
                 @*TODO InputSelect when EditForm added*@
                 <div class="ui-field">
                     <select class="form-select mt-1" size="8" multiple @onchange="SelectedTagsChanged">
-                        @foreach (Tag tag in _searchedTags)
-                        {
+                        @foreach (Tag tag in _searchedTags) {
                             <option value="@tag.Name">@tag.Name</option>
                         }
                     </select>
@@ -96,7 +92,6 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" @onclick="ModalClose">Abbrechen</button>
                 <button type="button" class="btn btn-success" @onclick="ModalApply">Anwenden</button>
             </div>
         </div>
@@ -131,38 +126,32 @@
 
     private List<Tag> _searchedTags = new List<Tag>();
 
-    @*------------MODAL------------*@
+        @*------------MODAL------------*@
 
-    private Task ModalClose()
-    {
+    private Task ModalClose() {
         return OnClose.InvokeAsync(false);
     }
 
-    private Task ModalApply()
-    {
-        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> { ["IsOnline"] = IsOnline, ["hasBookmark"] = hasBookmark, ["minRating"] = SelectedStarNum, ["tags"] = SelectedTagsStr, }));
+    private Task ModalApply() {
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> { ["IsOnline"] = IsOnline, ["HasBookmark"] = hasBookmark, ["minRating"] = SelectedStarNum, ["tags"] = SelectedTagsStr, }));
         return OnClose.InvokeAsync(true);
     }
 
-    @*------------TAG SEARCH------------*@
+        @*------------TAG SEARCH------------*@
 
-    private void SearchTags(KeyboardEventArgs evt)
-    {
+    private void SearchTags(KeyboardEventArgs evt) {
         _searchedTags = new List<Tag>();
 
-        if (evt.Key == "Enter" && _tagQuery is not null)
-        {
-            foreach (Tag tag in _mockTags)
-            {
-                if (tag.Name.Contains(_tagQuery, StringComparison.CurrentCultureIgnoreCase))
-                {
+        if (evt.Key == "Enter" && _tagQuery is not null) {
+            foreach (Tag tag in _mockTags) {
+                if (tag.Name.Contains(_tagQuery, StringComparison.CurrentCultureIgnoreCase)) {
                     _searchedTags.Add(tag);
                 }
             }
         }
     }
 
-    @*------------TAGS------------*@
+        @*------------TAGS------------*@
 
     protected override void OnInitialized() {
     /*mock tags*/
@@ -180,38 +169,30 @@
 
         foreach (string str in SelectedTagsStr!) //visibility of previous applied tags
         {
-            foreach (Tag tag in _mockTags)
-            {
-                if (str.Equals(tag.Name))
-                {
+            foreach (Tag tag in _mockTags) {
+                if (str.Equals(tag.Name)) {
                     _selectedTags.Add(tag);
                 }
             }
         }
     }
 
-    private void DeleteSelectedTags()
-    {
+    private void DeleteSelectedTags() {
         _selectedTags = new List<Tag>();
         SelectedTagsStr = new string[] { };
     }
 
-    private void RemoveTag(Tag tag)
-    {
+    private void RemoveTag(Tag tag) {
         _selectedTags = _selectedTags.Where(t => t.Name != tag.Name).ToList();
         SelectedTagsStr = SelectedTagsStr!.Where(s => s != tag.Name).ToArray();
     }
 
-    private void SelectedTagsChanged(ChangeEventArgs e)
-    {
-        if (e.Value is not null)
-        {
+    private void SelectedTagsChanged(ChangeEventArgs e) {
+        if (e.Value is not null) {
             _selectedTagsStrB = (string[])e.Value;
         }
-        foreach (string str in _selectedTagsStrB)
-        {
-            if (!_selectedTags.Exists(t => t.Name == str))
-            {
+        foreach (string str in _selectedTagsStrB) {
+            if (!_selectedTags.Exists(t => t.Name == str)) {
                 Tag selectedTag = _mockTags.Find(t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
                 _selectedTags.Add(selectedTag);
                 SelectedTagsStr = SelectedTagsStr!.Concat(new[] { selectedTag.Name }).ToArray();

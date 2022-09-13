@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AtriaContext))]
-    [Migration("20220907201623_MockMig")]
-    partial class MockMig
+    [Migration("20220913002958_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -189,7 +189,6 @@ namespace Backend.Migrations
                         .HasColumnName("creator_id");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("description");
 
@@ -258,8 +257,15 @@ namespace Backend.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
+                    b.Property<long?>("WseDraftId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("wse_draft_id");
+
                     b.HasKey("Name")
                         .HasName("pk_tags");
+
+                    b.HasIndex("WseDraftId")
+                        .HasDatabaseName("ix_tags_wse_draft_id");
 
                     b.ToTable("tags", (string)null);
                 });
@@ -446,12 +452,12 @@ namespace Backend.Migrations
                         .HasColumnName("short_description");
 
                     b.HasKey("Id")
-                        .HasName("pk_wse_draft");
+                        .HasName("pk_drafts");
 
                     b.HasIndex("CreatorId")
-                        .HasDatabaseName("ix_wse_draft_creator_id");
+                        .HasDatabaseName("ix_drafts_creator_id");
 
-                    b.ToTable("wse_draft", (string)null);
+                    b.ToTable("drafts", (string)null);
                 });
 
             modelBuilder.Entity("TagWebserviceEntry", b =>
@@ -617,6 +623,14 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Models.Tag", b =>
+                {
+                    b.HasOne("Models.WseDraft", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("WseDraftId")
+                        .HasConstraintName("fk_tags_drafts_wse_draft_id");
+                });
+
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
                     b.HasOne("Models.User", "ContactPerson")
@@ -636,7 +650,7 @@ namespace Backend.Migrations
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_wse_draft_users_creator_id");
+                        .HasConstraintName("fk_drafts_users_creator_id");
 
                     b.Navigation("Creator");
                 });
@@ -689,6 +703,11 @@ namespace Backend.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("Models.WseDraft", b =>
+                {
+                    b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
         }

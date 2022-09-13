@@ -1,24 +1,23 @@
 ﻿@page "/newWse"
-@using Microsoft.AspNetCore.Components
 @using Models
+@using Models.DTO
+@using System.Net
+@inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
 
 <PageTitle>Atria - Neuer Eintrag</PageTitle>
 
 <div class="container-lg mt-3">
 
-    @if (newWse)
-    {
-        <h2>Neuer Eintrag</h2>
-    } else if (editWse) 
-    {
-        @*TODO inputs with data*@
-        <h2>Eintrag bearbeiten</h2>
-    }
+    <h2>Neuer Eintrag</h2>
 
-    @*TODO: draft only needs name; to publish name, short description and link needed*@
-    <EditForm Model="@webserviceEntry" OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator/>
-        <ValidationSummary/>
+    <div class="fw-bold text-danger">
+        @_conflictMessage
+    </div>
+
+    <EditForm EditContext="@_editContext">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
 
         <div class="mt-3 mb-3">
             <label class="form-label fw-bold">
@@ -26,9 +25,9 @@
                 <small style="color: red">*Pflicht</small>
             </label>
             <div class="ui-field">
-                <InputText class="form-control" id="name" @bind-Value="webserviceEntry.Name"/>
+                <InputText class="form-control" id="name" @bind-Value="_webserviceEntry.Name"/>
             </div>
-            <ValidationMessage For="() => webserviceEntry.Name"></ValidationMessage>
+            <ValidationMessage For="() => _webserviceEntry.Name"></ValidationMessage>
         </div>
 
         <div class="mb-3">
@@ -38,9 +37,9 @@
                 <small style="color: red">*Pflicht für die Veröffentlichung</small>
             </label>
             <div class="ui-field">
-                <InputText class="form-control" id="shortDescription" @bind-Value="webserviceEntry.ShortDescription"/>
+                <InputText class="form-control" id="shortDescription" @bind-Value="_webserviceEntry.ShortDescription"/>
             </div>
-            <ValidationMessage For="() => webserviceEntry.ShortDescription"></ValidationMessage>
+            <ValidationMessage For="() => _webserviceEntry.ShortDescription"></ValidationMessage>
         </div>
 
         <div class="mb-4">
@@ -49,9 +48,9 @@
                 <small style="color: red">*Pflicht für die Veröffentlichung</small>
             </label>
             <div class="ui-field">
-                <InputText class="form-control" type="url" placeholder="http(s)://..." id="link" @bind-Value="webserviceEntry.Link"/>
+                <InputText class="form-control" type="url" placeholder="http(s)://..." id="link" @bind-Value="_webserviceEntry.Link"/>
             </div>
-            <ValidationMessage For="() => webserviceEntry.Link"></ValidationMessage>
+            <ValidationMessage For="() => _webserviceEntry.Link"></ValidationMessage>
         </div>
 
         <hr/>
@@ -73,34 +72,45 @@
             <div class="col-auto mb-2">
                 <div class="form-control form-control-sm border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
                     <div class="input-group input-group-sm">
-                        <button class="btn btn-sm btn-link text-dark"><i class="fa fa-search"></i></button>
-                        <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach...">
+                        <button class="btn btn-sm btn-link text-dark">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="_tagQuery" @onkeyup="SearchTags">
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="row mb-1">
-            @foreach (string tag in selectedTags)
-            {
+            @foreach (var tag in _selectedTags) {
                 <div class="col-auto">
                     <h6>
                         <span class="badge bg-info">
-                            @tag
-                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"/>
+                            @tag.Name
+                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"></button>
                         </span>
                     </h6>
                 </div>
             }
         </div>
-        
-        @*TODO change to InputSelect*@
+
         <div class="ui-field">
             <select class="form-select mb-3" size="8" multiple @onchange="SelectedTagsChanged">
-                @for (int i = 0; i < 21; i++) {
-                    <option value="Tag @i">Tag @i</option>
+                @foreach (var tag in _searchedTags) {
+                    <option value="@tag.Name">@tag.Name</option>
                 }
             </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">
+                neue Tags erstellen
+                <small class="text-muted">(kommagetrennt)</small>
+            </label>
+            <div class="ui-field">
+                <InputTextArea class="form-control" rows="3" placeholder="tag1,tag2,..." id="newTags" @bind-Value="_tagDto.NewTagsStr"/>
+            </div>
+            <ValidationMessage For="() => _tagDto.NewTagsStr"></ValidationMessage>
         </div>
 
         <hr/>
@@ -108,35 +118,35 @@
         <div class="mt-4 mb-3">
             <label class="form-label fw-bold">Dokumentation</label>
             <div class="ui-field">
-                <InputText class="form-control mb-2" type="url" placeholder="Link" id="docLink" @bind-Value="webserviceEntry.DocumentationLink"/> 
+                <InputText class="form-control mb-2" type="url" placeholder="Link" id="docLink" @bind-Value="_webserviceEntry.DocumentationLink"/>
             </div>
             <div class="ui-field">
-                <InputTextArea class="form-control" rows="3" placeholder="Text" id="doc" @bind-Value="webserviceEntry.Documentation"/>
+                <InputTextArea class="form-control" rows="3" placeholder="Text" id="doc" @bind-Value="_webserviceEntry.Documentation"/>
             </div>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">Volltextbeschreibung</label>
             <div class="ui-field">
-                <InputTextArea class="form-control" rows="3" id="fullDescription" @bind-Value="webserviceEntry.FullDescription"/>
+                <InputTextArea class="form-control" rows="3" id="fullDescription" @bind-Value="_webserviceEntry.FullDescription"/>
             </div>
         </div>
 
         <div class="mb-4">
             <label class="form-label fw-bold">Änderungshistorie</label>
             <div class="ui-field">
-                <InputTextArea class="form-control" rows="3" id="changeLog" @bind-Value="webserviceEntry.ChangeLog"/>
+                <InputTextArea class="form-control" rows="3" id="changeLog" @bind-Value="_webserviceEntry.ChangeLog"/>
             </div>
         </div>
 
         <div class="d-grid gap-2 d-flex justify-content-end mb-4">
             <div class="btn-group">
-                <button class="btn btn-success" type="submit">
+                <button class="btn btn-success" type="button" @onclick="SaveAsDraft">
                     Als Entwurf speichern
                 </button>
             </div>
             <div class="btn-group">
-                <button class="btn btn-success" type="submit">
+                <button class="btn btn-success" type="button" @onclick="PublishWse">
                     Veröffentlichen
                 </button>
             </div>
@@ -145,30 +155,153 @@
 </div>
 
 @code {
-    readonly WebserviceEntry webserviceEntry = new();
-    string[] selectedTags = new string[] { };
-    public bool newWse = true;
-    public bool editWse = false;
 
-    private void HandleValidSubmit() {
-        Console.WriteLine("Valid");
+    /*
+     * if this is false, the current context is using wse as model and the wse field is populated.
+     * if this is true, the current context is using draft as model and the draft field is populated.
+     * default is using wse as model
+     */
+    private bool _drafting = false;
+
+    private EditContext? _editContext;
+    private WebserviceEntry _webserviceEntry = new();
+    private WseDraft _draft = new();
+    
+    [CascadingParameter]
+    private LoginState LoginState { get; init; } = null!;
+
+    private readonly TagDto _tagDto = new();
+
+    private List<Tag> _searchedTags = new();
+    private List<Tag> _selectedTags = new();
+    private string[] _selectedTagsStr = { };
+    private Tag[]? _allTags;
+
+    private string? _tagQuery;
+    private string? _conflictMessage;
+
+    protected override void OnInitialized() {
+        _editContext = new EditContext(_webserviceEntry);
     }
 
-    private void DeleteSelectedTags()
-    {
-        selectedTags = Array.Empty<string>();
+    private async void PublishWse() {
+    // if previous attempt was to create a draft, now try to create a wse
+        if (_drafting) {
+            _webserviceEntry = new WebserviceEntry {
+                Name = _draft.Name,
+                ShortDescription = _draft.ShortDescription!, // if null then null is wanted for validation
+                Link = _draft.Link!, // if null then null is wanted for validation
+                FullDescription = _draft.FullDescription,
+                DocumentationLink = _draft.DocumentationLink,
+                Documentation = _draft.Documentation,
+                ChangeLog = _draft.ChangeLog,
+                Tags = _draft.Tags
+            };
+            _editContext = new EditContext(_webserviceEntry);
+            _editContext.EnableDataAnnotationsValidation();
+        }
+        
+        if (_editContext!.Validate()) {
+    //set contact and tags
+            _webserviceEntry.ContactPersonId = LoginState.User!.Id;
+            _webserviceEntry.Tags = new HashSet<Tag>(_selectedTags);
+
+            _webserviceEntry.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',').Select(x => new Tag {
+                Name = x
+            }) ?? Enumerable.Empty<Tag>());
+
+    // send to api
+            var response = await HttpClient.PutAsJsonAsync("wse", _webserviceEntry);
+            if (response.IsSuccessStatusCode) {
+                var wseId = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!.Id;
+                NavigationManager.NavigateTo("wse/" + wseId);
+            } else if (response.StatusCode == HttpStatusCode.Conflict) {
+                _conflictMessage = await response.Content.ReadAsStringAsync();
+            } else {
+                NavigationManager.NavigateTo("/internal-server-error");
+            }
+        }
+        _drafting = false;
+        StateHasChanged();
+
     }
 
-    private void RemoveTag(string tag)
-    {
-        selectedTags = selectedTags.Where(w => w != tag).ToArray();
+    private async void SaveAsDraft() {
+    // if previous attempt was to create a draft, now try to create a wse
+        if (!_drafting) {
+            _draft = new WseDraft {
+                Name = _webserviceEntry.Name,
+                ShortDescription = _webserviceEntry.ShortDescription,
+                Link = _webserviceEntry.Link,
+                FullDescription = _webserviceEntry.FullDescription,
+                DocumentationLink = _webserviceEntry.DocumentationLink,
+                Documentation = _webserviceEntry.Documentation,
+                ChangeLog = _webserviceEntry.ChangeLog,
+                Tags = _webserviceEntry.Tags
+            };
+            _editContext = new EditContext(_draft);
+            _editContext.EnableDataAnnotationsValidation();
+        }
+
+        if (_editContext!.Validate()) {
+    /* set tags */
+            _draft.Tags = new HashSet<Tag>(_selectedTags);
+            _draft.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',').Select(x => new Tag {
+                Name = x
+            }) ?? Enumerable.Empty<Tag>());
+
+            var response = await HttpClient.PutAsJsonAsync("user/draft", _draft);
+            if (response.IsSuccessStatusCode) {
+                var wseDraftId = (await response.Content.ReadFromJsonAsync<WseDraft>())!.Id;
+                NavigationManager.NavigateTo("wseDraft/" + wseDraftId);
+            } else if (response.StatusCode == HttpStatusCode.Conflict) {
+                _conflictMessage = await response.Content.ReadAsStringAsync();
+            } else {
+                NavigationManager.NavigateTo("/internal-server-error");
+            }
+        }
+        _drafting = true;
+        StateHasChanged();
     }
 
-    private void SelectedTagsChanged(ChangeEventArgs e)
-    {
-        if (e.Value is not null)
-        {
-            selectedTags = (string[])e.Value;
+        @*------------TAG SEARCH------------*@
+
+    private void SearchTags(KeyboardEventArgs evt) {
+        _searchedTags = new List<Tag>();
+
+        if (evt.Key == "Enter" && _tagQuery is not null && _allTags is not null) {
+            foreach (var tag in _allTags) {
+                if (tag.Name.Contains(_tagQuery, StringComparison.CurrentCultureIgnoreCase)) {
+                    _searchedTags.Add(tag);
+                }
+            }
         }
     }
+
+    protected override async Task OnInitializedAsync() {
+        _allTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag") ?? new Tag[] { };
+        _searchedTags = _allTags.ToList();
+    }
+
+    private void DeleteSelectedTags() {
+        _selectedTags = new List<Tag>();
+    }
+
+    private void RemoveTag(Tag tag) {
+        _selectedTags = _selectedTags.Where(t => t.Name != tag.Name).ToList();
+    }
+
+    private void SelectedTagsChanged(ChangeEventArgs e) {
+        if (e.Value is not null) {
+            _selectedTagsStr = (string[])e.Value;
+        }
+
+        foreach (var str in _selectedTagsStr) {
+            if (!_selectedTags.Exists(t => t.Name == str) && _allTags is not null) {
+                var selectedTag = Array.Find(_allTags, t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
+                _selectedTags.Add(selectedTag);
+            }
+        }
+    }
+
 }
