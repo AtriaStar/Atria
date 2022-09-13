@@ -48,7 +48,10 @@
             @Entry.ShortDescription
         </div>
         <div class="col-auto ms-auto">
-            @($"{NiceNumberFormatterService.NiceFormat(Entry.ViewCount)} Aufruf{(Entry.ViewCount == 1 ? "" : "e")}")
+	        <Tooltip Text="@Entry.ViewCount.ToString("N0")">
+		        @NiceNumberFormatterService.NiceFormat(Entry.ViewCount)
+	        </Tooltip>
+	        @(" Aufruf" + (Entry.ViewCount == 1 ? "" : "e"))
         </div>
     </div>
 
@@ -61,9 +64,11 @@
     </div>
 
     <div class="row justify-content-between">
-        <div class="col">
-            @NiceTimeSpanFormatterService.NiceFormat(DateTimeOffset.UtcNow - Entry.CreatedAt)
-        </div>
+	    <div class="col">
+		    <Tooltip Text="@Entry.CreatedAt.ToString()">
+			    @NiceTimeSpanFormatterService.NiceFormat(DateTimeOffset.UtcNow - Entry.CreatedAt)
+		    </Tooltip>
+	    </div>
         <div class="col-auto">
             <NavLink href="@Entry.Link">
                 <i class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-4" title="Zur Webservice"></i>
@@ -86,7 +91,7 @@
     private string _onlineStatusStyle = "text-secondary";
     private string _wseLink = "";
 
-        @* TODO implement *@
+    @* TODO implement; Maybe display review count as tooltip? *@
     private double _reviewAverage = 2.4;
 
     protected override void OnParametersSet() {

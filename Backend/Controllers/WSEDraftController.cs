@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Backend.AspPlugins;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 
 namespace Backend.Controllers;
 
 [ApiController]
 [Route("")]
-public class WseDraftController : ControllerBase {
+public class WseDraftController : AtriaControllerBase {
 
     [HttpGet("user/{userId}/draft/{draftId}")]
     public WseDraft Get(int draftId) => null!;
