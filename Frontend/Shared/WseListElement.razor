@@ -92,7 +92,7 @@
     private string _wseLink = "";
 
     @* TODO implement; Maybe display review count as tooltip? *@
-    private double _reviewAverage = 2.4;
+    private double _reviewAverage { get; set; }
 
     protected override void OnParametersSet() {
         _wseLink = "/wse/" + Entry.Id;
@@ -109,6 +109,7 @@
         } else {
             _onlineStatusStyle = "text-secondary";
         }
+        await GetAvgReview();
     }
 
     private void NavigateToLogin() {
@@ -130,6 +131,15 @@
             }
         }
         NavigationManager.NavigateTo(NavigationManager.Uri);
+    }
+
+    private async Task GetAvgReview() {
+        Review[] allReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + Entry.Id + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] { };
+        double sum = 0;
+        foreach (Review review in allReviews) {
+            sum += (int)review.StarCount;
+        }
+        _reviewAverage = sum / allReviews.Count();
     }
 
 }
