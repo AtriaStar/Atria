@@ -4,18 +4,21 @@ namespace PlaywrightTests;
 
 public class Tests {
 
-    public IBrowser Browser { get; set; }
     private readonly string _url = "https://localhost:7206/";
 
-    [OneTimeSetUp]
-    public async Task SetupBrowser() {
-        using var playwright = await Playwright.CreateAsync();
-        Browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions {Headless = false});
+    [SetUp]
+    public void SetupBrowser() {
+        
     }
 
     [Test]
-    public async Task RegisterAndLogoutTest() { 
-        var page = await Browser.NewPageAsync();
+    public async Task RegisterAndLogoutTest() {
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions {
+            Headless = false
+        });
+        var page = await browser.NewPageAsync();
 
         await page.GotoAsync(_url);
         await page.Locator("text=Registrieren").ClickAsync();
@@ -36,7 +39,12 @@ public class Tests {
 
     [Test]
     public async Task LoginTest() {
-        var page = await Browser.NewPageAsync();
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions {
+            Headless = false
+        });
+        var page = await browser.NewPageAsync();
 
         await page.GotoAsync(_url);
         await page.Locator("text=Einloggen").ClickAsync();
