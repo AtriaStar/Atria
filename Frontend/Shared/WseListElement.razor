@@ -48,10 +48,10 @@
             @Entry.ShortDescription
         </div>
         <div class="col-auto ms-auto">
-	        <Tooltip Text="@Entry.ViewCount.ToString("N0")">
-		        @NiceNumberFormatterService.NiceFormat(Entry.ViewCount)
-	        </Tooltip>
-	        @(" Aufruf" + (Entry.ViewCount == 1 ? "" : "e"))
+            <Tooltip Text="@Entry.ViewCount.ToString("N0")">
+                @NiceNumberFormatterService.NiceFormat(Entry.ViewCount)
+            </Tooltip>
+            @(" Aufruf" + (Entry.ViewCount == 1 ? "" : "e"))
         </div>
     </div>
 
@@ -64,11 +64,11 @@
     </div>
 
     <div class="row justify-content-between">
-	    <div class="col">
-		    <Tooltip Text="@Entry.CreatedAt.ToString()">
-			    @NiceTimeSpanFormatterService.NiceFormat(DateTimeOffset.UtcNow - Entry.CreatedAt)
-		    </Tooltip>
-	    </div>
+        <div class="col">
+            <Tooltip Text="@Entry.CreatedAt.ToString()">
+                @NiceTimeSpanFormatterService.NiceFormat(DateTimeOffset.UtcNow - Entry.CreatedAt)
+            </Tooltip>
+        </div>
         <div class="col-auto">
             <NavLink href="@Entry.Link">
                 <i class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-4" title="Zur Webservice"></i>
@@ -91,8 +91,8 @@
     private string _onlineStatusStyle = "text-secondary";
     private string _wseLink = "";
 
-    @* TODO implement; Maybe display review count as tooltip? *@
-    private double _reviewAverage { get; set; }
+        @* TODO implement; Maybe display review count as tooltip? *@
+    private double _reviewAverage;
 
     protected override void OnParametersSet() {
         _wseLink = "/wse/" + Entry.Id;
@@ -134,12 +134,13 @@
     }
 
     private async Task GetAvgReview() {
-        Review[] allReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + Entry.Id + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] { };
+        var allReviews = await HttpClient.GetFromJsonAsync<Review[]>(
+            "wse/" + Entry.Id + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] { };
         double sum = 0;
-        foreach (Review review in allReviews) {
+        foreach (var review in allReviews) {
             sum += (int)review.StarCount;
         }
-        _reviewAverage = sum / allReviews.Count();
+        _reviewAverage = sum / allReviews.Length;
     }
 
 }
