@@ -28,6 +28,9 @@ jobs:
       - name: Setup database
         run: dotnet ef database update --project Backend/Backend.csproj
 
+      - name: Setup Playwright
+        uses: maxmilton/action-setup-playwright@v1.0.6
+
       - name: Build
         run: dotnet build -warnaserror
 
