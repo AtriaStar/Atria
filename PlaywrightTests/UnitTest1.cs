@@ -16,7 +16,9 @@ public class Tests {
 
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions {
+#if !CI
             Headless = false
+#endif
         });
         var page = await browser.NewPageAsync();
 
