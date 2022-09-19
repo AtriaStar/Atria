@@ -14,7 +14,7 @@ public class AuthenticationBinderFilter : IAsyncActionFilter, IOrderedFilter {
 
     public int Order => 0;
 
-    private async Task<bool> Execute(ActionExecutingContext context) {
+    private static async Task<bool> Execute(ActionExecutingContext context) {
         var authParams = context.GetParametersWithAttribute<FromAuthenticationAttribute>().ToArray();
         var optional = authParams.All(x => Nullability.Create(x).ReadState == NullabilityState.Nullable)
                        && context.GetMethod()?.GetCustomAttribute<RequiresAuthenticationAttribute>() == null;
