@@ -1,4 +1,5 @@
-﻿using Backend.AspPlugins;
+﻿using System.Globalization;
+using Backend.AspPlugins;
 using Backend.Authentication;
 using Backend.ParameterHelpers;
 using Backend.Services;
@@ -34,7 +35,7 @@ public class SearchController : AtriaControllerBase {
             .Select(x => x with { score = x.score * parameters.Order.GetMapper().Invoke(x.wse) })
             .OrderBy(x => parameters.Ascending ? x.score : -x.score)
             .Select(x => {
-                x.wse.ChangeLog = x.score.ToString();
+                x.wse.ChangeLog = x.score.ToString(CultureInfo.CurrentCulture);
                 return x.wse;
             });
 
