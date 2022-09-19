@@ -28,11 +28,12 @@ jobs:
       - name: Setup database
         run: dotnet ef database update --project Backend/Backend.csproj
 
-      - name: Setup Playwright
-        uses: maxmilton/action-setup-playwright@v1.0.6
-
       - name: Build
         run: dotnet build -warnaserror
+        
+      - name: Setup Playwright
+        shell: pwsh
+        run: PlaywrightTests/bin/Debug/net6.0/playwright.ps1 install
 
       - name: Run tests
         run: dotnet test
