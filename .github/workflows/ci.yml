@@ -29,7 +29,7 @@ jobs:
         run: dotnet ef database update --project Backend/Backend.csproj
 
       - name: Build
-        run: dotnet build -warnaserror
+        run: dotnet build -warnaserror /p:DefineConstants=CI
         
       - name: Setup Playwright
         shell: pwsh
