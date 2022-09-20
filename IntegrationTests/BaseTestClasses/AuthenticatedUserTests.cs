@@ -26,4 +26,15 @@ public abstract class AuthenticatedUserTests : BaseTests, IAsyncLifetime {
         Scope.Dispose();
         return Task.CompletedTask;
     }
+
+    protected async Task<WebserviceEntry> AddBasicWseAsync()
+        => (await Context.AddAsync(new WebserviceEntry {
+            Name = Guid.NewGuid().ToString(),
+            ShortDescription = "test",
+            FullDescription = "test",
+            Link = "https://www.test.com/" + Guid.NewGuid(),
+            ViewCount = 1,
+            ContactPersonId = AuthenticatedUser.Id,
+            Collaborators = new List<Collaborator> { new() { User = AuthenticatedUser, Rights = WseRights.Owner } },
+        })).Entity;
 }
