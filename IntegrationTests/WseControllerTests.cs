@@ -2,6 +2,7 @@
 using IntegrationTests.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.DTO;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -68,6 +69,41 @@ public class WseControllerTests : AuthenticatedUserTests {
 
         //Assert
         Assert.NotNull(wseInDb);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(wseInDb.Name, newWse.Name);
+    }
+
+    [Fact]
+    public async Task EditCollaborators_UpdatesWseInDb_WhenUserAuthorized() {
+        //Arrange
+        var newWse = new WebserviceEntry {
+            Name = "EditCollabs",
+            ShortDescription = "Search things",
+            FullDescription = "search many things",
+            Link = "https://www.EditCollab.com/",
+            ViewCount = 1,
+            ContactPersonId = AuthenticatedUser.Id,
+        };
+        newWse.Collaborators.Add(new() { UserId = AuthenticatedUser.Id, Rights = WseRights.Owner });
+        newWse = (await Context.WebserviceEntries.AddAsync(newWse)).Entity;
+        await Context.SaveChangesAsync();
+        var user = await Context.Users.FirstOrDefaultAsync(x => x.Id != AuthenticatedUser.Id);
+
+        //Act
+        var collabDto = new CollaboratorDto {
+            UserId = user.Id,
+            Rights = WseRights.EditCollaborators,
+        };
+        CollaboratorDto[] collabs = {collabDto};
+
+        using var response = await Client.PostAsJsonAsync($"https://localhost:7038/api/wse/{newWse.Id}/collaborators", collabs);
+        await response.AssertStatusCode();
+        var wseInDb = await Context.WebserviceEntries.FirstOrDefaultAsync(x => x.Name.Equals(newWse.Name));
+        var userInCollabList = wseInDb.Collaborators.FirstOrDefault(x => x.UserId == user.Id);
+
+        //Assert
+        Assert.NotNull(wseInDb);
+        Assert.NotNull(userInCollabList);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(wseInDb.Name, newWse.Name);
     }
