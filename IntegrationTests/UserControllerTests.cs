@@ -107,9 +107,10 @@ public class UserControllerTests : AuthenticatedUserTests {
             CreatorId = user.Id,
             WseId = wse.Id,
             Description = "testDescription",
-            CreationTime = DateTime.Now,
+            CreationTime = DateTimeOffset.UtcNow,
         };
         await Context.Reviews.AddAsync(review);
+        await Context.SaveChangesAsync();
 
         //Act
         var response = await Client.GetAsync($"https://localhost:7038/api/user/{user.Id}/reviews");
@@ -127,9 +128,10 @@ public class UserControllerTests : AuthenticatedUserTests {
         var wseDraft = new WseDraft { Name = "testDraft" };
         user.WseDrafts.Add(wseDraft);
         Context.Users.Update(user);
+        await Context.SaveChangesAsync();
 
         //Act
-        var response = await Client.GetAsync($"https://localhost:7038/api/user/{user.Id}/bookmarks");
+        var response = await Client.GetAsync($"https://localhost:7038/api/user/{user.Id}/drafts");
         var wseDraftList = await response.Content.ReadFromJsonAsync<IEnumerable<WseDraft>>() ?? Array.Empty<WseDraft>();
         //Assert
 

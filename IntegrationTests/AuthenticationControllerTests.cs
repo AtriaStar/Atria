@@ -66,7 +66,7 @@ namespace IntegrationTests {
             };
 
             LoginDto login2 = new() {
-                Password = "12345",
+                Password = "5353345",
                 Email = user.Email,
             };
 
