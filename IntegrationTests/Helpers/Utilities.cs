@@ -34,20 +34,27 @@ public static class Utilities {
     public static readonly byte[] MASTER_SALT = HashingService.GenerateSalt();
     public static readonly byte[] MASTER_HASHED_PASSWORD = HashingService.Hash(MASTER_PASSWORD, MASTER_SALT);
 
-    public static async Task<Session> GetAuthenticatedUser(AtriaContext db) {
-        var session = db.Sessions.Include(x => x.User).FirstOrDefault();
-        if (session == null) {
-            var user = await db.Users.FirstAsync();
-            session = new() {
-                User = user,
-                Ip = "127.0.0.1",
-                Token = MASTER_TOKEN,
-                UserAgent = "Goggle Chrum",
-            };
-            await db.Sessions.AddAsync(session);
-            await db.SaveChangesAsync();
-        }
+    private static readonly SemaphoreSlim _sem = new(1, 1);
 
-        return session;
+    public static async Task<Session> GetAuthenticatedUser(AtriaContext db) {
+        await _sem.WaitAsync();
+        try {
+            var session = db.Sessions.Include(x => x.User).FirstOrDefault();
+            if (session == null) {
+                var user = await db.Users.FirstAsync();
+                session = new() {
+                    User = user,
+                    Ip = "127.0.0.1",
+                    Token = MASTER_TOKEN,
+                    UserAgent = "Goggle Chrum",
+                };
+                await db.Sessions.AddAsync(session);
+                await db.SaveChangesAsync();
+            }
+
+            return session;
+        } finally {
+            _sem.Release();
+        }
     }
 }
