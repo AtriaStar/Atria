@@ -130,7 +130,7 @@ public class AuthenticationController : AtriaControllerBase {
     }
 
     private async Task<User?> LoginAsync(string email, string password) {
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email.ToLowerInvariant());
         return user != null && user.PasswordHash.SequenceEqual(HashingService.Hash(password, user.PasswordSalt))
             ? user : null;
     }
