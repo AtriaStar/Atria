@@ -5,6 +5,7 @@ using Models;
 using Models.DTO;
 using System.Net;
 using System.Net.Http.Json;
+using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 
 namespace IntegrationTests; 
@@ -149,7 +150,7 @@ public class WseControllerTests : AuthenticatedUserTests {
     }
 
     [Fact]
-    public async Task EdiReview_UpdatesReviewInDb_WhenUserAuthorized() {
+    public async Task EditReview_UpdatesReviewInDb_WhenUserAuthorized() {
         //Arrange
         var wse = await Context.WebserviceEntries.FirstAsync();
         var review = new Review {
@@ -225,6 +226,113 @@ public class WseControllerTests : AuthenticatedUserTests {
 
         //Assert
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteWse_DeletesWseInDb_WhenUserAuthorized() {
+        //Arrange
+        var newWse = new WebserviceEntry {
+            Name = "DeleteWse",
+            ShortDescription = "Search things",
+            FullDescription = "search many things",
+            Link = "https://www.Edit.com/",
+            ViewCount = 1,
+            ContactPersonId = AuthenticatedUser.Id,
+        };
+        newWse.Collaborators.Add(new() { UserId = AuthenticatedUser.Id, Rights = WseRights.Owner });
+        newWse = (await Context.WebserviceEntries.AddAsync(newWse)).Entity;
+        await Context.SaveChangesAsync();
+
+        //Act
+        var wseInDb = await Context.WebserviceEntries.FirstOrDefaultAsync(x => x.Name.Equals(newWse.Name));
+        using var response = await Client.DeleteAsync($"https://localhost:7038/api/wse/{wseInDb.Id}");
+
+        //Assert
+        Assert.Null(await Context.WebserviceEntries.FirstOrDefaultAsync(x => x.Name.Equals(newWse.Name)));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteQuestion_DeletesQuestionInDb_WhenUserAuthorized() {
+        //Arrange
+        var wse = await Context.WebserviceEntries.FirstAsync();
+        var newQuestion = new Question {
+            Creator = AuthenticatedUser,
+            CreatorId = AuthenticatedUser.Id,
+            Wse = wse,
+            WseId = wse.Id,
+            CreationTime = DateTimeOffset.UtcNow,
+            Text = "test",
+        };
+        await Context.Questions.AddAsync(newQuestion);
+        await Context.SaveChangesAsync();
+
+        //Act
+        var questionInDb = await Context.Questions.FirstOrDefaultAsync(x => x.Text.Equals(newQuestion.Text));
+        using var response = await Client.DeleteAsync($"https://localhost:7038/api/wse/{wse.Id}/question/{questionInDb.Id}");
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Null(await Context.Questions.FirstOrDefaultAsync(x => x.Text.Equals(newQuestion.Text)));
+        
+    }
+
+    [Fact]
+    public async Task DeleteAnswer_DeletesAnswerInDb_WhenUserAuthorized() {
+        var wse = await Context.WebserviceEntries.FirstAsync();
+        var newQuestion = new Question {
+            Creator = AuthenticatedUser,
+            CreatorId = AuthenticatedUser.Id,
+            Wse = wse,
+            WseId = wse.Id,
+            CreationTime = DateTimeOffset.UtcNow,
+            Text = "test",
+        };
+
+        //Act
+        await Client.PutAsJsonAsync("https://localhost:7038/api/wse/question", newQuestion);
+        var questionInDb = Context.Questions.First();
+        var newAnswer = new Answer {
+            Text = "DeleteAnswer",
+            Wse = wse,
+            WseId = wse.Id,
+            CreationTime = DateTimeOffset.UtcNow,
+            Creator = AuthenticatedUser,
+            CreatorId = AuthenticatedUser.Id,
+            Question = questionInDb,
+            QuestionId = questionInDb.Id,
+        };
+        await Client.PutAsJsonAsync("https://localhost:7038/api/wse/answer", newAnswer);
+        var answerInDb = Context.Answers.First();
+        using var response = await Client.DeleteAsync($"https://localhost:7038/api/wse/{wse.Id}/question/{questionInDb.Id}/answer/{answerInDb.Id}");
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Null(await Context.Answers.FirstOrDefaultAsync(x => x.Text.Equals(newAnswer.Text))); 
+    }
+
+    [Fact]
+    public async Task DeleteReview_DeletesReviewInDb_WhenUserAuthorized() {
+        //Arrange
+        var wse = Context.WebserviceEntries.First();
+        
+        var newReview = new Review {
+            Title = "testReview",
+            StarCount = StarCount.Five,
+            Creator = AuthenticatedUser,
+            CreatorId = AuthenticatedUser.Id,
+            Wse = wse,
+            WseId = wse.Id,
+            Description = "testDescription",
+        };
+        //Act
+        newReview = (await Context.Reviews.AddAsync(newReview)).Entity;
+        await Context.SaveChangesAsync();
+        using var response = await Client.DeleteAsync($"https://localhost:7038/api/wse/{wse.Id}/review/{newReview.Id}");
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Null(Context.Answers.FirstOrDefault());
     }
 
     [Fact]
