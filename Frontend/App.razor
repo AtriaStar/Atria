@@ -1,4 +1,4 @@
-﻿<CascadingValue Value="LoginState">
+﻿<CascadingValue Value="_loginState">
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
@@ -18,10 +18,10 @@
     [Inject]
     private HttpClient HttpClient { get; set; } = null!;
 
-    private LoginState LoginState { get; set; } = null!;
+    private LoginState _loginState = null!;
 
 	protected override async Task OnInitializedAsync() {
-        LoginState = new(HttpClient);
-		await LoginState.Init;
+        _loginState = new(HttpClient);
+		await _loginState.Init;
 	}
 }

@@ -92,7 +92,7 @@
     public WebserviceEntry Wse { get; set; } = new();
 
     [CascadingParameter] 
-    private LoginState LoginState { get; init; } = null!;
+    public LoginState LoginState { get; init; } = default!;
 
     private bool newReview { get; set; }
     private bool _isLoggedIn { get; set; }

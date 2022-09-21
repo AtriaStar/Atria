@@ -368,7 +368,7 @@
     public WebserviceEntry Wse { get; set; } = new();
 
     [CascadingParameter]
-    private LoginState LoginState { get; init; } = null!;
+    public LoginState LoginState { get; init; } = default!;
 
     private User ContactPerson { get; set; } = new();
 
