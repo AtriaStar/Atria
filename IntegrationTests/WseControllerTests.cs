@@ -5,6 +5,7 @@ using Models;
 using Models.DTO;
 using System.Net;
 using System.Net.Http.Json;
+using System.Runtime.Intrinsics.X86;
 
 namespace IntegrationTests; 
 
@@ -44,6 +45,80 @@ public class WseControllerTests : AuthenticatedUserTests {
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
 
+    [Fact]
+    public async Task CreateQuestion_AddsQuestionToDb_WhenUserAuthenticated() {
+        //Arrange
+        var wse = await Context.WebserviceEntries.FirstAsync();
+        var newQuestion = new Question {
+            Creator = AuthenticatedUser,
+            CreatorId = AuthenticatedUser.Id,
+            Wse = wse,
+            WseId = wse.Id,
+            CreationTime = DateTimeOffset.UtcNow,
+            Text = "test",
+        };
+
+        //Act
+        using var response = await Client.PutAsJsonAsync("https://localhost:7038/api/wse/question", newQuestion);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CreateAnswer_AddsQuestionToDb_WhenUserAuthenticated() {
+        //Arrange
+        var wse = await Context.WebserviceEntries.FirstAsync();
+        var newQuestion = new Question {
+            Creator = AuthenticatedUser,
+            CreatorId = AuthenticatedUser.Id,
+            Wse = wse,
+            WseId = wse.Id,
+            CreationTime = DateTimeOffset.UtcNow,
+            Text = "test",
+        };
+     
+        
+        //Act
+        await Client.PutAsJsonAsync("https://localhost:7038/api/wse/question", newQuestion);
+        var questionInDb = Context.Questions.First();
+        var newAnswer = new Answer {
+            Text = "test",
+            Wse = wse,
+            WseId = wse.Id,
+            CreationTime = DateTimeOffset.UtcNow,
+            Creator = AuthenticatedUser,
+            CreatorId = AuthenticatedUser.Id,
+            Question = questionInDb,
+            QuestionId = questionInDb.Id,
+        };
+        using var response = await Client.PutAsJsonAsync("https://localhost:7038/api/wse/answer", newAnswer);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CreateReview_AddsWseToDb_WhenUserAuthenticated() {
+        //Arrange
+        var wse = await Context.WebserviceEntries.FirstAsync();
+        var newReview = new Review {
+            Title = "testReview",
+            StarCount = StarCount.Five,
+            Creator = AuthenticatedUser,
+            CreatorId = AuthenticatedUser.Id,
+            Wse = wse,
+            WseId = wse.Id,
+            Description = "testDescription",
+        };
+
+        //Act
+        using var response = await Client.PutAsJsonAsync("https://localhost:7038/api/wse/review", newReview);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+    }
+
 
     [Fact]
     public async Task EditWse_UpdatesWseInDb_WhenUserAuthorized() {
@@ -71,6 +146,34 @@ public class WseControllerTests : AuthenticatedUserTests {
         Assert.NotNull(wseInDb);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(wseInDb.Name, newWse.Name);
+    }
+
+    [Fact]
+    public async Task EdiReview_UpdatesReviewInDb_WhenUserAuthorized() {
+        //Arrange
+        var wse = await Context.WebserviceEntries.FirstAsync();
+        var review = new Review {
+            Title = "testReview",
+            StarCount = StarCount.Five,
+            Creator = AuthenticatedUser,
+            CreatorId = AuthenticatedUser.Id,
+            Wse = wse,
+            WseId = wse.Id,
+            Description = "testDescription",
+        };
+        await Context.Reviews.AddRangeAsync(review);
+        await Context.SaveChangesAsync();
+        //Act
+        var realizedReview = await Context.Reviews.FirstOrDefaultAsync(x => x.Title.Equals(review.Title));
+        realizedReview!.Title = "HackedByBigFlopa";
+        using var response = await Client.PostAsJsonAsync("https://localhost:7038/api/wse/review", realizedReview);
+        await response.AssertStatusCode();
+        var reviewInDb = await Context.Reviews.FirstOrDefaultAsync(x => x.Title.Equals(realizedReview.Title));
+
+        //Assert
+        Assert.NotNull(reviewInDb);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+     
     }
 
     [Fact]
@@ -105,7 +208,6 @@ public class WseControllerTests : AuthenticatedUserTests {
         Assert.NotNull(wseInDb);
         Assert.NotNull(userInCollabList);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(wseInDb.Name, newWse.Name);
     }
 
     [Fact]
