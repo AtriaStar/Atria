@@ -1,31 +1,26 @@
 using Microsoft.Playwright;
-using Xunit;
 
 namespace PlaywrightTests;
 
-public class Tests : IAsyncLifetime {
+public class Tests {
+
     private readonly string _url = "https://localhost:7206/";
 
-    private IPlaywright _playwright = null!;
-    private IBrowser _browser = null!;
+    [SetUp]
+    public void SetupBrowser() {
+        
+    }
 
-    public async Task InitializeAsync() {
-        _playwright = await Playwright.CreateAsync();
-        _browser = await _playwright.Chromium.LaunchAsync(new() {
+    [Test]
+    public async Task RegisterAndLogoutTest() {
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions {
 #if !CI
-            Headless = false,
+            Headless = false
 #endif
         });
-    }
-
-    public async Task DisposeAsync() {
-        _playwright.Dispose();
-        await _browser.DisposeAsync();
-    }
-
-    [Fact]
-    public async Task RegisterAndLogoutTest() {
-        var page = await _browser.NewPageAsync();
+        var page = await browser.NewPageAsync();
 
         await page.GotoAsync(_url);
         await page.Locator("text=Registrieren").ClickAsync();
@@ -44,9 +39,14 @@ public class Tests : IAsyncLifetime {
         await page.WaitForURLAsync(_url);
     }
 
-    [Fact]
+    [Test]
     public async Task LoginTest() {
-        var page = await _browser.NewPageAsync();
+
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions {
+            Headless = false
+        });
+        var page = await browser.NewPageAsync();
 
         await page.GotoAsync(_url);
         await page.Locator("text=Einloggen").ClickAsync();
@@ -57,4 +57,5 @@ public class Tests : IAsyncLifetime {
         await page.Locator("button:has-text(\"Anmelden\")").ClickAsync();
         await page.WaitForURLAsync(_url);
     }
+
 }
