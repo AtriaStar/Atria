@@ -41,7 +41,7 @@
     private NavigationManager NavigationManager { get; set; } = default!;
 
     [CascadingParameter]
-    private LoginState LoginState { get; set; } = default!;
+    public LoginState LoginState { get; set; } = default!;
 
     private async Task ModalDelete() {
         var response = await HttpClient.DeleteAsync("user");

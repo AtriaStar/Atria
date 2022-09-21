@@ -168,7 +168,7 @@
     private WseDraft _draft = new();
     
     [CascadingParameter]
-    private LoginState LoginState { get; init; } = null!;
+    public LoginState LoginState { get; init; } = default!;
 
     private readonly TagDto _tagDto = new();
 

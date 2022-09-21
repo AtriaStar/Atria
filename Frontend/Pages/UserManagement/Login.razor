@@ -72,7 +72,7 @@
 @code {
 
     [CascadingParameter]
-    private LoginState LoginState { get; set; } = null!;
+    public LoginState LoginState { get; set; } = default!;
 
     [Parameter]
     [SupplyParameterFromQuery]

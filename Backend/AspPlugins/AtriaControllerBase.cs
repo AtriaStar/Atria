@@ -10,6 +10,8 @@ public class AtriaControllerBase : ControllerBase {
     public override ForbidResult Forbid(params string[] authenticationSchemes) => throw new NotImplementedException();
 #pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
 
-    public ActionResult Forbidden() => StatusCode(403);
-    public ActionResult Forbidden(object? obj) => StatusCode(403, obj);
+    [NonAction]
+    protected ActionResult Forbidden() => StatusCode(403);
+    [NonAction]
+    protected ActionResult Forbidden(object? obj) => StatusCode(403, obj);
 }

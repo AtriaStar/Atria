@@ -22,7 +22,7 @@
 @code {
 
     [CascadingParameter]
-    private LoginState LoginState { get; set; } = default!;
+    public LoginState LoginState { get; set; } = default!;
     
     [Parameter]
     public RenderFragment? Authorized { get; set; }

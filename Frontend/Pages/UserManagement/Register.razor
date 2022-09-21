@@ -102,7 +102,7 @@
     HttpClient HttpClient { get; set; } = default!;
 
     [CascadingParameter]
-    private LoginState LoginState { get; set; } = null!;
+    public LoginState LoginState { get; set; } = default!;
 
     private bool _processingRequest;
     private string RegisterMessage { get; set; } = null!;
