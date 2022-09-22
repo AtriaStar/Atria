@@ -96,6 +96,34 @@ public class UserManagementTest : PageTest {
         await Page.WaitForURLAsync("https://localhost:7206/");
     }
 
+    [Test]
+    public async Task InvalidEmail() {
+        // Go to https://localhost:7206/login
+        await Page.GotoAsync("https://localhost:7206/login");
+        // Click input[type="email"]
+        await Page.Locator("input[type=\"email\"]").ClickAsync();
+        // Fill input[type="email"]
+        await Page.Locator("input[type=\"email\"]").FillAsync(_email + "asdf");
+        // Press Tab
+        await Page.Locator("input[type=\"email\"]").PressAsync("Tab");
+        // Fill input[type="password"]
+        await Page.Locator("input[type=\"password\"]").FillAsync(_password);
+        // Click text=Anmelden
+        await Page.Locator("text=Anmelden").ClickAsync();
+        // Click text=Email or password invalid
+        await Page.Locator("text=Email or password invalid").ClickAsync();
+    }
+
+    [Test]
+    public async Task InvalidPassword() {
+        // Go to https://localhost:7206/login
+        await Page.GotoAsync("https://localhost:7206/login");
+        // Click input[type="email"]
+        await Page.Locator("input[type=\"email\"]").ClickAsync();
+        // Fill input[type="email"]
+        await Page.Locator("input[type=\"email\"]").FillAsync(_email);
+        // Press Tab
+        await Page.Locator("input[type=\"email\"]").PressAsync("Tab");
         // Fill input[type="password"]
         await Page.Locator("input[type=\"password\"]").FillAsync(_password + "asdf");
         // Click text=Anmelden
@@ -103,6 +131,30 @@ public class UserManagementTest : PageTest {
         // Click text=Email or password invalid
         await Page.Locator("text=Email or password invalid").ClickAsync();
     }
-    
-    
+
+    [Test]
+    public async Task LinkBetweenLoginRegisterRequestResetPassword() {
+        // Go to https://localhost:7206/
+        await Page.GotoAsync("https://localhost:7206/");
+        // Click text=Einloggen
+        await Page.Locator("text=Einloggen").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/login?returnurl=");
+        // Click text=Hier registrieren
+        await Page.Locator("text=Hier registrieren").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/register");
+        // Click text=Hier anmelden
+        await Page.Locator("text=Hier anmelden").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/login");
+        // Click text=Passwort vergessen?
+        await Page.Locator("text=Passwort vergessen?").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/forgotPassword");
+        // Click input[type="email"]
+        await Page.Locator("input[type=\"email\"]").ClickAsync();
+        // Fill input[type="email"]
+        await Page.Locator("input[type=\"email\"]").FillAsync(_email);
+        // Click text=E-Mail senden
+        await Page.Locator("text=E-Mail senden").ClickAsync();
+        // Click text=Sende Email...
+        await Page.Locator("text=Sende Email...").ClickAsync();
+    }
 }
