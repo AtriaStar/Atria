@@ -1,6 +1,7 @@
 ﻿using IntegrationTests.BaseTestClasses;
 using IntegrationTests.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Models;
 using Models.DTO;
 using System.Net.Http.Json;
 
@@ -105,6 +106,39 @@ namespace IntegrationTests {
 
             Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
             //Todo: check if authentication cookie is set in response and database
+        }
+
+        [Fact]
+        public async Task Logout_DeletesSessionInDb() {
+            //Arrange
+            var session = Session;
+            //Act
+            var response = await Client.PostAsJsonAsync("https://localhost:7038/api/auth/logout", session);
+            //Assert
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+            Assert.DoesNotContain(session, Context.Sessions);
+        }
+
+        [Fact]
+        public async Task LogoutAll_DeletesSessionInDb() {
+            //Arrange
+            var session = Session;
+            //Act
+            var response = await Client.PostAsJsonAsync("https://localhost:7038/api/auth/logout/all", Session);
+            //Assert
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+            Assert.DoesNotContain(session, Context.Sessions);
+        }
+
+        [Fact]
+        public async Task PasswordReset_ResetsPassword() {
+            //Arrange
+            var resetPasswordDto = new ResetPasswordDto { };
+            //Act
+            var response = await Client.PostAsJsonAsync("https://localhost:7038/api/auth/logout/all", Session);
+            //Assert
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+            
         }
 
     }
