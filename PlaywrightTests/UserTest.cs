@@ -148,6 +148,47 @@ public class UserTest : PageTest {
         await Page.Locator("text=Der Test").ClickAsync();
     }
 
+    [Test]
+    public async Task ChangePassword() {
+        // Click [aria-label="settings outline"]
+        await Page.Locator("[aria-label=\"settings outline\"]").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/settings");
+        // Click [placeholder="Altes Passwort eingeben\.\.\."]
+        await Page.Locator("[placeholder=\"Altes Passwort eingeben\\.\\.\\.\"]").ClickAsync();
+        // Fill [placeholder="Altes Passwort eingeben\.\.\."]
+        await Page.Locator("[placeholder=\"Altes Passwort eingeben\\.\\.\\.\"]").FillAsync(_password);
+        // Click [placeholder="Neues Passwort eingeben\.\.\."]
+        await Page.Locator("[placeholder=\"Neues Passwort eingeben\\.\\.\\.\"]").ClickAsync();
+        // Fill [placeholder="Neues Passwort eingeben\.\.\."]
+        await Page.Locator("[placeholder=\"Neues Passwort eingeben\\.\\.\\.\"]").FillAsync("asdff");
+        // Click [placeholder="Neues Passwort bestätigen\.\.\."]
+        await Page.Locator("[placeholder=\"Neues Passwort bestätigen\\.\\.\\.\"]").ClickAsync();
+        // Fill [placeholder="Neues Passwort bestätigen\.\.\."]
+        await Page.Locator("[placeholder=\"Neues Passwort bestätigen\\.\\.\\.\"]").FillAsync("asdff");
+        // Click text=Speichern
+        await Page.Locator("text=Speichern").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/");
+        // Click [aria-label="person circle outline"]
+        await Page.Locator("[aria-label=\"person circle outline\"]").ClickAsync();
+        // Click text=Abmelden
+        await Page.Locator("text=Abmelden").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/");
+        // Click text=Einloggen
+        await Page.Locator("text=Einloggen").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/login?returnurl=");
+        // Click input[type="email"]
+        await Page.Locator("input[type=\"email\"]").ClickAsync();
+        // Fill input[type="email"]
+        await Page.Locator("input[type=\"email\"]").FillAsync(_email+"@"+_emailSecond);
+        // Press Tab
+        await Page.Locator("input[type=\"email\"]").PressAsync("Tab");
+        // Fill input[type="password"]
+        await Page.Locator("input[type=\"password\"]").FillAsync("asdff");
+        // Click text=Anmelden
+        await Page.Locator("text=Anmelden").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/");
+    }
+
     [TearDown]
     public async Task OneTimeTeardown() {
         // Go to https://localhost:7206
