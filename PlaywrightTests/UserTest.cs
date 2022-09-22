@@ -5,20 +5,20 @@ namespace PlaywrightTests;
 
 [TestFixture]
 public class UserTest : PageTest {
-    private readonly string _baseUrl = "https://localhost:7206/";
     private string _email = null!;
     private string _emailSecond = null!;
     private string _password = null!;
+    private const string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345789";
+
 
     [SetUp]
     public async Task Setup() {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345789";
         var random = new Random();
-        _email = new string(Enumerable.Repeat(chars, 10)
+        _email = new string(Enumerable.Repeat(Chars, 10)
             .Select(s => s[random.Next(s.Length)]).ToArray());
-        _emailSecond = new string(Enumerable.Repeat(chars, 10)
+        _emailSecond = new string(Enumerable.Repeat(Chars, 10)
             .Select(s => s[random.Next(s.Length)]).ToArray());
-        _password = new string(Enumerable.Repeat(chars, 8)
+        _password = new string(Enumerable.Repeat(Chars, 8)
             .Select(s => s[random.Next(s.Length)]).ToArray());
 
         // Go to https://localhost:7206/
