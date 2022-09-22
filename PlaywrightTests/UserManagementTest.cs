@@ -1,145 +1,107 @@
-﻿using Microsoft.Playwright;
+﻿using Microsoft.Playwright.NUnit;
 
-namespace PlaywrightTests; 
+namespace PlaywrightTests;
 
-public class UserManagementTest {
+public class UserManagementTest : PageTest {
+    private string _email = null!;
+    private string _password = null!;
+    private const string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345789";
+
+    [SetUp]
+    public void Setup() {
+        var random = new Random();
+        var emailFirst = new string(Enumerable.Repeat(Chars, 10)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+        var emailSecond = new string(Enumerable.Repeat(Chars, 10)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+        _email = emailFirst + "@" + emailSecond;
+        _password = new string(Enumerable.Repeat(Chars, 8)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+    }
 
     [Test]
     public async Task ValidRegister() {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345789";
-        var random = new Random();
-        var email = new string(Enumerable.Repeat(chars, 10)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-        var emailSecond = new string(Enumerable.Repeat(chars, 10)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-        
-        using var playwright = await Playwright.CreateAsync();
-        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-        {
-            Headless = false,
-        });
-        var context = await browser.NewContextAsync();
-        var page = await browser.NewPageAsync();
-
-        // Go to https://localhost:7206/
-        await page.GotoAsync("https://localhost:7206/");
-        // Click text=Registrieren
-        await page.Locator("text=Registrieren").ClickAsync();
-        await page.WaitForURLAsync("https://localhost:7206/register");
+        // Go to https://localhost:7206/register
+        await Page.GotoAsync("https://localhost:7206/register");
         // Click #lastName
-        await page.Locator("#lastName").ClickAsync();
+        await Page.Locator("#lastName").ClickAsync();
         // Fill #lastName
-        await page.Locator("#lastName").FillAsync("test");
+        await Page.Locator("#lastName").FillAsync("test");
         // Click #firstName
-        await page.Locator("#firstName").ClickAsync();
+        await Page.Locator("#firstName").ClickAsync();
         // Fill #firstName
-        await page.Locator("#firstName").FillAsync("test");
+        await Page.Locator("#firstName").FillAsync("test");
         // Click input[type="email"]
-        await page.Locator("input[type=\"email\"]").ClickAsync();
+        await Page.Locator("input[type=\"email\"]").ClickAsync();
         // Fill input[type="email"]
-        await page.Locator("input[type=\"email\"]").FillAsync(email+"@"+emailSecond);
+        await Page.Locator("input[type=\"email\"]").FillAsync(_email);
         // Click #password
-        await page.Locator("#password").ClickAsync();
+        await Page.Locator("#password").ClickAsync();
         // Fill #password
-        await page.Locator("#password").FillAsync("teste");
+        await Page.Locator("#password").FillAsync("teste");
         // Click #confirmPassword
-        await page.Locator("#confirmPassword").ClickAsync();
+        await Page.Locator("#confirmPassword").ClickAsync();
         // Fill #confirmPassword
-        await page.Locator("#confirmPassword").FillAsync("teste");
+        await Page.Locator("#confirmPassword").FillAsync("teste");
         // Click button:has-text("Registrieren")
-        await page.Locator("button:has-text(\"Registrieren\")").ClickAsync();
-        await page.WaitForURLAsync("https://localhost:7206/");
+        await Page.Locator("button:has-text(\"Registrieren\")").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/");
     }
 
     [Test]
     public async Task RegisterLogoutLogin() {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345789";
-        var random = new Random();
-        var email = new string(Enumerable.Repeat(chars, 8)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-        var emailSecond = new string(Enumerable.Repeat(chars, 8)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-        var password = new string(Enumerable.Repeat(chars, 8)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-
-        using var playwright = await Playwright.CreateAsync();
-        await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-        {
-            Headless = false,
-        });
-        var context = await browser.NewContextAsync();
-        var page = await browser.NewPageAsync();
-
-
         // Go to https://localhost:7206/register
-        await page.GotoAsync("https://localhost:7206/register");
-
+        await Page.GotoAsync("https://localhost:7206/register");
         // Click #lastName
-        await page.Locator("#lastName").ClickAsync();
-
+        await Page.Locator("#lastName").ClickAsync();
         // Fill #lastName
-        await page.Locator("#lastName").FillAsync("test");
-
+        await Page.Locator("#lastName").FillAsync("test");
         // Press Tab
-        await page.Locator("#lastName").PressAsync("Tab");
-
+        await Page.Locator("#lastName").PressAsync("Tab");
         // Fill #firstName
-        await page.Locator("#firstName").FillAsync("test");
-
+        await Page.Locator("#firstName").FillAsync("test");
         // Press Tab
-        await page.Locator("#firstName").PressAsync("Tab");
-
+        await Page.Locator("#firstName").PressAsync("Tab");
         // Fill input[type="email"]
-        await page.Locator("input[type=\"email\"]").FillAsync(email+"@"+emailSecond);
-
+        await Page.Locator("input[type=\"email\"]").FillAsync(_email);
         // Press Tab
-        await page.Locator("input[type=\"email\"]").PressAsync("Tab");
-
+        await Page.Locator("input[type=\"email\"]").PressAsync("Tab");
         // Fill #password
-        await page.Locator("#password").FillAsync(password);
-
+        await Page.Locator("#password").FillAsync(_password);
         // Press Tab
-        await page.Locator("#password").PressAsync("Tab");
-
+        await Page.Locator("#password").PressAsync("Tab");
         // Fill #confirmPassword
-        await page.Locator("#confirmPassword").FillAsync(password);
-
+        await Page.Locator("#confirmPassword").FillAsync(_password);
         // Click button:has-text("Registrieren")
-        await page.Locator("button:has-text(\"Registrieren\")").ClickAsync();
-        await page.WaitForURLAsync("https://localhost:7206/");
-        
+        await Page.Locator("button:has-text(\"Registrieren\")").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/");
         // Click [aria-label="person circle outline"]
-        await page.Locator("[aria-label=\"person circle outline\"]").ClickAsync();
-
+        await Page.Locator("[aria-label=\"person circle outline\"]").ClickAsync();
         // Click text=Abmelden
-        await page.Locator("text=Abmelden").ClickAsync();
-        await page.WaitForURLAsync("https://localhost:7206/");
-
+        await Page.Locator("text=Abmelden").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/");
         // Click text=Einloggen
-        await page.Locator("text=Einloggen").ClickAsync();
-        await page.WaitForURLAsync("https://localhost:7206/login?returnurl=");
-
+        await Page.Locator("text=Einloggen").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/login?returnurl=");
         // Click input[type="email"]
-        await page.Locator("input[type=\"email\"]").ClickAsync();
-
+        await Page.Locator("input[type=\"email\"]").ClickAsync();
         // Fill input[type="email"]
-        await page.Locator("input[type=\"email\"]").FillAsync(email+"@"+emailSecond);
-
+        await Page.Locator("input[type=\"email\"]").FillAsync(_email);
         // Click input[type="password"]
-        await page.Locator("input[type=\"password\"]").ClickAsync();
+        await Page.Locator("input[type=\"password\"]").ClickAsync();
+        // Fill input[type="password"]
+        await Page.Locator("input[type=\"password\"]").FillAsync(_password);
+        // Click text=Anmelden
+        await Page.Locator("text=Anmelden").ClickAsync();
+        await Page.WaitForURLAsync("https://localhost:7206/");
+    }
 
         // Fill input[type="password"]
-        await page.Locator("input[type=\"password\"]").FillAsync(password);
-
+        await Page.Locator("input[type=\"password\"]").FillAsync(_password + "asdf");
         // Click text=Anmelden
-        await page.Locator("text=Anmelden").ClickAsync();
-        await page.WaitForURLAsync("https://localhost:7206/");
-        
-        // Save storage state into the file.
-        await context.StorageStateAsync(new()
-        {
-            Path = "state.json"
-        });
+        await Page.Locator("text=Anmelden").ClickAsync();
+        // Click text=Email or password invalid
+        await Page.Locator("text=Email or password invalid").ClickAsync();
     }
     
     
