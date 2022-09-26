@@ -16,6 +16,9 @@ public record BackendSettings(
     double MinimumWseScore,
     double MinimumUserScore,
     
+    int MaxConcurrentApiChecks,
+    TimeSpan MinimumTimeBetweenApiChecks,
+
     int ScorePower,
     // TODO: https://github.com/dotnet/runtime/pull/74981
     FuzzingService.FactorWeights Weights = null!

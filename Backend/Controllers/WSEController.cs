@@ -38,12 +38,12 @@ public class WseController : AtriaControllerBase {
 
     [HttpGet("{wseId:long}/checks/latest")]
     public async Task<bool?> GetLastCheck(long wseId)
-        => (await _context.WebserviceEntries
+        => (int?)(await _context.WebserviceEntries
             .Include(x => x.ApiCheckHistory)
             .FirstAsync(x => x.Id == wseId))
             .ApiCheckHistory
             .MaxBy(x => x.CheckedAt)
-            ?.Success;
+            ?.Status is { } status ? status / 100 == 2 : null;
 
     [HttpGet("{wseId:long}/question")]
     public IEnumerable<Question> GetQuestions(long wseId, [FromQuery] Pagination pagination)

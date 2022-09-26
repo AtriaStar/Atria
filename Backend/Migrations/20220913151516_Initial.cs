@@ -153,7 +153,7 @@ namespace Backend.Migrations
                 columns: table => new
                 {
                     checked_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    success = table.Column<bool>(type: "boolean", nullable: false),
+                    status = table.Column<int>(type: "integer", nullable: false),
                     webservice_entry_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
