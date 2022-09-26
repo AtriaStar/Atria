@@ -156,7 +156,7 @@ public class WseMocker {
 
         WebserviceEntry entry16 = new WebserviceEntry {
             Name = "AnotherDuckDuckGo",
-            ShortDescription = "Search things",
+            ShortDescription = "with invalid apicheckurl",
             FullDescription = "search many things",
             Link = "https://duckduckgo.com/",
             ViewCount = 33331,
