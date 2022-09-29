@@ -74,7 +74,7 @@
     public bool? IsOnline { get; set; }
 
     [Parameter]
-    public bool? hasBookmark { get; set; }
+    public bool? HasBookmark { get; set; }
 
     [Parameter]
     public int? SelectedStarNum { get; set; }
@@ -98,7 +98,7 @@
         var selectedTagsAsString = _selectedTags.Select(tag => tag.Name).ToArray();
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> {
             ["IsOnline"] = IsOnline,
-            ["HasBookmark"] = hasBookmark,
+            ["HasBookmark"] = HasBookmark,
             ["minRating"] = SelectedStarNum,
             ["tags"] = selectedTagsAsString,
         }));

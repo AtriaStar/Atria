@@ -155,7 +155,7 @@
 }
 
 @if (_filterDialogOpen) {
-    <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" hasBookmark="hasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+    <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" HasBookmark="HasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
 }
 
 @code {
@@ -175,7 +175,7 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public bool? hasBookmark { get; set; }
+    public bool? HasBookmark { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "minRating")]

@@ -57,8 +57,8 @@
             <div class="col-auto">
                 <div class="d-flex align-items-center">
                     @{
-                        var bookmarkTitle = hasBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
-                        var bookmarkStyle = hasBookmark ? "fa-solid" : "fa-regular";
+                        var bookmarkTitle = HasBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+                        var bookmarkStyle = HasBookmark ? "fa-solid" : "fa-regular";
                     }
                     <i class="fa-bookmark @bookmarkStyle fs-4 mx-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
                     <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zum Webservice" href="@Wse.Link"></a>
@@ -335,7 +335,7 @@
     public bool isLoggedIn = true;
     public bool isCollab = true;
     public bool isCreator = true;
-    public bool hasBookmark = false;
+    public bool HasBookmark = false;
 
     //private bool _displayForm = false;
 
