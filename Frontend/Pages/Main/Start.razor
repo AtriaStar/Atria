@@ -1,7 +1,7 @@
 ﻿@page "/"
 @using Models
 @using System.Net
-@using Frontend.Pages.WSE.FilterModal
+@using Frontend.Pages.WSE.Components.FilterModal
 @inject NavigationManager NavigationManager
 
 <PageTitle>Atria</PageTitle>
@@ -48,7 +48,7 @@
                         </i>
                     </Authorized>
                 </AuthView>
-                <Filter IsOnline="IsOnline" HasBookmark="HasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr"></Filter>
+                <FilterModal IsOnline="IsOnline" HasBookmark="HasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr"></FilterModal>
             }
             <div class="dropdown ms-3 d-flex">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

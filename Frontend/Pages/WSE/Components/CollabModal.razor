@@ -56,7 +56,7 @@
 </div>
 
 @if (DeleteCollabDialogOpen) {
-    <Frontend.Pages.Components.DeleteCollabModal WseId="WseId" Collabs="CollabsList" CollabIdToDelete="CollabIdToDelete" OnClose="@OnDeleteCollabDialogClose"/>
+    <DeleteCollabModal WseId="WseId" Collabs="CollabsList" CollabIdToDelete="CollabIdToDelete" OnClose="@OnDeleteCollabDialogClose"/>
 }
 
 @code {

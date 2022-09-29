@@ -2,6 +2,7 @@
 @using Models
 @using System.Web
 @using System.Net
+@using Frontend.Pages.WSE.Components
 @inject NavigationManager NavManager
 
 <PageTitle>Atria - @Wse.Name</PageTitle>
@@ -219,7 +220,7 @@
     }
 
     @foreach (Question question in _wseQuestions) {
-        <Frontend.Pages.Components.QuestionComponent Question="question" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
+        <QuestionComponent Question="question" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
     }
 
     @if (_wseNextQuestions.Length != 0) {
@@ -268,7 +269,7 @@
     </div>
 
     @foreach (Review review in _wseReviews) {
-        <Frontend.Pages.Components.ReviewComponent Review="review" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
+        <ReviewComponent Review="review" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
     }
     @if (_wseNextReviews.Length != 0) {
         <div class="d-grid d-flex mt-2 mb-2 justify-content-center">
@@ -305,7 +306,7 @@
 </div>
 
 @if (CollabDialogOpen) {
-    <Frontend.Pages.Components.CollabModal
+    <CollabModal
         WseId="WseId"
         WseContactPersonId="Wse.ContactPersonId"
         UserId="_userId"
