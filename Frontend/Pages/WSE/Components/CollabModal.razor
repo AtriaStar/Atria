@@ -1,65 +1,60 @@
 ﻿@using Models
+@using Models.DTO
 @inject NavigationManager NavManager
 @inject HttpClient HttpClient
 
-<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
+<button class="btn btn-outline-secondary btn-small ms-2" @onclick="() => ModalBase.Open()">weitere Kollaboratoren</button>
 
-            <div class="modal-header">
-                <h5 class="modal-title">Kollaboratoren</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="@ModalClose"></button>
-            </div>
-
-            <div class="modal-body">
-                @foreach (User user in Users) {
-                    <div class="card mb-2">
-                        <div class="row">
-                            <div class="col-2">
-                                <img src="@user.ProfilePicture"/>
+<ModalBase @ref="ModalBase">
+    <ModalTitle>Kollaboratoren</ModalTitle>
+    <ModalBody>
+        @foreach (User user in _collaboratorsAsUsers) {
+            <div class="card mb-2">
+                <div class="row">
+                    <div class="col-2">
+                        <img src="@user.ProfilePicture"/>
+                    </div>
+                    <div class="col">
+                        <div class="card-body">
+                            <div class="card-title">
+                                @user.FirstNames @user.LastName
+                                @if (user.Id == WseContactPersonId) {
+                                    <small style="color: red">*Ansprechpartner</small>
+                                }
                             </div>
-                            <div class="col">
-                                <div class="card-body">
-                                    <div class="card-title">
-                                        @user.FirstNames @user.LastName
-                                        @if (@user.Id == WseContactPersonId) {
-                                            <small style="color: red">*Ansprechpartner</small>
-                                        }
-                                    </div>
-                                    <div class="card-subtitle">@user.Email</div>
-                                    <div class="d-grid d-flex justify-content-end">
-                                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteCollabDialog(user.Id)">
-                                            Entfernen
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="card-subtitle">@user.Email</div>
+                            <div class="d-grid d-flex justify-content-end">
+                                <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteCollabDialog(user.Id)">
+                                    Entfernen
+                                </button>
                             </div>
                         </div>
                     </div>
-                }
-                
-                @if (_isLoggedIn && Array.Exists(Collabs, c => c.UserId == UserId))
-                {
-                    <label class="form-label mt-2">E-Mail oder Name des neuen Kollaborators</label>
-                    <div class="ui-field">
-                        @*TODO UserSearch*@
-                        <input class="form-control"/>
-                    </div>
-                    <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
-                        <button type="button" class="btn btn-success" @onclick="@ModalAddCollab">Hinzufügen</button>
-                    </div>
-                }
-                
+                </div>
             </div>
-        </div>
-    </div>
-</div>
+        }
+        <AuthView UserIdClaimCollection="_idsWithEditRights">
+            <AuthorizedAndMatching>
+                <label class="form-label mt-2">E-Mail oder Name des neuen Kollaborators</label>
+                <div class="ui-field">
+                    @*TODO UserSearch*@
+                    <input class="form-control" @bind="_newCollabEmail"/>
+                </div>
+                <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
+                    <button type="button" class="btn btn-success" @onclick="AddCollab">Hinzufügen</button>
+                </div>
+            </AuthorizedAndMatching>
+        </AuthView>
 
-@if (DeleteCollabDialogOpen) {
-    <DeleteCollabModal WseId="WseId" Collabs="CollabsList" CollabIdToDelete="CollabIdToDelete" OnClose="@OnDeleteCollabDialogClose"/>
-}
+    </ModalBody>
+</ModalBase>
 
 @code {
+
+    private string? _newCollabEmail;
+
+    public ModalBase ModalBase { get; set; } = null!;
+
     [Parameter]
     public long WseId { get; set; }
 
@@ -69,49 +64,37 @@
     [Parameter]
     public long UserId { get; set; }
 
-    [Parameter]
-    public bool _isLoggedIn { get; set; }
+    [CascadingParameter]
+    public LoginState LoginState { get; set; } = default!;
 
-    [Parameter]
-    public EventCallback<bool> OnClose { get; set; }
+    private ICollection<Collaborator>? _collaborators;
 
-    private Collaborator[] Collabs { get; set; } = new Collaborator[] {};
-    private List<Collaborator> CollabsList { get; set; } = new List<Collaborator> { };
-    private List<User> Users { get; set; } = new List<User> {};
+    private ICollection<User> _collaboratorsAsUsers = new List<User>();
+
+    private long[] _idsWithEditRights = { };
+
     private long CollabIdToDelete { get; set; }
 
     protected override async Task OnInitializedAsync() {
-        Collabs = await HttpClient.GetFromJsonAsync<Collaborator[]>("wse/" + WseId + "/collaborators") ?? new Collaborator[] {};
-        CollabsList = Collabs.ToList();
-        foreach (Collaborator collab in Collabs) {
-            User user = await HttpClient.GetFromJsonAsync<User>("user/" + collab.UserId) ?? new User { };
-            Users.Add(user);
+        _collaborators = await HttpClient.GetFromJsonAsync<ICollection<Collaborator>>("wse/" + WseId + "/collaborators") ?? new Collaborator[] { };
+        foreach (Collaborator collab in _collaborators) {
+            User user = await HttpClient.GetFromJsonAsync<User>("user/" + collab.UserId) ?? throw new InvalidOperationException();
+            _collaboratorsAsUsers.Add(user);
         }
+        _idsWithEditRights = _collaborators
+            .Where(collaborator => (collaborator.Rights & WseRights.EditCollaborators) != 0)
+            .Select(collaborator => collaborator.UserId)
+            .ToArray();
     }
 
-    public Task ModalClose()
-    {
-        return OnClose.InvokeAsync(false);
+    private void AddCollab() {
+        @* TODO logic *@
+        ModalBase.Close();
     }
 
-    public Task ModalAddCollab()
-    {
-        return OnClose.InvokeAsync(true);
+    private async Task OpenDeleteCollabDialog(long userId) {
+        _collaborators!.Remove(_collaborators.Single(collaborator => collaborator.UserId == userId));
+        await HttpClient.PostAsJsonAsync($"wse/{WseId}/collaborators", _collaborators);
     }
 
-    @*delete modal*@
-    public bool DeleteCollabDialogOpen { get; set; }
-
-    private void OpenDeleteCollabDialog(long userId)
-    {
-        DeleteCollabDialogOpen = true;
-        CollabIdToDelete = userId;
-        StateHasChanged();
-    }
-
-    private void OnDeleteCollabDialogClose(bool accepted)
-    {
-        DeleteCollabDialogOpen = false;
-        StateHasChanged();
-    }
 }

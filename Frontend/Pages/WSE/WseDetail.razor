@@ -3,6 +3,7 @@
 @using System.Web
 @using System.Net
 @using Frontend.Pages.WSE.Components
+
 @inject NavigationManager NavManager
 
 <PageTitle>Atria - @Wse.Name</PageTitle>
@@ -15,9 +16,10 @@
             <button class="btn btn-success" type="button" @onclick="() => _displayEditForm = !_displayEditForm">
                 Bearbeiten
             </button>
+            @* TODO
             <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDialog">
                 Löschen
-            </button>
+            </button>*@
         </div>
     } else {
         <EditForm Model="Wse">
@@ -68,7 +70,7 @@
         </div>
         <h5 class="card-subtitle mb-2 me-2 text-muted">
             @ContactPerson.FirstNames @ContactPerson.LastName
-            <button class="btn btn-outline-secondary btn-small ms-2" @onclick="OpenCollabDialog">weitere Kollaboratoren</button>
+            <CollabModal @ref="CollabModal" WseId="WseId" WseContactPersonId="Wse.ContactPersonId" UserId="_userId"></CollabModal>
         </h5>
         @if (!_displayEditForm) {
             <div class="card-text">@Wse.ShortDescription</div>
@@ -284,9 +286,11 @@
             <button class="btn btn-success" type="button" @onclick="() => _displayEditForm = !_displayEditForm">
                 Bearbeiten
             </button>
+            @*TODO
             <button class="btn btn-danger" type="button" @onclick="OpenDeleteWseDialog">
                 Löschen
             </button>
+            *@
         </div>
     } else {
         <EditForm Model="Wse">
@@ -305,65 +309,14 @@
 }
 </div>
 
-@if (CollabDialogOpen) {
-    <CollabModal
-        WseId="WseId"
-        WseContactPersonId="Wse.ContactPersonId"
-        UserId="_userId"
-        _isLoggedIn="_isLoggedIn"
-        OnClose="@OnCollabDialogClose"/>
-}
-
-@if (DeleteWseDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal
-        Title="Eintrag löschen"
-        Text="Sind Sie sicher, dass Sie Ihren Eintrag löschen möchten?"
-        ToDelete="wse"
-        WseId="WseId"
-        OnClose="@OnDeleteWseDialogClose"/>
-}
-
 @code {
+
+    public CollabModal CollabModal { get; set; } = null!;
 
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
-    public bool CollabDialogOpen { get; set; }
-    public bool DeleteQuestionDialogOpen { get; set; }
-    public bool DeleteAnswerDialogOpen { get; set; }
-    public bool DeleteReviewDialogOpen { get; set; }
-    public bool DeleteWseDialogOpen { get; set; }
-    public bool isLoggedIn = true;
-    public bool isCollab = true;
-    public bool isCreator = true;
     public bool HasBookmark = false;
-
-    //private bool _displayForm = false;
-
-    /*-------------MODALS-------------*/
-    private long ReviewIdToDelete { get; set; }
-
-    //private WebserviceEntry _cloneWse = null!;
-
-    private void OpenCollabDialog() {
-        CollabDialogOpen = true;
-        StateHasChanged();
-    }
-
-    private void OnCollabDialogClose(bool accepted) {
-        CollabDialogOpen = false;
-        StateHasChanged();
-    }
-
-    private void OpenDeleteWseDialog() {
-        DeleteWseDialogOpen = true;
-        StateHasChanged();
-    }
-
-    private void OnDeleteWseDialogClose(bool accepted) {
-        DeleteWseDialogOpen = false;
-        StateHasChanged();
-    }
 
     [Parameter]
     public WebserviceEntry Wse { get; set; } = new();
