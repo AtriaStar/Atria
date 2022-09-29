@@ -206,7 +206,7 @@
             _webserviceEntry.ContactPersonId = LoginState.User!.Id;
             _webserviceEntry.Tags = new HashSet<Tag>(_selectedTags);
 
-            _webserviceEntry.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',').Select(x => new Tag {
+            _webserviceEntry.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',', StringSplitOptions.TrimEntries).Select(x => new Tag {
                 Name = x
             }) ?? Enumerable.Empty<Tag>());
 
