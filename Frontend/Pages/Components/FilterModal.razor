@@ -18,15 +18,7 @@
                         Online
                     </label>
                 </div>
-                @*
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="flexCheckBookmarks" @bind="IsBookmark" />
-                    <label class="form-check-label" for="flexCheckBookmarks">
-                        <i class="fa-solid fa-bookmark pe-1" style="color: red"></i>
-                        Lesezeichen
-                    </label>
-                </div>
-                *@
+
                 <hr/>
 
                 <div>Bewertung</div>
@@ -34,7 +26,7 @@
                     <div class="col-5">
                         <div class="ui-field">
                             <select class="form-select form-select-sm" @bind="SelectedStarNum">
-                                <option value="0" selected>0 oder mehr</option>
+                                <option value="0" selected>Beliebig</option>
                                 <option value="1">1 oder mehr</option>
                                 <option value="2">2 oder mehr</option>
                                 <option value="3">3 oder mehr</option>
@@ -53,7 +45,7 @@
                     </div>
                 </div>
                 <hr/>
-                <TagList @bind-SelectedTags="_selectedTags" SearchedTags="_searchedTags" AllTags="_tags"></TagList>
+                <TagList @bind-SelectedTagsStr="SelectedTagsStr"></TagList>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" @onclick="ModalApply">Anwenden</button>
@@ -63,9 +55,6 @@
 </div>
 
 @code {
-
-    [Inject]
-    public HttpClient HttpClient { get; set; } = default!;
 
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
@@ -82,12 +71,6 @@
     [Parameter]
     public string[]? SelectedTagsStr { get; set; }
 
-    private IEnumerable<Tag> _tags = null!;
-
-    private List<Tag> _selectedTags = null!;
-
-    private List<Tag> _searchedTags = null!;
-
         @*------------MODAL------------*@
 
     private Task ModalClose() {
@@ -95,22 +78,13 @@
     }
 
     private Task ModalApply() {
-        var selectedTagsAsString = _selectedTags.Select(tag => tag.Name).ToArray();
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> {
             ["IsOnline"] = IsOnline,
             ["HasBookmark"] = HasBookmark,
             ["minRating"] = SelectedStarNum,
-            ["tags"] = selectedTagsAsString,
+            ["tags"] = SelectedTagsStr,
         }));
         return OnClose.InvokeAsync(true);
-    }
-
-    protected override async Task OnInitializedAsync() {
-        _tags = await HttpClient.GetFromJsonAsync<IList<Tag>>("tag") ?? new List<Tag>();
-        _searchedTags = _tags.OrderByDescending(tag => tag.UseCount).ToList();
-        _selectedTags = SelectedTagsStr is null ? new List<Tag>() : _tags
-            .Where(tag => SelectedTagsStr.Contains(tag.Name))
-            .ToList();
     }
 
 }
