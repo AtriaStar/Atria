@@ -21,27 +21,30 @@
 
                 <hr/>
 
-                <div>Bewertung</div>
-                <div class="row mt-2">
-                    <div class="col-5">
-                        <div class="ui-field">
-                            <select class="form-select form-select-sm" @bind="SelectedStarNum">
-                                <option value="0" selected>Beliebig</option>
-                                <option value="1">1 oder mehr</option>
-                                <option value="2">2 oder mehr</option>
-                                <option value="3">3 oder mehr</option>
-                                <option value="4">4 oder mehr</option>
-                            </select>
+                <div>
+                    Bewertung
+                    <div class="row mt-2">
+                        <div class="col-5">
+                            <div class="ui-field">
+                                <select class="form-select form-select-sm" @bind="SelectedStarNum">
+                                    <option value="0" selected>Beliebig</option>
+                                    <option value="1">1 oder mehr</option>
+                                    <option value="2">2 oder mehr</option>
+                                    <option value="3">3 oder mehr</option>
+                                    <option value="4">4 oder mehr</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-auto">
-                        @for (int i = 1; i <= SelectedStarNum; i++) {
-                            <i class="fa fa-star rating-color me-1"></i>
-                        }
+                        <div class="col-auto">
+                            @for (int i = 1; i <= SelectedStarNum; i++) {
+                                <i class="fa fa-star rating-color me-1"></i>
+                            }
 
-                        @for (int i = 1; i <= (5 - SelectedStarNum); i++) {
-                            <i class="fa fa-star rating-uncolored me-1"></i>
-                        }
+                            @for (int i = 1; i <= (5 - SelectedStarNum); i++) {
+                                <i class="fa fa-star rating-uncolored me-1"></i>
+                            }
+                        </div>
                     </div>
                 </div>
                 <hr/>
@@ -70,9 +73,7 @@
 
     [Parameter]
     public string[]? SelectedTagsStr { get; set; }
-
-        @*------------MODAL------------*@
-
+    
     private Task ModalClose() {
         return OnClose.InvokeAsync(false);
     }
