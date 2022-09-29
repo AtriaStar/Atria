@@ -1,11 +1,14 @@
 ﻿@inject NavigationManager NavigationManager
 
-<div class="modal" id="tagModal" tabindex="-1" aria-labelledby="tagModalLabel" aria-hidden="true" style="display:block; background-color: rgba(10,10,10,.8);">
+<div class="modal" id="tagModal" tabindex="-1" aria-labelledby="tagModalLabel" aria-hidden="true"
+     style="display:block; background-color: rgba(10,10,10,.8);">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="tagModalLabel">Filter</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="ModalClose"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        @onclick="ModalClose">
+                </button>
             </div>
             <div class="modal-body">
                 <div class="form-check">
@@ -15,9 +18,7 @@
                         Online
                     </label>
                 </div>
-
                 <hr/>
-
                 <div>
                     Bewertung
                     <div class="row mt-2">
@@ -37,7 +38,6 @@
                             @for (int i = 1; i <= SelectedStarNum; i++) {
                                 <i class="fa fa-star rating-color me-1"></i>
                             }
-
                             @for (int i = 1; i <= (5 - SelectedStarNum); i++) {
                                 <i class="fa fa-star rating-uncolored me-1"></i>
                             }
@@ -70,7 +70,7 @@
 
     [Parameter]
     public string[]? SelectedTagsStr { get; set; }
-    
+
     private Task ModalClose() {
         return OnClose.InvokeAsync(false);
     }

@@ -44,7 +44,8 @@
                 <AuthView>
                     <Authorized>
                         <i class="fa-bookmark @_bookmarkStateFilter fs-4" style="color: #dc3545" type="button" title="Lesezeichen"
-                           @onclick="ChangeBookmarkStatusFilter"></i>
+                           @onclick="ChangeBookmarkStatusFilter">
+                        </i>
                     </Authorized>
                 </AuthView>
                 <button class="btn btn-outline-primary ms-3" type="button" @onclick="OpenFilterDialog">
@@ -137,6 +138,7 @@
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
+    // Lists to hold queried data
     private IEnumerable<WebserviceEntry> _wseList = new List<WebserviceEntry>();
     private IEnumerable<User> _userList = new List<User>();
 
@@ -148,6 +150,7 @@
     private int _numberOfEntries;
 
     protected override async Task OnParametersSetAsync() {
+        // Pagination is 1-indexed
         if (Page == 0) {
             Page = 1;
         }
@@ -177,6 +180,7 @@
     }
 
     private async Task GetAndSetUserList() {
+        // Empty query for user is not allowed.
         if (Query is null or "") {
             _userList = Array.Empty<User>();
             _numberOfEntries = 0;
@@ -205,12 +209,13 @@
             Search();
         }
     }
-
+    
+    // Search by redirecting to corresponding url.
     private void Search() {
         NavigationManager.NavigateTo(Navigate("query", Query));
     }
 
-	private string Navigate(string key, string? value) {
+    private string Navigate(string key, string? value) {
         return NavigationManager.GetUriWithQueryParameter(key, value);
     }
 
@@ -221,7 +226,8 @@
         });
     }
 
-    private void OnFilterDialogClose(bool accepted) {
+    // Modal fragments
+    private void OnFilterDialogClose() {
         _filterDialogOpen = false;
     }
 

@@ -50,17 +50,19 @@
     [Inject]
     public HttpClient HttpClient { get; set; } = default!;
 
+    // Two-way-binding of the tag query string
     [Parameter]
     public string[]? SelectedTagsStr { get; set; }
-
+    
+    // Two-way-binding of the tag query string
+    [Parameter]
+    public EventCallback<string[]> SelectedTagsStrChanged { get; set; }
+    
     private IEnumerable<Tag>? _allTags;
 
     private List<Tag> _searchedTags = new();
 
     private List<Tag> _selectedTags = new();
-
-    [Parameter]
-    public EventCallback<string[]> SelectedTagsStrChanged { get; set; }
 
     private string? _tagQuery;
 
@@ -86,7 +88,8 @@
                 .ToList();
         }
     }
-
+    
+    // Generate string array for query
     private string[] GenerateTagString() {
         return _selectedTags.Select(tag => tag.Name).ToArray();
     }
