@@ -60,9 +60,9 @@
     
     private IEnumerable<Tag>? _allTags;
 
-    private List<Tag> _searchedTags = new();
+    private ICollection<Tag> _searchedTags = new List<Tag>();
 
-    private List<Tag> _selectedTags = new();
+    private ICollection<Tag> _selectedTags = new List<Tag>();
 
     private string? _tagQuery;
 
