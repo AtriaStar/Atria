@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Models
 @using System.Net
+@using Frontend.Pages.WSE.FilterModal
 @inject NavigationManager NavigationManager
 
 <PageTitle>Atria</PageTitle>
@@ -87,7 +88,7 @@
 </div>
 
 @if (_filterDialogOpen) {
-    <Frontend.Pages.Components.FilterModal IsOnline="IsOnline" HasBookmark="HasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></Frontend.Pages.Components.FilterModal>
+    <FilterModal IsOnline="IsOnline" HasBookmark="HasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></FilterModal>
 }
 
 @code {
