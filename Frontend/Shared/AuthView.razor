@@ -7,7 +7,8 @@
         if (AuthorizedAndMatching is null) {
             @Authorized
         } else {
-            if (UserIdClaim == LoginState.User.Id) {
+            if ((UserIdClaim != null && UserIdClaim == LoginState.User.Id) ||
+                (UserIdClaimCollection != null && UserIdClaimCollection.Contains(LoginState.User.Id))) {
                 @AuthorizedAndMatching
             } else {
                 @NotAuthorized
@@ -35,13 +36,20 @@
     
     [Parameter]
     public long? UserIdClaim { get; set; }
+    
+    [Parameter]
+    public long[]? UserIdClaimCollection { get; set; }
 
     protected override void OnParametersSet() {
         if (Authorized != null && AuthorizedAndMatching != null) {
             throw new InvalidOperationException($"Do not specify both '{nameof(Authorized)}' and '{nameof(AuthorizedAndMatching)}'");
         }
-        if (AuthorizedAndMatching != null && UserIdClaim == null) {
-            throw new InvalidOperationException($"'{nameof(AuthorizedAndMatching)}' requires '{nameof(UserIdClaim)}'");
+        if (AuthorizedAndMatching != null && UserIdClaim == null && UserIdClaimCollection == null) {
+            throw new InvalidOperationException(
+                $"'{nameof(AuthorizedAndMatching)}' requires '{nameof(UserIdClaim)}' or '{nameof(UserIdClaimCollection)}");
+        }
+        if (UserIdClaim != null && UserIdClaimCollection != null) {
+            throw new InvalidOperationException($"Do not specify both '{nameof(UserIdClaim)}' and '{nameof(UserIdClaimCollection)}'");
         }
 
     }
