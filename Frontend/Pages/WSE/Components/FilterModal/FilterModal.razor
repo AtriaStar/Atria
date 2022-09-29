@@ -1,13 +1,13 @@
 ﻿@inject NavigationManager NavigationManager
 
-<button class="btn btn-outline-primary ms-3" type="button" @onclick="() => Base.Open()">
+<button class="btn btn-outline-primary ms-3" type="button" @onclick="() => ModalBase.Open()">
     Filter
 </button>
 
-<ModalBase @ref="Base">
-    <Title>
+<ModalBase @ref="ModalBase">
+    <ModalTitle>
         Filter
-    </Title>
+    </ModalTitle>
     <ModalBody>
         
     <div class="form-check">
@@ -47,14 +47,14 @@
     <TagList @bind-SelectedTagsStr="SelectedTagsStr"></TagList>
 
     </ModalBody>
-    <Footer>
+    <ModalFooter>
         <button type="button" class="btn btn-success" @onclick="ModalApply">Anwenden</button>
-    </Footer>
+    </ModalFooter>
 </ModalBase>
 
 @code {
 
-    private ModalBase Base { get; set; } = null!;
+    private ModalBase ModalBase { get; set; } = null!;
 
     [Parameter]
     public bool? IsOnline { get; set; }
@@ -69,7 +69,7 @@
     public string[]? SelectedTagsStr { get; set; }
 
     private void ModalApply() {
-        Base.Close();
+        ModalBase.Close();
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> {
             ["IsOnline"] = IsOnline,
             ["HasBookmark"] = HasBookmark,

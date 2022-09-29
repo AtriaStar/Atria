@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered" style="z-index: 1055">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@Title</h5>
+                <h5 class="modal-title">@ModalTitle</h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" @onclick="Close">
                 </button>
             </div>
@@ -10,7 +10,7 @@
                 @ModalBody
             </div>
             <div class="modal-footer">
-                @Footer
+                @ModalFooter
             </div>
         </div>
     </div>
@@ -22,13 +22,13 @@
 @code {
 
     [Parameter]
-    public RenderFragment? Title { get; set; }
+    public RenderFragment? ModalTitle { get; set; }
 
     [Parameter]
     public RenderFragment? ModalBody { get; set; }
 
     [Parameter]
-    public RenderFragment? Footer { get; set; }
+    public RenderFragment? ModalFooter { get; set; }
 
     private string _modalDisplay = "none;";
     private string _modalClass = "";
