@@ -48,9 +48,7 @@
                         </i>
                     </Authorized>
                 </AuthView>
-                <button class="btn btn-outline-primary ms-3" type="button" @onclick="OpenFilterDialog">
-                    Filter
-                </button>
+                <Filter IsOnline="IsOnline" HasBookmark="HasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr"></Filter>
             }
             <div class="dropdown ms-3 d-flex">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -87,10 +85,6 @@
         <Pagination NumberOfPages="_numberOfPages" CurrentPage="Page" Radius="3"></Pagination>
     }
 </div>
-
-@if (_filterDialogOpen) {
-    <FilterModal IsOnline="IsOnline" HasBookmark="HasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></FilterModal>
-}
 
 @code {
 
@@ -143,7 +137,6 @@
     private IEnumerable<User> _userList = new List<User>();
 
     private string _bookmarkStateFilter = "fa-regular";
-    private bool _filterDialogOpen;
 
     // Pagination
     private int _numberOfPages;
@@ -224,15 +217,6 @@
             ["order"] = order,
             ["ascending"] = asc
         });
-    }
-
-    // Modal fragments
-    private void OnFilterDialogClose() {
-        _filterDialogOpen = false;
-    }
-
-    private void OpenFilterDialog() {
-        _filterDialogOpen = true;
     }
 
     private void ChangeBookmarkStatusFilter() {
