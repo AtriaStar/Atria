@@ -1,0 +1,82 @@
+﻿@using Models
+<div class="ui-field">
+    <div class="form-control form-control-sm border p-0">
+        <div class="input-group input-group-sm">
+            <button class="btn btn-sm btn-link text-dark">
+                <i class="fa fa-search"></i>
+            </button>
+            <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="_tagQuery" @onkeyup="SearchTags">
+        </div>
+    </div>
+</div>
+<div class="row mt-3 mb-1">
+    @foreach (var tag in SelectedTags) {
+        <div class="col-auto">
+            <h6>
+                <span class="badge bg-info">
+                    @tag.Name
+                    <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTagFromSelection(tag)"></button>
+                </span>
+            </h6>
+        </div>
+    }
+</div>
+
+<div class="ui-field p-3">
+    @foreach (var tag in SearchedTags) {
+        var value = SelectedTags.Contains(tag);
+        <div class="form-check">
+            @if (value) {
+                <input class="form-check-input" type="checkbox" @onclick="() => RemoveTagFromSelection(tag)" checked id="@tag.Name"/>
+            } else {
+                <input class="form-check-input" type="checkbox" @onclick="() => AddTagToSelection(tag)" id="@tag.Name"/>
+            }
+            <label class="form-check-label" for="@tag.Name">@tag.Name</label>
+        </div>
+    }
+</div>
+
+<div class="d-grid gap-2 mt-3 d-flex justify-content-end">
+    <button type="button" class="btn btn-outline-danger btn-small" @onclick="ClearSelection">Alle Tags Löschen</button>
+</div>
+
+@code {
+
+    [Parameter]
+    public IEnumerable<Tag> AllTags { get; set; } = default!;
+
+    [Parameter]
+    public List<Tag> SelectedTags { get; set; } = default!;
+
+    [Parameter]
+    public List<Tag> SearchedTags { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<List<Tag>> SelectedTagsChanged { get; set; }
+
+    private string? _tagQuery;
+
+    private async Task RemoveTagFromSelection(Tag tag) {
+        SelectedTags.Remove(tag);
+        await SelectedTagsChanged.InvokeAsync(SelectedTags);
+    }
+
+    private async Task AddTagToSelection(Tag tag) {
+        SelectedTags.Add(tag);
+        await SelectedTagsChanged.InvokeAsync(SelectedTags);
+    }
+
+    private async Task ClearSelection() {
+        SelectedTags = new List<Tag>();
+        await SelectedTagsChanged.InvokeAsync(SelectedTags);
+    }
+
+    private void SearchTags(KeyboardEventArgs evt) {
+        if (evt.Key == "Enter" && _tagQuery is not null) {
+            SearchedTags = AllTags.Where(tag => tag.Name.Contains(_tagQuery))
+                .OrderByDescending(tag => tag.UseCount)
+                .ToList();
+        }
+    }
+
+}

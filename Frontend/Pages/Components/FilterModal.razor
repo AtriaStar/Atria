@@ -12,7 +12,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="flexCheckOnline" @bind="IsOnline" />
+                    <input class="form-check-input" type="checkbox" id="flexCheckOnline" @bind="IsOnline"/>
                     <label class="form-check-label" for="flexCheckOnline">
                         <i class="fa-solid fa-circle text-success"></i>
                         Online
@@ -27,7 +27,7 @@
                     </label>
                 </div>
                 *@
-                <hr />
+                <hr/>
 
                 <div>Bewertung</div>
                 <div class="row mt-2">
@@ -52,44 +52,8 @@
                         }
                     </div>
                 </div>
-
-                <hr />
-
-                <div class="ui-field">
-                    <div class="form-control form-control-sm border p-0">
-                        <div class="input-group input-group-sm">
-                            <button class="btn btn-sm btn-link text-dark">
-                                <i class="fa fa-search"></i>
-                            </button>
-                            <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="_tagQuery" @onkeyup="SearchTags">
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-3 mb-1">
-
-                    @foreach (Tag tag in _selectedTags) {
-                        <div class="col-auto">
-                            <h6>
-                                <span class="badge bg-info">
-
-                                    @tag.Name
-                                    <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"></button>
-                                </span>
-                            </h6>
-                        </div>
-                    }
-                </div>
-                @*TODO InputSelect when EditForm added*@
-                <div class="ui-field">
-                    <select class="form-select mt-1" size="8" multiple @onchange="SelectedTagsChanged">
-                        @foreach (Tag tag in _searchedTags) {
-                            <option value="@tag.Name">@tag.Name</option>
-                        }
-                    </select>
-                </div>
-                <div class="d-grid gap-2 mt-3 d-flex justify-content-end">
-                    <button type="button" class="btn btn-outline-danger btn-small" @onclick="DeleteSelectedTags">Alle Tags Löschen</button>
-                </div>
+                <hr/>
+                <TagList @bind-SelectedTags="_selectedTags" SearchedTags="_searchedTags" AllTags="_tags"></TagList>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" @onclick="ModalApply">Anwenden</button>
@@ -99,6 +63,9 @@
 </div>
 
 @code {
+
+    [Inject]
+    public HttpClient HttpClient { get; set; } = default!;
 
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }
@@ -115,16 +82,11 @@
     [Parameter]
     public string[]? SelectedTagsStr { get; set; }
 
-    private string[] _selectedTagsStrB = { };
+    private IEnumerable<Tag> _tags = null!;
 
+    private List<Tag> _selectedTags = null!;
 
-    private List<Tag> _mockTags = new();
-
-    private string? _tagQuery;
-
-    private List<Tag> _selectedTags = new List<Tag>();
-
-    private List<Tag> _searchedTags = new List<Tag>();
+    private List<Tag> _searchedTags = null!;
 
         @*------------MODAL------------*@
 
@@ -133,71 +95,22 @@
     }
 
     private Task ModalApply() {
-        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> { ["IsOnline"] = IsOnline, ["HasBookmark"] = hasBookmark, ["minRating"] = SelectedStarNum, ["tags"] = SelectedTagsStr, }));
+        var selectedTagsAsString = _selectedTags.Select(tag => tag.Name).ToArray();
+        NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> {
+            ["IsOnline"] = IsOnline,
+            ["HasBookmark"] = hasBookmark,
+            ["minRating"] = SelectedStarNum,
+            ["tags"] = selectedTagsAsString,
+        }));
         return OnClose.InvokeAsync(true);
     }
 
-        @*------------TAG SEARCH------------*@
-
-    private void SearchTags(KeyboardEventArgs evt) {
-        _searchedTags = new List<Tag>();
-
-        if (evt.Key == "Enter" && _tagQuery is not null) {
-            foreach (Tag tag in _mockTags) {
-                if (tag.Name.Contains(_tagQuery, StringComparison.CurrentCultureIgnoreCase)) {
-                    _searchedTags.Add(tag);
-                }
-            }
-        }
-    }
-
-        @*------------TAGS------------*@
-
-    protected override void OnInitialized() {
-    /*mock tags*/
-        _mockTags.Add(new() { Name = "Suchmaschine1", CreationTime = DateTimeOffset.Now });
-        _mockTags.Add(new() { Name = "Lexikon34", CreationTime = DateTimeOffset.Now });
-        _mockTags.Add(new() { Name = "Wörterbuch6", CreationTime = DateTimeOffset.Now });
-        _mockTags.Add(new() { Name = "Tool2", CreationTime = DateTimeOffset.Now });
-        _mockTags.Add(new() { Name = "Webservice2", CreationTime = DateTimeOffset.Now });
-        _mockTags.Add(new() { Name = "Suchmaschine2", CreationTime = DateTimeOffset.Now });
-        _mockTags.Add(new() { Name = "Wörterbuch4", CreationTime = DateTimeOffset.Now });
-        _mockTags.Add(new() { Name = "Tool3", CreationTime = DateTimeOffset.Now });
-
-        _searchedTags = _mockTags;
-        _searchedTags = _searchedTags.OrderBy(tag => tag.Name).ToList();
-
-        foreach (string str in SelectedTagsStr!) //visibility of previous applied tags
-        {
-            foreach (Tag tag in _mockTags) {
-                if (str.Equals(tag.Name)) {
-                    _selectedTags.Add(tag);
-                }
-            }
-        }
-    }
-
-    private void DeleteSelectedTags() {
-        _selectedTags = new List<Tag>();
-        SelectedTagsStr = new string[] { };
-    }
-
-    private void RemoveTag(Tag tag) {
-        _selectedTags = _selectedTags.Where(t => t.Name != tag.Name).ToList();
-        SelectedTagsStr = SelectedTagsStr!.Where(s => s != tag.Name).ToArray();
-    }
-
-    private void SelectedTagsChanged(ChangeEventArgs e) {
-        if (e.Value is not null) {
-            _selectedTagsStrB = (string[])e.Value;
-        }
-        foreach (string str in _selectedTagsStrB) {
-            if (!_selectedTags.Exists(t => t.Name == str)) {
-                Tag selectedTag = _mockTags.Find(t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
-                _selectedTags.Add(selectedTag);
-                SelectedTagsStr = SelectedTagsStr!.Concat(new[] { selectedTag.Name }).ToArray();
-            }
-        }
+    protected override async Task OnInitializedAsync() {
+        _tags = await HttpClient.GetFromJsonAsync<IList<Tag>>("tag") ?? new List<Tag>();
+        _searchedTags = _tags.OrderByDescending(tag => tag.UseCount).ToList();
+        _selectedTags = SelectedTagsStr is null ? new List<Tag>() : _tags
+            .Where(tag => SelectedTagsStr.Contains(tag.Name))
+            .ToList();
     }
 
 }
