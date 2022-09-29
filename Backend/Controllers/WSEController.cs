@@ -211,7 +211,7 @@ public class WseController : AtriaControllerBase {
     [RequiresAuthentication]
     [HttpDelete("{wseId:long}/question/{questionId:long}")]
     public async Task<IActionResult> DeleteQuestion(long wseId, long questionId, [FromAuthentication] User user) {
-        var question = await _context.Questions.FindAsync(questionId, wseId);
+        var question = await _context.Questions.FindAsync(wseId, questionId);
         if (question == null) {
             return NotFound();
         }
@@ -230,7 +230,7 @@ public class WseController : AtriaControllerBase {
     [HttpDelete("{wseId:long}/question/{questionId:long}/answer/{answerId:long}")]
     public async Task<IActionResult> DeleteAnswer(long wseId, long questionId,
         long answerId, [FromAuthentication] User user) {
-        var answer = await _context.Answers.FindAsync(answerId, questionId, wseId);
+        var answer = await _context.Answers.FindAsync(wseId, questionId, answerId);
         if (answer == null) {
             return NotFound();
         }
@@ -248,7 +248,7 @@ public class WseController : AtriaControllerBase {
     [RequiresAuthentication]
     [HttpDelete("{wseId:long}/review/{reviewId:long}")]
     public async Task<IActionResult> DeleteReview(long wseId, long reviewId, [FromAuthentication] User user) {
-        var review = await _context.Reviews.FindAsync(reviewId, wseId);
+        var review = await _context.Reviews.FindAsync(wseId, reviewId);
         if (review == null) {
             return NotFound();
         }
