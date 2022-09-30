@@ -71,9 +71,6 @@
     [Parameter]
     public long WseContactPersonId { get; set; }
 
-    [Parameter]
-    public long UserId { get; set; }
-
     [CascadingParameter]
     public LoginState LoginState { get; set; } = default!;
 
