@@ -2,6 +2,9 @@
 @using Models.DTO
 @inject NavigationManager NavManager
 @inject HttpClient HttpClient
+@using System.Reactive.Subjects
+@using System.Reactive.Linq
+@implements IDisposable
 
 <button class="btn btn-outline-secondary btn-small ms-2" @onclick="() => ModalBase.Open()">weitere Kollaboratoren</button>
 
@@ -37,9 +40,13 @@
             <AuthorizedAndMatching>
                 <label class="form-label mt-2">E-Mail oder Name des neuen Kollaborators</label>
                 <div class="ui-field">
-                    @*TODO UserSearch*@
-                    <input class="form-control" @bind="_newCollabEmail"/>
+                    <input class="form-control" type="text" @oninput="_collabQuery.OnNext"/>
                 </div>
+                <select class="form-select" size="3" @bind="_userToAdd">
+                    @foreach (User user in _usersFound) {
+                       <option value="@user.Id">@user.FirstNames @user.LastName @user.Email</option> 
+                    }
+                </select>
                 <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
                     <button type="button" class="btn btn-success" @onclick="AddCollab">Hinzufügen</button>
                 </div>
@@ -51,9 +58,12 @@
 
 @code {
 
-    private string? _newCollabEmail;
-
-    public ModalBase ModalBase { get; set; } = null!;
+    private Subject<ChangeEventArgs> _collabQuery = new();
+    private IDisposable? _collabQuerySubscription;
+    private IEnumerable<User> _usersFound = new User[] { };
+    private long? _userToAdd;
+    
+    private ModalBase ModalBase { get; set; } = null!;
 
     [Parameter]
     public long WseId { get; set; }
@@ -72,7 +82,7 @@
     private ICollection<User> _collaboratorsAsUsers = new List<User>();
 
     private long[] _idsWithEditRights = { };
-    
+
     protected override async Task OnInitializedAsync() {
         _collaborators = await HttpClient.GetFromJsonAsync<ICollection<Collaborator>>("wse/" + WseId + "/collaborators") ?? new Collaborator[] { };
         foreach (Collaborator collab in _collaborators) {
@@ -83,11 +93,35 @@
             .Where(collaborator => (collaborator.Rights & WseRights.EditCollaborators) != 0)
             .Select(collaborator => collaborator.UserId)
             .ToArray();
+
+        _collabQuerySubscription = _collabQuery
+            .Throttle(TimeSpan.FromMilliseconds(500))
+            .Select(e => (string?)e.Value)
+            .Select(v => v?.Trim())
+            .DistinctUntilChanged()
+            .Select(SearchThings)
+            .Switch()
+            .Subscribe(users => {
+                _usersFound = users;
+                StateHasChanged();
+            });
     }
 
-    private void AddCollab() {
-        @* TODO logic *@
-        ModalBase.Close();
+    private async Task<IEnumerable<User>> SearchThings(string? searchTerm = null) {
+        var response = await HttpClient.GetAsync($"search/user?query={searchTerm}");
+        if (response.IsSuccessStatusCode) {
+            return (await response.Content.ReadFromJsonAsync<IEnumerable<User>>())!;
+        }
+        return Array.Empty<User>();
+    }
+
+    private async Task AddCollab() {
+        if (_userToAdd == null) {
+            return;
+        }
+        _collaborators!.Add(new Collaborator {UserId = _userToAdd.Value, Rights = WseRights.EditData});
+        await HttpClient.PostAsJsonAsync($"wse/{WseId}/collaborators", _collaborators);
+        @* TODO when backend works, test wether to call StateHasChanged or close Modal and ensure consistent state between FE and BE lisis *@
     }
 
     private async Task RemoveCollabById(long userId) {
@@ -95,4 +129,5 @@
         await HttpClient.PostAsJsonAsync($"wse/{WseId}/collaborators", _collaborators);
     }
 
+    public void Dispose() => _collabQuerySubscription?.Dispose();
 }
