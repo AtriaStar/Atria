@@ -271,7 +271,7 @@
     </div>
 
     @foreach (Review review in _wseReviews) {
-        <ReviewComponent Review="review" WseId="WseId" _isLoggedIn="_isLoggedIn" _userId="_userId"/>
+        <ReviewComponent Review="review"/>
     }
     @if (_wseNextReviews.Length != 0) {
         <div class="d-grid d-flex mt-2 mb-2 justify-content-center">
