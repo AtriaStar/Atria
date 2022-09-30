@@ -6,12 +6,10 @@
     <div class="card-body">
         <div class="row">
             <div class="col-auto">
-                @for (int i = 1; i <= (int)Review.StarCount; i++)
-                {
+                @for (int i = 1; i <= (int)Review.StarCount; i++) {
                     <i class="fa fa-star rating-color"></i>
                 }
-                @for (int i = (int)Review.StarCount + 1; i <= 5; i++)
-                {
+                @for (int i = (int)Review.StarCount + 1; i <= 5; i++) {
                     <i class="fa fa-star rating-uncolored"></i>
                 }
                 <div class="card-subtitle mt-1 text-muted">@Review.CreationTime</div>
@@ -22,26 +20,25 @@
                 <p class="card-text">@Review.Description</p>
             </div>
         </div>
-        @if (_isLoggedIn && Review.CreatorId == _userId)
-        {
-            <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
-                <button class="btn btn-outline-success btn-small" type="button" @onclick="() => EditReview(Review.Id)">
-                    Bearbeiten
-                </button>
-                <DeleteModal
-                    ModalTitle="Bewertung löschen"
-                    ModalBody="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?"
-                    ToDelete="review"
-                    WseId="WseId"
-                    ReviewId="Review.Id"
-                    ButtonStyle="btn-outline-danger btn-small">
-                </DeleteModal>
-            </div>
-        }
+        <AuthView UserIdClaim="Review.CreatorId">
+            <AuthorizedAndMatching>
+                <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
+                    <DeleteModal
+                        ModalTitle="Bewertung löschen"
+                        ModalBody="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?"
+                        ToDelete="review"
+                        WseId="Review.WseId"
+                        ReviewId="Review.Id"
+                        ButtonStyle="btn-outline-danger btn-small">
+                    </DeleteModal>
+                </div>
+            </AuthorizedAndMatching>
+        </AuthView>
     </div>
 </div>
 
 @code {
+
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
@@ -49,28 +46,12 @@
     private NavigationManager NavManager { get; set; } = default!;
 
     [Parameter]
-    public long WseId { get; set; }
-
-    [Parameter]
     public Review Review { get; set; } = null!;
-
-    [Parameter]
-    public bool _isLoggedIn { get; set; }
-
-    [Parameter]
-    public long _userId { get; set; }
 
     private User ReviewCreator { get; set; } = new();
 
     protected override async Task OnInitializedAsync() {
-        ReviewCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Review.CreatorId) ?? new User() {};
+        ReviewCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Review.CreatorId) ?? new User();
     }
 
-    private void EditReview(long reviewId) {
-        if (_isLoggedIn) {
-            NavManager.NavigateTo("/wse/" + WseId + "/editReview" + reviewId);
-        } else {
-            NavManager.NavigateTo("login");
-        }
-    }
 }
