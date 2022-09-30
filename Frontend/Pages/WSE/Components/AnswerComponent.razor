@@ -16,17 +16,19 @@
         </div>
     </div>
     <AuthView UserIdClaim="Answer.CreatorId">
-        <div class="d-grid mt-2 d-flex justify-content-end">
-            <DeleteModal
-                ModalTitle="Antwort löschen"
-                ModalBody="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?"
-                ToDelete="answer"
-                WseId="Answer.WseId"
-                QuestionId="Answer.QuestionId"
-                AnswerId="Answer.Id"
-                ButtonStyle="btn-outline-danger btn-small">
-            </DeleteModal>
-        </div>
+        <AuthorizedAndMatching>
+            <div class="d-grid mt-2 d-flex justify-content-end">
+                        <DeleteModal
+                            ModalTitle="Antwort löschen"
+                            ModalBody="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?"
+                            ToDelete="answer"
+                            WseId="Answer.WseId"
+                            QuestionId="Answer.QuestionId"
+                            AnswerId="Answer.Id"
+                            ButtonStyle="btn-outline-danger btn-small">
+                        </DeleteModal>
+                    </div>
+        </AuthorizedAndMatching>
     </AuthView>
 </li>
 
