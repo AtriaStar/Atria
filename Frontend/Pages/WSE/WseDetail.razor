@@ -70,7 +70,7 @@
         </div>
         <h5 class="card-subtitle mb-2 me-2 text-muted">
             @ContactPerson.FirstNames @ContactPerson.LastName
-            <CollabModal @ref="CollabModal" WseId="WseId" WseContactPersonId="Wse.ContactPersonId" UserId="_userId"></CollabModal>
+            <CollabModal WseId="WseId" WseContactPersonId="Wse.ContactPersonId" UserId="_userId"></CollabModal>
         </h5>
         @if (!_displayEditForm) {
             <div class="card-text">@Wse.ShortDescription</div>
@@ -310,8 +310,6 @@
 </div>
 
 @code {
-
-    public CollabModal CollabModal { get; set; } = null!;
 
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
