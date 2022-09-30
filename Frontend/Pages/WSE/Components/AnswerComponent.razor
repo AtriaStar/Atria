@@ -15,19 +15,19 @@
             @Answer.Text
         </div>
     </div>
-    @if (Answer.CreatorId == _userId) {
+    <AuthView UserIdClaim="Answer.CreatorId">
         <div class="d-grid mt-2 d-flex justify-content-end">
             <DeleteModal
                 ModalTitle="Antwort löschen"
                 ModalBody="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?"
                 ToDelete="answer"
-                WseId="WseId"
-                QuestionId="Question.Id"
+                WseId="Answer.WseId"
+                QuestionId="Answer.QuestionId"
                 AnswerId="Answer.Id"
                 ButtonStyle="btn-outline-danger btn-small">
             </DeleteModal>
         </div>
-    }
+    </AuthView>
 </li>
 
 @code {
@@ -36,25 +36,12 @@
     private HttpClient HttpClient { get; set; } = default!;
 
     [Parameter]
-    public Question Question { get; set; } = null!;
-
-    [Parameter]
     public Answer Answer { get; set; } = null!;
-
-    [Parameter]
-    public long WseId { get; set; }
-
-    [Parameter]
-    public bool _isLoggedIn { get; set; }
-
-    [Parameter]
-    public long _userId { get; set; }
 
     private User AnswerCreator { get; set; } = new();
 
     protected override async Task OnInitializedAsync() {
-        AnswerCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Answer.CreatorId) ?? new User() {
-        };
+        AnswerCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Answer.CreatorId) ?? new User();
     }
 
 }
