@@ -15,28 +15,23 @@
             @Answer.Text
         </div>
     </div>
-    @if (Answer.CreatorId == _userId)
-    {
+    @if (Answer.CreatorId == _userId) {
         <div class="d-grid mt-2 d-flex justify-content-end">
-            <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteAnswerDialog(Question.Id, Answer.Id)">
-                Löschen
-            </button>
+            <DeleteModal
+                ModalTitle="Antwort löschen"
+                ModalBody="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?"
+                ToDelete="answer"
+                WseId="WseId"
+                QuestionId="Question.Id"
+                AnswerId="Answer.Id"
+                ButtonStyle="btn-outline-danger btn-small">
+            </DeleteModal>
         </div>
     }
 </li>
 
-@if (DeleteAnswerDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal 
-    Title="Antwort löschen" 
-    Text="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?" 
-    ToDelete="answer" 
-    WseId="WseId"
-    QuestionId="QuestionIdToDelete" 
-    AnswerId="AnswerIdToDelete"
-    OnClose="@OnDeleteAnswerDialogClose"/>
-}
-
 @code {
+
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
@@ -45,7 +40,7 @@
 
     [Parameter]
     public Answer Answer { get; set; } = null!;
-    
+
     [Parameter]
     public long WseId { get; set; }
 
@@ -58,23 +53,8 @@
     private User AnswerCreator { get; set; } = new();
 
     protected override async Task OnInitializedAsync() {
-        AnswerCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Answer.CreatorId) ?? new User() {};
+        AnswerCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Answer.CreatorId) ?? new User() {
+        };
     }
 
-    /*-------------MODALS-------------*/
-    private long QuestionIdToDelete { get; set; }
-    private long AnswerIdToDelete { get; set; }
-    private bool DeleteAnswerDialogOpen { get; set; }
-
-    private void OpenDeleteAnswerDialog(long questionId, long answerId) {
-        DeleteAnswerDialogOpen = true;
-        QuestionIdToDelete = questionId;
-        AnswerIdToDelete = answerId;
-        StateHasChanged();
-    }
-
-    private void OnDeleteAnswerDialogClose(bool accepted) {
-        DeleteAnswerDialogOpen = false;
-        StateHasChanged();
-    }
 }

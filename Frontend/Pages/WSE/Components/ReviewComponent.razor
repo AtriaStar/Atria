@@ -28,24 +28,18 @@
                 <button class="btn btn-outline-success btn-small" type="button" @onclick="() => EditReview(Review.Id)">
                     Bearbeiten
                 </button>
-                <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteReviewDialog(Review.Id)">
-                    Löschen
-                </button>
+                <DeleteModal
+                    ModalTitle="Bewertung löschen"
+                    ModalBody="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?"
+                    ToDelete="review"
+                    WseId="WseId"
+                    ReviewId="Review.Id"
+                    ButtonStyle="btn-outline-danger btn-small">
+                </DeleteModal>
             </div>
         }
     </div>
-</div>   
-
-
-@if (DeleteReviewDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal 
-    Title="Bewertung löschen" 
-    Text="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?" 
-    ToDelete="review" 
-    WseId="WseId"
-    ReviewId="ReviewIdToDelete"
-    OnClose="@OnDeleteReviewDialogClose"/>
-}
+</div>
 
 @code {
     [Inject]
@@ -78,20 +72,5 @@
         } else {
             NavManager.NavigateTo("login");
         }
-    }
-
-    /*-------------MODALS-------------*/
-    private long ReviewIdToDelete { get; set; }
-    private bool DeleteReviewDialogOpen { get; set; }
-
-    private void OpenDeleteReviewDialog(long reviewId) {
-        DeleteReviewDialogOpen = true;
-        ReviewIdToDelete = reviewId;
-        StateHasChanged();
-    }
-
-    private void OnDeleteReviewDialogClose(bool accepted) {
-        DeleteReviewDialogOpen = false;
-        StateHasChanged();
     }
 }

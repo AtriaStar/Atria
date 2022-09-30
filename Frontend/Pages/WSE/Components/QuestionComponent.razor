@@ -29,9 +29,13 @@
                     
                     @if (Question.CreatorId == _userId && !_createNewAnswer)
                     {
-                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => OpenDeleteQuestionDialog(Question.Id)">
-                            Löschen
-                        </button>
+                        <DeleteModal
+                            ModalTitle="Frage löschen" 
+                            ModalBody="Sind Sie sicher, dass Sie Ihre Frage löschen möchten?" 
+                            ToDelete="question" 
+                            WseId="WseId"
+                            QuestionId="Question.Id" 
+                            ButtonStyle="btn-outline-danger btn-small"/>
                     }
                 }
                         
@@ -77,16 +81,6 @@
         </div>
     </div>
 </div>
-
-@if (DeleteQuestionDialogOpen) {
-    <Frontend.Pages.Components.DeleteModal 
-    Title="Frage löschen" 
-    Text="Sind Sie sicher, dass Sie Ihre Frage löschen möchten?" 
-    ToDelete="question" 
-    WseId="WseId"
-    QuestionId="QuestionIdToDelete" 
-    OnClose="@OnDeleteQuestionDialogClose"/>
-}
 
 @code {
     [Inject]
@@ -155,20 +149,5 @@
         else {
             NavManager.NavigateTo("/internal-server-error");
         }
-    }
-
-    /*-------------MODALS-------------*/
-    private long QuestionIdToDelete { get; set; }
-    private bool DeleteQuestionDialogOpen { get; set; }
-    
-    private void OpenDeleteQuestionDialog(long questionId) {
-        DeleteQuestionDialogOpen = true;
-        QuestionIdToDelete = questionId;
-        StateHasChanged();
-    }
-
-    private void OnDeleteQuestionDialogClose(bool accepted) {
-        DeleteQuestionDialogOpen = false;
-        StateHasChanged();
     }
 }
