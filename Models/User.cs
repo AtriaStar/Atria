@@ -41,8 +41,5 @@ public class User {
     [JsonIgnore]
     public virtual ISet<WebserviceEntry> Bookmarks { get; set; } = new HashSet<WebserviceEntry>();
 
-    [JsonIgnore]
-    public virtual ICollection<WseDraft> WseDrafts { get; set; } = new List<WseDraft>();
-
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

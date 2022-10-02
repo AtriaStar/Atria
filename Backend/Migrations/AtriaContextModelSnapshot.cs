@@ -255,15 +255,8 @@ namespace Backend.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
-                    b.Property<long?>("WseDraftId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("wse_draft_id");
-
                     b.HasKey("Name")
                         .HasName("pk_tags");
-
-                    b.HasIndex("WseDraftId")
-                        .HasDatabaseName("ix_tags_wse_draft_id");
 
                     b.ToTable("tags", (string)null);
                 });
@@ -401,61 +394,6 @@ namespace Backend.Migrations
                         .HasDatabaseName("ix_webservice_entries_contact_person_id");
 
                     b.ToTable("webservice_entries", (string)null);
-                });
-
-            modelBuilder.Entity("Models.WseDraft", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("ChangeLog")
-                        .HasColumnType("text")
-                        .HasColumnName("change_log");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long>("CreatorId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("creator_id");
-
-                    b.Property<string>("Documentation")
-                        .HasColumnType("text")
-                        .HasColumnName("documentation");
-
-                    b.Property<string>("DocumentationLink")
-                        .HasColumnType("text")
-                        .HasColumnName("documentation_link");
-
-                    b.Property<string>("FullDescription")
-                        .HasColumnType("text")
-                        .HasColumnName("full_description");
-
-                    b.Property<string>("Link")
-                        .HasColumnType("text")
-                        .HasColumnName("link");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("ShortDescription")
-                        .HasColumnType("text")
-                        .HasColumnName("short_description");
-
-                    b.HasKey("Id")
-                        .HasName("pk_drafts");
-
-                    b.HasIndex("CreatorId")
-                        .HasDatabaseName("ix_drafts_creator_id");
-
-                    b.ToTable("drafts", (string)null);
                 });
 
             modelBuilder.Entity("TagWebserviceEntry", b =>
@@ -621,14 +559,6 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Models.Tag", b =>
-                {
-                    b.HasOne("Models.WseDraft", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("WseDraftId")
-                        .HasConstraintName("fk_tags_drafts_wse_draft_id");
-                });
-
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
                     b.HasOne("Models.User", "ContactPerson")
@@ -639,18 +569,6 @@ namespace Backend.Migrations
                         .HasConstraintName("fk_webservice_entries_users_contact_person_id");
 
                     b.Navigation("ContactPerson");
-                });
-
-            modelBuilder.Entity("Models.WseDraft", b =>
-                {
-                    b.HasOne("Models.User", "Creator")
-                        .WithMany("WseDrafts")
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_drafts_users_creator_id");
-
-                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("TagWebserviceEntry", b =>
@@ -687,11 +605,6 @@ namespace Backend.Migrations
                         .HasConstraintName("fk_bookmarks_webservice_entries_bookmarks_id");
                 });
 
-            modelBuilder.Entity("Models.User", b =>
-                {
-                    b.Navigation("WseDrafts");
-                });
-
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
                     b.Navigation("ApiCheckHistory");
@@ -701,11 +614,6 @@ namespace Backend.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("Models.WseDraft", b =>
-                {
-                    b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
         }

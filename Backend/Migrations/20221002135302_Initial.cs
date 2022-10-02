@@ -11,6 +11,19 @@ namespace Backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "tags",
+                columns: table => new
+                {
+                    name = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    creation_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_tags", x => x.name);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "users",
                 columns: table => new
                 {
@@ -31,33 +44,6 @@ namespace Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_users", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "drafts",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    short_description = table.Column<string>(type: "text", nullable: true),
-                    link = table.Column<string>(type: "text", nullable: true),
-                    full_description = table.Column<string>(type: "text", nullable: true),
-                    documentation_link = table.Column<string>(type: "text", nullable: true),
-                    documentation = table.Column<string>(type: "text", nullable: true),
-                    change_log = table.Column<string>(type: "text", nullable: true),
-                    creator_id = table.Column<long>(type: "bigint", nullable: false),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_drafts", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_drafts_users_creator_id",
-                        column: x => x.creator_id,
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -127,25 +113,6 @@ namespace Backend.Migrations
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tags",
-                columns: table => new
-                {
-                    name = table.Column<string>(type: "text", nullable: false),
-                    description = table.Column<string>(type: "text", nullable: true),
-                    creation_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    wse_draft_id = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_tags", x => x.name);
-                    table.ForeignKey(
-                        name: "fk_tags_drafts_wse_draft_id",
-                        column: x => x.wse_draft_id,
-                        principalTable: "drafts",
-                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -353,11 +320,6 @@ namespace Backend.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_drafts_creator_id",
-                table: "drafts",
-                column: "creator_id");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_questions_creator_id",
                 table: "questions",
                 column: "creator_id");
@@ -381,11 +343,6 @@ namespace Backend.Migrations
                 name: "ix_tag_webservice_entry_webservice_entries_id",
                 table: "tag_webservice_entry",
                 column: "webservice_entries_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_tags_wse_draft_id",
-                table: "tags",
-                column: "wse_draft_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_users_email",
@@ -433,9 +390,6 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "webservice_entries");
-
-            migrationBuilder.DropTable(
-                name: "drafts");
 
             migrationBuilder.DropTable(
                 name: "users");

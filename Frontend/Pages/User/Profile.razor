@@ -94,11 +94,6 @@
                         <NavLink href="@NavigateType(null)" class="nav-link me-2" Match="NavLinkMatch.All">WSE</NavLink>
                         <NavLink href="@NavigateType("bookmarks")" class="nav-link me-2">Lesezeichen</NavLink>
                         <NavLink href="@NavigateType("reviews")" class="nav-link me-2">Bewertungen</NavLink>
-                        <AuthView UserIdClaim="UserId">
-                            <AuthorizedAndMatching>
-                                <NavLink href="@NavigateType("drafts")" class="nav-link">Entwürfe</NavLink>
-                            </AuthorizedAndMatching>
-                        </AuthView>
                     </div>
 
                     <div class="d-flex mb-2 ms-auto">
@@ -129,13 +124,6 @@
                             break;
                         case "reviews":
                             <ReviewList Reviews="_reviews"/>
-                            break;
-                        case "drafts":
-                            <AuthView UserIdClaim="UserId">
-                                <AuthorizedAndMatching>
-                                    <WseSummaryList Entries="_webserviceEntries"/>
-                                </AuthorizedAndMatching>
-                            </AuthView>
                             break;
                         default:
                             NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string)null!));
@@ -240,11 +228,6 @@
                         SetNumberOfPages(_numberOfEntries);
                         break;
                     case "bookmarks":
-                        _webserviceEntries = (await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>())!;
-                        _numberOfEntries = _webserviceEntries.Count();
-                        SetNumberOfPages(_numberOfEntries);
-                        break;
-                    case "drafts":
                         _webserviceEntries = (await response.Content.ReadFromJsonAsync<IEnumerable<WebserviceEntry>>())!;
                         _numberOfEntries = _webserviceEntries.Count();
                         SetNumberOfPages(_numberOfEntries);

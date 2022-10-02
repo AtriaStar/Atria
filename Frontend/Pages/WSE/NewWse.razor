@@ -15,7 +15,7 @@
         @_conflictMessage
     </div>
 
-    <EditForm EditContext="@_editContext">
+    <EditForm Model="_webserviceEntry" OnValidSubmit="PublishWse">
         <DataAnnotationsValidator></DataAnnotationsValidator>
         <ValidationSummary></ValidationSummary>
 
@@ -141,12 +141,7 @@
 
         <div class="d-grid gap-2 d-flex justify-content-end mb-4">
             <div class="btn-group">
-                <button class="btn btn-success" type="button" @onclick="SaveAsDraft">
-                    Als Entwurf speichern
-                </button>
-            </div>
-            <div class="btn-group">
-                <button class="btn btn-success" type="button" @onclick="PublishWse">
+                <button class="btn btn-success" type="submit">
                     Veröffentlichen
                 </button>
             </div>
@@ -156,16 +151,7 @@
 
 @code {
 
-    /*
-     * if this is false, the current context is using wse as model and the wse field is populated.
-     * if this is true, the current context is using draft as model and the draft field is populated.
-     * default is using wse as model
-     */
-    private bool _drafting = false;
-
-    private EditContext? _editContext;
     private WebserviceEntry _webserviceEntry = new();
-    private WseDraft _draft = new();
     
     [CascadingParameter]
     public LoginState LoginState { get; init; } = default!;
@@ -180,28 +166,7 @@
     private string? _tagQuery;
     private string? _conflictMessage;
 
-    protected override void OnInitialized() {
-        _editContext = new EditContext(_webserviceEntry);
-    }
-
     private async void PublishWse() {
-    // if previous attempt was to create a draft, now try to create a wse
-        if (_drafting) {
-            _webserviceEntry = new WebserviceEntry {
-                Name = _draft.Name,
-                ShortDescription = _draft.ShortDescription!, // if null then null is wanted for validation
-                Link = _draft.Link!, // if null then null is wanted for validation
-                FullDescription = _draft.FullDescription,
-                DocumentationLink = _draft.DocumentationLink,
-                Documentation = _draft.Documentation,
-                ChangeLog = _draft.ChangeLog,
-                Tags = _draft.Tags
-            };
-            _editContext = new EditContext(_webserviceEntry);
-            _editContext.EnableDataAnnotationsValidation();
-        }
-        
-        if (_editContext!.Validate()) {
     //set contact and tags
             _webserviceEntry.ContactPersonId = LoginState.User!.Id;
             _webserviceEntry.Tags = new HashSet<Tag>(_selectedTags);
@@ -220,50 +185,8 @@
             } else {
                 NavigationManager.NavigateTo("/internal-server-error");
             }
-        }
-        _drafting = false;
-        StateHasChanged();
 
     }
-
-    private async void SaveAsDraft() {
-    // if previous attempt was to create a draft, now try to create a wse
-        if (!_drafting) {
-            _draft = new WseDraft {
-                Name = _webserviceEntry.Name,
-                ShortDescription = _webserviceEntry.ShortDescription,
-                Link = _webserviceEntry.Link,
-                FullDescription = _webserviceEntry.FullDescription,
-                DocumentationLink = _webserviceEntry.DocumentationLink,
-                Documentation = _webserviceEntry.Documentation,
-                ChangeLog = _webserviceEntry.ChangeLog,
-                Tags = _webserviceEntry.Tags
-            };
-            _editContext = new EditContext(_draft);
-            _editContext.EnableDataAnnotationsValidation();
-        }
-
-        if (_editContext!.Validate()) {
-    /* set tags */
-            _draft.Tags = new HashSet<Tag>(_selectedTags);
-            _draft.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',').Select(x => new Tag {
-                Name = x
-            }) ?? Enumerable.Empty<Tag>());
-
-            var response = await HttpClient.PutAsJsonAsync("user/draft", _draft);
-            if (response.IsSuccessStatusCode) {
-                var wseDraftId = (await response.Content.ReadFromJsonAsync<WseDraft>())!.Id;
-                NavigationManager.NavigateTo("wseDraft/" + wseDraftId);
-            } else if (response.StatusCode == HttpStatusCode.Conflict) {
-                _conflictMessage = await response.Content.ReadAsStringAsync();
-            } else {
-                NavigationManager.NavigateTo("/internal-server-error");
-            }
-        }
-        _drafting = true;
-        StateHasChanged();
-    }
-
         @*------------TAG SEARCH------------*@
 
     private void SearchTags(KeyboardEventArgs evt) {

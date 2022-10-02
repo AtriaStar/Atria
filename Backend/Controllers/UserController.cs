@@ -32,11 +32,6 @@ public class UserController : AtriaControllerBase {
         => _context.Reviews.Where(x => x.CreatorId == userId).Paginate(pagination);
 
     [RequiresAuthentication]
-    [HttpGet("{userId:long}/drafts")]
-    public IActionResult GetWseDrafts([FromDatabase] User user, [FromAuthentication] User authUser, [FromQuery] Pagination pagination)
-        => user.Id == authUser.Id ? Ok(user.WseDrafts.Paginate(pagination)) : Forbidden();
-
-    [RequiresAuthentication]
     [HttpPost]
     public async Task<IActionResult> Edit(User user, [FromAuthentication] User authUser) {
         if (user.Id != authUser.Id) { return Forbidden("You can only edit your own profile"); }
@@ -49,7 +44,6 @@ public class UserController : AtriaControllerBase {
         user.PasswordSalt = authUser.PasswordSalt;
 
         // TODO: Extra endpoint for email
-        user.WseDrafts = authUser.WseDrafts;
         user.Bookmarks = authUser.Bookmarks;
 
         _context.ChangeTracker.Clear(); // TODO: WHY IS THIS NEEDED??
