@@ -1,18 +1,20 @@
 ﻿@using Models
-@using System.Web
-@using System.Net
-
+@using Frontend.Services
 <div class="card mt-3 mb-4">
     <div class="card-body">
         <div class="row">
             <div class="col-auto">
-                @for (int i = 1; i <= (int)Review.StarCount; i++) {
+                @for (var i = 1; i <= (int)Review.StarCount; i++) {
                     <i class="fa fa-star rating-color"></i>
                 }
-                @for (int i = (int)Review.StarCount + 1; i <= 5; i++) {
+                @for (var i = (int)Review.StarCount + 1; i <= 5; i++) {
                     <i class="fa fa-star rating-uncolored"></i>
                 }
-                <div class="card-subtitle mt-1 text-muted">@Review.CreationTime</div>
+                <div class="card-subtitle mt-1 text-muted">
+                    <Tooltip Text="@Review.CreationTime.ToString()">
+                        @NiceTimeSpanFormatterService.NiceFormat(DateTimeOffset.UtcNow - Review.CreationTime)
+                    </Tooltip>
+                </div>
             </div>
             <div class="col mt-1">
                 <h6 class="card-title fw-bold">@Review.Title</h6>

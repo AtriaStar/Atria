@@ -1,7 +1,5 @@
 ﻿@using Models
-@using System.Web
-@using System.Net
-
+@using Frontend.Services
 <li class="list-group-item px-0">
     <div class="row">
         <div class="col-auto">
@@ -10,7 +8,11 @@
         <div class="col">
             <h6 class="fw-bold mt-1 mb-1">
                 @AnswerCreator.FirstNames @AnswerCreator.LastName
-                <small class="text-muted">@Answer.CreationTime</small>
+                <small class="text-muted">
+                    <Tooltip Text="@Answer.CreationTime.ToString()">
+                        @NiceTimeSpanFormatterService.NiceFormat(DateTimeOffset.UtcNow - Answer.CreationTime)
+                    </Tooltip>
+                </small>
             </h6>
             @Answer.Text
         </div>
@@ -18,16 +20,16 @@
     <AuthView UserIdClaim="Answer.CreatorId">
         <AuthorizedAndMatching>
             <div class="d-grid mt-2 d-flex justify-content-end">
-                        <DeleteModal
-                            ModalTitle="Antwort löschen"
-                            ModalBody="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?"
-                            ToDelete="answer"
-                            WseId="Answer.WseId"
-                            QuestionId="Answer.QuestionId"
-                            AnswerId="Answer.Id"
-                            ButtonStyle="btn-outline-danger btn-small">
-                        </DeleteModal>
-                    </div>
+                <DeleteModal
+                    ModalTitle="Antwort löschen"
+                    ModalBody="Sind Sie sicher, dass Sie Ihre Antwort löschen möchten?"
+                    ToDelete="answer"
+                    WseId="Answer.WseId"
+                    QuestionId="Answer.QuestionId"
+                    AnswerId="Answer.Id"
+                    ButtonStyle="btn-outline-danger btn-small">
+                </DeleteModal>
+            </div>
         </AuthorizedAndMatching>
     </AuthView>
 </li>
