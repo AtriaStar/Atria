@@ -16,12 +16,7 @@
     </div>
 }
 
-@if (_wse == null) {
-    <div class="d-flex justify-content-center mt-4">
-        <p><strong>Webservice-Eintrag wird geladen...</strong></p>
-        <div class="spinner-border ms-3" role="status" aria-hidden="true"></div>
-    </div>
-} else {
+@if (_wse is not null) {
 @*------------HEADER CARD------------*@
     <div class="card mb-4">
         <div class="card-body">
@@ -265,6 +260,15 @@
             </EditForm>
         }
     }
+} else if (_wseNotFound) {
+    <NotFound></NotFound>
+} else {
+    <div class="d-flex justify-content-center mt-4">
+        <p>
+            <strong>Webservice-Eintrag wird geladen...</strong>
+        </p>
+        <div class="spinner-border ms-3" role="status" aria-hidden="true"></div>
+    </div>
 }
 </div>
 
@@ -308,6 +312,7 @@
     private bool _displayEditForm;
     private double _avgReview;
     private string? _onlineStatus;
+    private bool _wseNotFound;
 
     private string? _conflictMessage;
 
@@ -333,24 +338,26 @@
         if (response.IsSuccessStatusCode) {
             _wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
             var fullUrl = $"wse/{WseId}/{HttpUtility.UrlEncode(_wse.Name)}";
+            
+
+            _contactPerson = await HttpClient.GetFromJsonAsync<User>("user/" + _wse!.ContactPersonId) ?? new User();
+
+            _allReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] { };
+            _reviewNum = _allReviews.Count();
+
+            await StyleOnlineStatus();
+            await CheckCurrentUserCollab();
+            await CheckCurrentUserBookmark();
+            await InitReviews();
+            await InitQuestions();
+            GetAvgReview();
+            
             if (NavManager.ToBaseRelativePath(NavManager.Uri) != fullUrl) {
                 NavManager.NavigateTo(fullUrl);
             }
         } else {
-            NavManager.NavigateTo("");
+            _wseNotFound = true;
         }
-
-        _contactPerson = await HttpClient.GetFromJsonAsync<User>("user/" + _wse!.ContactPersonId) ?? new User();
-
-        _allReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] { };
-        _reviewNum = _allReviews.Count();
-
-        await StyleOnlineStatus();
-        await CheckCurrentUserCollab();
-        await CheckCurrentUserBookmark();
-        await InitReviews();
-        await InitQuestions();
-        GetAvgReview();
     }
 
     private void GetAvgReview() {
@@ -459,13 +466,14 @@
 
     private async Task StyleOnlineStatus() {
         var response = await HttpClient.GetAsync($"wse/{WseId}/checks/latest");
-        if (response.IsSuccessStatusCode) {
+        if (response.StatusCode == HttpStatusCode.OK) {
             if (await response.Content.ReadFromJsonAsync<bool>()) {
                 _onlineStatus = "text-success";
             }
             _onlineStatus = "text-danger";
+        } else {
+            _onlineStatus = "text-secondary";
         }
-        _onlineStatus = "text-secondary";
     }
 
 }
