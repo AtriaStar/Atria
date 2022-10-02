@@ -36,9 +36,6 @@ public class UserController : AtriaControllerBase {
     public IActionResult GetWseDrafts([FromDatabase] User user, [FromAuthentication] User authUser, [FromQuery] Pagination pagination)
         => user.Id == authUser.Id ? Ok(user.WseDrafts.Paginate(pagination)) : Forbidden();
 
-    [HttpGet("{userId:long}/notifications")]
-    public IReadOnlyList<Notification> GetNotifications() => null!;
-
     [RequiresAuthentication]
     [HttpPost]
     public async Task<IActionResult> Edit(User user, [FromAuthentication] User authUser) {
