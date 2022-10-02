@@ -40,8 +40,7 @@ public class WseController : AtriaControllerBase {
     public async Task<bool?> GetLastCheck(long wseId)
         => (int?)(await _context.WebserviceEntries
             .Include(x => x.ApiCheckHistory)
-            .FirstAsync(x => x.Id == wseId))
-            .ApiCheckHistory
+            .FirstOrDefaultAsync(x => x.Id == wseId))?.ApiCheckHistory
             .MaxBy(x => x.CheckedAt)
             ?.Status is { } status ? status / 100 == 2 : null;
 
