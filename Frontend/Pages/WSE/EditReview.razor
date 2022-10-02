@@ -14,7 +14,7 @@
             <h2 class="mb-3">Bewertung bearbeiten</h2>
         }
 
-        <EditForm Model="@_reviewToEdit" OnValidSubmit="HandleValidSubmit">
+        <EditForm EditContext="_context" OnSubmit="ValidateStarCount">
             <DataAnnotationsValidator/>
             <ValidationSummary/>
             <div class="card">
@@ -28,7 +28,9 @@
 
                     <div class="row mt-2">
                         <div class="col-2">
-                            <InputSelect class="select form-select form-select-sm" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px" @bind-Value="_reviewToEdit.StarCount">
+                            <InputSelect class="select form-select form-select-sm"
+                                         style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px"
+                                         @bind-Value="_reviewToEdit.StarCount">
                                 <option value="@StarCount.One">1</option>
                                 <option value="@StarCount.Two">2</option>
                                 <option value="@StarCount.Three">3</option>
@@ -36,6 +38,7 @@
                                 <option value="@StarCount.Five">5</option>
                             </InputSelect>
                             <ValidationMessage For="() => _reviewToEdit.StarCount"></ValidationMessage>
+                            <p class="validation-message">@_starCountErrorMessage</p>
                         </div>
                         <div class="col-auto">
                             @for (int i = 1; i <= (int)_reviewToEdit.StarCount; i++) {
@@ -102,10 +105,14 @@
     [Parameter]
     public long WseId { get; set; }
 
+    private EditContext? _context;
+
     private Review _reviewToEdit = null!;
     private WebserviceEntry _wse = null!;
 
     private string? _errorMessage;
+    private string? _starCountErrorMessage;
+
     private bool _isLoaded;
 
     protected override async Task OnInitializedAsync() {
@@ -132,11 +139,30 @@
                 WseId = WseId
             };
         }
-
+        _context = new EditContext(_reviewToEdit);
         _isLoaded = true;
     }
 
+    private void ValidateStarCount() {
+        var isValid = _context!.Validate();
+        if (_reviewToEdit.StarCount == 0) {
+    // blazor's required attribute somehow doesn't work properly
+            _starCountErrorMessage = "The starcount field is required.";
+            StateHasChanged();
+        } else {
+            _starCountErrorMessage = null;
+            StateHasChanged();
+            if (isValid) {
+                HandleValidSubmit();
+            }
+        }
+    }
+
     private async void HandleValidSubmit() {
+        if (_reviewToEdit.StarCount == 0) {
+    // blazor's required attribute somehow doesn't work properly
+            return;
+        }
         HttpResponseMessage response;
         if (ReviewId is null) {
             response = await HttpClient.PutAsJsonAsync("wse/review", _reviewToEdit);
