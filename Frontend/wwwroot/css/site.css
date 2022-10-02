@@ -8,6 +8,10 @@ h1:focus {
     outline: none;
 }
 
+:root {
+    --bottom-bar-height: 50px;
+}
+
 a, .btn-link {
     color: #0071c1;
 }
