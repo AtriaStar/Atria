@@ -1,0 +1,57 @@
+﻿@using Models
+@using System.Web
+@using System.Net
+
+<div class="card mt-3 mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-auto">
+                @for (int i = 1; i <= (int)Review.StarCount; i++) {
+                    <i class="fa fa-star rating-color"></i>
+                }
+                @for (int i = (int)Review.StarCount + 1; i <= 5; i++) {
+                    <i class="fa fa-star rating-uncolored"></i>
+                }
+                <div class="card-subtitle mt-1 text-muted">@Review.CreationTime</div>
+            </div>
+            <div class="col mt-1">
+                <h6 class="card-title fw-bold">@Review.Title</h6>
+                <div class="card-subtitle mb-2 text-muted">@ReviewCreator.FirstNames @ReviewCreator.LastName</div>
+                <p class="card-text">@Review.Description</p>
+            </div>
+        </div>
+        <AuthView UserIdClaim="Review.CreatorId">
+            <AuthorizedAndMatching>
+                <div class="d-grid gap-2 mt-2 d-flex justify-content-end">
+                    <DeleteModal
+                        ModalTitle="Bewertung löschen"
+                        ModalBody="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?"
+                        ToDelete="review"
+                        WseId="Review.WseId"
+                        ReviewId="Review.Id"
+                        ButtonStyle="btn-outline-danger btn-small">
+                    </DeleteModal>
+                </div>
+            </AuthorizedAndMatching>
+        </AuthView>
+    </div>
+</div>
+
+@code {
+
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager NavManager { get; set; } = default!;
+
+    [Parameter]
+    public Review Review { get; set; } = null!;
+
+    private User ReviewCreator { get; set; } = new();
+
+    protected override async Task OnInitializedAsync() {
+        ReviewCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Review.CreatorId) ?? new User();
+    }
+
+}

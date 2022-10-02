@@ -1,7 +1,7 @@
 ﻿@page "/profile/{UserId:long}"
 @using Models
 @using System.Net
-@using Frontend.Pages.WSE.FilterModal
+@using Frontend.Pages.WSE.Components.FilterModal
 @inject NavigationManager NavigationManager
 
 @if (_user is not null) {
@@ -103,9 +103,7 @@
 
                     <div class="d-flex mb-2 ms-auto">
                         @if (Type is null or "wse" or "bookmarks") {
-                            <button class="btn btn-outline-primary" type="button" @onclick="OpenFilterDialog">
-                                Filter
-                            </button>
+                            <FilterModal IsOnline="IsOnline" HasBookmark="HasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr"></FilterModal>
                         }
 
                         <div class="ms-3 d-flex">
@@ -153,10 +151,6 @@
     }
 } else if (_userNotFound) {
     <NotFound></NotFound>
-}
-
-@if (_filterDialogOpen) {
-    <FilterModal IsOnline="IsOnline" HasBookmark="HasBookmark" SelectedStarNum="SelectedStarNum" SelectedTagsStr="SelectedTagsStr" OnClose="@OnFilterDialogClose"></FilterModal>
 }
 
 @code {
@@ -216,8 +210,6 @@
 
     // used for from reset
     private User _cloneUser = null!;
-
-    private bool _filterDialogOpen;
 
     protected override async Task OnInitializedAsync() {
         var response = await HttpClient.GetAsync($"user/{UserId}");
@@ -315,14 +307,6 @@
 
     private void Search() {
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("query", Query));
-    }
-
-    private void OnFilterDialogClose(bool accepted) {
-        _filterDialogOpen = false;
-    }
-
-    private void OpenFilterDialog() {
-        _filterDialogOpen = true;
     }
 
     private void SetNumberOfPages(int numberOfResults) {
