@@ -38,11 +38,11 @@
         }
         <AuthView UserIdClaimCollection="_idsWithEditRights">
             <AuthorizedAndMatching>
-                <label class="form-label mt-2">E-Mail oder Name des neuen Kollaborators</label>
+                <label class="form-label fs-6 mt-2">E-Mail oder Name des neuen Kollaborators</label>
                 <div class="ui-field">
                     <input class="form-control" type="text" @oninput="_collabQuery.OnNext"/>
                 </div>
-                <select class="form-select" size="3" @bind="_userToAdd">
+                <select class="form-select mt-2" size="6" @bind="_userToAdd">
                     @foreach (User user in _usersFound) {
                        <option value="@user.Id">@user.FirstNames @user.LastName @user.Email</option> 
                     }

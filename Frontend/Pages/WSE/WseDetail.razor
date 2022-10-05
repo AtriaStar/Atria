@@ -3,6 +3,7 @@
 @using System.Net
 @using System.Web
 @using Frontend.Pages.WSE.Components
+@using Frontend.Pages.WSE.Components.FilterModal
 
 @inject NavigationManager NavManager
 
@@ -104,8 +105,12 @@
                 <div class="card-body">
                     <h6 class="card-title fw-bold">Tags</h6>
                     <div class="card-text">
-                        @foreach (var tag in _wse.Tags) {
-                            <div class="badge bg-info me-1" value="@tag.Name">@tag.Name</div>
+                        @if (!_displayEditForm) {
+                            foreach (var tag in _wse.Tags) {
+                                <div class="badge bg-info me-1" value="@tag.Name">@tag.Name</div>
+                            }
+                        } else {
+                            <TagList @bind-SelectedTagsStr="SelectedTagsStr"></TagList>
                         }
                     </div>
                 </div>
@@ -279,6 +284,8 @@
 
     [Parameter]
     public string WseName { get; set; } = null!;
+
+    public string[]? SelectedTagsStr { get; set; }
 
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
