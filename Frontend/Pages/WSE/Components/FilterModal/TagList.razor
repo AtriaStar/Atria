@@ -1,5 +1,5 @@
 ﻿@using Models
-@using Microsoft.EntityFrameworkCore.ChangeTracking
+
 <div class="ui-field">
     <div class="form-control form-control-sm border p-0">
         <div class="input-group input-group-sm">
@@ -29,13 +29,16 @@
         <div class="spinner-border ms-3" role="status" aria-hidden="true"></div>
     } else {
         @foreach (var tag in _searchedTags) {
-            // this should be contains but isn't because useCount isn't implemented properly
+            // this is only necessary because tags in selectedTags and in searchedTags might differ because of misimplemented usecount, see #194
+            // this should be contains
             var value = _selectedTags.Any(tag1 => tag1.Name.Equals(tag.Name));
+            // this should not exist
+            var selectedTag = _selectedTags.SingleOrDefault(tag1 => tag1.Name.Equals(tag.Name), tag);
             <div class="form-check">
                 @if (value) {
-                    <input class="form-check-input" type="checkbox" @onclick="() => RemoveTagFromSelection(tag)" checked id="@tag.Name"/>
+                    <input class="form-check-input" type="checkbox" @onclick="() => RemoveTagFromSelection(selectedTag)" checked id="@tag.Name"/>
                 } else {
-                    <input class="form-check-input" type="checkbox" @onclick="() => AddTagToSelection(tag)" id="@tag.Name"/>
+                    <input class="form-check-input" type="checkbox" @onclick="() => AddTagToSelection(selectedTag)" id="@tag.Name"/>
                 }
                 <label class="form-check-label" for="@tag.Name">@tag.Name</label>
             </div>
