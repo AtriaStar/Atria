@@ -199,19 +199,18 @@
     // used for from reset
     private User _cloneUser = null!;
 
-    protected override async Task OnInitializedAsync() {
-        var response = await HttpClient.GetAsync($"user/{UserId}");
-        if (response.IsSuccessStatusCode) {
-            _user = await response.Content.ReadFromJsonAsync<User>();
-            CloneUser();
-        } else if (response.StatusCode == HttpStatusCode.NotFound) {
-            _userNotFound = true;
-        } else {
-            NavigationManager.NavigateTo("/internal-server-error");
-        }
-    }
-
     protected override async Task OnParametersSetAsync() {
+        if (_user is null || _user.Id != UserId) {
+            var response = await HttpClient.GetAsync($"user/{UserId}");
+            if (response.IsSuccessStatusCode) {
+                _user = await response.Content.ReadFromJsonAsync<User>();
+                CloneUser();
+            } else if (response.StatusCode == HttpStatusCode.NotFound) {
+                _userNotFound = true;
+            } else {
+                NavigationManager.NavigateTo("/internal-server-error");
+            }
+        }
         if (!_userNotFound) {
             // Get only query parameters
             var queryString = NavigationManager
