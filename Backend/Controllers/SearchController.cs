@@ -26,9 +26,10 @@ public class SearchController : AtriaControllerBase {
             .Include(x => x.Tags)
             .Include(x => x.ApiCheckHistory)
             .Include(x => x.Reviews)
+            .AsEnumerable()
             .Where(x => ((int)parameters.MinReviewAvg <= 1
                     || x.Reviews.Any() && x.Reviews.Average(y => (int) y.StarCount) >= (int) parameters.MinReviewAvg)
-                && (parameters.Tags == null || x.Tags.Count(y => parameters.Tags.Contains(y)) == parameters.Tags.Count) // Fuck
+                && (parameters.Tags == null || parameters.Tags.All(s => x.Tags.Select(tag => tag.Name).Contains(s))) // Fuck
                 && (parameters.HasBookmark == null || user == null || user.Bookmarks.Contains(x) == parameters.HasBookmark))
             .AsEnumerable()
             .Where(x => parameters.IsOnline == null
