@@ -24,11 +24,14 @@ public class SearchController : AtriaControllerBase {
     private IEnumerable<WebserviceEntry> GetBaseWse(WseSearchParameters parameters, User? user)
         => _context.WebserviceEntries
             .Include(x => x.Tags)
+            .Include(x => x.ApiCheckHistory)
             .Where(x => (!x.Reviews.Any() || x.Reviews.Average(y => (int) y.StarCount) >= (int) parameters.MinReviewAvg)
                 && (parameters.Tags == null || x.Tags.Count(y => parameters.Tags.Contains(y)) == parameters.Tags.Count) // Fuck
-                && (parameters.IsOnline == null || true /* TODO */)
                 && (parameters.HasBookmark == null || user == null || user.Bookmarks.Contains(x) == parameters.HasBookmark))
             .AsEnumerable()
+            .Where(x => parameters.IsOnline == null
+                || ((int?)x.ApiCheckHistory.MaxBy(y => y.CheckedAt)?.Status is { } status &&
+                    ((status / 100 == 2) == parameters.IsOnline)))
             .Select(x => (wse: x, score: string.IsNullOrEmpty(parameters.Query) ? 1 : _fuzzer.CalculateScore1(parameters.Query, x)))
             .Where(x => x.score >= _options.MinimumWseScore)
             .Select(x => x with { score = x.score * parameters.Order.GetMapper().Invoke(x.wse) })
