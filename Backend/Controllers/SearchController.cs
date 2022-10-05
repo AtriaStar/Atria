@@ -25,7 +25,9 @@ public class SearchController : AtriaControllerBase {
         => _context.WebserviceEntries
             .Include(x => x.Tags)
             .Include(x => x.ApiCheckHistory)
-            .Where(x => (!x.Reviews.Any() || x.Reviews.Average(y => (int) y.StarCount) >= (int) parameters.MinReviewAvg)
+            .Include(x => x.Reviews)
+            .Where(x => ((int)parameters.MinReviewAvg <= 1
+                    || x.Reviews.Any() && x.Reviews.Average(y => (int) y.StarCount) >= (int) parameters.MinReviewAvg)
                 && (parameters.Tags == null || x.Tags.Count(y => parameters.Tags.Contains(y)) == parameters.Tags.Count) // Fuck
                 && (parameters.HasBookmark == null || user == null || user.Bookmarks.Contains(x) == parameters.HasBookmark))
             .AsEnumerable()
