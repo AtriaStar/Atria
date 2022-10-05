@@ -73,7 +73,7 @@
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> {
             ["IsOnline"] = IsOnline,
             ["HasBookmark"] = HasBookmark,
-            ["minRating"] = SelectedStarNum,
+            ["minReviewAvg"] = SelectedStarNum,
             ["tags"] = SelectedTagsStr,
         }));
     }

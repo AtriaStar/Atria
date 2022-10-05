@@ -161,7 +161,7 @@
     public bool? HasBookmark { get; set; }
 
     [Parameter]
-    [SupplyParameterFromQuery(Name = "minRating")]
+    [SupplyParameterFromQuery(Name = "minReviewAvg")]
     public int? SelectedStarNum { get; set; }
 
     [Parameter]
@@ -276,7 +276,7 @@
             ["type"] = value,
             ["IsOnline"] = null,
             ["hasBookmark"] = null,
-            ["minRating"] = null,
+            ["minReviewAvg"] = null,
             ["tags"] = null
         });
     }
