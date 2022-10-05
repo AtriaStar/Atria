@@ -10,7 +10,7 @@
     </div>
 </div>
 <div class="row mt-3 mb-1">
-    @foreach (var tag in SelectedTags) {
+    @foreach (var tag in _selectedTags) {
         <div class="col-auto">
             <h6>
                 <span class="badge bg-info">
@@ -28,7 +28,7 @@
         <div class="spinner-border ms-3" role="status" aria-hidden="true"></div>
     } else {
         @foreach (var tag in _searchedTags) {
-            var value = SelectedTags.Contains(tag);
+            var value = _selectedTags.Contains(tag);
             <div class="form-check">
                 @if (value) {
                     <input class="form-check-input" type="checkbox" @onclick="() => RemoveTagFromSelection(tag)" checked id="@tag.Name"/>
@@ -55,30 +55,33 @@
 
     // Two-way-binding of tag collection
     [Parameter]
-    public IEnumerable<Tag> SelectedTags { get; set; } = null!;
+    public ISet<Tag> SelectedTags { get; set; } = null!;
 
     // Two-way-binding of tag collection
     [Parameter]
-    public EventCallback<IEnumerable<Tag>> SelectedTagsChanged { get; set; }
+    public EventCallback<ISet<Tag>> SelectedTagsChanged { get; set; }
 
     private IEnumerable<Tag>? _allTags;
 
     private ICollection<Tag> _searchedTags = new List<Tag>();
-    
+
+    private ISet<Tag> _selectedTags = new HashSet<Tag>();
+
     private string? _tagQuery;
 
     private async Task RemoveTagFromSelection(Tag tag) {
-        var selectedTags = SelectedTags.Except(new []{tag});
-        await SelectedTagsChanged.InvokeAsync(selectedTags);
+        _selectedTags.ExceptWith(new []{tag});
+        await SelectedTagsChanged.InvokeAsync(_selectedTags);
     }
 
     private async Task AddTagToSelection(Tag tag) {
-        var selectedTags = SelectedTags.Append(tag);
-        await SelectedTagsChanged.InvokeAsync(selectedTags);
+        _selectedTags.Add(tag);
+        await SelectedTagsChanged.InvokeAsync(_selectedTags);
     }
 
     private async Task ClearSelection() {
-        await SelectedTagsChanged.InvokeAsync(new List<Tag>());
+        _selectedTags.Clear();
+        await SelectedTagsChanged.InvokeAsync(_selectedTags);
     }
 
     private void SearchTags(KeyboardEventArgs evt) {
@@ -92,13 +95,13 @@
     protected override async Task OnInitializedAsync() {
         _allTags = await HttpClient.GetFromJsonAsync<IList<Tag>>("tag") ?? new List<Tag>();
         _searchedTags = _allTags.OrderByDescending(tag => tag.UseCount).ToList();
+        _selectedTags = SelectedTags;
         //If no selected tags have been provided, check for selected tags string
-        if (!SelectedTags.Any()) {
-            SelectedTags = SelectedTagsStr is null
-                ? new List<Tag>()
+        if (!_selectedTags.Any()) {
+            _selectedTags = SelectedTagsStr is null
+                ? new HashSet<Tag>()
                 : _allTags
-                    .Where(tag => SelectedTagsStr.Contains(tag.Name))
-                    .ToList();
+                    .Where(tag => SelectedTagsStr.Contains(tag.Name)).ToHashSet();
         }
     }
 

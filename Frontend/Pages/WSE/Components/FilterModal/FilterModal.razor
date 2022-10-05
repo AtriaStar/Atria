@@ -69,7 +69,7 @@
     [Parameter]
     public string[]? SelectedTagsStr { get; set; }
 
-    private IEnumerable<Tag> _selectedTags = new List<Tag>();
+    private ISet<Tag> _selectedTags = new HashSet<Tag>();
 
     private void ModalApply() {
         ModalBase.Close();
