@@ -12,26 +12,26 @@
     <ModalTitle>Kollaboratoren</ModalTitle>
     <ModalBody>
         @foreach (User user in _collaboratorsAsUsers) {
-            <div class="card mb-2">
-                <div class="row">
-                    <div class="col-2">
-                        <img src="@user.ProfilePicture" alt="avatar"/>
+            <div class="card mb-2 flex-row">
+                <div class="img-wrap m-2">
+                    @if (user.ProfilePicture is not null) {
+                        <img alt="avatar" src="@user.ProfilePicture">
+                    } else {
+                        <img alt="default avatar" src="images/default_avatar.png"/>
+                    }
+                </div>
+                <div class="card-body">
+                    <div class="card-title">
+                        @user.FirstNames @user.LastName
+                        @if (user.Id == WseContactPersonId) {
+                            <small style="color: red">*Ansprechpartner</small>
+                        }
                     </div>
-                    <div class="col">
-                        <div class="card-body">
-                            <div class="card-title">
-                                @user.FirstNames @user.LastName
-                                @if (user.Id == WseContactPersonId) {
-                                    <small style="color: red">*Ansprechpartner</small>
-                                }
-                            </div>
-                            <div class="card-subtitle">@user.Email</div>
-                            <div class="d-grid d-flex justify-content-end">
-                                <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => RemoveCollabById(user.Id)">
-                                    Entfernen
-                                </button>
-                            </div>
-                        </div>
+                    <div class="card-subtitle">@user.Email</div>
+                    <div class="d-grid d-flex justify-content-end">
+                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => RemoveCollabById(user.Id)">
+                            Entfernen
+                        </button>
                     </div>
                 </div>
             </div>
@@ -44,7 +44,7 @@
                 </div>
                 <select class="form-select mt-2" size="6" @bind="_userToAdd">
                     @foreach (User user in _usersFound) {
-                       <option value="@user.Id">@user.FirstNames @user.LastName @user.Email</option> 
+                        <option value="@user.Id">@user.FirstNames @user.LastName @user.Email</option>
                     }
                 </select>
                 <div class="d-grid gap-2 mt-3 mb-2 d-flex justify-content-end">
@@ -62,7 +62,7 @@
     private IDisposable? _collabQuerySubscription;
     private IEnumerable<User> _usersFound = new User[] { };
     private long? _userToAdd;
-    
+
     private ModalBase ModalBase { get; set; } = null!;
 
     [Parameter]
@@ -116,7 +116,10 @@
         if (_userToAdd == null) {
             return;
         }
-        _collaborators!.Add(new Collaborator {UserId = _userToAdd.Value, Rights = WseRights.EditData});
+        _collaborators!.Add(new Collaborator {
+            UserId = _userToAdd.Value,
+            Rights = WseRights.EditData
+        });
         await HttpClient.PostAsJsonAsync($"wse/{WseId}/collaborators", _collaborators);
         StateHasChanged();
         @* TODO when backend works, test whether to call StateHasChanged or close Modal and ensure consistent state between FE and BE lisis *@
