@@ -1,4 +1,5 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using Models
+@inject NavigationManager NavigationManager
 
 <button class="btn btn-outline-primary ms-3" type="button" @onclick="() => ModalBase.Open()">
     Filter
@@ -44,7 +45,7 @@
         </div>
     </div>
     <hr/>
-    <TagList @bind-SelectedTagsStr="SelectedTagsStr"></TagList>
+    <TagList @bind-SelectedTags="_selectedTags" SelectedTagsStr="SelectedTagsStr"></TagList>
 
     </ModalBody>
     <ModalFooter>
@@ -68,13 +69,17 @@
     [Parameter]
     public string[]? SelectedTagsStr { get; set; }
 
+    private IEnumerable<Tag> _selectedTags = new List<Tag>();
+
     private void ModalApply() {
         ModalBase.Close();
+    // Generate string array for query
+        var selectedTagsString = _selectedTags.Select(tag => tag.Name).ToArray();
         NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(new Dictionary<string, object?> {
             ["IsOnline"] = IsOnline,
             ["HasBookmark"] = HasBookmark,
             ["minReviewAvg"] = SelectedStarNum,
-            ["tags"] = SelectedTagsStr,
+            ["tags"] = selectedTagsString,
         }));
     }
 
