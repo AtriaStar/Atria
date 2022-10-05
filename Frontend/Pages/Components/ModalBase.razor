@@ -9,9 +9,11 @@
             <div class="modal-body">
                 @ModalBody
             </div>
-            <div class="modal-footer">
-                @ModalFooter
-            </div>
+            @if (ModalFooter is not null) {
+                <div class="modal-footer">
+                    @ModalFooter
+                </div>
+            }
         </div>
     </div>
     @if (_showBackdrop) {
@@ -22,10 +24,10 @@
 @code {
 
     [Parameter]
-    public RenderFragment? ModalTitle { get; set; }
+    public RenderFragment ModalTitle { get; set; } = null!;
 
     [Parameter]
-    public RenderFragment? ModalBody { get; set; }
+    public RenderFragment ModalBody { get; set; } = null!;
 
     [Parameter]
     public RenderFragment? ModalFooter { get; set; }
@@ -44,6 +46,13 @@
         _modalDisplay = "none";
         _modalClass = "";
         _showBackdrop = false;
+    }
+
+    protected override void OnParametersSet() {
+        if (ModalTitle == null || ModalBody == null) {
+            throw new InvalidOperationException(
+                $"You have to specify both '{nameof(ModalTitle)}' and '{nameof(ModalBody)}'");
+        }
     }
 
 }
