@@ -23,7 +23,7 @@
         <div class="card-body">
             <div class="row mb-2">
                 <div class="col-auto mt-sm-1">
-                    <i class="fa-solid fa-circle @_onlineStatus"></i>
+                    <i class="fa-solid fa-circle @_onlineStatusStyle"></i>
                 </div>
                 <div class="col ps-0">
                     <h3 class="card-title fw-bold">
@@ -316,7 +316,7 @@
     private bool _isBookmark;
     private bool _displayEditForm;
     private double _avgReview;
-    private string? _onlineStatus;
+    private string? _onlineStatusStyle;
     private bool _wseNotFound;
 
     private string? _conflictMessage;
@@ -473,11 +473,12 @@
         var response = await HttpClient.GetAsync($"wse/{WseId}/checks/latest");
         if (response.StatusCode == HttpStatusCode.OK) {
             if (await response.Content.ReadFromJsonAsync<bool>()) {
-                _onlineStatus = "text-success";
+                _onlineStatusStyle = "text-success";
+            } else {
+                _onlineStatusStyle = "text-danger";
             }
-            _onlineStatus = "text-danger";
         } else {
-            _onlineStatus = "text-secondary";
+            _onlineStatusStyle = "text-secondary";
         }
     }
 
