@@ -30,7 +30,7 @@ public class FuzzingService {
     /// <param name="entry"></param>
     /// <returns>Score in [0, 1].</returns>
     // TODO: Consider tags, questions, etc.
-    public double CalculateScore1(string query, WebserviceEntry entry) {
+    public double CalculateScore(string query, WebserviceEntry entry) {
         var (totalScore, totalWeight) = _factors
             .Select(x => (str: x.Mapper(entry), x.Weight))
             .Where(x => x.str is not null)
@@ -39,13 +39,6 @@ public class FuzzingService {
                 s.totalWeight += x.Weight));
         return totalScore / totalWeight;
     }
-
-    public double CalculateScore2(string query, WebserviceEntry entry)
-        => _factors
-            .Select(x => (str: x.Mapper(entry), x.Weight))
-            .Where(x => x.str is not null)
-            .Select(x => Math.Pow(_scorer.Score(query, x.str) / 100.0, _scorePower))
-            .Max();
 
     public double CalculateScore(string query, User user)
         => 0.01 * Math.Max(_scorer.Score(query, user.Email),

@@ -32,14 +32,11 @@ public class SearchController : AtriaControllerBase {
             .Where(x => parameters.IsOnline == null
                 || ((int?)x.ApiCheckHistory.MaxBy(y => y.CheckedAt)?.Status is { } status &&
                     ((status / 100 == 2) == parameters.IsOnline)))
-            .Select(x => (wse: x, score: string.IsNullOrEmpty(parameters.Query) ? 1 : _fuzzer.CalculateScore1(parameters.Query, x)))
+            .Select(x => (wse: x, score: string.IsNullOrEmpty(parameters.Query) ? 1 : _fuzzer.CalculateScore(parameters.Query, x)))
             .Where(x => x.score >= _options.MinimumWseScore)
             .Select(x => x with { score = x.score * parameters.Order.GetMapper().Invoke(x.wse) })
             .OrderBy(x => parameters.Ascending ? x.score : -x.score)
-            .Select(x => {
-                x.wse.ChangeLog = x.score.ToString();
-                return x.wse;
-            });
+            .Select(x => x.wse);
 
     [HttpGet("wse")]
     public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WseSearchParameters parameters, [FromQuery] Pagination pagination,
