@@ -5,6 +5,9 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Backend.AspPlugins;
 
+/// <summary>
+/// Prevents properties with a <see cref="JsonIgnoreAttribute"/> from causing validation failures when their class is being passed to the API.
+/// </summary>
 public class SelectiveValidator : IObjectModelValidator {
     private readonly IObjectModelValidator _baseValidator;
 

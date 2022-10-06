@@ -7,8 +7,11 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
-namespace Backend.Authentication; 
+namespace Backend.Authentication;
 
+/// <summary>
+/// Fills authorization parameters with the authenticated user from the session cookie, fails the call if session cookie invalid or absent.
+/// </summary>
 public class AuthenticationBinderFilter : IAsyncActionFilter, IOrderedFilter {
     private static readonly NullabilityInfoContext Nullability = new();
 

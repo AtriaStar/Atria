@@ -4,6 +4,12 @@ using Models;
 
 namespace Backend.Authentication;
 
+/// <summary>
+/// Abstract base class for advanced authorization attributes verifying additional user requirements.
+/// </summary>
+/// <para>
+/// E.g. Extracts the authenticated <see cref="User"/> from the controller method parameters.
+/// </para>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public abstract class AdditionalAuthorizationBaseAttribute : Attribute, IActionFilter, IOrderedFilter {
     public int Order => 5;

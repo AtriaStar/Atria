@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 namespace Backend.ParameterHelpers;
 
 /// <summary>
-/// Causes the specified foreign key property to be loaded for the associated parameter.
+/// Causes the specified foreign key property to be loaded for the associated parameter marked with <see cref="FromDatabaseAttribute"/>.
 /// </summary>
 [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Enum | AttributeTargets.Struct,
     AllowMultiple = true)]

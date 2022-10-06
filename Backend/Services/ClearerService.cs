@@ -3,6 +3,9 @@ using Timer = System.Timers.Timer;
 
 namespace Backend.Services;
 
+/// <summary>
+/// Regularly purges expired sessions and reset tokens from the database.
+/// </summary>
 public class ClearerService : IHostedService {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly Timer _timer;

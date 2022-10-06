@@ -2,6 +2,9 @@
 
 namespace Backend.AspPlugins; 
 
+/// <summary>
+/// Provides functioning alternatives to built-in Forbid methods that don't work due to not using their auth functionality
+/// </summary>
 public class AtriaControllerBase : ControllerBase {
     [Obsolete("Use Forbidden", true)]
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member

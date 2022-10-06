@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Backend.AspPlugins;
 
+/// <summary>
+/// Allows the API to reside exclusively on https://address/api/ instead of https://address/.
+/// </summary>
 public class RouteConvention : IApplicationModelConvention {
     private readonly AttributeRouteModel _centralPrefix;
 

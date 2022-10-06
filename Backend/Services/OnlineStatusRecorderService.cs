@@ -4,12 +4,15 @@ using Models;
 
 namespace Backend.Services; 
 
-public class ApiCheckerService : BackgroundService {
+/// <summary>
+/// Regularly checks and records the availability of all webservices.
+/// </summary>
+public class OnlineStatusRecorderService : BackgroundService {
     private readonly HttpClient _client = new();
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly BackendSettings _opt;
 
-    public ApiCheckerService(IServiceScopeFactory scopeFactory, BackendSettings opt) {
+    public OnlineStatusRecorderService(IServiceScopeFactory scopeFactory, BackendSettings opt) {
         _scopeFactory = scopeFactory;
         _opt = opt;
     }
