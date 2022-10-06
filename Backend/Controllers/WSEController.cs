@@ -141,6 +141,9 @@ public class WseController : AtriaControllerBase {
             return BadRequest("The creation timestamp cannot be modified");
         }
 
+        review.Wse = existingReview.Wse;
+
+        _context.ChangeTracker.Clear();
         _context.Reviews.Update(review);
         await _context.SaveChangesAsync();
 
