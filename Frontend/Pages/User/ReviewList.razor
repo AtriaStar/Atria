@@ -2,21 +2,12 @@
 @using Models
 @foreach (Review review in Reviews) {
     <div class="card mb-3">
-        @*
-        <div class="row flex-shrink-0 me-0">
-            <div class="col">
-                @for (int i = 0; i < (int)review.StarCount; i++) {
-                    <i class="fa fa-star rating-color"></i>
-                }
-                @for (int i = (int)review.StarCount; i < 5; i++) {
-                    <i class="fa fa-star rating-uncolored"></i>
-                }
-            </div>
-        </div>
-        *@
-        <div class="card-body">
-            <div class="row mb-2">
-                <div class="col-auto">
+        <div class="card-body d-flex flex-column">
+            <div class="d-flex mb-1 justify-content-between">
+                <h5 class="me-3">
+                    <NavLink href="@GetLinkToWse(review)">@review.Title</NavLink>
+                </h5>
+                <div>
                     @for (int i = 0; i < (int)review.StarCount; i++) {
                         <i class="fa fa-star rating-color"></i>
                     }
@@ -24,39 +15,22 @@
                         <i class="fa fa-star rating-uncolored"></i>
                     }
                 </div>
-                <div class="col">
-                    <NavLink href="">
-                        <h5>wseName</h5>
-                    </NavLink>
+            </div>
+            @review.Description
+            <div class="d-flex justify-content-between mt-1">
+                @review.CreationTime
+                <div class="d-grid gap-2 d-flex justify-content-end">
+                    <DeleteModal ModalTitle="Bewertung löschen"
+                                 ModalBody="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?"
+                                 ReviewId="review.Id"
+                                 WseId="review.WseId"
+                                 ToDelete="review"
+                                 ButtonStyle="btn-small btn-outline-danger">
+                    </DeleteModal>
+                    <button class="btn btn-small btn-outline-success" type="button">Bearbeiten</button>
                 </div>
             </div>
-            <div class="row justify-content-between">
-                <div class="col">
-                    <h5>
-                        @review.Title
-                    </h5>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col">
-                    @review.Description
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col">
-                    @review.CreationTime
-                </div>
-            </div>
-            <div class="d-grid gap-2 d-flex justify-content-end">
-                <DeleteModal ModalTitle="Bewertung löschen"
-                             ModalBody="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?"
-                             ReviewId="review.Id"
-                             WseId="review.WseId"
-                             ToDelete="review"
-                             ButtonStyle="btn-small btn-outline-danger">
-                </DeleteModal>
-                <button class="btn btn-small btn-outline-success" type="button">Bearbeiten</button>
-            </div>
+
         </div>
     </div>
 }
@@ -65,5 +39,9 @@
 
     [Parameter]
     public IEnumerable<Review> Reviews { get; set; } = null!;
+
+    private string GetLinkToWse(Review review) {
+        return "wse/" + review.WseId;
+    }
 
 }
