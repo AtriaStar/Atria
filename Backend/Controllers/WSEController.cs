@@ -203,8 +203,9 @@ public class WseController : AtriaControllerBase {
     [RequiresAuthentication]
     [RequiresWseRights(WseRights.DeleteWse)]
     [HttpDelete("{wseId}")]
-    public async Task<IActionResult> DeleteWse([FromDatabase, Include(nameof(WebserviceEntry.Collaborators))] WebserviceEntry wse,
-        [FromAuthentication] User _) {
+    public async Task<IActionResult> DeleteWse([FromDatabase, Include(nameof(WebserviceEntry.Collaborators)), Include(nameof(WebserviceEntry.ApiCheckHistory))]
+        WebserviceEntry wse, [FromAuthentication] User _) {
+        _context.RemoveRange(wse.ApiCheckHistory);
         _context.WebserviceEntries.Remove(wse);
         await _context.SaveChangesAsync();
         return Ok();
