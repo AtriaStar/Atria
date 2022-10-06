@@ -21,25 +21,42 @@ public class SearchController : AtriaControllerBase {
         _fuzzer = fuzzer;
     }
 
-    private IEnumerable<WebserviceEntry> GetBaseWse(WseSearchParameters parameters, User? user)
-        => _context.WebserviceEntries
+    private IEnumerable<WebserviceEntry> GetBaseWse(WseSearchParameters parameters, User? user) {
+        IQueryable<WebserviceEntry> query = _context.WebserviceEntries
             .Include(x => x.Tags)
-            .Include(x => x.ApiCheckHistory)
-            .Include(x => x.Reviews)
-            .AsEnumerable()
-            .Where(x => ((int)parameters.MinReviewAvg <= 1
-                    || x.Reviews.Any() && x.Reviews.Average(y => (int) y.StarCount) >= (int) parameters.MinReviewAvg)
-                && (parameters.Tags == null || parameters.Tags.All(s => x.Tags.Select(tag => tag.Name).Contains(s))) // Fuck
-                && (parameters.HasBookmark == null || user == null || user.Bookmarks.Contains(x) == parameters.HasBookmark))
-            .AsEnumerable()
-            .Where(x => parameters.IsOnline == null
-                || ((int?)x.ApiCheckHistory.MaxBy(y => y.CheckedAt)?.Status is { } status &&
-                    ((status / 100 == 2) == parameters.IsOnline)))
-            .Select(x => (wse: x, score: string.IsNullOrEmpty(parameters.Query) ? 1 : _fuzzer.CalculateScore(parameters.Query, x)))
+            .Include(x => x.ApiCheckHistory);
+
+        if ((int)parameters.MinReviewAvg > 1) {
+            query = query.Include(x => x.Reviews)
+                .Where(x => x.Reviews.Any() && x.Reviews.Average(y => (int)y.StarCount) >= (int)parameters.MinReviewAvg);
+        }
+
+        if (parameters.Tags != null) {
+            query = query.Where(x => x.Tags.Count(y => parameters.Tags.Contains(y.Name)) == parameters.Tags.Length);
+        }
+
+        if (parameters.HasBookmark != null && user != null) {
+            query = query.Where(x => user.Bookmarks.Contains(x) == parameters.HasBookmark);
+        }
+
+        var enumerable = query.AsEnumerable();
+
+        if (parameters.IsOnline != null) {
+            enumerable = enumerable.Where(x =>
+                (int?) x.ApiCheckHistory.MaxBy(y => y.CheckedAt)?.Status is { } status &&
+                 ((status / 100 == 2) == parameters.IsOnline));
+        }
+
+        var scoredEnum = string.IsNullOrEmpty(parameters.Query)
+            ? enumerable.Select(x => (wse: x, score: 1.0))
+            : enumerable.Select(x => (wse: x, score: _fuzzer.CalculateScore(parameters.Query, x)));
+        
+        return scoredEnum
             .Where(x => x.score >= _options.MinimumWseScore)
-            .Select(x => x with { score = x.score * parameters.Order.GetMapper().Invoke(x.wse) })
+            .Select(x => x with {score = x.score * parameters.Order.GetMapper().Invoke(x.wse)})
             .OrderBy(x => parameters.Ascending ? x.score : -x.score)
             .Select(x => x.wse);
+    }
 
     [HttpGet("wse")]
     public IEnumerable<WebserviceEntry> GetWseList([FromQuery] WseSearchParameters parameters, [FromQuery] Pagination pagination,
