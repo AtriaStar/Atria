@@ -107,7 +107,7 @@ public class WseController : AtriaControllerBase {
             WseId = wse.Id,
             UserId = x.UserId,
             Rights = x.Rights,
-        }).ToArray();
+        }).ToList();
 
         _context.Update(wse);
         await _context.SaveChangesAsync();
