@@ -22,9 +22,9 @@
                 </div>
                 <div class="card-body">
                     <div class="card-title">
-                        @user.FirstNames @user.LastName
+                        <NavLink href="@GetLinkToProfile(user)">@user.FirstNames @user.LastName</NavLink>
                         @if (user.Id == WseContactPersonId) {
-                            <small style="color: red">*Ansprechpartner</small>
+                            <small style="color: red"> *Ansprechpartner</small>
                         }
                     </div>
                     <div class="card-subtitle">@user.Email</div>
@@ -136,4 +136,9 @@
     }
 
     public void Dispose() => _collabQuerySubscription?.Dispose();
+
+    private string GetLinkToProfile(User user) {
+        return "profile/" + user.Id;
+    }
+
 }
