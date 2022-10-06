@@ -28,11 +28,15 @@
                         }
                     </div>
                     <div class="card-subtitle">@user.Email</div>
-                    <div class="d-grid d-flex justify-content-end">
-                        <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => RemoveCollabById(user.Id)">
-                            Entfernen
-                        </button>
-                    </div>
+                    <AuthView UserIdClaimCollection="_idsWithEditRights">
+                        <AuthorizedAndMatching>
+                            <div class="d-grid d-flex justify-content-end">
+                                <button class="btn btn-outline-danger btn-small" type="button" @onclick="() => RemoveCollabById(user.Id)">
+                                    Entfernen
+                                </button>
+                            </div>
+                        </AuthorizedAndMatching>
+                    </AuthView>
                 </div>
             </div>
         }
