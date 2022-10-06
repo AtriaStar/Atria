@@ -46,5 +46,9 @@ public class AtriaContext : DbContext {
             .HasOne(x => x.ContactPerson)
             .WithMany()
             .HasForeignKey(x => x.ContactPersonId);
+
+        modelBuilder.Entity<WebserviceEntry>()
+            .Navigation(x => x.Tags)
+            .AutoInclude();
     }
 }

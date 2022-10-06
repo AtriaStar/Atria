@@ -23,7 +23,6 @@ public class SearchController : AtriaControllerBase {
 
     private IEnumerable<WebserviceEntry> GetBaseWse(WseSearchParameters parameters, User? user) {
         IQueryable<WebserviceEntry> query = _context.WebserviceEntries
-            .Include(x => x.Tags)
             .Include(x => x.ApiCheckHistory);
 
         if ((int)parameters.MinReviewAvg > 1) {
