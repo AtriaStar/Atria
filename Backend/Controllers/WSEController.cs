@@ -86,6 +86,7 @@ public class WseController : AtriaControllerBase {
         wse.ApiCheckHistory = existingWse.ApiCheckHistory;
         wse.Questions = existingWse.Questions;
         wse.Reviews = existingWse.Reviews;
+        wse.Tags = (await Task.WhenAll(wse.Tags.Select(async x => await _context.Tags.FindAsync(x.Name) ?? x))).ToHashSet();
 
         _context.ChangeTracker.Clear();
         _context.WebserviceEntries.Update(wse);
@@ -156,6 +157,7 @@ public class WseController : AtriaControllerBase {
         wse.Id = 0;
         wse.CreatedAt = DateTimeOffset.UtcNow;
         wse.Collaborators = new List<Collaborator> { new() { User = user, Rights = WseRights.Owner } };
+        wse.Tags = (await Task.WhenAll(wse.Tags.Select(async x => await _context.Tags.FindAsync(x.Name) ?? x))).ToHashSet();
         await _context.WebserviceEntries.AddAsync(wse);
         await _context.SaveChangesAsync();
 
