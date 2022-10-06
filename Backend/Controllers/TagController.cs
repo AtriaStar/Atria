@@ -1,6 +1,7 @@
 ﻿using Backend.AspPlugins;
 using Backend.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Backend.Controllers;
@@ -16,7 +17,7 @@ public class TagController : AtriaControllerBase {
 
     [HttpGet]
     public IQueryable<Tag> GetAll([FromQuery] Pagination pagination)
-        => _context.Tags.Paginate(pagination);
+        => _context.Tags.Include("WebserviceEntries").Paginate(pagination);
 
     [HttpPut]
     [RequiresAuthentication]
