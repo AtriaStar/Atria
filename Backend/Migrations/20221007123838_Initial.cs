@@ -87,23 +87,30 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "answers",
+                name: "webservice_entries",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    question_id = table.Column<long>(type: "bigint", nullable: false),
-                    wse_id = table.Column<long>(type: "bigint", nullable: false),
-                    text = table.Column<string>(type: "text", nullable: false),
-                    creation_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    creator_id = table.Column<long>(type: "bigint", nullable: false)
+                    name = table.Column<string>(type: "text", nullable: false),
+                    short_description = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    link = table.Column<string>(type: "text", nullable: false),
+                    full_description = table.Column<string>(type: "text", nullable: true),
+                    api_check_url = table.Column<string>(type: "text", nullable: true),
+                    latest_check_status = table.Column<int>(type: "integer", nullable: true),
+                    documentation_link = table.Column<string>(type: "text", nullable: true),
+                    documentation = table.Column<string>(type: "text", nullable: true),
+                    change_log = table.Column<string>(type: "text", nullable: true),
+                    view_count = table.Column<long>(type: "bigint", nullable: false),
+                    contact_person_id = table.Column<long>(type: "bigint", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_answers", x => new { x.wse_id, x.question_id, x.id });
+                    table.PrimaryKey("pk_webservice_entries", x => x.id);
                     table.ForeignKey(
-                        name: "fk_answers_users_creator_id",
-                        column: x => x.creator_id,
+                        name: "fk_webservice_entries_users_contact_person_id",
+                        column: x => x.contact_person_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -120,41 +127,11 @@ namespace Backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_api_check", x => x.checked_at);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "webservice_entries",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    short_description = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    link = table.Column<string>(type: "text", nullable: false),
-                    full_description = table.Column<string>(type: "text", nullable: true),
-                    api_check_url = table.Column<string>(type: "text", nullable: true),
-                    latest_check_checked_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    documentation_link = table.Column<string>(type: "text", nullable: true),
-                    documentation = table.Column<string>(type: "text", nullable: true),
-                    change_log = table.Column<string>(type: "text", nullable: true),
-                    view_count = table.Column<long>(type: "bigint", nullable: false),
-                    contact_person_id = table.Column<long>(type: "bigint", nullable: false),
-                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_webservice_entries", x => x.id);
                     table.ForeignKey(
-                        name: "fk_webservice_entries_api_check_latest_check_temp_id",
-                        column: x => x.latest_check_checked_at,
-                        principalTable: "api_check",
-                        principalColumn: "checked_at");
-                    table.ForeignKey(
-                        name: "fk_webservice_entries_users_contact_person_id",
-                        column: x => x.contact_person_id,
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "fk_api_check_webservice_entries_webservice_entry_id",
+                        column: x => x.webservice_entry_id,
+                        principalTable: "webservice_entries",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -288,6 +265,41 @@ namespace Backend.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "answers",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    question_id = table.Column<long>(type: "bigint", nullable: false),
+                    wse_id = table.Column<long>(type: "bigint", nullable: false),
+                    text = table.Column<string>(type: "text", nullable: false),
+                    creation_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    creator_id = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_answers", x => new { x.wse_id, x.question_id, x.id });
+                    table.ForeignKey(
+                        name: "fk_answers_questions_wse_id_question_id",
+                        columns: x => new { x.wse_id, x.question_id },
+                        principalTable: "questions",
+                        principalColumns: new[] { "wse_id", "id" },
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_answers_users_creator_id",
+                        column: x => x.creator_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_answers_webservice_entries_wse_id",
+                        column: x => x.wse_id,
+                        principalTable: "webservice_entries",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "ix_answers_creator_id",
                 table: "answers",
@@ -343,48 +355,15 @@ namespace Backend.Migrations
                 name: "ix_webservice_entries_contact_person_id",
                 table: "webservice_entries",
                 column: "contact_person_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_webservice_entries_latest_check_checked_at",
-                table: "webservice_entries",
-                column: "latest_check_checked_at");
-
-            migrationBuilder.AddForeignKey(
-                name: "fk_answers_questions_wse_id_question_id",
-                table: "answers",
-                columns: new[] { "wse_id", "question_id" },
-                principalTable: "questions",
-                principalColumns: new[] { "wse_id", "id" },
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "fk_answers_webservice_entries_wse_id",
-                table: "answers",
-                column: "wse_id",
-                principalTable: "webservice_entries",
-                principalColumn: "id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "fk_api_check_webservice_entries_webservice_entry_id",
-                table: "api_check",
-                column: "webservice_entry_id",
-                principalTable: "webservice_entries",
-                principalColumn: "id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "fk_webservice_entries_users_contact_person_id",
-                table: "webservice_entries");
-
-            migrationBuilder.DropForeignKey(
-                name: "fk_api_check_webservice_entries_webservice_entry_id",
-                table: "api_check");
-
             migrationBuilder.DropTable(
                 name: "answers");
+
+            migrationBuilder.DropTable(
+                name: "api_check");
 
             migrationBuilder.DropTable(
                 name: "bookmarks");
@@ -411,13 +390,10 @@ namespace Backend.Migrations
                 name: "tags");
 
             migrationBuilder.DropTable(
-                name: "users");
-
-            migrationBuilder.DropTable(
                 name: "webservice_entries");
 
             migrationBuilder.DropTable(
-                name: "api_check");
+                name: "users");
         }
     }
 }

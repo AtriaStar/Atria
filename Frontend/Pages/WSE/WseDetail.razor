@@ -25,10 +25,10 @@
                 <div class="col-auto mt-sm-1">
                     @{
                         string onlineStatusStyle;
-                        if (_wse.LatestCheck == null) {
+                        if (_wse.LatestCheckStatus == null) {
                             onlineStatusStyle = "text-secondary";
                         } else {
-                            onlineStatusStyle = _wse.LatestCheck.Status == HttpStatusCode.OK ? "text-success" : "text-danger";
+                            onlineStatusStyle = _wse.LatestCheckStatus == HttpStatusCode.OK ? "text-success" : "text-danger";
                         }
                     }
                     <i class="fa-solid fa-circle @onlineStatusStyle"></i>

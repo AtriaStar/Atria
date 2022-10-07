@@ -8,10 +8,10 @@
         <div class="col-auto">
             @{
                 string onlineStatusStyle;
-                if (Entry.LatestCheck == null) {
+                if (Entry.LatestCheckStatus == null) {
                     onlineStatusStyle = "text-secondary";
                 } else {
-                    onlineStatusStyle = Entry.LatestCheck.Status == HttpStatusCode.OK ? "text-success" : "text-danger";
+                    onlineStatusStyle = Entry.LatestCheckStatus == HttpStatusCode.OK ? "text-success" : "text-danger";
                 }
             }
             <i class="fa-solid fa-circle @onlineStatusStyle"></i>

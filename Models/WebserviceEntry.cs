@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Net;
 using System.Text.Json.Serialization;
 
 namespace Models;
@@ -31,7 +32,7 @@ public class WebserviceEntry {
     }
     [JsonIgnore]
     public virtual ICollection<ApiCheck> ApiCheckHistory { get; set; } = new List<ApiCheck>();
-    public ApiCheck? LatestCheck { get; set; }
+    public HttpStatusCode? LatestCheckStatus { get; set; }
 
     [Url]
     public string? DocumentationLink {
