@@ -61,6 +61,15 @@ public class WseController : AtriaControllerBase {
     public long GetReviewCount(long wseId)
         => _context.Reviews.Where(x => x.WseId == wseId).LongCount();
 
+    [HttpGet("{wseId:long}/review/average")]
+    public double GetReviewAverage(long wseId) {
+        var list = _context.Reviews.Where(x => x.WseId == wseId);
+        if (list.Any()) {
+            return list.Average(review => (int)review.StarCount);
+        }
+        return 0;
+    }
+
     [HttpGet("{wseId:long}/review/{reviewId:long}")]
     public Review GetReview(long wseId, long reviewId)
         => _context.Reviews.Single(x => x.WseId == wseId && x.Id == reviewId);
