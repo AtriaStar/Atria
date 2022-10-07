@@ -48,11 +48,7 @@
                 </div>
                 <div class="col-auto">
                     <div class="d-flex align-items-center">
-                        @{
-                            var bookmarkTitle = _isBookmark ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
-                            var bookmarkStyle = _isBookmark ? "fa-solid" : "fa-regular";
-                        }
-                        <i class="fa-bookmark @bookmarkStyle fs-4 mx-4" type="button" title="@bookmarkTitle" style="color: #dc3545" @onclick="ChangeBookmarkStatus"></i>
+                        <BookmarkIcon Entry="_wse" IconClass="fs-4 mx-4"></BookmarkIcon>
                         <a class="fa-solid fa-arrow-up-right-from-square text-decoration-none fs-2" title="Zum Webservice" href="@_wse.Link"></a>
                     </div>
                 </div>
@@ -321,7 +317,6 @@
     private Question[] _wseNextQuestions = { };
 
     private bool _isCollab;
-    private bool _isBookmark;
     private bool _displayEditForm;
     private double _avgReview;
     private bool _wseNotFound;
@@ -426,22 +421,6 @@
         await LoginState.Init;
         if (LoginState.LoggedIn && !LoginState.HasLoadedBookmarks) {
             CurrentUserBookmarks = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + LoginState.User.Id + "/bookmarks");
-            if (CurrentUserBookmarks!.Any(userBm => userBm.Id == WseId)) {
-                _isBookmark = true;
-            }
-        }
-    }
-
-    private async void ChangeBookmarkStatus() {
-        if (LoginState.LoggedIn) {
-            _isBookmark = !_isBookmark;
-            if (!_isBookmark) {
-                await HttpClient.PostAsJsonAsync("user/" + LoginState.User.Id + "/bookmarks/add/" + WseId, "");
-            } else {
-                await HttpClient.PostAsJsonAsync("user/" + LoginState.User.Id + "/bookmarks/remove/" + WseId, "");
-            }
-        } else {
-            NavManager.NavigateTo("login");
         }
     }
 

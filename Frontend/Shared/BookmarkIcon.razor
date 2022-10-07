@@ -1,0 +1,57 @@
+﻿@using Models
+@inject NavigationManager NavigationManager
+
+<AuthView>
+    <Authorized>
+        @{
+            var bookmarkState = LoginState.User!.Bookmarks.Any(webserviceEntry => webserviceEntry.Id == Entry.Id);
+            var bookmarkTitle = bookmarkState ? "Lesezeichen entfernen" : "Als Lesezeichen hinzufügen";
+            var bookmarkStyle = bookmarkState ? "fa-solid" : "fa-regular";
+        }
+        <i class="fa-bookmark @bookmarkStyle @IconClass" type="button" style="color: #dc3545"
+           title="@bookmarkTitle" @onclick="() => ChangeBookmarkStatus(Entry, bookmarkState)">
+        </i>
+    </Authorized>
+    <NotAuthorized>
+        <i class="fa-bookmark fa-regular @IconClass" type="button" style="color: #dc3545"
+           title="Als Lesezeichen hinzufügen" @onclick="NavigateToLogin">
+        </i>
+    </NotAuthorized>
+</AuthView>
+
+@code {
+
+    [Parameter]
+    public WebserviceEntry Entry { get; set; } = null!;
+
+    [CascadingParameter]
+    public LoginState LoginState { get; set; } = null!;
+
+    [Inject]
+    public HttpClient HttpClient { get; set; } = default!;
+    
+    [Parameter]
+    public string IconClass { get; set; } = null!;
+
+    private void NavigateToLogin() {
+        NavigationManager.NavigateTo("login");
+    }
+
+    private async Task ChangeBookmarkStatus(WebserviceEntry entry, bool bookmarkState) {
+        if (bookmarkState) {
+            var response = await HttpClient.PostAsync($"user/{LoginState.User!.Id}/bookmarks/remove/{entry.Id}", null);
+            if (response.IsSuccessStatusCode) {
+                var set = (HashSet<WebserviceEntry>)LoginState.User.Bookmarks;
+                set.RemoveWhere(webserviceEntry => webserviceEntry.Id == entry.Id);
+                LoginState.User.Bookmarks = set;
+            }
+        } else {
+            var response = await HttpClient.PostAsync($"user/{LoginState.User!.Id}/bookmarks/add/{entry.Id}", null);
+            if (response.IsSuccessStatusCode) {
+                LoginState.User.Bookmarks.Add(entry);
+            }
+        }
+        NavigationManager.NavigateTo(NavigationManager.Uri);
+    }
+
+}
