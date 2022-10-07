@@ -367,6 +367,10 @@ namespace Backend.Migrations
                         .HasColumnType("text")
                         .HasColumnName("full_description");
 
+                    b.Property<DateTimeOffset?>("LatestCheckCheckedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("latest_check_checked_at");
+
                     b.Property<string>("Link")
                         .IsRequired()
                         .HasColumnType("text")
@@ -392,6 +396,9 @@ namespace Backend.Migrations
 
                     b.HasIndex("ContactPersonId")
                         .HasDatabaseName("ix_webservice_entries_contact_person_id");
+
+                    b.HasIndex("LatestCheckCheckedAt")
+                        .HasDatabaseName("ix_webservice_entries_latest_check_checked_at");
 
                     b.ToTable("webservice_entries", (string)null);
                 });
@@ -568,7 +575,14 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_webservice_entries_users_contact_person_id");
 
+                    b.HasOne("Models.ApiCheck", "LatestCheck")
+                        .WithMany()
+                        .HasForeignKey("LatestCheckCheckedAt")
+                        .HasConstraintName("fk_webservice_entries_api_check_latest_check_temp_id");
+
                     b.Navigation("ContactPerson");
+
+                    b.Navigation("LatestCheck");
                 });
 
             modelBuilder.Entity("TagWebserviceEntry", b =>

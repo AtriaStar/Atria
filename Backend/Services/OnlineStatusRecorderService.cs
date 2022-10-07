@@ -44,6 +44,7 @@ public class OnlineStatusRecorderService : BackgroundService {
                 foreach (var (wse, check) in await Task.WhenAll(chunk)) {
                     if (check != null) {
                         wse.ApiCheckHistory.Add(check);
+                        wse.LatestCheck = check;
                     }
                 }
 

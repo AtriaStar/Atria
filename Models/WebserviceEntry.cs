@@ -29,7 +29,9 @@ public class WebserviceEntry {
         get => _apiCheckUrl;
         set => _apiCheckUrl = string.IsNullOrEmpty(value) ? null : value;
     }
+    [JsonIgnore]
     public virtual ICollection<ApiCheck> ApiCheckHistory { get; set; } = new List<ApiCheck>();
+    public ApiCheck? LatestCheck { get; set; }
 
     [Url]
     public string? DocumentationLink {

@@ -6,7 +6,15 @@
 <div class="card-body">
     <div class="row mb-1">
         <div class="col-auto">
-            <i class="fa-solid fa-circle @_onlineStatusStyle"></i>
+            @{
+                string onlineStatusStyle;
+                if (Entry.LatestCheck == null) {
+                    onlineStatusStyle = "text-secondary";
+                } else {
+                    onlineStatusStyle = Entry.LatestCheck.Status == HttpStatusCode.OK ? "text-success" : "text-danger";
+                }
+            }
+            <i class="fa-solid fa-circle @onlineStatusStyle"></i>
         </div>
 
         <div class="col-auto ps-0 d-flex d-block">
@@ -88,7 +96,6 @@
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
-    private string _onlineStatusStyle = "text-secondary";
     private string _wseLink = "";
 
     private double _reviewAverage;
@@ -98,16 +105,6 @@
     }
 
     protected override async Task OnParametersSetAsync() {
-        var response = await HttpClient.GetAsync($"wse/{Entry.Id}/checks/latest");
-        if (response.StatusCode == HttpStatusCode.OK) {
-            if (await response.Content.ReadFromJsonAsync<bool>()) {
-                _onlineStatusStyle = "text-success";
-            } else {
-                _onlineStatusStyle = "text-danger";
-            }
-        } else {
-            _onlineStatusStyle = "text-secondary";
-        }
         await GetAvgReview();
     }
 
