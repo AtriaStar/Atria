@@ -52,10 +52,13 @@
                     </div>
                 </div>
             </div>
-            <h5 class="card-subtitle mb-2 me-2 text-muted">
-                @_contactPerson!.FirstNames @_contactPerson.LastName
-                <CollabModal WseId="WseId" WseContactPersonId="_wse.ContactPersonId"></CollabModal>
-            </h5>
+            <div class="d-flex justify-content-between card-subtitle text-muted">
+                <h5 class="mb-2 me-2 text-muted">
+                    @_contactPerson!.FirstNames @_contactPerson.LastName                
+                    <CollabModal WseId="WseId" WseContactPersonId="_wse.ContactPersonId"></CollabModal>
+                </h5>
+                Aufrufzahl: @_wse.ViewCount
+            </div>
             @if (!_displayEditForm) {
                 <div class="card-text">@_wse.ShortDescription</div>
             } else {
