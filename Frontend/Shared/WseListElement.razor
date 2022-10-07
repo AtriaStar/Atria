@@ -89,17 +89,7 @@
     }
 
     protected override async Task OnParametersSetAsync() {
-        await GetAvgReview();
-    }
-
-    private async Task GetAvgReview() {
-        var allReviews = await HttpClient.GetFromJsonAsync<Review[]>(
-            "wse/" + Entry.Id + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] { };
-        double sum = 0;
-        foreach (var review in allReviews) {
-            sum += (int)review.StarCount;
-        }
-        _reviewAverage = sum / allReviews.Length;
+        _reviewAverage = await HttpClient.GetFromJsonAsync<double>($"wse/{Entry.Id}/review/average");
     }
 
 }

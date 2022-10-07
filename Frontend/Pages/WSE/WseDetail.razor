@@ -95,10 +95,10 @@
                         <h6 class="card-title fw-bold">Bewertung</h6>
                         <div class="row">
                             <div class="col-auto">
-                                <Rating ReviewAverage="@_avgReview"/>
+                                <Rating ReviewAverage="@_reviewAverage"/>
                             </div>
                             <div class="col-auto">
-                                <p>@_reviewNum Bewertung(en)</p>
+                                <p>@_reviewCount Bewertung(en)</p>
                             </div>
                         </div>
                     </div>
@@ -210,7 +210,7 @@
             <QuestionComponent Question="question" WseId="WseId"/>
         }
 
-        @if (_wseNextQuestions.Length != 0) {
+        @if (_currentQuestionPage * QuestionEntriesPerPage < _questionCount) {
             <div class="d-grid d-flex mt-2 mb-4 justify-content-center">
                 <button class="btn btn-outline-secondary btn-small" type="button" @onclick="GetNextQuestions">weitere Fragen</button>
             </div>
@@ -236,7 +236,7 @@
         @foreach (var review in _wseReviews) {
             <ReviewComponent Review="review"/>
         }
-        @if (_wseNextReviews.Length != 0) {
+        @if (_currentReviewPage * ReviewEntriesPerPage < _reviewCount) {
             <div class="d-grid d-flex mt-2 mb-2 justify-content-center">
                 <button class="btn btn-outline-secondary btn-small" type="button" @onclick="GetNextReviews">weitere Bewertungen</button>
             </div>
@@ -283,6 +283,9 @@
 
 @code {
 
+        private const int ReviewEntriesPerPage = 3;
+        private const int QuestionEntriesPerPage = 3;
+
     [Parameter]
     public long WseId { get; set; }
 
@@ -300,25 +303,20 @@
     private User? _contactPerson;
 
     private WebserviceEntry[]? CurrentUserWse { get; set; }
-    private WebserviceEntry[]? CurrentUserBookmarks { get; set; }
 
     private string? _newQuestion;
 
-    private int _reviewNum;
-    private int _reviewPage = 1;
-    private readonly int _reviewEntryNum = 3;
-    private Review[] _wseReviews = { };
-    private Review[] _wseNextReviews = { };
-    private Review[] _allReviews = { };
+    private long _reviewCount;
+    private int _currentReviewPage;
+    private IEnumerable<Review> _wseReviews = new List<Review>();
 
-    private int _questionPage = 1;
-    private readonly int _questionEntryNum = 3;
-    private Question[] _wseQuestions = { };
-    private Question[] _wseNextQuestions = { };
+    private long _questionCount;
+    private int _currentQuestionPage;
+    private IEnumerable<Question> _wseQuestions = new List<Question>();
 
     private bool _isCollab;
     private bool _displayEditForm;
-    private double _avgReview;
+    private double _reviewAverage;
     private bool _wseNotFound;
 
     private string? _conflictMessage;
@@ -337,7 +335,7 @@
     }
 
     private void CancelEdit() {
-        NavManager.NavigateTo("wse/" + WseId, true);
+        NavManager.NavigateTo("wse/" + WseId);
     }
 
     protected override async Task OnInitializedAsync() {
@@ -348,14 +346,30 @@
 
             _contactPerson = await HttpClient.GetFromJsonAsync<User>("user/" + _wse!.ContactPersonId) ?? new User();
 
-            _allReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] { };
-            _reviewNum = _allReviews.Count();
+            await LoginState.Init;
+            if (LoginState.LoggedIn) {
+                CurrentUserWse = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + LoginState.User.Id + "/wse");
+                if (CurrentUserWse!.Any(userWse => userWse.Id == WseId)) {
+                    _isCollab = true;
+                }
 
-            await CheckCurrentUserCollab();
-            await CheckCurrentUserBookmark();
-            await InitReviews();
-            await InitQuestions();
-            GetAvgReview();
+                if (!LoginState.HasLoadedBookmarks) {
+                    LoginState.User.Bookmarks = (await HttpClient.GetFromJsonAsync<ISet<WebserviceEntry>>("user/" + LoginState.User.Id + "/bookmarks"))!;
+                }
+            }
+
+            _questionCount = await HttpClient.GetFromJsonAsync<long>($"wse/{WseId}/question/count");
+            if (_questionCount != 0) {
+                await GetNextQuestions();
+            }
+
+            _reviewCount = await HttpClient.GetFromJsonAsync<long>($"wse/{WseId}/review/count");
+            if (_reviewCount != 0) {
+                _reviewAverage = await HttpClient.GetFromJsonAsync<double>($"wse/{WseId}/review/average");
+                await GetNextReviews();
+            } else {
+                _reviewAverage = 0;
+            }
 
             if (NavManager.ToBaseRelativePath(NavManager.Uri) != fullUrl) {
                 NavManager.NavigateTo(fullUrl);
@@ -365,62 +379,21 @@
         }
     }
 
-    private void GetAvgReview() {
-        double sum = 0;
-        foreach (var review in _allReviews) {
-            sum += (int)review.StarCount;
-        }
-        _avgReview = sum / _reviewNum;
-    }
-
-    private async Task InitReviews() {
-        _wseReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + _reviewPage + "&entriesPerPage=" + _reviewEntryNum) ?? new Review[] { };
-        _reviewPage++;
-        _wseNextReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + _reviewPage + "&entriesPerPage=" + _reviewEntryNum) ?? new Review[] { };
-        _reviewPage++;
-        _wseReviews = _wseReviews.OrderByDescending(r => (int)r.StarCount).ToArray();
-    }
-
-    private async Task InitQuestions() {
-        _wseQuestions = await HttpClient.GetFromJsonAsync<Question[]>("wse/" + WseId + "/question?page=" + _questionPage + "&entriesPerPage=" + _questionEntryNum) ?? new Question[] { };
-        _questionPage++;
-        _wseNextQuestions = await HttpClient.GetFromJsonAsync<Question[]>("wse/" + WseId + "/question?page=" + _questionPage + "&entriesPerPage=" + _questionEntryNum) ?? new Question[] { };
-        _questionPage++;
-    }
-
     private async Task GetNextReviews() {
-        var loadedReviews = new Review[_wseReviews.Length + _wseNextReviews.Length];
-        _wseReviews.CopyTo(loadedReviews, 0);
-        _wseNextReviews.CopyTo(loadedReviews, _wseReviews.Length);
-        _wseReviews = loadedReviews;
-
-        _wseNextReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + _reviewPage + "&entriesPerPage=" + _reviewEntryNum) ?? new Review[] { };
-        _reviewPage++;
+        _currentReviewPage++;
+        var nextReviews = (await HttpClient.GetFromJsonAsync<IEnumerable<Review>>(
+            "wse/" + WseId + "/review?page=" + _currentReviewPage + "&entriesPerPage=" + ReviewEntriesPerPage))!;
+        foreach (var review in nextReviews) {
+            _wseReviews = _wseReviews.Append(review);
+        }
     }
 
     private async Task GetNextQuestions() {
-        var loadedQuestions = new Question[_wseQuestions.Length + _wseNextQuestions.Length];
-        _wseQuestions.CopyTo(loadedQuestions, 0);
-        _wseNextQuestions.CopyTo(loadedQuestions, _wseQuestions.Length);
-        _wseQuestions = loadedQuestions;
-
-        _wseNextQuestions = await HttpClient.GetFromJsonAsync<Question[]>("wse/" + WseId + "/question?page=" + _questionPage + "&entriesPerPage=" + _questionEntryNum) ?? new Question[] { };
-        _questionPage++;
-    }
-
-    private async Task CheckCurrentUserCollab() {
-        if (LoginState.LoggedIn) {
-            CurrentUserWse = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + LoginState.User.Id + "/wse");
-            if (CurrentUserWse!.Any(userWse => userWse.Id == WseId)) {
-                _isCollab = true;
-            }
-        }
-    }
-
-    private async Task CheckCurrentUserBookmark() {
-        await LoginState.Init;
-        if (LoginState.LoggedIn && !LoginState.HasLoadedBookmarks) {
-            CurrentUserBookmarks = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + LoginState.User.Id + "/bookmarks");
+        _currentQuestionPage++;
+        var nextQuestions = (await HttpClient.GetFromJsonAsync<IEnumerable<Question>>(
+            "wse/" + WseId + "/question?page=" + _currentQuestionPage + "&entriesPerPage=" + QuestionEntriesPerPage))!;
+        foreach (var question in nextQuestions) {
+            _wseQuestions = _wseQuestions.Append(question);
         }
     }
 
