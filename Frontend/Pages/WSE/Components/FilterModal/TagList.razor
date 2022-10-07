@@ -1,12 +1,14 @@
 ﻿@using Models
+@using System.Reactive.Subjects
+@using System.Reactive.Linq
 
 <div class="ui-field">
     <div class="form-control form-control-sm border p-0">
         <div class="input-group input-group-sm">
-            <button class="btn btn-sm btn-link text-dark">
+            <div class="d-flex align-items-center p-2">
                 <i class="fa fa-search"></i>
-            </button>
-            <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="_tagQuery" @onkeyup="SearchTags">
+            </div>
+            <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @oninput="_tagQuery.OnNext">
         </div>
     </div>
 </div>
@@ -25,7 +27,9 @@
 
 <div class="ui-field p-3">
     @if (_allTags is null) {
-        <p><strong>Lade Tags...</strong></p>
+        <p>
+            <strong>Lade Tags...</strong>
+        </p>
         <div class="spinner-border ms-3" role="status" aria-hidden="true"></div>
     } else {
         @foreach (var tag in _searchedTags) {
@@ -51,10 +55,10 @@
 </div>
 
 @code {
-    
+
     [Inject]
     public HttpClient HttpClient { get; set; } = default!;
-    
+
     [Parameter]
     public string[]? SelectedTagsStr { get; set; }
 
@@ -72,10 +76,11 @@
 
     private ISet<Tag> _selectedTags = new HashSet<Tag>();
 
-    private string? _tagQuery;
+    private Subject<ChangeEventArgs> _tagQuery = new();
+    private IDisposable? _tagQuerySubscription;
 
     private async Task RemoveTagFromSelection(Tag tag) {
-        _selectedTags.ExceptWith(new []{tag});
+        _selectedTags.ExceptWith(new[] { tag });
         await SelectedTagsChanged.InvokeAsync(_selectedTags);
     }
 
@@ -89,25 +94,36 @@
         await SelectedTagsChanged.InvokeAsync(_selectedTags);
     }
 
-    private void SearchTags(KeyboardEventArgs evt) {
-        if (evt.Key == "Enter" && _tagQuery is not null) {
-            _searchedTags = _allTags!.Where(tag => tag.Name.Contains(_tagQuery))
-                .OrderByDescending(tag => tag.UseCount)
-                .ToList();
-        }
-    }
-
     protected override async Task OnInitializedAsync() {
         _allTags = await HttpClient.GetFromJsonAsync<IList<Tag>>("tag") ?? new List<Tag>();
         _searchedTags = _allTags.OrderByDescending(tag => tag.UseCount).ToList();
         _selectedTags = SelectedTags;
-        //If no selected tags have been provided, check for selected tags string
+    //If no selected tags have been provided, check for selected tags string
         if (!_selectedTags.Any()) {
             _selectedTags = SelectedTagsStr is null
                 ? new HashSet<Tag>()
                 : _allTags
                     .Where(tag => SelectedTagsStr.Contains(tag.Name)).ToHashSet();
         }
+    }
+
+    protected override void OnInitialized() {
+        _tagQuerySubscription = _tagQuery
+            .Throttle(TimeSpan.FromMilliseconds(200))
+            .Select(e => (string?)e.Value)
+            .Select(v => v?.Trim())
+            .DistinctUntilChanged()
+            .Select(Search)
+            .Subscribe(tags => {
+                _searchedTags = tags;
+                StateHasChanged();
+            });
+    }
+
+    private ICollection<Tag> Search(string? searchTerm) {
+        return _allTags!.Where(tag => tag.Name.Contains(searchTerm ?? string.Empty))
+            .OrderByDescending(tag => tag.UseCount)
+            .ToList();
     }
 
 }
