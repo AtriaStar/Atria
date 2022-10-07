@@ -2,6 +2,7 @@
 @using Models
 @using Models.DTO
 @using System.Net
+@using Frontend.Pages.WSE.Components.FilterModal
 @inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
 
@@ -54,52 +55,13 @@
         </div>
 
         <hr/>
-
-        <div class="row mt-4">
-            <div class="col-auto">
-                <label class="form-label fw-bold">
-                    Tags
-                    <small class="text-muted">(zum Auswählen Strg gedrückt halten)</small>
-                </label>
-            </div>
-            <div class="col-auto pt-1 ms-auto">
-                <div class="btn-group">
-                    <button class="btn btn-outline-danger btn-small" type="button" @onclick="DeleteSelectedTags">
-                        Alle Löschen
-                    </button>
-                </div>
-            </div>
-            <div class="col-auto mb-2">
-                <div class="form-control form-control-sm border p-0" style="box-shadow: rgba(0, 0, 0, 0.24) 3px 3px 3px">
-                    <div class="input-group input-group-sm">
-                        <button class="btn btn-sm btn-link text-dark">
-                            <i class="fa fa-search"></i>
-                        </button>
-                        <input type="search" class="form-control form-control-sm border-0" placeholder="Suche nach..." @bind="_tagQuery" @onkeyup="SearchTags">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-1">
-            @foreach (var tag in _selectedTags) {
-                <div class="col-auto">
-                    <h6>
-                        <span class="badge bg-info">
-                            @tag.Name
-                            <button type="button" class="btn-close btn-close-white" aria-label="Close" @onclick="() => RemoveTag(tag)"></button>
-                        </span>
-                    </h6>
-                </div>
-            }
-        </div>
-
-        <div class="ui-field">
-            <select class="form-select mb-3" size="8" multiple @onchange="SelectedTagsChanged">
-                @foreach (var tag in _searchedTags) {
-                    <option value="@tag.Name">@tag.Name</option>
-                }
-            </select>
+        
+        <div class="mt-4 mb-2">
+            <label class="form-label fw-bold">
+                Tags
+                <small class="text-muted">(zum Auswählen Strg gedrückt halten)</small>
+            </label>
+                <TagList @bind-SelectedTags="_webserviceEntry.Tags"></TagList>
         </div>
 
         <div class="mb-4">
@@ -157,19 +119,12 @@
     public LoginState LoginState { get; init; } = default!;
 
     private readonly TagDto _tagDto = new();
-
-    private List<Tag> _searchedTags = new();
-    private List<Tag> _selectedTags = new();
-    private string[] _selectedTagsStr = { };
-    private Tag[]? _allTags;
-
-    private string? _tagQuery;
+    
     private string? _conflictMessage;
 
     private async void PublishWse() {
     //set contact and tags
             _webserviceEntry.ContactPersonId = LoginState.User!.Id;
-            _webserviceEntry.Tags = new HashSet<Tag>(_selectedTags);
 
             _webserviceEntry.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',', StringSplitOptions.TrimEntries).Select(x => new Tag {
                 Name = x
@@ -186,45 +141,6 @@
                 NavigationManager.NavigateTo("/internal-server-error");
             }
 
-    }
-        @*------------TAG SEARCH------------*@
-
-    private void SearchTags(KeyboardEventArgs evt) {
-        _searchedTags = new List<Tag>();
-
-        if (evt.Key == "Enter" && _tagQuery is not null && _allTags is not null) {
-            foreach (var tag in _allTags) {
-                if (tag.Name.Contains(_tagQuery, StringComparison.CurrentCultureIgnoreCase)) {
-                    _searchedTags.Add(tag);
-                }
-            }
-        }
-    }
-
-    protected override async Task OnInitializedAsync() {
-        _allTags = await HttpClient.GetFromJsonAsync<Tag[]>("tag") ?? new Tag[] { };
-        _searchedTags = _allTags.ToList();
-    }
-
-    private void DeleteSelectedTags() {
-        _selectedTags = new List<Tag>();
-    }
-
-    private void RemoveTag(Tag tag) {
-        _selectedTags = _selectedTags.Where(t => t.Name != tag.Name).ToList();
-    }
-
-    private void SelectedTagsChanged(ChangeEventArgs e) {
-        if (e.Value is not null) {
-            _selectedTagsStr = (string[])e.Value;
-        }
-
-        foreach (var str in _selectedTagsStr) {
-            if (!_selectedTags.Exists(t => t.Name == str) && _allTags is not null) {
-                var selectedTag = Array.Find(_allTags, t => t.Name == str) ?? throw new ArgumentException("Tag cannot be null");
-                _selectedTags.Add(selectedTag);
-            }
-        }
     }
 
 }
