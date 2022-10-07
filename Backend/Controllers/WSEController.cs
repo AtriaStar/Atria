@@ -48,6 +48,10 @@ public class WseController : AtriaControllerBase {
     public IEnumerable<Question> GetQuestions(long wseId, [FromQuery] Pagination pagination)
         => _context.Questions.Where(x => x.WseId == wseId).Paginate(pagination);
 
+    [HttpGet("{wseId:long}/question/count")]
+    public long GetQuestionCount(long wseId) 
+        => _context.Questions.Where(x => x.WseId == wseId).LongCount();
+
     [HttpGet("{wseId:long}/question/{questionId:long}")]
     public IQueryable<Answer> GetAnswers(long wseId, long questionId, [FromQuery] Pagination pagination)
         => _context.Answers.Where(x => x.WseId == wseId && x.QuestionId == questionId)
