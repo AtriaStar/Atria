@@ -23,7 +23,15 @@
         <div class="card-body">
             <div class="row mb-2">
                 <div class="col-auto mt-sm-1">
-                    <i class="fa-solid fa-circle @_onlineStatusStyle"></i>
+                    @{
+                        string onlineStatusStyle;
+                        if (_wse.LatestCheck == null) {
+                            onlineStatusStyle = "text-secondary";
+                        } else {
+                            onlineStatusStyle = _wse.LatestCheck.Status == HttpStatusCode.OK ? "text-success" : "text-danger";
+                        }
+                    }
+                    <i class="fa-solid fa-circle @onlineStatusStyle"></i>
                 </div>
                 <div class="col ps-0">
                     <h3 class="card-title fw-bold">
@@ -284,7 +292,7 @@
 
     [Parameter]
     public string WseName { get; set; } = null!;
-    
+
     [Inject]
     private HttpClient HttpClient { get; set; } = default!;
 
@@ -316,7 +324,6 @@
     private bool _isBookmark;
     private bool _displayEditForm;
     private double _avgReview;
-    private string? _onlineStatusStyle;
     private bool _wseNotFound;
 
     private string? _conflictMessage;
@@ -343,20 +350,18 @@
         if (response.IsSuccessStatusCode) {
             _wse = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!;
             var fullUrl = $"wse/{WseId}/{HttpUtility.UrlEncode(_wse.Name)}";
-            
 
             _contactPerson = await HttpClient.GetFromJsonAsync<User>("user/" + _wse!.ContactPersonId) ?? new User();
 
             _allReviews = await HttpClient.GetFromJsonAsync<Review[]>("wse/" + WseId + "/review?page=" + 1 + "&entriesPerPage=" + 1000) ?? new Review[] { };
             _reviewNum = _allReviews.Count();
 
-            await StyleOnlineStatus();
             await CheckCurrentUserCollab();
             await CheckCurrentUserBookmark();
             await InitReviews();
             await InitQuestions();
             GetAvgReview();
-            
+
             if (NavManager.ToBaseRelativePath(NavManager.Uri) != fullUrl) {
                 NavManager.NavigateTo(fullUrl);
             }
@@ -418,7 +423,8 @@
     }
 
     private async Task CheckCurrentUserBookmark() {
-        if (LoginState.LoggedIn) {
+        await LoginState.Init;
+        if (LoginState.LoggedIn && !LoginState.HasLoadedBookmarks) {
             CurrentUserBookmarks = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + LoginState.User.Id + "/bookmarks");
             if (CurrentUserBookmarks!.Any(userBm => userBm.Id == WseId)) {
                 _isBookmark = true;
@@ -466,19 +472,6 @@
             NavManager.NavigateTo("/wse/" + WseId + "/editReview");
         } else {
             NavManager.NavigateTo("login");
-        }
-    }
-
-    private async Task StyleOnlineStatus() {
-        var response = await HttpClient.GetAsync($"wse/{WseId}/checks/latest");
-        if (response.StatusCode == HttpStatusCode.OK) {
-            if (await response.Content.ReadFromJsonAsync<bool>()) {
-                _onlineStatusStyle = "text-success";
-            } else {
-                _onlineStatusStyle = "text-danger";
-            }
-        } else {
-            _onlineStatusStyle = "text-secondary";
         }
     }
 

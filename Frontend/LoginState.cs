@@ -6,6 +6,7 @@ namespace Frontend;
 
 public class LoginState {
     public bool Loaded { get; private set; }
+    public bool HasLoadedBookmarks { get; set; }
 
     [MemberNotNullWhen(true, nameof(User))]
     public bool LoggedIn => User != null;

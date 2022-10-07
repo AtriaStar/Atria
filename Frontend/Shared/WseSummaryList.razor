@@ -23,10 +23,11 @@
 
     protected override async Task OnInitializedAsync() {
         await LoginState.Init;
-        if (LoginState.LoggedIn) {
+        if (LoginState.LoggedIn && !LoginState.HasLoadedBookmarks) {
             var response = await HttpClient.GetAsync($"user/{LoginState.User.Id}/bookmarks");
             if (response.IsSuccessStatusCode) {
                 LoginState.User.Bookmarks = (await response.Content.ReadFromJsonAsync<ISet<WebserviceEntry>>())!;
+                LoginState.HasLoadedBookmarks = true;
             }
         }
     }
