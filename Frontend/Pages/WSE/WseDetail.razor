@@ -4,7 +4,6 @@
 @using System.Web
 @using Frontend.Pages.WSE.Components
 @using Frontend.Pages.WSE.Components.FilterModal
-
 @inject NavigationManager NavManager
 
 <PageTitle>Atria - @_wse?.Name</PageTitle>
@@ -286,25 +285,20 @@
         private const int ReviewEntriesPerPage = 3;
         private const int QuestionEntriesPerPage = 3;
 
+    [Inject]
+    private HttpClient HttpClient { get; set; } = default!;
+
+    [CascadingParameter]
+    public LoginState LoginState { get; init; } = default!;
+
     [Parameter]
     public long WseId { get; set; }
 
     [Parameter]
     public string WseName { get; set; } = null!;
 
-    [Inject]
-    private HttpClient HttpClient { get; set; } = default!;
-
     private WebserviceEntry? _wse;
-
-    [CascadingParameter]
-    public LoginState LoginState { get; init; } = default!;
-
     private User? _contactPerson;
-
-    private WebserviceEntry[]? CurrentUserWse { get; set; }
-
-    private string? _newQuestion;
 
     private long _reviewCount;
     private int _currentReviewPage;
@@ -319,24 +313,8 @@
     private double _reviewAverage;
     private bool _wseNotFound;
 
+    private string? _newQuestion;
     private string? _conflictMessage;
-
-    private async void HandleValidSubmit() {
-        var response = await HttpClient.PostAsJsonAsync("wse", _wse);
-
-        if (response.IsSuccessStatusCode) {
-            NavManager.NavigateTo("wse/" + WseId, true);
-        } else if (response.StatusCode == HttpStatusCode.Conflict) {
-            _conflictMessage = await response.Content.ReadAsStringAsync();
-            StateHasChanged();
-        } else {
-            NavManager.NavigateTo("/internal-server-error");
-        }
-    }
-
-    private void CancelEdit() {
-        NavManager.NavigateTo("wse/" + WseId);
-    }
 
     protected override async Task OnInitializedAsync() {
         var response = await HttpClient.GetAsync($"wse/{WseId}");
@@ -348,8 +326,8 @@
 
             await LoginState.Init;
             if (LoginState.LoggedIn) {
-                CurrentUserWse = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + LoginState.User.Id + "/wse");
-                if (CurrentUserWse!.Any(userWse => userWse.Id == WseId)) {
+                var currentUserWse = await HttpClient.GetFromJsonAsync<WebserviceEntry[]>("user/" + LoginState.User.Id + "/wse");
+                if (currentUserWse!.Any(userWse => userWse.Id == WseId)) {
                     _isCollab = true;
                 }
 
@@ -376,6 +354,19 @@
             }
         } else {
             _wseNotFound = true;
+        }
+    }
+
+    private async void HandleValidSubmit() {
+        var response = await HttpClient.PostAsJsonAsync("wse", _wse);
+
+        if (response.IsSuccessStatusCode) {
+            NavManager.NavigateTo("wse/" + WseId, true);
+        } else if (response.StatusCode == HttpStatusCode.Conflict) {
+            _conflictMessage = await response.Content.ReadAsStringAsync();
+            StateHasChanged();
+        } else {
+            NavManager.NavigateTo("/internal-server-error");
         }
     }
 
@@ -425,6 +416,10 @@
         } else {
             NavManager.NavigateTo("login");
         }
+    }
+
+    private void CancelEdit() {
+        NavManager.NavigateTo("wse/" + WseId);
     }
 
 }
