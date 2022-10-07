@@ -57,6 +57,10 @@ public class WseController : AtriaControllerBase {
         => _context.Answers.Where(x => x.WseId == wseId && x.QuestionId == questionId)
             .Paginate(pagination);
 
+    [HttpGet("{wseId:long}/question/{questionId:long}/count")]
+    public long GetAnswerCount(long wseId, long questionId) 
+        => _context.Answers.Where(x => x.WseId == wseId && x.QuestionId == questionId).LongCount();
+
     [HttpGet("{wseId:long}/review")]
     public IEnumerable<Review> GetReviews(long wseId, [FromQuery] Pagination pagination)
         => _context.Reviews.Where(x => x.WseId == wseId).Paginate(pagination);
