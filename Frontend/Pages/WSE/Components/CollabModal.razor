@@ -1,6 +1,6 @@
 ﻿@using Models
 @using Models.DTO
-@inject NavigationManager NavManager
+@inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
 @using System.Reactive.Subjects
 @using System.Reactive.Linq
@@ -125,8 +125,8 @@
             Rights = WseRights.EditData
         });
         await HttpClient.PostAsJsonAsync($"wse/{WseId}/collaborators", _collaborators);
-        StateHasChanged();
-        @* TODO when backend works, test whether to call StateHasChanged or close Modal and ensure consistent state between FE and BE lisis *@
+        ModalBase.Close();
+        NavigationManager.NavigateTo(NavigationManager.Uri);
     }
 
     private async Task RemoveCollabById(long userId) {
