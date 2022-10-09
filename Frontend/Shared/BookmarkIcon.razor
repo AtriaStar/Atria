@@ -34,7 +34,7 @@
     public string IconClass { get; set; } = null!;
 
     private void NavigateToLogin() {
-        NavigationManager.NavigateTo("login");
+        NavigationManager.NavigateTo("login" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
     }
 
     private async Task ChangeBookmarkStatus(WebserviceEntry entry, bool bookmarkState) {
