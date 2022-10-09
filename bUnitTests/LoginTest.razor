@@ -64,5 +64,18 @@
 
         cut.WaitForAssertion(() => Assert.Equal("http://localhost/", navMan.Uri));
     }
+    
+    [Fact]
+    public async Task AlreadyLoggedIn() {
+        using var context = new TestContext();
+        var mockHttpHandler = context.Services.AddMockHttpClient();
+        await MockAuthentication.AddMockAuthentication(context, mockHttpHandler, true);
+        var navMan = context.Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("/login");
+        
+        var cut = context.RenderComponent<Login>();
+        Assert.True(cut.Instance.LoginState.Loaded);
+        Assert.Equal("http://localhost/", navMan.Uri);
+    }
 
 }
