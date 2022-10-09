@@ -33,7 +33,6 @@
         var wseLink = cut.Find("a[title='Zum Webservice']");
         
         Assert.Equal("Google", wseName.InnerHtml);
-        Assert.True(wseLink.Attributes.Any(attr 
-            => attr.Name.Equals("href") && attr.Value.Equals("https://www.google.com/")));
+        Assert.Contains(wseLink.Attributes, attr => attr.Name.Equals("href") && attr.Value.Equals("https://www.google.com/"));
     }
 }
