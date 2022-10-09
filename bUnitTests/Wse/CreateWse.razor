@@ -107,10 +107,18 @@
     }
     
     [Fact]
-    public async Task InvalidNewWseSyntaxTest() {
+    public async Task InvalidNewWseSyntaxTest1() {
         await InvalidTagSyntaxTestHelper(",");
 
     }
 
+    [Fact]
+    public async Task InvalidNewWseSyntaxTest2() {
+        await InvalidTagSyntaxTestHelper("a,");
+    }
 
+    [Fact]
+    public async Task InvalidNewWseSyntaxTest3() {
+        await InvalidTagSyntaxTestHelper(",,");
+    }
 }
