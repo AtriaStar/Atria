@@ -34,4 +34,26 @@
                 </li>
             </ul>");
     }
+    
+    [Fact]
+    public async Task ShortDescriptionMoreThan50SymbolsTest() {
+        var mock = await Setup();
+        mock.When("/tag").RespondJson(new List<Tag>());
+
+        var cut = RenderComponent<NewWse>();
+        cut.Find("input[id=shortDescription]").Change("This sentence has more than fifthy symbols and should not be valid when submitting.");
+
+        var valList = cut.Find("ul[class=validation-errors]");
+        valList.MarkupMatches(
+            @"<ul class=""validation-errors"">
+                <li class=""validation-message"">
+                    The field ShortDescription must be a string or array type with a maximum length of '50'.
+                </li>
+            </ul>");
+        var valMessage = cut.Find("div[class=validation-message]");
+        valMessage.MarkupMatches(
+            @"<div class=""validation-message"">
+                The field ShortDescription must be a string or array type with a maximum length of '50'.
+            </div>");
+    }
 }
