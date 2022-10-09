@@ -4,7 +4,7 @@
 @using System.Web
 @using Frontend.Pages.WSE.Components
 @using Frontend.Pages.WSE.Components.FilterModal
-@inject NavigationManager NavManager
+@inject NavigationManager NavigationManager
 
 <PageTitle>Atria - @_wse?.Name</PageTitle>
 
@@ -355,8 +355,8 @@
                 _reviewAverage = 0;
             }
 
-            if (NavManager.ToBaseRelativePath(NavManager.Uri) != fullUrl) {
-                NavManager.NavigateTo(fullUrl);
+            if (NavigationManager.ToBaseRelativePath(NavigationManager.Uri) != fullUrl) {
+                NavigationManager.NavigateTo(fullUrl);
             }
         } else {
             _wseNotFound = true;
@@ -367,12 +367,12 @@
         var response = await HttpClient.PostAsJsonAsync("wse", _wse);
 
         if (response.IsSuccessStatusCode) {
-            NavManager.NavigateTo("wse/" + WseId, true);
+            NavigationManager.NavigateTo("wse/" + WseId, true);
         } else if (response.StatusCode == HttpStatusCode.Conflict) {
             _conflictMessage = await response.Content.ReadAsStringAsync();
             StateHasChanged();
         } else {
-            NavManager.NavigateTo("/internal-server-error");
+            NavigationManager.NavigateTo("/internal-server-error");
         }
     }
 
@@ -404,34 +404,34 @@
             });
 
             if (response.IsSuccessStatusCode) {
-                NavManager.NavigateTo("wse/" + WseId, true);
+                NavigationManager.NavigateTo("wse/" + WseId, true);
             } else if (response.StatusCode == HttpStatusCode.Conflict) {
                 _conflictMessage = await response.Content.ReadAsStringAsync();
                 StateHasChanged();
             } else {
-                NavManager.NavigateTo("/internal-server-error");
+                NavigationManager.NavigateTo("/internal-server-error");
             }
         } else {
-            NavManager.NavigateTo("login");
+            NavigationManager.NavigateTo("login");
         }
     }
 
     private void CreateNewReview() {
         if (LoginState.LoggedIn) {
-            NavManager.NavigateTo("/wse/" + WseId + "/editReview");
+            NavigationManager.NavigateTo("/wse/" + WseId + "/editReview");
         } else {
-            NavManager.NavigateTo("login");
+            NavigationManager.NavigateTo("login");
         }
     }
 
     private void CancelEdit() {
-        NavManager.NavigateTo("wse/" + WseId);
+        NavigationManager.NavigateTo("wse/" + WseId);
     }
 
     private async Task Leave() {
         var response = await HttpClient.PostAsync($"wse/{WseId}/leave", null);
         if (response.IsSuccessStatusCode) {
-            NavManager.NavigateTo("");
+            NavigationManager.NavigateTo("");
         } else {
             _conflictMessage = await response.Content.ReadAsStringAsync();
         }
