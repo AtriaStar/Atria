@@ -1,5 +1,7 @@
 ﻿@using Frontend
 @using Frontend.Pages.UserManagement
+@using RichardSzalay.MockHttp
+@using System.Net
 @code {
 
     [Fact]
@@ -46,5 +48,21 @@
             @"<div class=""validation-message"">The Email field is not a valid e-mail address.</div>");
     }
 
+    [Fact]
+    public void ValidInput() {
+        using var context = new TestContext();
+        var mock = context.Services.AddMockHttpClient();
+        LoginState loginState = new LoginState(context.Services.GetRequiredService<HttpClient>());
+        mock.When("http://localhost/auth/login").Respond(HttpStatusCode.OK);
+        var navMan = context.Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("/login");
+
+        var cut = context.RenderComponent<Login>(parameters => parameters.Add(p => p.LoginState, loginState));
+        cut.Find("#email").Change("mock@mock");
+        cut.Find("#password").Change("mocking");
+        cut.Find("form").Submit();
+
+        cut.WaitForAssertion(() => Assert.Equal("http://localhost/", navMan.Uri));
+    }
 
 }
