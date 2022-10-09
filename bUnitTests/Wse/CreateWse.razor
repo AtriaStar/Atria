@@ -79,4 +79,18 @@
                 The Link field is not a valid fully-qualified http, https, or ftp URL.
             </div>");
     }
+    
+    [Fact]
+    public async Task InvalidDocumentationLinkTest() {
+        var mock = await Setup();
+        mock.When("/tag").RespondJson(new List<Tag>());
+
+        var cut = RenderComponent<NewWse>();
+        cut.Find("input[id=docLink]").Change("link");
+        cut.Find("form").Submit();
+
+        var elements = cut.FindAll("li[class=validation-message]");
+        Assert.Contains(elements, element => element.Html()
+            .Equals("The DocumentationLink field is not a valid fully-qualified http, https, or ftp URL."));
+    }
 }
