@@ -83,7 +83,8 @@
 
     private bool _processingRequest;
 
-    protected override void OnParametersSet() {
+    protected override async Task OnInitializedAsync() {
+        await LoginState.Init;
         if (LoginState.LoggedIn) {
             NavManager.NavigateTo("");
         }
