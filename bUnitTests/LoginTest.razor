@@ -2,16 +2,16 @@
 @using Frontend.Pages.UserManagement
 @using RichardSzalay.MockHttp
 @using System.Net
+@inherits TestContext
 @code {
 
     [Fact]
     public void NoInputTest() {
         // Arrange
-        using var context = new TestContext();
         LoginState loginState = new LoginState(new HttpClient());
         
         // Act
-        var cut = context.RenderComponent<Login>(parameters => parameters.Add(p => p.LoginState, loginState));
+        var cut = RenderComponent<Login>(parameters => parameters.Add(p => p.LoginState, loginState));
         cut.Find("button[type=submit]").Click();
 
         // Assert
@@ -30,10 +30,9 @@
     
     [Fact]
     public void InvalidEmailTest() {
-        using var context = new TestContext();
         LoginState loginState = new LoginState(new HttpClient());
 
-        var cut = context.RenderComponent<Login>(parameters => parameters.Add(p => p.LoginState, loginState));
+        var cut = RenderComponent<Login>(parameters => parameters.Add(p => p.LoginState, loginState));
         cut.Find("input[type=email]").Change("email");
 
         var valList = cut.Find("ul[class=validation-errors]");
@@ -50,14 +49,13 @@
 
     [Fact]
     public void ValidInput() {
-        using var context = new TestContext();
-        var mock = context.Services.AddMockHttpClient();
-        LoginState loginState = new LoginState(context.Services.GetRequiredService<HttpClient>());
+        var mock = Services.AddMockHttpClient();
+        LoginState loginState = new LoginState(Services.GetRequiredService<HttpClient>());
         mock.When("http://localhost/auth/login").Respond(HttpStatusCode.OK);
-        var navMan = context.Services.GetRequiredService<FakeNavigationManager>();
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
         navMan.NavigateTo("/login");
 
-        var cut = context.RenderComponent<Login>(parameters => parameters.Add(p => p.LoginState, loginState));
+        var cut = RenderComponent<Login>(parameters => parameters.Add(p => p.LoginState, loginState));
         cut.Find("#email").Change("mock@mock");
         cut.Find("#password").Change("mocking");
         cut.Find("form").Submit();
@@ -67,14 +65,13 @@
     
     [Fact]
     public async Task AlreadyLoggedIn() {
-        using var context = new TestContext();
-        var mockHttpHandler = context.Services.AddMockHttpClient();
-        await MockAuthentication.AddMockAuthentication(context, mockHttpHandler, true);
-        var navMan = context.Services.GetRequiredService<FakeNavigationManager>();
+        var mockHttpHandler = Services.AddMockHttpClient();
+        await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, true);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
         navMan.NavigateTo("/login");
         
-        var cut = context.RenderComponent<Login>();
-        Assert.True(cut.Instance.LoginState.Loaded);
+        var cut = RenderComponent<Login>();
+        Assert.True(cut.Instance.LoginState.LoggedIn);
         Assert.Equal("http://localhost/", navMan.Uri);
     }
 
