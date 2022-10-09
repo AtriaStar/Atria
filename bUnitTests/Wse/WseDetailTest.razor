@@ -21,6 +21,12 @@
         };
         mockHttpHandler.When("http://localhost/wse/1").RespondJson(entry);
         mockHttpHandler.When("http://localhost/user/1").RespondJson(MockAuthentication.GetMockUser());
+        mockHttpHandler.When("http://localhost/user/1/wse").RespondJson(new List<WebserviceEntry> {
+            entry
+        });
+        mockHttpHandler.When("http://localhost/user/1/bookmarks").RespondJson(new List<WebserviceEntry> {
+            entry
+        });
         mockHttpHandler.When("http://localhost/wse/1/review/count").RespondJson(0);
         mockHttpHandler.When("http://localhost/wse/1/question/count").RespondJson(0);
         mockHttpHandler.When("http://localhost/wse/1/collaborators").RespondJson(new List<Collaborator> {
@@ -39,7 +45,7 @@
         var cut = RenderComponent<WseDetail>(builder => builder
             .Add(parameter => parameter.WseId, 1)
             .Add(parameter => parameter.WseName, "Google"));
-        cut.WaitForState(() => cut.Find(".card-title").InnerHtml.Equals("Google"));
+        cut.WaitForElement(".card-title");
         var wseName = cut.Find(".card-title");
         var wseLink = cut.Find("a[title='Zum Webservice']");
 
