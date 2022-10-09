@@ -93,4 +93,24 @@
         Assert.Contains(elements, element => element.Html()
             .Equals("The DocumentationLink field is not a valid fully-qualified http, https, or ftp URL."));
     }
+
+    private async Task InvalidTagSyntaxTestHelper(string tagText) {
+        var mock = await Setup();
+        mock.When("/tag").RespondJson(new List<Tag>());
+
+        var cut = RenderComponent<NewWse>();
+        cut.Find("textarea[id=newTags]").Change(tagText);
+        
+        var elements = cut.FindAll("li[class=validation-message]");
+        Assert.Contains(elements, element => element.Html()
+            .Equals("Tags are not separated with a comma."));
+    }
+    
+    [Fact]
+    public async Task InvalidNewWseSyntaxTest() {
+        await InvalidTagSyntaxTestHelper(",");
+
+    }
+
+
 }
