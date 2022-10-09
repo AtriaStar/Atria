@@ -122,6 +122,13 @@
     
     private string? _conflictMessage;
 
+    protected override async Task OnInitializedAsync() {
+        await LoginState.Init;
+        if (!LoginState.LoggedIn) {
+            NavigationManager.NavigateTo("");
+        }
+    }
+
     private async void PublishWse() {
     //set contact and tags
             _webserviceEntry.ContactPersonId = LoginState.User!.Id;
