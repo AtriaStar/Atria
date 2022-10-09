@@ -14,17 +14,7 @@ public static class MockAuthentication {
         if (context is null) throw new ArgumentNullException(nameof(context));
 
         if (isAuthorized) {
-            var mockUser = new User {
-                Id = 1,
-                FirstNames = "MockFirstName",
-                LastName = "MockLastName",
-                Email = "mock@mock",
-                SignUpIp = "127.0.0.1",
-                Rights = UserRights.Default,
-                CreatedAt = DateTimeOffset.UtcNow
-            };
-
-            mockHttpMessageHandler.When("http://localhost/auth").RespondJson(mockUser);
+            mockHttpMessageHandler.When("http://localhost/auth").RespondJson(GetMockUser());
         } else {
             mockHttpMessageHandler.When("http://localhost/auth").Respond(HttpStatusCode.Unauthorized);
         }
@@ -34,5 +24,17 @@ public static class MockAuthentication {
         context.RenderTree.Add<CascadingValue<LoginState>>(parameters => parameters.Add(
             p => p.Value, l));
             
+    }
+
+    public static User GetMockUser() {
+        return new User {
+            Id = 1,
+            FirstNames = "MockFirstName",
+            LastName = "MockLastName",
+            Email = "mock@mock",
+            SignUpIp = "127.0.0.1",
+            Rights = UserRights.Default,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
     }
 }
