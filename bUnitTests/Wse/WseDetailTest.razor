@@ -21,7 +21,13 @@
         mockHttpHandler.When("/user/1").RespondJson(MockAuthentication.GetMockUser());
         mockHttpHandler.When("/wse/1/review/count").RespondJson(0);
         mockHttpHandler.When("/wse/1/question/count").RespondJson(0);
-        mockHttpHandler.When("/wse/1/collaborators").RespondJson(MockAuthentication.GetMockUser());
+        mockHttpHandler.When("/wse/1/collaborators").RespondJson(new List<Collaborator> {
+            new() {
+                UserId = 1,
+                WseId = 1,
+                Rights = WseRights.Owner
+            }
+        });
     }
 
     [Fact]
