@@ -1,0 +1,31 @@
+﻿@using Frontend
+@using Frontend.Pages.UserManagement
+@inherits TestContext
+@code {
+
+    private async Task Setup(bool isAuthorized) {
+        var mockHttpHandler = Services.AddMockHttpClient();
+        await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("/register");
+    }
+    
+    [Fact]
+    public async Task InvalidEmailTest() {
+        await Setup(false);
+        
+        var cut = RenderComponent<Register>();
+        cut.Find("input[type=email]").Change("email");
+
+        var valList = cut.Find("ul[class=validation-errors]");
+        valList.MarkupMatches(
+            @"<ul class=""validation-errors"">
+                <li class=""validation-message"">
+                    The Email field is not a valid e-mail address.
+                </li>
+            </ul>");
+        var valMessage = cut.Find("div[class=validation-message]");
+        valMessage.MarkupMatches(@"<div class=""validation-message"">The Email field is not a valid e-mail address.</div>");
+    }
+
+}
