@@ -75,4 +75,15 @@
         Assert.Equal("http://localhost/", navMan.Uri);
     }
 
+    public async Task NotAlreadyLoggedIn() {
+        var mockHttpHandler = Services.AddMockHttpClient();
+        await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, false);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("/login");
+
+        var cut = RenderComponent<Login>();
+        Assert.False(cut.Instance.LoginState.LoggedIn);
+        Assert.Equal("http://localhost/login", navMan.Uri);
+    }
+
 }
