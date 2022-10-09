@@ -56,4 +56,27 @@
                 The field ShortDescription must be a string or array type with a maximum length of '50'.
             </div>");
     }
+    
+    
+    [Fact]
+    public async Task InvalidWseLinkTest() {
+        var mock = await Setup();
+        mock.When("/tag").RespondJson(new List<Tag>());
+
+        var cut = RenderComponent<NewWse>();
+        cut.Find("input[id=link]").Change("link");
+
+        var valList = cut.Find("ul[class=validation-errors]");
+        valList.MarkupMatches(
+            @"<ul class=""validation-errors"">
+                <li class=""validation-message"">
+                    The Link field is not a valid fully-qualified http, https, or ftp URL.
+                </li>
+            </ul>");
+        var valMessage = cut.Find("div[class=validation-message]");
+        valMessage.MarkupMatches(
+            @"<div class=""validation-message"">
+                The Link field is not a valid fully-qualified http, https, or ftp URL.
+            </div>");
+    }
 }
