@@ -1,0 +1,39 @@
+﻿@using Frontend.Pages.WSE
+@using Models
+@using RichardSzalay.MockHttp
+@inherits TestContext
+@code {
+    
+    private async Task<MockHttpMessageHandler> Setup(bool isAuthorized) {
+        var mockHttpHandler = Services.AddMockHttpClient();
+        await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("/wse/0");
+        return mockHttpHandler;
+    }
+
+    
+    [Fact]
+    public async Task DisplayWse() {
+        var mock = await Setup(false);
+        WebserviceEntry entry = new WebserviceEntry() {
+            Name = "Google",
+            ShortDescription = "A Search Engine",
+            Link = "https://www.google.com/",
+            ContactPersonId = 1
+        };
+        mock.When("/wse/0").RespondJson(entry);
+        mock.When("/user/1").RespondJson(MockAuthentication.GetMockUser());
+        mock.When("/wse/0/review/count").RespondJson(0);
+        mock.When("/wse/0/question/count").RespondJson(0);
+
+        var cut = RenderComponent<WseDetail>();
+        cut.WaitForState(() => cut.Find(".card-title").TextContent.Equals("Google"));
+        var wseName = cut.Find(".card-title");
+        var wseLink = cut.Find("a[title='Zum Webservice']");
+        
+        Assert.Equal("Google", wseName.InnerHtml);
+        Assert.True(wseLink.Attributes.Any(attr 
+            => attr.Name.Equals("href") && attr.Value.Equals("https://www.google.com/")));
+    }
+}
