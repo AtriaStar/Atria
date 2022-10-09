@@ -24,5 +24,27 @@
                 </li>
             </ul>");
     }
+    
+    
+    [Fact]
+    public void InvalidEmailTest() {
+        using var context = new TestContext();
+        LoginState loginState = new LoginState(new HttpClient());
+
+        var cut = context.RenderComponent<Login>(parameters => parameters.Add(p => p.LoginState, loginState));
+        cut.Find("input[type=email]").Change("email");
+
+        var valList = cut.Find("ul[class=validation-errors]");
+        valList.MarkupMatches(
+            @"<ul class=""validation-errors"">
+                <li class=""validation-message"">
+                    The Email field is not a valid e-mail address.
+                </li>
+            </ul>");
+        var valMessage = cut.Find("div[class=validation-message]");
+        valMessage.MarkupMatches(
+            @"<div class=""validation-message"">The Email field is not a valid e-mail address.</div>");
+    }
+
 
 }
