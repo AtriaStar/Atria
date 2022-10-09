@@ -168,7 +168,7 @@
     protected override async Task OnInitializedAsync() {
         await LoginState.Init;
         if (!LoginState.LoggedIn) {
-            NavigationManager.NavigateTo("login");
+            NavigationManager.NavigateTo("login?returnurl=settings");
         }
     }
 
