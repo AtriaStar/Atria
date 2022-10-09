@@ -75,6 +75,7 @@
         Assert.Equal("http://localhost/", navMan.Uri);
     }
 
+    [Fact]
     public async Task NotAlreadyLoggedIn() {
         var mockHttpHandler = Services.AddMockHttpClient();
         await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, false);
