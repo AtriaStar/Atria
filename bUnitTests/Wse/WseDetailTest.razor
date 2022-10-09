@@ -2,8 +2,9 @@
 @using Models
 @using RichardSzalay.MockHttp
 @inherits TestContext
+
 @code {
-    
+
     private async Task<MockHttpMessageHandler> Setup(bool isAuthorized) {
         var mockHttpHandler = Services.AddMockHttpClient();
         await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
@@ -12,7 +13,6 @@
         return mockHttpHandler;
     }
 
-    
     [Fact]
     public async Task DisplayWse() {
         var mock = await Setup(false);
@@ -31,8 +31,10 @@
         cut.WaitForState(() => cut.Find(".card-title").TextContent.Equals("Google"));
         var wseName = cut.Find(".card-title");
         var wseLink = cut.Find("a[title='Zum Webservice']");
-        
+
         Assert.Equal("Google", wseName.InnerHtml);
-        Assert.Contains(wseLink.Attributes, attr => attr.Name.Equals("href") && attr.Value.Equals("https://www.google.com/"));
+        Assert.Contains(wseLink.Attributes, attr
+            => attr.Name.Equals("href") && attr.Value.Equals("https://www.google.com/"));
     }
+
 }
