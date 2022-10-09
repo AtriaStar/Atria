@@ -31,7 +31,6 @@
         cut.Find("input[type=email]").Change(emailToTest);
         cut.Find("form").Submit();
 
-        var valList = cut.Find("ul[class=validation-errors]");
         var c = cut.Find("label[for=email] + div > div");
         c.MarkupMatches(@<div class="validation-message">The Email field is not a valid e-mail address.</div>);
     }
