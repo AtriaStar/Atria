@@ -9,19 +9,21 @@
         var mockHttpHandler = Services.AddMockHttpClient();
         await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
         var navMan = Services.GetRequiredService<FakeNavigationManager>();
-        navMan.NavigateTo("/wse/1");
+        navMan.NavigateTo("/wse/1/Google");
         WebserviceEntry entry = new WebserviceEntry() {
             Name = "Google",
             ShortDescription = "A Search Engine",
             Link = "https://www.google.com/",
             ContactPersonId = 1,
             Id = 1,
+            ViewCount = 1,
+            CreatedAt = DateTimeOffset.UtcNow
         };
-        mockHttpHandler.When("/wse/1").RespondJson(entry);
-        mockHttpHandler.When("/user/1").RespondJson(MockAuthentication.GetMockUser());
-        mockHttpHandler.When("/wse/1/review/count").RespondJson(0);
-        mockHttpHandler.When("/wse/1/question/count").RespondJson(0);
-        mockHttpHandler.When("/wse/1/collaborators").RespondJson(new List<Collaborator> {
+        mockHttpHandler.When("http://localhost/wse/1").RespondJson(entry);
+        mockHttpHandler.When("http://localhost/user/1").RespondJson(MockAuthentication.GetMockUser());
+        mockHttpHandler.When("http://localhost/wse/1/review/count").RespondJson(0);
+        mockHttpHandler.When("http://localhost/wse/1/question/count").RespondJson(0);
+        mockHttpHandler.When("http://localhost/wse/1/collaborators").RespondJson(new List<Collaborator> {
             new() {
                 UserId = 1,
                 WseId = 1,
@@ -37,7 +39,7 @@
         var cut = RenderComponent<WseDetail>(builder => builder
             .Add(parameter => parameter.WseId, 1)
             .Add(parameter => parameter.WseName, "Google"));
-        cut.WaitForState(() => cut.Find(".card-title").TextContent.Equals("Google"));
+        cut.WaitForState(() => cut.Find(".card-title").InnerHtml.Equals("Google"));
         var wseName = cut.Find(".card-title");
         var wseLink = cut.Find("a[title='Zum Webservice']");
 
