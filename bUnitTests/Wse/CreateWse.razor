@@ -1,0 +1,37 @@
+﻿@using RichardSzalay.MockHttp
+@using Models
+@using Frontend.Pages.WSE
+@inherits TestContext
+@code {
+    
+    private async Task<MockHttpMessageHandler> Setup() {
+        var mockHttpHandler = Services.AddMockHttpClient();
+        await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, true);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("/newWse");
+        return mockHttpHandler;
+    }
+    
+    [Fact]
+    public async Task NoInputTest() {
+        var mock = await Setup();
+        mock.When("/tag").RespondJson(new List<Tag>());
+
+        var cut = RenderComponent<NewWse>();
+        cut.Find("form").Submit();
+
+        var valList = cut.Find("ul[class=validation-errors]");
+        valList.MarkupMatches(
+            @"<ul class=""validation-errors"">
+                <li class=""validation-message"">
+                    The Name field is required.
+                </li>
+                <li class=""validation-message"">
+                    The ShortDescription field is required.
+                </li>
+                <li class=""validation-message"">
+                    The Link field is required.
+                </li>
+            </ul>");
+    }
+}
