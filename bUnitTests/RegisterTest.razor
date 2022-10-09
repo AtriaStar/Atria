@@ -1,5 +1,4 @@
-﻿@using Frontend
-@using Frontend.Pages.UserManagement
+﻿@using Frontend.Pages.UserManagement
 @inherits TestContext
 @code {
 
@@ -9,23 +8,32 @@
         var navMan = Services.GetRequiredService<FakeNavigationManager>();
         navMan.NavigateTo("/register");
     }
-    
+
     [Fact]
-    public async Task InvalidEmailTest() {
+    public async Task InvalidEmailTest1() {
+        await InvalidEmailTestHelper("email");
+    }
+
+    [Fact]
+    public async Task InvalidEmailTest2() {
+        await InvalidEmailTestHelper("email@");
+    }
+
+    [Fact]
+    public async Task InvalidEmailTest3() {
+        await InvalidEmailTestHelper("e@@e.de");
+    }
+
+    private async Task InvalidEmailTestHelper(string emailToTest) {
         await Setup(false);
         
         var cut = RenderComponent<Register>();
-        cut.Find("input[type=email]").Change("email");
+        cut.Find("input[type=email]").Change(emailToTest);
+        cut.Find("form").Submit();
 
         var valList = cut.Find("ul[class=validation-errors]");
-        valList.MarkupMatches(
-            @"<ul class=""validation-errors"">
-                <li class=""validation-message"">
-                    The Email field is not a valid e-mail address.
-                </li>
-            </ul>");
-        var valMessage = cut.Find("div[class=validation-message]");
-        valMessage.MarkupMatches(@"<div class=""validation-message"">The Email field is not a valid e-mail address.</div>");
+        var c = cut.Find("label[for=email] + div > div");
+        c.MarkupMatches(@<div class="validation-message">The Email field is not a valid e-mail address.</div>);
     }
 
 }
