@@ -1,6 +1,7 @@
 ﻿@using Frontend.Pages.WSE
 @using Models
 @using RichardSzalay.MockHttp
+@using System.Net
 @inherits TestContext
 
 @code {
@@ -36,6 +37,7 @@
                 Rights = WseRights.Owner
             }
         });
+        mockHttpHandler.When("http://localhost/user/1/bookmarks/remove/1").Respond(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -53,5 +55,26 @@
         Assert.Contains(wseLink.Attributes, attr
             => attr.Name.Equals("href") && attr.Value.Equals("https://www.google.com/"));
     }
+
+    [Fact]
+    public async Task BookmarkIconTest() {
+        await Setup(true);
+
+        var cut = RenderComponent<WseDetail>(builder => builder
+            .Add(parameter => parameter.WseId, 1)
+            .Add(parameter => parameter.WseName, "Google"));
+        cut.WaitForElement(".card-title");
+
+        var icon = cut.Find("i.fa-bookmark");
+
+        Assert.Contains(icon.ClassList, s => s.Equals("fa-solid"));
+        
+        await icon.ClickAsync(new MouseEventArgs());
+        
+        cut.WaitForAssertion(() => Assert.Contains("fa-regular", icon.ClassList));
+        Assert.DoesNotContain("fa-solid", icon.ClassList);
+    }
+
+
 
 }
