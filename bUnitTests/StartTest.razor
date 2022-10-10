@@ -1,0 +1,48 @@
+﻿@using Frontend.Pages.Main
+@using Frontend.Shared
+@using Models
+@using RichardSzalay.MockHttp
+@inherits TestContext
+@code {
+    
+    private async Task Setup(bool isAuthorized) {
+        var mockHttpHandler = Services.AddMockHttpClient();
+        mockHttpHandler.When("/tag").RespondJson(new List<Tag>());
+        mockHttpHandler.When("http://localhost/wse/1/review/average").RespondJson(1);
+        await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
+    }
+    
+    [Fact]
+    public async Task QueryTest() {
+        await Setup(true);
+
+        var cut = RenderComponent<Start>();
+        var searchbar = cut.Find("input[type=search]");
+        searchbar.Change("test");
+        searchbar.TriggerEvent("onkeyup", new KeyboardEventArgs {
+            Key = "Enter"
+        });
+
+        Assert.Equal("test", cut.Instance.Query);
+    }
+
+    [Fact]
+    public async Task ShowWse() {
+        await Setup(true);
+        
+        WebserviceEntry entry = new WebserviceEntry() {
+            Name = "Google",
+            ShortDescription = "A Search Engine",
+            Link = "https://www.google.com/",
+            ContactPersonId = 1,
+            Id = 1,
+            ViewCount = 1,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+        
+        IEnumerable<WebserviceEntry> list = new[] { entry };
+
+        var cut = RenderComponent<WseSummaryList>(builder => builder.Add(p => p.Entries, list));
+        Assert.Contains("Google", cut.Markup);
+    }
+}

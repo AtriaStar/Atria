@@ -1,0 +1,62 @@
+﻿@using RichardSzalay.MockHttp
+@using Frontend.Shared
+@using System.Net
+@inherits TestContext
+
+@code {
+    
+    private async Task<MockHttpMessageHandler> Setup(bool isAuthorized) {
+        var mockHttpHandler = Services.AddMockHttpClient();
+        await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
+        return mockHttpHandler;
+    }
+    
+    [Fact]
+    public async Task DisplayWhenUnauthorized() {
+        await Setup(false);
+
+        var cut = RenderComponent<NavMenu>();
+        cut.WaitForState(() => !cut.Markup.Contains("Authentifiziere..."));
+
+        Assert.Contains("Einloggen", cut.Markup);
+        Assert.DoesNotContain("Abmelden", cut.Markup);
+    }
+
+    [Fact]
+    public async Task DisplayWhenAuthorized() {
+        await Setup(true);
+
+        var cut = RenderComponent<NavMenu>();
+        cut.WaitForState(() => !cut.Markup.Contains("Authentifiziere..."));
+
+        Assert.Contains("Abmelden", cut.Markup);
+        Assert.DoesNotContain("Einloggen", cut.Markup);
+    }
+
+    [Fact]
+    public async Task RedirectToStartAfterLogout() {
+        var mock = await Setup(true);
+        mock.When("http://localhost/auth/logout").Respond(HttpStatusCode.OK);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("faq");
+
+        var cut = RenderComponent<NavMenu>();
+        cut.WaitForElement("button.text-danger");
+        await cut.Find("button.text-danger").ClickAsync(new MouseEventArgs());
+
+        Assert.Equal("http://localhost/", navMan.Uri);
+    }
+
+    [Fact]
+    public async Task SetLoginRedirectUrl() {
+        await Setup(false);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("faq");
+
+        var cut = RenderComponent<NavMenu>();
+        cut.WaitForState(() => !cut.Markup.Contains("Authentifiziere..."));
+
+        await cut.Find("a[href=login]").ClickAsync(new MouseEventArgs());
+        Assert.Single(cut.FindAll("a[href=\"login?returnurl=faq\"]"));
+    }
+}
