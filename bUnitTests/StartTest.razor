@@ -5,16 +5,19 @@
 @inherits TestContext
 @code {
     
-    private async Task Setup(bool isAuthorized) {
+    private async Task<MockHttpMessageHandler> Setup(bool isAuthorized) {
         var mockHttpHandler = Services.AddMockHttpClient();
         mockHttpHandler.When("/tag").RespondJson(new List<Tag>());
         mockHttpHandler.When("http://localhost/wse/1/review/average").RespondJson(1);
         await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
+        return mockHttpHandler;
     }
     
     [Fact]
     public async Task QueryTest() {
-        await Setup(true);
+        var mock = await Setup(true);        
+        mock.When("search/wse").RespondJson(new List<WebserviceEntry>());
+        mock.When("search/wse?query=test").RespondJson(new List<WebserviceEntry>());
 
         var cut = RenderComponent<Start>();
         var searchbar = cut.Find("input[type=search]");
