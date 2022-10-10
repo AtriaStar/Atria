@@ -124,15 +124,19 @@
             UserId = _userToAdd.Value,
             Rights = WseRights.EditData
         });
-        await HttpClient.PostAsJsonAsync($"wse/{WseId}/collaborators", _collaborators);
-        var user = await HttpClient.GetFromJsonAsync<User>("user/" + _userToAdd.Value) ?? throw new InvalidOperationException();
-        _collaboratorsAsUsers.Add(user);
+        var response = await HttpClient.PostAsJsonAsync($"wse/{WseId}/collaborators", _collaborators);
+        if (response.IsSuccessStatusCode) {
+            var user = await HttpClient.GetFromJsonAsync<User>("user/" + _userToAdd.Value) ?? throw new InvalidOperationException();
+            _collaboratorsAsUsers.Add(user);
+        }
     }
 
     private async Task RemoveCollabById(long userId) {
         _collaborators!.Remove(_collaborators.Single(collaborator => collaborator.UserId == userId));
-        await HttpClient.PostAsJsonAsync($"wse/{WseId}/collaborators", _collaborators);
-        StateHasChanged();
+        var response = await HttpClient.PostAsJsonAsync($"wse/{WseId}/collaborators", _collaborators);
+        if (response.IsSuccessStatusCode) {
+            _collaboratorsAsUsers.Remove(_collaboratorsAsUsers.Single(user => user.Id == userId));
+        }
     }
 
     public void Dispose() => _collabQuerySubscription?.Dispose();
