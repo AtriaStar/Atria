@@ -1,0 +1,124 @@
+﻿@using RichardSzalay.MockHttp
+@using Models
+@using Frontend.Pages.WSE
+@inherits TestContext
+@code {
+    
+    private async Task<MockHttpMessageHandler> Setup() {
+        var mockHttpHandler = Services.AddMockHttpClient();
+        await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, true);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("/newWse");
+        return mockHttpHandler;
+    }
+    
+    [Fact]
+    public async Task NoInputTest() {
+        var mock = await Setup();
+        mock.When("/tag").RespondJson(new List<Tag>());
+
+        var cut = RenderComponent<NewWse>();
+        cut.Find("form").Submit();
+
+        var valList = cut.Find("ul[class=validation-errors]");
+        valList.MarkupMatches(
+            @"<ul class=""validation-errors"">
+                <li class=""validation-message"">
+                    The Name field is required.
+                </li>
+                <li class=""validation-message"">
+                    The ShortDescription field is required.
+                </li>
+                <li class=""validation-message"">
+                    The Link field is required.
+                </li>
+            </ul>");
+    }
+    
+    [Fact]
+    public async Task ShortDescriptionMoreThan50SymbolsTest() {
+        var mock = await Setup();
+        mock.When("/tag").RespondJson(new List<Tag>());
+
+        var cut = RenderComponent<NewWse>();
+        cut.Find("input[id=shortDescription]").Change("This sentence has more than fifthy symbols and should not be valid when submitting.");
+
+        var valList = cut.Find("ul[class=validation-errors]");
+        valList.MarkupMatches(
+            @"<ul class=""validation-errors"">
+                <li class=""validation-message"">
+                    The field ShortDescription must be a string or array type with a maximum length of '50'.
+                </li>
+            </ul>");
+        var valMessage = cut.Find("div[class=validation-message]");
+        valMessage.MarkupMatches(
+            @"<div class=""validation-message"">
+                The field ShortDescription must be a string or array type with a maximum length of '50'.
+            </div>");
+    }
+    
+    
+    [Fact]
+    public async Task InvalidWseLinkTest() {
+        var mock = await Setup();
+        mock.When("/tag").RespondJson(new List<Tag>());
+
+        var cut = RenderComponent<NewWse>();
+        cut.Find("input[id=link]").Change("link");
+
+        var valList = cut.Find("ul[class=validation-errors]");
+        valList.MarkupMatches(
+            @"<ul class=""validation-errors"">
+                <li class=""validation-message"">
+                    The Link field is not a valid fully-qualified http, https, or ftp URL.
+                </li>
+            </ul>");
+        var valMessage = cut.Find("div[class=validation-message]");
+        valMessage.MarkupMatches(
+            @"<div class=""validation-message"">
+                The Link field is not a valid fully-qualified http, https, or ftp URL.
+            </div>");
+    }
+    
+    [Fact]
+    public async Task InvalidDocumentationLinkTest() {
+        var mock = await Setup();
+        mock.When("/tag").RespondJson(new List<Tag>());
+
+        var cut = RenderComponent<NewWse>();
+        cut.Find("input[id=docLink]").Change("link");
+        cut.Find("form").Submit();
+
+        var elements = cut.FindAll("li[class=validation-message]");
+        Assert.Contains(elements, element => element.Html()
+            .Equals("The DocumentationLink field is not a valid fully-qualified http, https, or ftp URL."));
+    }
+
+    private async Task InvalidTagSyntaxTestHelper(string tagText) {
+        var mock = await Setup();
+        mock.When("/tag").RespondJson(new List<Tag>());
+
+        var cut = RenderComponent<NewWse>();
+        cut.Find("textarea[id=newTags]").Change(tagText);
+        
+        var elements = cut.FindAll("li[class=validation-message]");
+        Assert.Contains(elements, element => element.Html()
+            .Equals("Tags are not separated with a comma."));
+    }
+    
+    [Fact]
+    public async Task InvalidNewWseSyntaxTest1() {
+        await InvalidTagSyntaxTestHelper(",");
+
+    }
+
+    [Fact]
+    public async Task InvalidNewWseSyntaxTest2() {
+        await InvalidTagSyntaxTestHelper("a,");
+    }
+
+    [Fact]
+    public async Task InvalidNewWseSyntaxTest3() {
+        await InvalidTagSyntaxTestHelper(",,");
+    }
+}

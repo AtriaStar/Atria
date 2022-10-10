@@ -1,0 +1,80 @@
+﻿@using Frontend.Pages.WSE
+@using Models
+@using RichardSzalay.MockHttp
+@using System.Net
+@inherits TestContext
+
+@code {
+
+    private async Task Setup(bool isAuthorized) {
+        var mockHttpHandler = Services.AddMockHttpClient();
+        await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("/wse/1/Google");
+        WebserviceEntry entry = new WebserviceEntry() {
+            Name = "Google",
+            ShortDescription = "A Search Engine",
+            Link = "https://www.google.com/",
+            ContactPersonId = 1,
+            Id = 1,
+            ViewCount = 1,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+        mockHttpHandler.When("http://localhost/wse/1").RespondJson(entry);
+        mockHttpHandler.When("http://localhost/user/1").RespondJson(MockAuthentication.GetMockUser());
+        mockHttpHandler.When("http://localhost/user/1/wse").RespondJson(new List<WebserviceEntry> {
+            entry
+        });
+        mockHttpHandler.When("http://localhost/user/1/bookmarks").RespondJson(new List<WebserviceEntry> {
+            entry
+        });
+        mockHttpHandler.When("http://localhost/wse/1/review/count").RespondJson(0);
+        mockHttpHandler.When("http://localhost/wse/1/question/count").RespondJson(0);
+        mockHttpHandler.When("http://localhost/wse/1/collaborators").RespondJson(new List<Collaborator> {
+            new() {
+                UserId = 1,
+                WseId = 1,
+                Rights = WseRights.Owner
+            }
+        });
+        mockHttpHandler.When("http://localhost/user/1/bookmarks/remove/1").Respond(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task DisplayWse() {
+        await Setup(false);
+
+        var cut = RenderComponent<WseDetail>(builder => builder
+            .Add(parameter => parameter.WseId, 1)
+            .Add(parameter => parameter.WseName, "Google"));
+        cut.WaitForElement(".card-title");
+        var wseName = cut.Find(".card-title");
+        var wseLink = cut.Find("a[title='Zum Webservice']");
+
+        Assert.Equal("Google", wseName.InnerHtml);
+        Assert.Contains(wseLink.Attributes, attr
+            => attr.Name.Equals("href") && attr.Value.Equals("https://www.google.com/"));
+    }
+
+    [Fact]
+    public async Task BookmarkIconTest() {
+        await Setup(true);
+
+        var cut = RenderComponent<WseDetail>(builder => builder
+            .Add(parameter => parameter.WseId, 1)
+            .Add(parameter => parameter.WseName, "Google"));
+        cut.WaitForElement(".card-title");
+
+        var icon = cut.Find("i.fa-bookmark");
+
+        Assert.Contains(icon.ClassList, s => s.Equals("fa-solid"));
+        
+        await icon.ClickAsync(new MouseEventArgs());
+        
+        cut.WaitForAssertion(() => Assert.Contains("fa-regular", icon.ClassList));
+        Assert.DoesNotContain("fa-solid", icon.ClassList);
+    }
+
+
+
+}

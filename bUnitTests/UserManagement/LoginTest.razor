@@ -1,0 +1,90 @@
+﻿@using Frontend.Pages.UserManagement
+@using RichardSzalay.MockHttp
+@using System.Net
+@inherits TestContext
+
+@code {
+
+    private async Task<MockHttpMessageHandler> Setup(bool isAuthorized) {
+        var mockHttpHandler = Services.AddMockHttpClient();
+        await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("/login");
+        return mockHttpHandler;
+    }
+
+    [Fact]
+    public async Task NoInputTest() {
+        await Setup(false);
+
+        var cut = RenderComponent<Login>();
+        cut.Find("button[type=submit]").Click();
+
+        var valList = cut.Find("ul[class=validation-errors]");
+        valList.MarkupMatches(
+            @"<ul class=""validation-errors"">
+                <li class=""validation-message"">
+                    The Email field is required.
+                </li>
+                <li class=""validation-message"">
+                    The Password field is required.
+                </li>
+            </ul>");
+    }
+
+    [Fact]
+    public async Task InvalidEmailTest() {
+        await Setup(false);
+
+        var cut = RenderComponent<Login>();
+        cut.Find("input[type=email]").Change("email");
+
+        var valList = cut.Find("ul[class=validation-errors]");
+        valList.MarkupMatches(
+            @"<ul class=""validation-errors"">
+                <li class=""validation-message"">
+                    The Email field is not a valid e-mail address.
+                </li>
+            </ul>");
+        var valMessage = cut.Find("div[class=validation-message]");
+        valMessage.MarkupMatches(
+            @"<div class=""validation-message"">The Email field is not a valid e-mail address.</div>");
+    }
+
+    [Fact]
+    public async Task ValidInput() {
+        var mock = await Setup(false);
+        mock.When("http://localhost/auth/login").Respond(HttpStatusCode.OK);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+
+        var cut = RenderComponent<Login>();
+        cut.Find("#email").Change("mock@mock");
+        cut.Find("#password").Change("mocking");
+        cut.Find("form").Submit();
+
+        cut.WaitForAssertion(() => Assert.Equal("http://localhost/", navMan.Uri));
+    }
+
+    [Fact]
+    public async Task AlreadyLoggedIn() {
+        await Setup(true);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+
+        var cut = RenderComponent<Login>();
+
+        Assert.True(cut.Instance.LoginState.LoggedIn);
+        Assert.Equal("http://localhost/", navMan.Uri);
+    }
+
+    [Fact]
+    public async Task NotAlreadyLoggedIn() {
+        await Setup(false);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+
+        var cut = RenderComponent<Login>();
+
+        Assert.False(cut.Instance.LoginState.LoggedIn);
+        Assert.Equal("http://localhost/login", navMan.Uri);
+    }
+
+}
