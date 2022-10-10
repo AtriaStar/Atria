@@ -123,7 +123,7 @@
                             <WseSummaryList Entries="_webserviceEntries"/>
                             break;
                         case "reviews":
-                            <ReviewList Reviews="_reviews"/>
+                            <ReviewList Reviews="_reviews" CurrentPageUserId="UserId"/>
                             break;
                         default:
                             NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("type", (string)null!));

@@ -19,16 +19,20 @@
             @review.Description
             <div class="d-flex justify-content-between mt-1">
                 @review.CreationTime
-                <div class="d-grid gap-2 d-flex justify-content-end">
-                    <DeleteModal ModalTitle="Bewertung löschen"
-                                 ModalBody="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?"
-                                 ReviewId="review.Id"
-                                 WseId="review.WseId"
-                                 ToDelete="review"
-                                 ButtonStyle="btn-small btn-outline-danger">
-                    </DeleteModal>
-                    <button class="btn btn-small btn-outline-success" type="button">Bearbeiten</button>
-                </div>
+                <AuthView UserIdClaim="CurrentPageUserId">
+                    <AuthorizedAndMatching>
+                        <div class="d-grid gap-2 d-flex justify-content-end">
+                            <DeleteModal ModalTitle="Bewertung löschen"
+                                         ModalBody="Sind Sie sicher, dass Sie Ihre Bewertung löschen möchten?"
+                                         ReviewId="review.Id"
+                                         WseId="review.WseId"
+                                         ToDelete="review"
+                                         ButtonStyle="btn-small btn-outline-danger">
+                            </DeleteModal>
+                            <button class="btn btn-small btn-outline-success" type="button">Bearbeiten</button>
+                        </div>
+                    </AuthorizedAndMatching>
+                </AuthView>
             </div>
 
         </div>
@@ -39,6 +43,9 @@
 
     [Parameter]
     public IEnumerable<Review> Reviews { get; set; } = null!;
+
+    [Parameter]
+    public long CurrentPageUserId { get; set; }
 
     private string GetLinkToWse(Review review) {
         return "wse/" + review.WseId;
