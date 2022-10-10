@@ -125,8 +125,8 @@
             Rights = WseRights.EditData
         });
         await HttpClient.PostAsJsonAsync($"wse/{WseId}/collaborators", _collaborators);
-        ModalBase.Close();
-        NavigationManager.NavigateTo(NavigationManager.Uri);
+        var user = await HttpClient.GetFromJsonAsync<User>("user/" + _userToAdd.Value) ?? throw new InvalidOperationException();
+        _collaboratorsAsUsers.Add(user);
     }
 
     private async Task RemoveCollabById(long userId) {
