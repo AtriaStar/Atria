@@ -1,5 +1,6 @@
 ﻿@using Models.DTO
 @using Models
+@using Frontend.Services
 @foreach (Review review in Reviews) {
     <div class="card mb-3">
         <div class="card-body d-flex flex-column">
@@ -18,7 +19,9 @@
             </div>
             @review.Description
             <div class="d-flex justify-content-between mt-1">
-                @review.CreationTime
+                <Tooltip Text="@review.CreationTime.ToString()">
+                    @NiceTimeSpanFormatterService.NiceFormat(DateTimeOffset.UtcNow - review.CreationTime)
+                </Tooltip>
                 <AuthView UserIdClaim="CurrentPageUserId">
                     <AuthorizedAndMatching>
                         <div class="d-grid gap-2 d-flex justify-content-end">
