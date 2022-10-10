@@ -212,12 +212,12 @@
             }
         }
         if (!_userNotFound) {
-            // Get only query parameters
+    // Get only query parameters
             var queryString = NavigationManager
-                .ToBaseRelativePath(NavigationManager.GetUriWithQueryParameter("type", (string) null!));
+                .ToBaseRelativePath(NavigationManager.GetUriWithQueryParameter("type", (string)null!));
             var i = queryString.IndexOf('?');
             queryString = i != -1 ? queryString[queryString.IndexOf('?')..] : "";
-            
+
             var response = await HttpClient.GetAsync($"user/{UserId}/{Type ?? "wse"}" + queryString);
             if (response.IsSuccessStatusCode) {
                 switch (Type) {
@@ -258,7 +258,7 @@
     }
 
     private void CloneUser() {
-        _cloneUser = new User() {
+        _cloneUser = new User {
             FirstNames = _user!.FirstNames,
             LastName = _user.LastName,
             Email = _user.Email,

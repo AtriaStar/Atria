@@ -24,19 +24,19 @@
 
     [CascadingParameter]
     public LoginState LoginState { get; set; } = default!;
-    
+
     [Parameter]
     public RenderFragment? Authorized { get; set; }
-    
+
     [Parameter]
     public RenderFragment? NotAuthorized { get; set; }
-    
+
     [Parameter]
     public RenderFragment? AuthorizedAndMatching { get; set; }
-    
+
     [Parameter]
     public long? UserIdClaim { get; set; }
-    
+
     [Parameter]
     public long[]? UserIdClaimCollection { get; set; }
 
@@ -51,7 +51,6 @@
         if (UserIdClaim != null && UserIdClaimCollection != null) {
             throw new InvalidOperationException($"Do not specify both '{nameof(UserIdClaim)}' and '{nameof(UserIdClaimCollection)}'");
         }
-
     }
 
 }

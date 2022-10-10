@@ -55,13 +55,13 @@
         </div>
 
         <hr/>
-        
+
         <div class="mt-4 mb-2">
             <label class="form-label fw-bold">
                 Tags
                 <small class="text-muted">(zum Auswählen Strg gedrückt halten)</small>
             </label>
-                <TagList @bind-SelectedTags="_webserviceEntry.Tags"></TagList>
+            <TagList @bind-SelectedTags="_webserviceEntry.Tags"></TagList>
         </div>
 
         <div class="mb-4">
@@ -114,12 +114,12 @@
 @code {
 
     private WebserviceEntry _webserviceEntry = new();
-    
+
     [CascadingParameter]
     public LoginState LoginState { get; init; } = default!;
 
     private readonly TagDto _tagDto = new();
-    
+
     private string? _conflictMessage;
 
     protected override async Task OnInitializedAsync() {
@@ -131,23 +131,22 @@
 
     private async void PublishWse() {
     //set contact and tags
-            _webserviceEntry.ContactPersonId = LoginState.User!.Id;
+        _webserviceEntry.ContactPersonId = LoginState.User!.Id;
 
-            _webserviceEntry.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',', StringSplitOptions.TrimEntries).Select(x => new Tag {
-                Name = x
-            }) ?? Enumerable.Empty<Tag>());
+        _webserviceEntry.Tags.UnionWith(_tagDto.NewTagsStr?.Split(',', StringSplitOptions.TrimEntries).Select(x => new Tag {
+            Name = x
+        }) ?? Enumerable.Empty<Tag>());
 
     // send to api
-            var response = await HttpClient.PutAsJsonAsync("wse", _webserviceEntry);
-            if (response.IsSuccessStatusCode) {
-                var wseId = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!.Id;
-                NavigationManager.NavigateTo("wse/" + wseId);
-            } else if (response.StatusCode == HttpStatusCode.Conflict) {
-                _conflictMessage = await response.Content.ReadAsStringAsync();
-            } else {
-                NavigationManager.NavigateTo("/internal-server-error");
-            }
-
+        var response = await HttpClient.PutAsJsonAsync("wse", _webserviceEntry);
+        if (response.IsSuccessStatusCode) {
+            var wseId = (await response.Content.ReadFromJsonAsync<WebserviceEntry>())!.Id;
+            NavigationManager.NavigateTo("wse/" + wseId);
+        } else if (response.StatusCode == HttpStatusCode.Conflict) {
+            _conflictMessage = await response.Content.ReadAsStringAsync();
+        } else {
+            NavigationManager.NavigateTo("/internal-server-error");
+        }
     }
 
 }

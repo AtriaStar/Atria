@@ -20,8 +20,9 @@
 
     private LoginState _loginState = null!;
 
-	protected override async Task OnInitializedAsync() {
+    protected override async Task OnInitializedAsync() {
         _loginState = new(HttpClient);
-		await _loginState.Init;
-	}
+        await _loginState.Init;
+    }
+
 }

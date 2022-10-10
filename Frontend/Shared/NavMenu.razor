@@ -33,11 +33,21 @@
                                 <ion-icon type="button" data-bs-toggle="dropdown" name="person-circle-outline"></ion-icon>
                             }
                             <ul class="dropdown-menu dropdown-menu-end mt-3">
-                                <li><a class="dropdown-item" href="@GetUrlToProfile(null)">Mein Konto</a></li>
-                                <li><a class="dropdown-item" href="@GetUrlToProfile("bookmarks")">Meine Lesezeichen</a></li>
-                                <li><a class="dropdown-item" href="@GetUrlToProfile("reviews")">Meine Bewertungen</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><button class="dropdown-item fw-bold text-danger" @onclick="Logout">Abmelden</button></li>
+                                <li>
+                                    <a class="dropdown-item" href="@GetUrlToProfile(null)">Mein Konto</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@GetUrlToProfile("bookmarks")">Meine Lesezeichen</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@GetUrlToProfile("reviews")">Meine Bewertungen</a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <button class="dropdown-item fw-bold text-danger" @onclick="Logout">Abmelden</button>
+                                </li>
                             </ul>
                         </div>
                     </div>

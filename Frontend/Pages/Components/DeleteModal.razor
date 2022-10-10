@@ -23,8 +23,8 @@
     [Parameter]
     public string? ButtonStyle { get; set; }
 
-    public ModalBase ModalBase { get; set; } = null!;
-    
+    private ModalBase ModalBase { get; set; } = null!;
+
     [Parameter]
     public string ModalTitle { get; set; } = null!;
 
@@ -45,15 +45,13 @@
 
     [Parameter]
     public long? ReviewId { get; set; }
-    
+
     private string? _errorMessage;
 
-    private async void ModalDelete()
-    {
+    private async void ModalDelete() {
         HttpResponseMessage response;
 
-        switch (ToDelete)
-        {
+        switch (ToDelete) {
             case "wse":
                 response = await HttpClient.DeleteAsync("wse/" + WseId);
                 if (response.IsSuccessStatusCode) {
@@ -82,4 +80,5 @@
 
         _errorMessage = "Ein Fehler ist aufgetreten.";
     }
+
 }

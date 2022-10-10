@@ -143,7 +143,7 @@
     private int _numberOfEntries;
 
     protected override async Task OnParametersSetAsync() {
-        // Pagination is 1-indexed
+    // Pagination is 1-indexed
         if (Page == 0) {
             Page = 1;
         }
@@ -173,7 +173,7 @@
     }
 
     private async Task GetAndSetUserList() {
-        // Empty query for user is not allowed.
+    // Empty query for user is not allowed.
         if (Query is null or "") {
             _userList = Array.Empty<User>();
             _numberOfEntries = 0;
@@ -202,7 +202,7 @@
             Search();
         }
     }
-    
+
     // Search by redirecting to corresponding url.
     private void Search() {
         NavigationManager.NavigateTo(Navigate("query", Query));
