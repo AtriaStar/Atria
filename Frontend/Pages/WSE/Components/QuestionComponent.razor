@@ -60,6 +60,11 @@
                         Antworten
                     </button>
                 </div>
+                @if (_errorMessage is not null) {
+                    <div class="fw-bold text-danger">
+                        @_errorMessage
+                    </div>
+                }
             }
         </div>
 
@@ -106,7 +111,7 @@
     private int _currentAnswerPage;
     private IEnumerable<Answer> _answers = new List<Answer>();
 
-    private string ConflictMessage { get; set; } = null!;
+    private string? _errorMessage;
 
     protected override async Task OnInitializedAsync() {
         QuestionCreator = await HttpClient.GetFromJsonAsync<User>("user/" + Question.CreatorId) ?? new User();
@@ -139,7 +144,7 @@
         if (response.IsSuccessStatusCode) {
             NavManager.NavigateTo("wse/" + WseId, true);
         } else if (response.StatusCode == HttpStatusCode.Conflict) {
-            ConflictMessage = await response.Content.ReadAsStringAsync();
+            _errorMessage = await response.Content.ReadAsStringAsync();
             StateHasChanged();
         } else {
             NavManager.NavigateTo("/internal-server-error");
