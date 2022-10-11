@@ -11,6 +11,8 @@
         mockHttpHandler.When("/tag").RespondJson(new List<Tag>());
         mockHttpHandler.When("/wse/1/review/average").RespondJson(1);
         await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
+        var navMan = Services.GetRequiredService<FakeNavigationManager>();
+        navMan.NavigateTo("http://localhost/");
         return mockHttpHandler;
     }
 
