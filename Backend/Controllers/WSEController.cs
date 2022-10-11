@@ -85,7 +85,9 @@ public class WseController : AtriaControllerBase {
     [RequiresAuthentication]
     [HttpPost]
     public async Task<IActionResult> EditWse(WebserviceEntry wse, [FromAuthentication] User user) {
-        var existingWse = await _context.WebserviceEntries.FindAsync(wse.Id);
+        var existingWse = await _context.WebserviceEntries
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == wse.Id);
         if (existingWse == null) { return NotFound(); }
         await _context.Entry(existingWse).Collection(x => x.Collaborators).LoadAsync();
         var rights = existingWse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights;
@@ -109,7 +111,6 @@ public class WseController : AtriaControllerBase {
         wse.Reviews = existingWse.Reviews;
         wse.Tags = (await Task.WhenAll(wse.Tags.Select(async x => await _context.Tags.FindAsync(x.Name) ?? x))).ToHashSet();
 
-        _context.ChangeTracker.Clear();
         _context.WebserviceEntries.Update(wse);
         await _context.SaveChangesAsync();
 
@@ -148,7 +149,9 @@ public class WseController : AtriaControllerBase {
     [RequiresAuthentication]
     [HttpPost("review")]
     public async Task<IActionResult> EditReview(Review review, [FromAuthentication] User user) {
-        var existingReview = await _context.Reviews.FirstOrDefaultAsync(x => x.Id == review.Id && x.WseId == review.WseId);
+        var existingReview = await _context.Reviews
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == review.Id && x.WseId == review.WseId);
         if (existingReview == null) { return NotFound(); }
 
         if (existingReview.CreatorId != user.Id) {
@@ -165,7 +168,6 @@ public class WseController : AtriaControllerBase {
 
         review.Wse = existingReview.Wse;
 
-        _context.ChangeTracker.Clear();
         _context.Reviews.Update(review);
         await _context.SaveChangesAsync();
 

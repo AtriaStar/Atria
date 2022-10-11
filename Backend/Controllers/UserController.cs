@@ -46,7 +46,7 @@ public class UserController : AtriaControllerBase {
         // TODO: Extra endpoint for email
         user.Bookmarks = authUser.Bookmarks;
 
-        _context.ChangeTracker.Clear(); // TODO: WHY IS THIS NEEDED??
+        _context.ChangeTracker.Clear(); // TODO: Optional parameter attribute to disable change tracking for parameter entity
         _context.Update(user);
         await _context.SaveChangesAsync();
         return Ok();
