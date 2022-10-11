@@ -8,8 +8,8 @@
 
     private async Task<MockHttpMessageHandler> Setup(bool isAuthorized) {
         var mockHttpHandler = Services.AddMockHttpClient();
-        mockHttpHandler.When("/tag").RespondJson(new List<Tag>());
-        mockHttpHandler.When("/wse/1/review/average").RespondJson(1);
+        mockHttpHandler.When("http://localhost/tag").RespondJson(new List<Tag>());
+        mockHttpHandler.When("http://localhost/wse/1/review/average").RespondJson(1);
         await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
         var navMan = Services.GetRequiredService<FakeNavigationManager>();
         navMan.NavigateTo("http://localhost/");
@@ -31,10 +31,10 @@
         };
         IEnumerable<WebserviceEntry> list = new[] { entry };
 
-        mock.When("search/wse").RespondJson(list);
-        mock.When("search/wse/count").RespondJson(1);
-        mock.When("search/wse?query=test").RespondJson(list);
-        mock.When("search/wse/count?query=test").RespondJson(1);
+        mock.When("http://localhost/search/wse").RespondJson(list);
+        mock.When("http://localhost/search/wse/count").RespondJson(1);
+        mock.When("http://localhost/search/wse?query=test").RespondJson(list);
+        mock.When("http://localhost/search/wse/count?query=test").RespondJson(1);
         mock.When("http://localhost/wse/1/review/average").RespondJson(0);
 
         var cut = RenderComponent<Start>();
