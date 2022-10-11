@@ -19,19 +19,32 @@
     [Fact]
     public async Task QueryTest() {
         var mock = await Setup(false);
-        mock.When("search/wse").RespondJson(new List<WebserviceEntry>());
-        mock.When("search/wse/count").RespondJson(0);
-        mock.When("search/wse?query=test").RespondJson(new List<WebserviceEntry>());
-        mock.When("search/wse/count?query=test").RespondJson(0);
+        
+        WebserviceEntry entry = new WebserviceEntry() {
+            Name = "Google",
+            ShortDescription = "A Search Engine",
+            Link = "https://www.google.com/",
+            ContactPersonId = 1,
+            Id = 1,
+            ViewCount = 1,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
+        IEnumerable<WebserviceEntry> list = new[] { entry };
+
+        mock.When("search/wse").RespondJson(list);
+        mock.When("search/wse/count").RespondJson(1);
+        mock.When("search/wse?query=test").RespondJson(list);
+        mock.When("search/wse/count?query=test").RespondJson(1);
+        mock.When("http://localhost/wse/1/review/average").RespondJson(0);
 
         var cut = RenderComponent<Start>();
         var searchbar = cut.Find("input[type=search]");
-        searchbar.Change("test");
+        searchbar.Change("google");
         searchbar.TriggerEvent("onkeyup", new KeyboardEventArgs {
             Key = "Enter"
         });
 
-        Assert.Equal("test", cut.Instance.Query);
+        Assert.Equal("google", cut.Instance.Query);
     }
 
     [Fact]
