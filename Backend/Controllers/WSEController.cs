@@ -86,10 +86,10 @@ public class WseController : AtriaControllerBase {
     [HttpPost]
     public async Task<IActionResult> EditWse(WebserviceEntry wse, [FromAuthentication] User user) {
         var existingWse = await _context.WebserviceEntries
+            .Include(x => x.Collaborators)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == wse.Id);
         if (existingWse == null) { return NotFound(); }
-        await _context.Entry(existingWse).Collection(x => x.Collaborators).LoadAsync();
         var rights = existingWse.Collaborators.FirstOrDefault(x => x.UserId == user.Id)?.Rights;
         if (rights == null) { return Forbidden("User is not a collaborator"); }
 
