@@ -3,21 +3,24 @@
 @using Models
 @using RichardSzalay.MockHttp
 @inherits TestContext
+
 @code {
-    
+
     private async Task<MockHttpMessageHandler> Setup(bool isAuthorized) {
         var mockHttpHandler = Services.AddMockHttpClient();
         mockHttpHandler.When("/tag").RespondJson(new List<Tag>());
-        mockHttpHandler.When("http://localhost/wse/1/review/average").RespondJson(1);
+        mockHttpHandler.When("/wse/1/review/average").RespondJson(1);
         await MockAuthentication.AddMockAuthentication(this, mockHttpHandler, isAuthorized);
         return mockHttpHandler;
     }
-    
+
     [Fact]
     public async Task QueryTest() {
-        var mock = await Setup(true);        
+        var mock = await Setup(false);
         mock.When("search/wse").RespondJson(new List<WebserviceEntry>());
+        mock.When("search/wse/count").RespondJson(0);
         mock.When("search/wse?query=test").RespondJson(new List<WebserviceEntry>());
+        mock.When("search/wse/count?query=test").RespondJson(0);
 
         var cut = RenderComponent<Start>();
         var searchbar = cut.Find("input[type=search]");
@@ -32,7 +35,7 @@
     [Fact]
     public async Task ShowWse() {
         await Setup(true);
-        
+
         WebserviceEntry entry = new WebserviceEntry() {
             Name = "Google",
             ShortDescription = "A Search Engine",
@@ -42,10 +45,11 @@
             ViewCount = 1,
             CreatedAt = DateTimeOffset.UtcNow
         };
-        
+
         IEnumerable<WebserviceEntry> list = new[] { entry };
 
         var cut = RenderComponent<WseSummaryList>(builder => builder.Add(p => p.Entries, list));
         Assert.Contains("Google", cut.Markup);
     }
+
 }
