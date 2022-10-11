@@ -11,19 +11,6 @@ namespace Backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "tags",
-                columns: table => new
-                {
-                    name = table.Column<string>(type: "text", nullable: false),
-                    description = table.Column<string>(type: "text", nullable: true),
-                    creation_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_tags", x => x.name);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "users",
                 columns: table => new
                 {
@@ -242,27 +229,22 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tag_webservice_entry",
+                name: "tags",
                 columns: table => new
                 {
-                    tags_name = table.Column<string>(type: "text", nullable: false),
-                    webservice_entries_id = table.Column<long>(type: "bigint", nullable: false)
+                    name = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    creation_time = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    webservice_entry_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_tag_webservice_entry", x => new { x.tags_name, x.webservice_entries_id });
+                    table.PrimaryKey("pk_tags", x => x.name);
                     table.ForeignKey(
-                        name: "fk_tag_webservice_entry_tags_tags_name",
-                        column: x => x.tags_name,
-                        principalTable: "tags",
-                        principalColumn: "name",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "fk_tag_webservice_entry_webservice_entries_webservice_entries_",
-                        column: x => x.webservice_entries_id,
+                        name: "fk_tags_webservice_entries_webservice_entry_id",
+                        column: x => x.webservice_entry_id,
                         principalTable: "webservice_entries",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -341,9 +323,9 @@ namespace Backend.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_tag_webservice_entry_webservice_entries_id",
-                table: "tag_webservice_entry",
-                column: "webservice_entries_id");
+                name: "ix_tags_webservice_entry_id",
+                table: "tags",
+                column: "webservice_entry_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_users_email",
@@ -381,13 +363,10 @@ namespace Backend.Migrations
                 name: "sessions");
 
             migrationBuilder.DropTable(
-                name: "tag_webservice_entry");
+                name: "tags");
 
             migrationBuilder.DropTable(
                 name: "questions");
-
-            migrationBuilder.DropTable(
-                name: "tags");
 
             migrationBuilder.DropTable(
                 name: "webservice_entries");
