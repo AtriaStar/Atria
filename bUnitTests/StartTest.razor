@@ -17,37 +17,6 @@
     }
 
     [Fact]
-    public async Task QueryTest() {
-        var mock = await Setup(false);
-        
-        WebserviceEntry entry = new WebserviceEntry() {
-            Name = "Google",
-            ShortDescription = "A Search Engine",
-            Link = "https://www.google.com/",
-            ContactPersonId = 1,
-            Id = 1,
-            ViewCount = 1,
-            CreatedAt = DateTimeOffset.UtcNow
-        };
-        IEnumerable<WebserviceEntry> list = new[] { entry };
-
-        mock.When("http://localhost/search/wse").RespondJson(list);
-        mock.When("http://localhost/search/wse/count").RespondJson(1);
-        mock.When("http://localhost/search/wse?query=test").RespondJson(list);
-        mock.When("http://localhost/search/wse/count?query=test").RespondJson(1);
-        mock.When("http://localhost/wse/1/review/average").RespondJson(0);
-
-        var cut = RenderComponent<Start>();
-        var searchbar = cut.Find("input[type=search]");
-        searchbar.Change("google");
-        searchbar.TriggerEvent("onkeyup", new KeyboardEventArgs {
-            Key = "Enter"
-        });
-
-        Assert.Equal("google", cut.Instance.Query);
-    }
-
-    [Fact]
     public async Task ShowWse() {
         await Setup(true);
 
