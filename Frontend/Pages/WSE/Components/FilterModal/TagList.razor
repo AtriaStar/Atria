@@ -76,7 +76,7 @@
     private IDisposable? _tagQuerySubscription;
 
     private async Task RemoveTagFromSelection(Tag tag) {
-        _selectedTags.ExceptWith(new[] { tag });
+        _selectedTags.Remove(tag);
         await SelectedTagsChanged.InvokeAsync(_selectedTags);
     }
 
