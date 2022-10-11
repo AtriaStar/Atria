@@ -17,7 +17,7 @@ public class TagController : AtriaControllerBase {
 
     [HttpGet]
     public IQueryable<Tag> GetAll([FromQuery] Pagination pagination)
-        => _context.Tags.Paginate(pagination);
+        => _context.Tags.Include("WebserviceEntries").Paginate(pagination);
 
     [HttpPut]
     [RequiresAuthentication]

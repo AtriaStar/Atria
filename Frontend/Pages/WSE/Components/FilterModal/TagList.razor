@@ -92,7 +92,7 @@
 
     protected override async Task OnInitializedAsync() {
         _allTags = await HttpClient.GetFromJsonAsync<IList<Tag>>("tag") ?? new List<Tag>();
-        _searchedTags = _allTags.ToList();
+        _searchedTags = _allTags.OrderByDescending(tag => tag.UseCount).ToList();
         _selectedTags = SelectedTags;
     //If no selected tags have been provided, check for selected tags string
         if (!_selectedTags.Any()) {
@@ -118,6 +118,7 @@
 
     private ICollection<Tag> Search(string? searchTerm) {
         return _allTags!.Where(tag => tag.Name.Contains(searchTerm ?? string.Empty))
+            .OrderByDescending(tag => tag.UseCount)
             .ToList();
     }
 

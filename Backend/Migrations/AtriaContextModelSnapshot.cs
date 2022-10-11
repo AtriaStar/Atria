@@ -255,15 +255,8 @@ namespace Backend.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
-                    b.Property<long?>("WebserviceEntryId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("webservice_entry_id");
-
                     b.HasKey("Name")
                         .HasName("pk_tags");
-
-                    b.HasIndex("WebserviceEntryId")
-                        .HasDatabaseName("ix_tags_webservice_entry_id");
 
                     b.ToTable("tags", (string)null);
                 });
@@ -405,6 +398,25 @@ namespace Backend.Migrations
                         .HasDatabaseName("ix_webservice_entries_contact_person_id");
 
                     b.ToTable("webservice_entries", (string)null);
+                });
+
+            modelBuilder.Entity("TagWebserviceEntry", b =>
+                {
+                    b.Property<string>("TagsName")
+                        .HasColumnType("text")
+                        .HasColumnName("tags_name");
+
+                    b.Property<long>("WebserviceEntriesId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("webservice_entries_id");
+
+                    b.HasKey("TagsName", "WebserviceEntriesId")
+                        .HasName("pk_tag_webservice_entry");
+
+                    b.HasIndex("WebserviceEntriesId")
+                        .HasDatabaseName("ix_tag_webservice_entry_webservice_entries_id");
+
+                    b.ToTable("tag_webservice_entry", (string)null);
                 });
 
             modelBuilder.Entity("UserWebserviceEntry", b =>
@@ -551,14 +563,6 @@ namespace Backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Models.Tag", b =>
-                {
-                    b.HasOne("Models.WebserviceEntry", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("WebserviceEntryId")
-                        .HasConstraintName("fk_tags_webservice_entries_webservice_entry_id");
-                });
-
             modelBuilder.Entity("Models.WebserviceEntry", b =>
                 {
                     b.HasOne("Models.User", "ContactPerson")
@@ -569,6 +573,23 @@ namespace Backend.Migrations
                         .HasConstraintName("fk_webservice_entries_users_contact_person_id");
 
                     b.Navigation("ContactPerson");
+                });
+
+            modelBuilder.Entity("TagWebserviceEntry", b =>
+                {
+                    b.HasOne("Models.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_tag_webservice_entry_tags_tags_name");
+
+                    b.HasOne("Models.WebserviceEntry", null)
+                        .WithMany()
+                        .HasForeignKey("WebserviceEntriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_tag_webservice_entry_webservice_entries_webservice_entries_");
                 });
 
             modelBuilder.Entity("UserWebserviceEntry", b =>
@@ -597,8 +618,6 @@ namespace Backend.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
         }
