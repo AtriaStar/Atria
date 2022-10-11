@@ -112,6 +112,13 @@ public class WseController : AtriaControllerBase {
         wse.Tags = (await Task.WhenAll(wse.Tags.Select(async x => await _context.Tags.FindAsync(x.Name) ?? x))).ToHashSet();
 
         _context.WebserviceEntries.Update(wse);
+
+        // Ugh, the alternative would be an actual entity to link WSE to tags that cascades deletion, might be worth considering.
+        foreach (var tag in _context.Tags.Include(x => x.WebserviceEntries)
+                     .Where(x => x.WebserviceEntries.Contains(wse) && !wse.Tags.Contains(x))) {
+            tag.WebserviceEntries.Remove(wse);
+        }
+
         await _context.SaveChangesAsync();
 
         return Ok();

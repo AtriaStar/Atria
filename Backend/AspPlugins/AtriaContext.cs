@@ -48,6 +48,10 @@ public class AtriaContext : DbContext {
             .HasForeignKey(x => x.ContactPersonId);
 
         modelBuilder.Entity<WebserviceEntry>()
+            .HasMany(x => x.Tags)
+            .WithMany(x => x.WebserviceEntries);
+
+        modelBuilder.Entity<WebserviceEntry>()
             .Navigation(x => x.Tags)
             .AutoInclude();
     }

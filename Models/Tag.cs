@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,14 +11,6 @@ public class Tag {
     public string? Description { get; set; }
     public DateTimeOffset CreationTime { get; set; } = DateTimeOffset.UtcNow;
     public long UseCount => WebserviceEntries.Count;
-
-    protected virtual ISet<WebserviceEntry> WebserviceEntries { get; set; } = new HashSet<WebserviceEntry>();
-
-    private class Mapper : IEntityTypeConfiguration<Tag> {
-        public void Configure(EntityTypeBuilder<Tag> builder) {
-            builder
-                .HasMany(x => x.WebserviceEntries)
-                .WithMany(x => x.Tags);
-        }
-    }
+    [JsonIgnore]
+    public virtual IList<WebserviceEntry> WebserviceEntries { get; set; } = new List<WebserviceEntry>();
 }
