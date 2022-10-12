@@ -33,10 +33,11 @@
         <div class="spinner-border ms-3" role="status" aria-hidden="true"></div>
     } else {
         @foreach (var tag in _searchedTags) {
-            var value = _selectedTags.Contains(tag);
+            var tagInSelection = _selectedTags.SingleOrDefault(tag1 => tag1.Name.Equals(tag.Name));
+            var value = tagInSelection != default;
             <div class="form-check">
                 @if (value) {
-                    <input class="form-check-input" type="checkbox" @onclick="() => RemoveTagFromSelection(tag)" checked id="@tag.Name"/>
+                    <input class="form-check-input" type="checkbox" @onclick="() => RemoveTagFromSelection(tagInSelection!)" checked id="@tag.Name"/>
                 } else {
                     <input class="form-check-input" type="checkbox" @onclick="() => AddTagToSelection(tag)" id="@tag.Name"/>
                 }
@@ -92,7 +93,7 @@
 
     protected override async Task OnInitializedAsync() {
         _allTags = await HttpClient.GetFromJsonAsync<IList<Tag>>("tag") ?? new List<Tag>();
-        _searchedTags = _allTags.OrderByDescending(tag => tag.UseCount).ToList();
+        _searchedTags = _allTags.ToList();
         _selectedTags = SelectedTags;
     //If no selected tags have been provided, check for selected tags string
         if (!_selectedTags.Any()) {
@@ -118,7 +119,6 @@
 
     private ICollection<Tag> Search(string? searchTerm) {
         return _allTags!.Where(tag => tag.Name.Contains(searchTerm ?? string.Empty))
-            .OrderByDescending(tag => tag.UseCount)
             .ToList();
     }
 
