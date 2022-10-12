@@ -247,14 +247,13 @@
 
     @if (_isCollab) {
         @if (!_displayEditForm) {
-            <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
-                <button class="btn btn-warning me-3" type="button" @onclick="Leave">
+            <div class="gap-2 mt-4 mb-4 d-grid d-sm-flex justify-content-sm-end">
+                <button class="btn btn-warning" type="button" @onclick="Leave">
                     WSE verlassen
                 </button>
                 <button class="btn btn-success" type="button" @onclick="() => _displayEditForm = !_displayEditForm">
                     Bearbeiten
                 </button>
-
                 <DeleteModal ModalBody="Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?"
                              ToDelete="wse" WseId="WseId" ModalTitle="Wse löschen" ButtonStyle="btn-danger">
                 </DeleteModal>
@@ -263,7 +262,7 @@
             <EditForm Model="_wse">
                 <DataAnnotationsValidator/>
                 <ValidationSummary/>
-                <div class="d-grid gap-2 mt-4 mb-4 d-flex justify-content-end">
+                <div class="gap-2 mt-4 mb-4 d-sm-flex justify-content-sm-end d-grid">
                     <button class="btn btn-danger" type="button" @onclick="CancelEdit">
                         Abbrechen
                     </button>

@@ -20,24 +20,20 @@
         </div>
     </div>
     <div class="d-flex flex-wrap">
-        <div class="nav nav-pills mb-2">
-            <div class="nav-item">
-                <NavLink href="@Navigate("type", null)" class="nav-link" Match="NavLinkMatch.All">
+        <div class="nav nav-pills mb-2 nav-fill flex-sm-grow-0 flex-grow-1">
+                <NavLink href="@Navigate("type", null)" class="nav-link me-2" Match="NavLinkMatch.All">
                     Webservice
                     @if (Type is null or "wse") {
                         @_numberOfEntries
                     }
                 </NavLink>
-            </div>
-            <div class="nav-item ms-3">
 
-                <NavLink href="@Navigate("type", "user")" class="nav-link">
+            <NavLink href="@Navigate("type", "user")" class="nav-link me-2">
                     Nutzer
                     @if (Type is "user") {
                         @_numberOfEntries
                     }
                 </NavLink>
-            </div>
         </div>
         <div class="d-flex mb-2 ms-auto align-items-center">
             @if (Type is null or "wse") {
